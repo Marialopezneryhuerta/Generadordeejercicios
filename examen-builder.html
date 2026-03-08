@@ -272,6 +272,7 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 
 /* PRINT */
 @media print {
+  .site-footer { display: none !important; }
   /* Ocultar absolutamente TODO — luego se re-muestra solo el exam-doc */
   body > * { display: none !important; }
 
@@ -316,6 +317,27 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
     @bottom-right { content: "P\00E1gina " counter(page) " de " counter(pages); font-family: "Nunito Sans", Arial, sans-serif; font-size: 7pt; color: #a0a5be; }
   }
 }
+
+.site-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white, #fff);
+  border-top: 1px solid var(--border, #e8eaf0);
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted, #8b92b1);
+  padding: 0.4rem 1rem;
+  z-index: 100;
+  letter-spacing: 0.01em;
+}
+.nav-copyright {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--muted, #8b92b1);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+body { padding-bottom: 2.2rem; }
 </style>
 </head>
 <body>
@@ -323,6 +345,7 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 <nav>
   <div class="nav-logo">Generador<span>Ejercitarios</span></div>
   <span class="nav-badge" style="margin-left:0.5rem">✦ Exámenes</span>
+  <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
 </nav>
 
 <div class="app-layout">
@@ -4142,5 +4165,6 @@ function ineqc_gen(lvl){
   }catch(e){return null;}
 }
 </script>
+<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 </body>
 </html>

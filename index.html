@@ -234,6 +234,27 @@ footer {
   color: var(--muted);
   border-top: 1px solid var(--border);
 }
+
+.site-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white, #fff);
+  border-top: 1px solid var(--border, #e8eaf0);
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted, #8b92b1);
+  padding: 0.4rem 1rem;
+  z-index: 100;
+  letter-spacing: 0.01em;
+}
+.nav-copyright {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--muted, #8b92b1);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+body { padding-bottom: 2.2rem; }
 </style>
 </head>
 <body>
@@ -241,6 +262,7 @@ footer {
 <nav>
   <div class="nav-logo">Generador de <span>ejercitarios</span></div>
   <p>Generador de ejercitarios de matemáticas</p>
+  <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
 </nav>
 
 <div class="hero">
@@ -434,8 +456,9 @@ footer {
 </main>
 
 <footer>
-  Generador de ejercitarios · Generador de ejercitarios para docentes
+  © 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta
 </footer>
 
+<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 </body>
 </html>

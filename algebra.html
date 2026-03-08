@@ -135,6 +135,7 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .sol-val { font-weight: 700; }
 
 @media print {
+  .site-footer { display: none !important; }
   /* Ocultar toda la interfaz */
   nav, .topic-selector, .card, .btn-generate, .btn-download,
   .btn-download-sol, .sol-opt-bar, .ej-copyright, .section-panel:not(.active),
@@ -507,6 +508,27 @@ body[data-hide-sol] .sol-opt-bar { display: none !important; }
     }
     .ej-copyright { display: none; }
   }
+
+.site-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white, #fff);
+  border-top: 1px solid var(--border, #e8eaf0);
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted, #8b92b1);
+  padding: 0.4rem 1rem;
+  z-index: 100;
+  letter-spacing: 0.01em;
+}
+.nav-copyright {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--muted, #8b92b1);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+body { padding-bottom: 2.2rem; }
 </style>
 </head>
 <body>
@@ -516,6 +538,7 @@ body[data-hide-sol] .sol-opt-bar { display: none !important; }
   <div style="width:1px;height:16px;background:var(--border);margin:0 0.5rem"></div>
   <div class="nav-logo">Generador de <span>ejercitarios</span></div>
   <p>Álgebra</p>
+  <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
 </nav>
 
 <div class="hero">
@@ -7864,5 +7887,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
   <div class="print-footer">© 2026 Maria Lopez Nery Huerta</div>
+<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 </body>
 </html>
