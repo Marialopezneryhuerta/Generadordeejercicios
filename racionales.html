@@ -344,9 +344,9 @@ TOPICS.forEach((t,ti) => {
       <div class="total-badge" id="${t.id}-badge">Total: <span>0</span> ejercicios</div>
     </div>
     <button class="btn-generate" onclick="generateTopic('${t.id}')">⚡ Generar ejercitario</button>
+<div class="ejercitario" id="${t.id}-ej"></div>
 <button class="btn-download" id="${t.id}-btnDL" onclick="downloadEj('${t.id}-ej','${TOPIC_NAMES[t.id].toLowerCase().replace(/ /g,'-')}')">⬇️ Descargar PDF</button>
     <button class="btn-download-sol" id="${t.id}-btnSolAparte" onclick="downloadSolucionesAparte('${t.id}-ej','${TOPIC_NAMES[t.id].toLowerCase().replace(/ /g,'-')}')">🔑 Descargar soluciones (hoja aparte)</button>
-    <div class="ejercitario" id="${t.id}-ej"></div>
   </div>`;
 });
 
