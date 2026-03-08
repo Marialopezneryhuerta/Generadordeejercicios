@@ -177,22 +177,28 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .ra-sit-blank-row { font-size: 0.82rem; color: #8b92b1; display: flex; align-items: center; gap: 0.4rem; }
 
 @media print {
-  .site-footer { display: none !important; }
+  * { box-shadow: none !important; }
   /* Ocultar toda la interfaz */
-  nav, .topic-selector, .card, .btn-generate, .btn-download,
-  .btn-download-sol, .sol-opt-bar, .ej-copyright, .section-panel:not(.active),
-  #sol-opt-bar, #_ios-toast, .hero, #ind-widget { display: none !important; }
+  nav, .hero, .topic-selector, .card, .btn-generate, .btn-download,
+  .btn-download-sol, .sol-opt-bar, .ej-copyright,
+  #sol-opt-bar, #_ios-toast, #ind-widget,
+  .site-footer, .print-footer { display: none !important; }
 
-  /* Mostrar solo el ejercitario activo */
-  .ejercitario { display: block !important; border: none !important;
-    box-shadow: none !important; padding: 0 !important; }
-  .section-panel { display: block !important; }
+  /* Layout limpio */
   body { background: white !important; }
-  main { padding: 0 !important; max-width: 100% !important; }
+  main { padding: 0 !important; max-width: 100% !important; display: block !important; }
+
+  /* Mostrar todos los paneles pero solo el ejercitario con .visible */
+  .section-panel { display: block !important; }
+  .ejercitario { display: block !important; border: none !important;
+    box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; }
+  .ejercitario:not(.visible) { display: none !important; }
 
   /* Cuadrícula visible al imprimir */
-  .work-space { -webkit-print-color-adjust: exact !important;
+  .work-space { display: block !important;
+    -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important; }
+  .diag-item, .rel-item, .vdi-item, .tv-item { border: 1px solid #ccc; }
 
   /* Ocultar soluciones si checkbox desmarcado */
   body.sin-soluciones .soluciones-section,
@@ -225,27 +231,6 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
       color: #a0a5be;
     }
   }
-}
-
-@media print {
-  * { box-shadow: none !important; }
-  body { background: white !important; }
-  nav, .hero, .topic-selector, .section-panel .card,
-  .btn-generate, .btn-download { display: none !important; }
-  main { padding: 0 !important; display: block !important; }
-  .section-panel { display: block !important; }
-  .ejercitario { display: block !important; padding: 1rem !important; border-radius: 0 !important; }
-  .ejercitario:not(.visible) { display: none !important; }
-  .work-space { display: block !important; }
-  .diag-item, .rel-item, .vdi-item, .tv-item { border: 1px solid #ccc; }
-  /* Ocultar soluciones al imprimir si el checkbox está desmarcado */
-  body.sin-soluciones .soluciones-section,
-  body.sin-soluciones .sol-section,
-  body.sin-soluciones .intro-sol-block,
-  body.sin-soluciones .solutions-title,
-  body.sin-soluciones .solutions-list,
-  body.sin-soluciones .sp-sol-title,
-  body.sin-soluciones .sp-sol-grid { display: none !important; }
 }
 /* ── INDICADORES DE LOGRO ─────────────────────── */
 .ind-card { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 14px; padding: 1rem 1.2rem; }
