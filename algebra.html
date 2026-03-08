@@ -1626,8 +1626,11 @@ function renderEjercitario(ejercicios, containerId, titulo) {
     </div>
     <div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>`;
   el.classList.add('visible');
-  const dlBtn = document.getElementById(printBtnId.replace('Print','Download'));
+  const prefix = containerId.replace('-ejercitario', '');
+  const dlBtn = document.getElementById(prefix + '-btnDownload');
   if (dlBtn) dlBtn.style.display = 'block';
+  const solBtn = document.getElementById(prefix + '-btnSolAparte');
+  if (solBtn) solBtn.style.display = 'block';
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
