@@ -257,11 +257,76 @@ footer {
   letter-spacing: 0.01em;
 }
 .nav-copyright {
-  margin-left: auto;
   font-size: 0.7rem;
   color: var(--muted, #8b92b1);
   letter-spacing: 0.01em;
   white-space: nowrap;
+}
+.btn-suscribite {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.45rem 1.1rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-suscribite:hover { background: #3a58e0; transform: translateY(-1px); }
+
+/* MODAL SUSCRIPCIÓN */
+#modal-suscripcion {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,29,46,0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+#modal-suscripcion.abierto { display: flex; }
+.modal-sus-box {
+  background: white;
+  border-radius: 16px;
+  width: 95%;
+  max-width: 540px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(79,110,247,0.18);
+  overflow: hidden;
+}
+.modal-sus-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+.modal-sus-header h2 {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--ink);
+}
+.modal-sus-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-sus-cerrar:hover { color: var(--ink); }
+.modal-sus-box iframe {
+  flex: 1;
+  border: none;
+  width: 100%;
+  min-height: 460px;
 }
 body { padding-bottom: 2.5rem; }
 </style>
@@ -272,7 +337,19 @@ body { padding-bottom: 2.5rem; }
   <div class="nav-logo">Generador de <span>ejercitarios</span></div>
   <p>Generador de ejercitarios de matemáticas</p>
   <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
+  <button class="btn-suscribite" onclick="document.getElementById('modal-suscripcion').classList.add('abierto')">✉️ Suscribite gratis</button>
 </nav>
+
+<!-- MODAL SUSCRIPCIÓN -->
+<div id="modal-suscripcion">
+  <div class="modal-sus-box">
+    <div class="modal-sus-header">
+      <h2>✉️ Registrate gratis</h2>
+      <button class="modal-sus-cerrar" onclick="document.getElementById('modal-suscripcion').classList.remove('abierto')">✕</button>
+    </div>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScKKIrWOi_KDPvqM5GzuJWc7_9vLla2v6KrKVPiudQxkXAIUQ/viewform?embedded=true" loading="lazy">Cargando…</iframe>
+  </div>
+</div>
 
 <div class="hero">
   <h1>📐 Generador de ejercitarios</h1>
@@ -469,5 +546,10 @@ body { padding-bottom: 2.5rem; }
 </footer>
 
 <div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
+<script>
+document.getElementById('modal-suscripcion').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('abierto');
+});
+</script>
 </body>
 </html>
