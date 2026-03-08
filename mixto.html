@@ -1,0 +1,3277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de ejercitarios — Ejercitario Mixto</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0f4ff; --white: #ffffff; --ink: #1a1d2e;
+  --muted: #8b92b1; --border: #dde2f0; --accent: #4f6ef7;
+  --accent-light: #eef1ff;
+}
+body { background: var(--bg); color: var(--ink); font-family: 'Nunito Sans', sans-serif; min-height: 100vh; }
+nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0.9rem 2rem; display: flex; align-items: center; gap: 0.6rem; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 8px rgba(79,110,247,0.06); }
+.nav-logo { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--accent); letter-spacing: -0.02em; }
+.nav-logo span { color: var(--ink); }
+.nav-back { font-size: 0.82rem; color: var(--muted); text-decoration: none; margin-right: 0.5rem; }
+.nav-back:hover { color: var(--accent); }
+nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
+.hero { background: linear-gradient(135deg, #1a1d2e 0%, #4f6ef7 100%); color: white; padding: 3rem 2rem; text-align: center; }
+.hero h1 { font-family: 'Nunito', sans-serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+.hero p { font-size: 1rem; opacity: 0.85; max-width: 520px; margin: 0 auto; }
+main { max-width: 860px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid; gap: 1.2rem; }
+
+/* TEMA BLOCKS */
+.tema-block { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(79,110,247,0.05); }
+.tema-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: background 0.15s; }
+.tema-header:hover { background: #f8f9ff; }
+.tema-header.open { border-bottom-color: var(--border); }
+.tema-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+.tema-badge { font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; background: var(--accent-light); color: var(--accent); padding: 0.2rem 0.7rem; border-radius: 20px; }
+.tema-badge.zero { background: #f5f5f5; color: var(--muted); }
+.tema-arrow { font-size: 0.8rem; color: var(--muted); transition: transform 0.2s; }
+.tema-header.open .tema-arrow { transform: rotate(90deg); }
+.tema-body { display: none; padding: 1rem 1.2rem; }
+.tema-body.open { display: block; }
+
+/* SUBTEMAS */
+.subtema { margin-bottom: 1rem; }
+.subtema-title { font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.5rem; }
+.tipo-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; border-radius: 8px; transition: background 0.12s; }
+.tipo-row:hover { background: #f8f9ff; }
+.tipo-label { flex: 1; font-size: 0.85rem; color: var(--ink); }
+.qty-ctrl { display: flex; align-items: center; gap: 0.4rem; }
+.qty-btn { width: 26px; height: 26px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--white); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--ink); transition: all 0.12s; line-height: 1; }
+.qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+.qty-val { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem; min-width: 1.2rem; text-align: center; }
+
+/* TOTAL & GENERATE */
+.total-bar { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.4rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(79,110,247,0.05); }
+.total-text { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--muted); }
+.total-text span { color: var(--accent); font-size: 1.3rem; }
+.btn-generate { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.05rem; background: var(--accent); color: white; border: none; border-radius: 12px; padding: 0.85rem 2rem; cursor: pointer; box-shadow: 0 4px 14px rgba(79,110,247,0.3); transition: all 0.18s; }
+.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,110,247,0.4); }
+.btn-download { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.92rem; background: var(--white); color: var(--ink); border: 2px solid var(--border); border-radius: 12px; padding: 0.75rem 1.5rem; cursor: pointer; transition: all 0.15s; width: 100%; display: none; margin-top: 0.5rem; }
+.btn-download-sol { width: 100%; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; background: #fee2e2; color: #b91c1c; border: 2px solid #fca5a5; padding: 0.8rem; border-radius: 14px; cursor: pointer; transition: all 0.15s; display: none; margin-top: 0.5rem; }
+.btn-download-sol:hover { background: #fca5a5; border-color: #ef4444; color: #7f1d1d; }
+.sol-opt-bar { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.4rem; padding: 0.45rem 0.8rem; background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 10px; font-size: 0.82rem; color: #1a1d2e; font-family: 'Nunito', sans-serif; font-weight: 600; cursor: pointer; user-select: none; }
+.sol-opt-bar input[type="checkbox"] { width: 1rem; height: 1rem; accent-color: #4f6ef7; cursor: pointer; flex-shrink: 0; }
+
+/* EJERCITARIO */
+.ejercitario { display: none; background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-top: 0.5rem; }
+.ej-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+.ej-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.3rem; margin-bottom: 0.4rem; }
+.ej-meta { font-size: 0.78rem; color: var(--muted); display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+.ej-data-row { font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.4rem; color: var(--muted); }
+.ejercicios-list { display: flex; flex-direction: column; gap: 1.4rem; margin-bottom: 2rem; }
+.ejercicio-item { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.6rem 0; border-bottom: 1px solid #f0f0f0; }
+.ej-num { font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--muted); font-size: 0.85rem; min-width: 1.6rem; padding-top: 0.1rem; }
+.ej-content { flex: 1; }
+.ej-question { font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.4rem; }
+.ej-tema-tag { display: inline-block; font-family: 'Nunito', sans-serif; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 10px; background: var(--accent-light); color: var(--accent); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.ej-graph { margin-top: 0.5rem; }
+.solutions-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; margin: 1.5rem 0 0.8rem; padding-top: 1rem; border-top: 2px dashed var(--border); }
+.solutions-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.sol-item { display: flex; gap: 0.8rem; font-size: 0.82rem; }
+.sol-num { font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--muted); min-width: 1.6rem; }
+.sol-val { color: var(--ink); line-height: 1.5; }
+
+@media print {
+  /* Ocultar toda la interfaz */
+  nav, .topic-selector, .card, .btn-generate, .btn-download,
+  .btn-download-sol, .sol-opt-bar, .ej-copyright, .section-panel:not(.active),
+  #sol-opt-bar, #_ios-toast { display: none !important; }
+
+  /* Mostrar solo el ejercitario activo */
+  .ejercitario { display: block !important; border: none !important;
+    box-shadow: none !important; padding: 0 !important; }
+  .section-panel { display: block !important; }
+  body { background: white !important; }
+  main { padding: 0 !important; max-width: 100% !important; }
+
+  /* Cuadrícula visible al imprimir */
+  .work-space { -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important; }
+
+  /* Ocultar soluciones si checkbox desmarcado */
+  body.sin-soluciones .soluciones-section,
+  body.sin-soluciones .sol-section,
+  body.sin-soluciones .intro-sol-block,
+  body.sin-soluciones .ineq-sol,
+  body.sin-soluciones .solutions-title,
+  body.sin-soluciones .solutions-list,
+  body.sin-soluciones .sp-sol-title,
+  body.sin-soluciones .sp-sol-grid { display: none !important; }
+
+  /* No cortar ejercicios entre páginas */
+  .ejercicio-item, .sp-item, .sp-problem-item, .rel-item,
+  .intro-mc-block, .ri-ej, .not-table, .ineq-item,
+  .ineqc-item, .tri-item { break-inside: avoid; }
+
+  /* Pie de página en CADA página con copyright y número */
+  @page {
+    margin: 15mm 15mm 22mm 15mm;
+    @bottom-left {
+      content: "\00A9 2026 Maria Lopez Nery Huerta";
+      font-family: "Nunito Sans", Arial, sans-serif;
+      font-size: 7pt;
+      color: #a0a5be;
+    }
+    @bottom-right {
+      content: "P\00E1gina " counter(page) " de " counter(pages);
+      font-family: "Nunito Sans", Arial, sans-serif;
+      font-size: 7pt;
+      color: #a0a5be;
+    }
+  }
+}
+
+.nivel-minimo-card {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+}
+.nivel-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  cursor: pointer;
+}
+.nivel-toggle-label input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.nivel-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.nivel-toggle-text strong {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.nivel-toggle-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* ══════════════════════════════════════════════════
+   ESPACIO DE TRABAJO — SOLO AL IMPRIMIR
+   Cuadrícula estilo cuaderno matemática
+   ══════════════════════════════════════════════════ */
+.work-space {
+  display: block;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect width='28' height='28' fill='white'/%3E%3Cpath d='M 28 0 L 0 0 0 28' fill='none' stroke='%23cccccc' stroke-width='0.6'/%3E%3C/svg%3E");
+  background-size: 28px 28px;
+  background-color: white;
+  border: 1px solid #e8eaf0;
+  border-radius: 4px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.work-space-xs  { height: 32px;  }   /* 1 renglón  */
+.work-space-sm  { height: 84px;  }   /* 3 renglones */
+.work-space-md  { height: 140px; }   /* 5 renglones */
+.work-space-lg  { height: 196px; }   /* 7 renglones */
+.work-space-xl  { height: 280px; }   /* 10 renglones */
+.work-space-xxl { height: 392px; }   /* 14 renglones */
+.ej-copyright {
+  font-size: 0.65rem;
+  color: #b0b7d0;
+  text-align: right;
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #eef0f8;
+  font-style: italic;
+}
+/* ── INDICADORES DE LOGRO ─────────────────────── */
+.ind-card { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 14px; padding: 1rem 1.2rem; }
+.ind-card-title { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #92400e; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+.ind-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+.ind-input-texto { flex: 1; font-family: 'Nunito', sans-serif; font-size: 0.85rem; padding: 0.45rem 0.7rem; border: 1.5px solid #fcd34d; border-radius: 8px; background: white; color: #111; outline: none; }
+.ind-input-texto:focus { border-color: #f59e0b; box-shadow: 0 0 0 2px #fef3c7; }
+.ind-input-pts { width: 68px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; padding: 0.45rem 0.5rem; border: 1.5px solid #fcd34d; border-radius: 8px; background: white; color: #111; text-align: center; outline: none; }
+.ind-input-pts:focus { border-color: #f59e0b; box-shadow: 0 0 0 2px #fef3c7; }
+.ind-btn-remove { background: none; border: none; cursor: pointer; font-size: 1rem; color: #d97706; padding: 0.2rem; line-height: 1; }
+.ind-btn-add { font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 700; background: white; border: 1.5px dashed #fcd34d; color: #92400e; border-radius: 8px; padding: 0.4rem 0.9rem; cursor: pointer; margin-top: 0.3rem; transition: all 0.15s; }
+.ind-btn-add:hover { background: #fef3c7; }
+.ind-hint { font-size: 0.72rem; color: #a16207; margin-top: 0.6rem; font-style: italic; }
+.ind-table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.8rem; }
+.ind-table th { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; text-align: left; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.ind-table th:last-child { text-align: center; width: 70px; }
+.ind-table td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #e5e7eb; }
+.ind-table td:last-child { text-align: center; font-weight: 700; }
+.ind-table tr:last-child td { border-bottom: none; }
+.ind-table-wrap { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }
+
+/* ── Ocultar soluciones al imprimir si el checkbox está desmarcado ── */
+body[data-hide-sol] .soluciones-section,
+body[data-hide-sol] .sol-section,
+body[data-hide-sol] .intro-sol-block,
+body[data-hide-sol] .solutions-title,
+body[data-hide-sol] .solutions-list,
+body[data-hide-sol] .sp-sol-title,
+body[data-hide-sol] .sp-sol-grid,
+body[data-hide-sol] .intro-sol-title,
+body[data-hide-sol] .sol-opt-bar { display: none !important; }
+
+  /* Copyright fijo en todas las páginas al imprimir */
+  .print-footer { display: none; }
+  @media print {
+    .print-footer {
+      display: block;
+      position: fixed;
+      bottom: 0.3cm;
+      left: 0; right: 0;
+      text-align: right;
+      font-size: 0.6rem;
+      color: #b0b7d0;
+      font-style: italic;
+      padding-right: 1.2cm;
+      padding-top: 2px;
+      border-top: 1px solid #eef0f8;
+    }
+    .ej-copyright { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">← Inicio</a>
+  <div class="nav-logo">Generador de <span>ejercitarios</span></div>
+  <p>Ejercitario Mixto</p>
+</nav>
+
+<div class="hero">
+  <h1>🎲 Ejercitario Mixto</h1>
+  <p>Combiná ejercicios de distintos temas en un solo ejercitario. Elegí cuántos de cada tipo y generá.</p>
+</div>
+
+<main>
+
+  <!-- ══ ÁLGEBRA ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('alg')">
+      <div class="tema-title">✏️ Álgebra</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="alg-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="alg-body">
+
+      <div class="subtema">
+        <div class="subtema-title">Ecuaciones Lineales</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Solo naturales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_lin1',-1)">−</button><span class="qty-val" id="q-alg_lin1">0</span><button class="qty-btn" onclick="chgQty('alg_lin1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_lin2',-1)">−</button><span class="qty-val" id="q-alg_lin2">0</span><button class="qty-btn" onclick="chgQty('alg_lin2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Fracciones</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_lin3',-1)">−</button><span class="qty-val" id="q-alg_lin3">0</span><button class="qty-btn" onclick="chgQty('alg_lin3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 4 — Paréntesis</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_lin4',-1)">−</button><span class="qty-val" id="q-alg_lin4">0</span><button class="qty-btn" onclick="chgQty('alg_lin4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 5 — Fracciones + paréntesis</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_lin5',-1)">−</button><span class="qty-val" id="q-alg_lin5">0</span><button class="qty-btn" onclick="chgQty('alg_lin5',1)">+</button></div></div>
+      </div>
+
+      <div class="subtema">
+        <div class="subtema-title">Ecuaciones Exponenciales</div>
+        <div class="tipo-row"><span class="tipo-label">Lineales — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_expL1',-1)">−</button><span class="qty-val" id="q-alg_expL1">0</span><button class="qty-btn" onclick="chgQty('alg_expL1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Lineales — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_expL2',-1)">−</button><span class="qty-val" id="q-alg_expL2">0</span><button class="qty-btn" onclick="chgQty('alg_expL2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Lineales — Nivel 3</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_expL3',-1)">−</button><span class="qty-val" id="q-alg_expL3">0</span><button class="qty-btn" onclick="chgQty('alg_expL3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Cuadráticas — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_expC1',-1)">−</button><span class="qty-val" id="q-alg_expC1">0</span><button class="qty-btn" onclick="chgQty('alg_expC1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Cuadráticas — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_expC2',-1)">−</button><span class="qty-val" id="q-alg_expC2">0</span><button class="qty-btn" onclick="chgQty('alg_expC2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Cuadráticas — Nivel 3</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_expC3',-1)">−</button><span class="qty-val" id="q-alg_expC3">0</span><button class="qty-btn" onclick="chgQty('alg_expC3',1)">+</button></div></div>
+      </div>
+
+      <div class="subtema">
+        <div class="subtema-title">Ecuaciones Logarítmicas</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Definición directa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_log1',-1)">−</button><span class="qty-val" id="q-alg_log1">0</span><button class="qty-btn" onclick="chgQty('alg_log1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Propiedades</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_log2',-1)">−</button><span class="qty-val" id="q-alg_log2">0</span><button class="qty-btn" onclick="chgQty('alg_log2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Base incógnita</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('alg_log3',-1)">−</button><span class="qty-val" id="q-alg_log3">0</span><button class="qty-btn" onclick="chgQty('alg_log3',1)">+</button></div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ TRIGONOMETRÍA ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('trig')">
+      <div class="tema-title">📐 Trigonometría</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="trig-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="trig-body">
+      <div class="subtema">
+        <div class="subtema-title">Ecuaciones Trigonométricas</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Primer grado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig1',-1)">−</button><span class="qty-val" id="q-trig1">0</span><button class="qty-btn" onclick="chgQty('trig1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Segundo grado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig2',-1)">−</button><span class="qty-val" id="q-trig2">0</span><button class="qty-btn" onclick="chgQty('trig2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Combinación de funciones</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig3',-1)">−</button><span class="qty-val" id="q-trig3">0</span><button class="qty-btn" onclick="chgQty('trig3',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GEOMETRÍA ANALÍTICA ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('ga')">
+      <div class="tema-title">📈 Geometría Analítica</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="ga-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="ga-body">
+
+      <div class="subtema">
+        <div class="subtema-title">Parábolas — Vértice (0,0)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el foco</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_1',-1)">−</button><span class="qty-val" id="q-par00_1">0</span><button class="qty-btn" onclick="chgQty('par00_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_2',-1)">−</button><span class="qty-val" id="q-par00_2">0</span><button class="qty-btn" onclick="chgQty('par00_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Punto y directriz</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_3',-1)">−</button><span class="qty-val" id="q-par00_3">0</span><button class="qty-btn" onclick="chgQty('par00_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Punto y eje de simetría</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_4',-1)">−</button><span class="qty-val" id="q-par00_4">0</span><button class="qty-btn" onclick="chgQty('par00_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 6 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_6',-1)">−</button><span class="qty-val" id="q-par00_6">0</span><button class="qty-btn" onclick="chgQty('par00_6',1)">+</button></div></div>
+      </div>
+
+      <div class="subtema">
+        <div class="subtema-title">Parábolas — Vértice (h,k)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el foco</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_1',-1)">−</button><span class="qty-val" id="q-parhk_1">0</span><button class="qty-btn" onclick="chgQty('parhk_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_2',-1)">−</button><span class="qty-val" id="q-parhk_2">0</span><button class="qty-btn" onclick="chgQty('parhk_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Punto y directriz</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_3',-1)">−</button><span class="qty-val" id="q-parhk_3">0</span><button class="qty-btn" onclick="chgQty('parhk_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Punto y eje de simetría</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_4',-1)">−</button><span class="qty-val" id="q-parhk_4">0</span><button class="qty-btn" onclick="chgQty('parhk_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 6 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_6',-1)">−</button><span class="qty-val" id="q-parhk_6">0</span><button class="qty-btn" onclick="chgQty('parhk_6',1)">+</button></div></div>
+      </div>
+
+      <div class="subtema">
+        <div class="subtema-title">Circunferencia — Centro (0,0)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el radio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_1',-1)">−</button><span class="qty-val" id="q-circ00_1">0</span><button class="qty-btn" onclick="chgQty('circ00_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dado un punto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_2',-1)">−</button><span class="qty-val" id="q-circ00_2">0</span><button class="qty-btn" onclick="chgQty('circ00_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_3',-1)">−</button><span class="qty-val" id="q-circ00_3">0</span><button class="qty-btn" onclick="chgQty('circ00_3',1)">+</button></div></div>
+      </div>
+
+      <div class="subtema">
+        <div class="subtema-title">Circunferencia — Centro (h,k)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado centro y radio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_1',-1)">−</button><span class="qty-val" id="q-circhk_1">0</span><button class="qty-btn" onclick="chgQty('circhk_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dado centro y punto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_2',-1)">−</button><span class="qty-val" id="q-circhk_2">0</span><button class="qty-btn" onclick="chgQty('circhk_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Dada la ecuación general</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_3',-1)">−</button><span class="qty-val" id="q-circhk_3">0</span><button class="qty-btn" onclick="chgQty('circhk_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Posición recta-circunferencia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_4',-1)">−</button><span class="qty-val" id="q-circhk_4">0</span><button class="qty-btn" onclick="chgQty('circhk_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 5 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_5',-1)">−</button><span class="qty-val" id="q-circhk_5">0</span><button class="qty-btn" onclick="chgQty('circhk_5',1)">+</button></div></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══ NÚMEROS ENTEROS ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('ent')">
+      <div class="tema-title">🔢 Números Enteros</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="ent-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="ent-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma y Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Corto (2 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr1',-1)">−</button><span class="qty-val" id="q-ent_sr1">0</span><button class="qty-btn" onclick="chgQty('ent_sr1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Medio (3-4 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr2',-1)">−</button><span class="qty-val" id="q-ent_sr2">0</span><button class="qty-btn" onclick="chgQty('ent_sr2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Largo (5-6 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr3',-1)">−</button><span class="qty-val" id="q-ent_sr3">0</span><button class="qty-btn" onclick="chgQty('ent_sr3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — 2 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu1',-1)">−</button><span class="qty-val" id="q-ent_mu1">0</span><button class="qty-btn" onclick="chgQty('ent_mu1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — 3 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu2',-1)">−</button><span class="qty-val" id="q-ent_mu2">0</span><button class="qty-btn" onclick="chgQty('ent_mu2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — 4+ factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu3',-1)">−</button><span class="qty-val" id="q-ent_mu3">0</span><button class="qty-btn" onclick="chgQty('ent_mu3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — División exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv1',-1)">−</button><span class="qty-val" id="q-ent_dv1">0</span><button class="qty-btn" onclick="chgQty('ent_dv1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con resto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv2',-1)">−</button><span class="qty-val" id="q-ent_dv2">0</span><button class="qty-btn" onclick="chgQty('ent_dv2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Cadena</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv3',-1)">−</button><span class="qty-val" id="q-ent_dv3">0</span><button class="qty-btn" onclick="chgQty('ent_dv3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Potenciación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Potencia simple</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po1',-1)">−</button><span class="qty-val" id="q-ent_po1">0</span><button class="qty-btn" onclick="chgQty('ent_po1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Misma base</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po2',-1)">−</button><span class="qty-val" id="q-ent_po2">0</span><button class="qty-btn" onclick="chgQty('ent_po2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Potencia de potencia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po3',-1)">−</button><span class="qty-val" id="q-ent_po3">0</span><button class="qty-btn" onclick="chgQty('ent_po3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Raíz cuadrada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra1',-1)">−</button><span class="qty-val" id="q-ent_ra1">0</span><button class="qty-btn" onclick="chgQty('ent_ra1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Raíz cúbica y potencias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra2',-1)">−</button><span class="qty-val" id="q-ent_ra2">0</span><button class="qty-btn" onclick="chgQty('ent_ra2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Combinadas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra3',-1)">−</button><span class="qty-val" id="q-ent_ra3">0</span><button class="qty-btn" onclick="chgQty('ent_ra3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas sin Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — +/−/·</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs1',-1)">−</button><span class="qty-val" id="q-ent_cs1">0</span><button class="qty-btn" onclick="chgQty('ent_cs1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — + División y potencias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs2',-1)">−</button><span class="qty-val" id="q-ent_cs2">0</span><button class="qty-btn" onclick="chgQty('ent_cs2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — + Raíces</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs3',-1)">−</button><span class="qty-val" id="q-ent_cs3">0</span><button class="qty-btn" onclick="chgQty('ent_cs3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas con Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Solo paréntesis</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc1',-1)">−</button><span class="qty-val" id="q-ent_cc1">0</span><button class="qty-btn" onclick="chgQty('ent_cc1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Paréntesis y corchetes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc2',-1)">−</button><span class="qty-val" id="q-ent_cc2">0</span><button class="qty-btn" onclick="chgQty('ent_cc2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — + Llaves</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc3',-1)">−</button><span class="qty-val" id="q-ent_cc3">0</span><button class="qty-btn" onclick="chgQty('ent_cc3',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ NÚMEROS RACIONALES ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('rac')">
+      <div class="tema-title">½ Números Racionales</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="rac-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="rac-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma y Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Mismo denominador</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr1',-1)">−</button><span class="qty-val" id="q-rac_sr1">0</span><button class="qty-btn" onclick="chgQty('rac_sr1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Distinto denominador</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr2',-1)">−</button><span class="qty-val" id="q-rac_sr2">0</span><button class="qty-btn" onclick="chgQty('rac_sr2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Expresiones mixtas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr3',-1)">−</button><span class="qty-val" id="q-rac_sr3">0</span><button class="qty-btn" onclick="chgQty('rac_sr3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — 2 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu1',-1)">−</button><span class="qty-val" id="q-rac_mu1">0</span><button class="qty-btn" onclick="chgQty('rac_mu1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — 3 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu2',-1)">−</button><span class="qty-val" id="q-rac_mu2">0</span><button class="qty-btn" onclick="chgQty('rac_mu2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — 4+ factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu3',-1)">−</button><span class="qty-val" id="q-rac_mu3">0</span><button class="qty-btn" onclick="chgQty('rac_mu3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv1',-1)">−</button><span class="qty-val" id="q-rac_dv1">0</span><button class="qty-btn" onclick="chgQty('rac_dv1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Encadenada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv2',-1)">−</button><span class="qty-val" id="q-rac_dv2">0</span><button class="qty-btn" onclick="chgQty('rac_dv2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Expresiones mixtas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv3',-1)">−</button><span class="qty-val" id="q-rac_dv3">0</span><button class="qty-btn" onclick="chgQty('rac_dv3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Potenciación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Potencia simple</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po1',-1)">−</button><span class="qty-val" id="q-rac_po1">0</span><button class="qty-btn" onclick="chgQty('rac_po1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Misma base</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po2',-1)">−</button><span class="qty-val" id="q-rac_po2">0</span><button class="qty-btn" onclick="chgQty('rac_po2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Potencia de fracción</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po3',-1)">−</button><span class="qty-val" id="q-rac_po3">0</span><button class="qty-btn" onclick="chgQty('rac_po3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Raíz cuadrada exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra1',-1)">−</button><span class="qty-val" id="q-rac_ra1">0</span><button class="qty-btn" onclick="chgQty('rac_ra1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Simplificación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra2',-1)">−</button><span class="qty-val" id="q-rac_ra2">0</span><button class="qty-btn" onclick="chgQty('rac_ra2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Operaciones con radicales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra3',-1)">−</button><span class="qty-val" id="q-rac_ra3">0</span><button class="qty-btn" onclick="chgQty('rac_ra3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas sin Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Fracciones propias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs1',-1)">−</button><span class="qty-val" id="q-rac_cs1">0</span><button class="qty-btn" onclick="chgQty('rac_cs1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fracciones impropias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs2',-1)">−</button><span class="qty-val" id="q-rac_cs2">0</span><button class="qty-btn" onclick="chgQty('rac_cs2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Números mixtos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs3',-1)">−</button><span class="qty-val" id="q-rac_cs3">0</span><button class="qty-btn" onclick="chgQty('rac_cs3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas con Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Fracciones propias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc1',-1)">−</button><span class="qty-val" id="q-rac_cc1">0</span><button class="qty-btn" onclick="chgQty('rac_cc1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fracciones impropias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc2',-1)">−</button><span class="qty-val" id="q-rac_cc2">0</span><button class="qty-btn" onclick="chgQty('rac_cc2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Números mixtos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc3',-1)">−</button><span class="qty-val" id="q-rac_cc3">0</span><button class="qty-btn" onclick="chgQty('rac_cc3',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPERACIONES CON MONOMIOS ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('mono')">
+      <div class="tema-title">⚙️ Op. con Monomios</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="mono-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="mono-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Coeficientes enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_suma1',-1)">−</button><span class="qty-val" id="q-mono_suma1">0</span><button class="qty-btn" onclick="chgQty('mono_suma1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios y decimales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_suma2',-1)">−</button><span class="qty-val" id="q-mono_suma2">0</span><button class="qty-btn" onclick="chgQty('mono_suma2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Coeficientes enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_resta1',-1)">−</button><span class="qty-val" id="q-mono_resta1">0</span><button class="qty-btn" onclick="chgQty('mono_resta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios y decimales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_resta2',-1)">−</button><span class="qty-val" id="q-mono_resta2">0</span><button class="qty-btn" onclick="chgQty('mono_resta2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_mult1',-1)">−</button><span class="qty-val" id="q-mono_mult1">0</span><button class="qty-btn" onclick="chgQty('mono_mult1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_mult2',-1)">−</button><span class="qty-val" id="q-mono_mult2">0</span><button class="qty-btn" onclick="chgQty('mono_mult2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_div1',-1)">−</button><span class="qty-val" id="q-mono_div1">0</span><button class="qty-btn" onclick="chgQty('mono_div1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_div2',-1)">−</button><span class="qty-val" id="q-mono_div2">0</span><button class="qty-btn" onclick="chgQty('mono_div2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Potenciación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_pot1',-1)">−</button><span class="qty-val" id="q-mono_pot1">0</span><button class="qty-btn" onclick="chgQty('mono_pot1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_pot2',-1)">−</button><span class="qty-val" id="q-mono_pot2">0</span><button class="qty-btn" onclick="chgQty('mono_pot2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_rad1',-1)">−</button><span class="qty-val" id="q-mono_rad1">0</span><button class="qty-btn" onclick="chgQty('mono_rad1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_rad2',-1)">−</button><span class="qty-val" id="q-mono_rad2">0</span><button class="qty-btn" onclick="chgQty('mono_rad2',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPERACIONES CON POLINOMIOS ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('poly')">
+      <div class="tema-title">📐 Op. con Polinomios</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="poly-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="poly-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma / Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Suma Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_suma1',-1)">−</button><span class="qty-val" id="q-poly_suma1">0</span><button class="qty-btn" onclick="chgQty('poly_suma1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Suma Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_suma2',-1)">−</button><span class="qty-val" id="q-poly_suma2">0</span><button class="qty-btn" onclick="chgQty('poly_suma2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Resta Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resta1',-1)">−</button><span class="qty-val" id="q-poly_resta1">0</span><button class="qty-btn" onclick="chgQty('poly_resta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Resta Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resta2',-1)">−</button><span class="qty-val" id="q-poly_resta2">0</span><button class="qty-btn" onclick="chgQty('poly_resta2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Mon × Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multmp1',-1)">−</button><span class="qty-val" id="q-poly_multmp1">0</span><button class="qty-btn" onclick="chgQty('poly_multmp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mon × Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multmp2',-1)">−</button><span class="qty-val" id="q-poly_multmp2">0</span><button class="qty-btn" onclick="chgQty('poly_multmp2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol × Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multpp1',-1)">−</button><span class="qty-val" id="q-poly_multpp1">0</span><button class="qty-btn" onclick="chgQty('poly_multpp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol × Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multpp2',-1)">−</button><span class="qty-val" id="q-poly_multpp2">0</span><button class="qty-btn" onclick="chgQty('poly_multpp2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División / Teo. del Resto / Ruffini</div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Mon — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpm1',-1)">−</button><span class="qty-val" id="q-poly_divpm1">0</span><button class="qty-btn" onclick="chgQty('poly_divpm1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Mon — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpm2',-1)">−</button><span class="qty-val" id="q-poly_divpm2">0</span><button class="qty-btn" onclick="chgQty('poly_divpm2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpp1',-1)">−</button><span class="qty-val" id="q-poly_divpp1">0</span><button class="qty-btn" onclick="chgQty('poly_divpp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpp2',-1)">−</button><span class="qty-val" id="q-poly_divpp2">0</span><button class="qty-btn" onclick="chgQty('poly_divpp2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Teo. del Resto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resto1',-1)">−</button><span class="qty-val" id="q-poly_resto1">0</span><button class="qty-btn" onclick="chgQty('poly_resto1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ruffini</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_ruffini1',-1)">−</button><span class="qty-val" id="q-poly_ruffini1">0</span><button class="qty-btn" onclick="chgQty('poly_ruffini1',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RADICALES ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('rad')">
+      <div class="tema-title">√ Radicales (Álgebra)</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="rad-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="rad-body">
+      <div class="subtema">
+        <div class="subtema-title">Raíces exactas / Extracción / Intro</div>
+        <div class="tipo-row"><span class="tipo-label">Raíces exactas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_exactas1',-1)">−</button><span class="qty-val" id="q-rad_exactas1">0</span><button class="qty-btn" onclick="chgQty('rad_exactas1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Extracción Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_extraccion1',-1)">−</button><span class="qty-val" id="q-rad_extraccion1">0</span><button class="qty-btn" onclick="chgQty('rad_extraccion1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Extracción Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_extraccion2',-1)">−</button><span class="qty-val" id="q-rad_extraccion2">0</span><button class="qty-btn" onclick="chgQty('rad_extraccion2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Intro al signo radical</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_intro1',-1)">−</button><span class="qty-val" id="q-rad_intro1">0</span><button class="qty-btn" onclick="chgQty('rad_intro1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Suma y Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta1',-1)">−</button><span class="qty-val" id="q-rad_sumaresta1">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta2',-1)">−</button><span class="qty-val" id="q-rad_sumaresta2">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Con extracción previa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta3',-1)">−</button><span class="qty-val" id="q-rad_sumaresta3">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Mult. I — mon×mon</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multI1',-1)">−</button><span class="qty-val" id="q-rad_multI1">0</span><button class="qty-btn" onclick="chgQty('rad_multI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mult. II — mon×pol</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multII1',-1)">−</button><span class="qty-val" id="q-rad_multII1">0</span><button class="qty-btn" onclick="chgQty('rad_multII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mult. III — pol×pol</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multIII1',-1)">−</button><span class="qty-val" id="q-rad_multIII1">0</span><button class="qty-btn" onclick="chgQty('rad_multIII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mult. distintos índices</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multIndices1',-1)">−</button><span class="qty-val" id="q-rad_multIndices1">0</span><button class="qty-btn" onclick="chgQty('rad_multIndices1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División / Potenciación / Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">División mon÷mon</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_divI1',-1)">−</button><span class="qty-val" id="q-rad_divI1">0</span><button class="qty-btn" onclick="chgQty('rad_divI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Div. distintos índices</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_divIndices1',-1)">−</button><span class="qty-val" id="q-rad_divIndices1">0</span><button class="qty-btn" onclick="chgQty('rad_divIndices1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pot. I — monomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_potI1',-1)">−</button><span class="qty-val" id="q-rad_potI1">0</span><button class="qty-btn" onclick="chgQty('rad_potI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pot. II — pol²</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_potII1',-1)">−</button><span class="qty-val" id="q-rad_potII1">0</span><button class="qty-btn" onclick="chgQty('rad_potII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Radicación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_radrad1',-1)">−</button><span class="qty-val" id="q-rad_radrad1">0</span><button class="qty-btn" onclick="chgQty('rad_radrad1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Racionalización</div>
+        <div class="tipo-row"><span class="tipo-label">Rac. I — mon, índice 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racI1',-1)">−</button><span class="qty-val" id="q-rad_racI1">0</span><button class="qty-btn" onclick="chgQty('rad_racI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Rac. II — mon, índice &gt;2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racII1',-1)">−</button><span class="qty-val" id="q-rad_racII1">0</span><button class="qty-btn" onclick="chgQty('rad_racII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Rac. III — binomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racIII1',-1)">−</button><span class="qty-val" id="q-rad_racIII1">0</span><button class="qty-btn" onclick="chgQty('rad_racIII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Rac. IV — trinomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racIV1',-1)">−</button><span class="qty-val" id="q-rad_racIV1">0</span><button class="qty-btn" onclick="chgQty('rad_racIV1',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOTAL + GENERAR -->
+  <div class="total-bar">
+    <div class="total-text">Total: <span id="grand-total">0</span> ejercicios</div>
+    <div class="nivel-minimo-card">
+    <label class="nivel-toggle-label">
+      <input type="checkbox" id="skipLevel1" onchange="updateSkipBadge()">
+      <span class="nivel-toggle-text">
+        <strong>Omitir Nivel 1</strong>
+        <span class="nivel-toggle-sub">Los ejercicios de Nivel 1 se generan desde Nivel 2</span>
+      </span>
+    </label>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WIDGET INDICADORES DE LOGRO           -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="ind-card" id="ind-widget">
+    <div class="ind-card-title">
+      <span style="font-size:1.1rem">🎯</span> Indicadores
+      <span style="margin-left:auto;font-size:0.7rem;font-weight:600;color:#a16207;cursor:pointer" onclick="indToggleWidget()">▲ Ocultar</span>
+    </div>
+    <div id="ind-filas"></div>
+    <button class="ind-btn-add" onclick="indAgregar('ind-filas')">+ Agregar indicador</button>
+    <div class="ind-hint">Opcional — si completás al menos uno, aparece una tabla en el encabezado del ejercitario impreso.</div>
+  </div>
+
+  <button class="btn-generate" onclick="generateMixto()">⚡ Generar ejercitario</button>
+  </div>
+<button class="btn-download" id="mix-btnDownload" onclick="downloadMixto()">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="mix-btnSolAparte" onclick="downloadSolucionesAparte('mix-ejercitario', 'ejercitario-mixto')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+  <div class="ejercitario" id="mix-ejercitario"></div>
+
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════
+   INDICADORES DE LOGRO
+   ══════════════════════════════════════════════════ */
+function indToggleWidget() {
+  const filas = document.getElementById('ind-filas');
+  const hint = document.querySelector('.ind-hint');
+  const btnAdd = document.querySelector('.ind-btn-add');
+  const toggle = document.querySelector('#ind-widget .ind-card-title span[style*="cursor"]');
+  const hidden = filas.style.display === 'none';
+  filas.style.display = hidden ? '' : 'none';
+  if (hint) hint.style.display = hidden ? '' : 'none';
+  if (btnAdd) btnAdd.style.display = hidden ? '' : 'none';
+  if (toggle) toggle.textContent = hidden ? '▲ Ocultar' : '▼ Mostrar';
+}
+function indAgregar(containerId) {
+  const wrap = document.getElementById(containerId);
+  const idx = wrap.children.length + 1;
+  if (idx > 6) return;
+  const row = document.createElement('div');
+  row.className = 'ind-row';
+  row.innerHTML = `
+    <input class="ind-input-texto" type="text" placeholder="Indicador ${idx}" maxlength="120">
+    <input class="ind-input-pts" type="number" placeholder="pts" min="1" max="999">
+    <button class="ind-btn-remove" title="Quitar" onclick="this.parentElement.remove()">✕</button>`;
+  wrap.appendChild(row);
+}
+function indInicializar(containerId) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap || wrap.children.length > 0) return;
+  indAgregar(containerId);
+  indAgregar(containerId);
+}
+function indGetTablaHTML(containerId) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return '';
+  const filas = [];
+  wrap.querySelectorAll('.ind-row').forEach(row => {
+    const texto = row.querySelector('.ind-input-texto').value.trim();
+    const pts = row.querySelector('.ind-input-pts').value.trim();
+    if (texto) filas.push({ texto, pts: pts || '—' });
+  });
+  if (filas.length === 0) return '';
+  const rows = filas.map(f => `<tr><td>${f.texto}</td><td>${f.pts}</td></tr>`).join('');
+  return `<div class="ind-table-wrap"><table class="ind-table"><thead><tr><th>Indicadores</th><th>Puntaje</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+const IND_PRINT_CSS =
+  '  .ind-table-wrap { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\n' +
+  '  .ind-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }\n' +
+  '  .ind-table th { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; text-align: left; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }\n' +
+  '  .ind-table th:last-child { text-align: center; width: 70px; }\n' +
+  '  .ind-table td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #e5e7eb; }\n' +
+  '  .ind-table td:last-child { text-align: center; font-weight: 700; }\n' +
+  '  .ind-table tr:last-child td { border-bottom: none; }\n';
+
+// ══════════════════════════════════════════
+// QUANTITIES STATE
+// ══════════════════════════════════════════
+const qtys = {};
+const TEMA_KEYS = {
+  ent: ['ent_sr1','ent_sr2','ent_sr3','ent_mu1','ent_mu2','ent_mu3',
+        'ent_dv1','ent_dv2','ent_dv3','ent_po1','ent_po2','ent_po3',
+        'ent_ra1','ent_ra2','ent_ra3','ent_cs1','ent_cs2','ent_cs3',
+        'ent_cc1','ent_cc2','ent_cc3'],
+  rac: ['rac_sr1','rac_sr2','rac_sr3','rac_mu1','rac_mu2','rac_mu3',
+        'rac_dv1','rac_dv2','rac_dv3','rac_po1','rac_po2','rac_po3',
+        'rac_ra1','rac_ra2','rac_ra3','rac_cs1','rac_cs2','rac_cs3',
+        'rac_cc1','rac_cc2','rac_cc3'],
+  mono: ['mono_suma1','mono_suma2','mono_resta1','mono_resta2',
+         'mono_mult1','mono_mult2','mono_div1','mono_div2',
+         'mono_pot1','mono_pot2','mono_rad1','mono_rad2'],
+  poly: ['poly_suma1','poly_suma2','poly_resta1','poly_resta2',
+         'poly_multmp1','poly_multmp2','poly_multpp1','poly_multpp2',
+         'poly_divpm1','poly_divpm2','poly_divpp1','poly_divpp2',
+         'poly_resto1','poly_ruffini1'],
+  rad: ['rad_exactas1','rad_extraccion1','rad_extraccion2',
+        'rad_intro1','rad_sumaresta1','rad_sumaresta2','rad_sumaresta3',
+        'rad_multI1','rad_multII1','rad_multIII1','rad_divI1',
+        'rad_multIndices1','rad_divIndices1',
+        'rad_potI1','rad_potII1','rad_radrad1',
+        'rad_racI1','rad_racII1','rad_racIII1','rad_racIV1'],
+  alg: ['alg_lin1','alg_lin2','alg_lin3','alg_lin4','alg_lin5',
+        'alg_expL1','alg_expL2','alg_expL3','alg_expC1','alg_expC2','alg_expC3',
+        'alg_log1','alg_log2','alg_log3'],
+  trig: ['trig1','trig2','trig3'],
+  ga: ['par00_1','par00_2','par00_3','par00_4','par00_6',
+       'parhk_1','parhk_2','parhk_3','parhk_4','parhk_6',
+       'circ00_1','circ00_2','circ00_3',
+       'circhk_1','circhk_2','circhk_3','circhk_4','circhk_5'],
+};
+const ALL_KEYS = [...TEMA_KEYS.alg, ...TEMA_KEYS.trig, ...TEMA_KEYS.ga];
+ALL_KEYS.forEach(k => qtys[k] = 0);
+
+function chgQty(key, delta) {
+  qtys[key] = Math.max(0, Math.min(20, (qtys[key]||0) + delta));
+  document.getElementById('q-' + key).textContent = qtys[key];
+  updateTotals();
+}
+
+function updateTotals() {
+  let grand = 0;
+  for (const [tema, keys] of Object.entries(TEMA_KEYS)) {
+    const t = keys.reduce((s,k) => s + (qtys[k]||0), 0);
+    const badge = document.getElementById(tema + '-badge');
+    badge.textContent = t + (t === 1 ? ' ejercicio' : ' ejercicios');
+    badge.className = 'tema-badge' + (t === 0 ? ' zero' : '');
+    grand += t;
+  }
+  document.getElementById('grand-total').textContent = grand;
+}
+
+function toggleTema(id) {
+  const header = document.querySelector(`#${id}-body`).previousElementSibling;
+  const body = document.getElementById(id + '-body');
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ══════════════════════════════════════════
+// HELPERS (shared across all generators)
+// ══════════════════════════════════════════
+function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+function rndNZ(a, b) { let v; do { v = rnd(a, b); } while (v === 0); return v; }
+function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function simplify(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(Math.abs(n), d); return [n/g, d/g]; }
+
+// ══════════════════════════════════════════
+// ALGEBRA GENERATORS (subset)
+// ══════════════════════════════════════════
+// Linear equations
+function gen1() { // nivel 1 naturales
+  const a=rnd(1,9),b=rnd(1,9),c=rnd(1,9);
+  const sol=Math.round((c-b)/a*100)/100;
+  return { expr:`${a}x + ${b} = ${c}`, sol:`x = ${sol}`, tema:'Ec. Lineales Niv.1' };
+}
+function gen2() { // nivel 2 enteros
+  const a=rndNZ(-9,9),b=rnd(-9,9),c=rnd(-9,9);
+  const sol=Math.round((c-b)/a*100)/100;
+  const bS=b>=0?`+ ${b}`:b;
+  return { expr:`${a}x ${b>=0?'+':''} ${Math.abs(b)} = ${c}`, sol:`x = ${sol}`, tema:'Ec. Lineales Niv.2' };
+}
+function gen3() { // nivel 3 fracciones
+  const a=rndNZ(1,5),b=rndNZ(1,5),x=rnd(-8,8);
+  const lhs_n=a,lhs_d=b;
+  const rhs=a*x+b;
+  return { expr:`${a}/${b}x + ${b} = ${rhs}`, sol:`x = ${x}`, tema:'Ec. Lineales Niv.3' };
+}
+function gen4() { // nivel 4 paréntesis
+  const a=rndNZ(1,5),b=rndNZ(-5,5),c=rndNZ(1,5),d=rnd(-5,5);
+  const x=rnd(-6,6);
+  const rhs=a*(x+b)+c*x+d;
+  const bS=b>=0?`+ ${b}`:b;
+  return { expr:`${a}(x ${b>=0?'+':''} ${Math.abs(b)}) + ${c}x ${d>=0?'+ '+d:d} = ${rhs}`, sol:`x = ${x}`, tema:'Ec. Lineales Niv.4' };
+}
+function gen5() { // nivel 5 fracciones + paréntesis
+  const x=rnd(-6,6);
+  const a=rndNZ(1,4),b=rndNZ(1,4),c=rndNZ(-4,4);
+  const lhs=a/b*(x+c);
+  const d=rndNZ(1,4),e=rndNZ(-4,4);
+  const rhs2=lhs+d/b*(x+e)-x*0; // simplified approach
+  const rhs=Math.round((a*(x+c)+d*(x+e))/b*100)/100;
+  return { expr:`${a}/${b}·(x ${c>=0?'+ '+c:c}) + ${d}/${b}·(x ${e>=0?'+ '+e:e}) = ${rhs}`, sol:`x = ${x}`, tema:'Ec. Lineales Niv.5' };
+}
+
+// Exponential linear - simplified wrappers
+function expGenL1() {
+  const bases=[2,3,5,7],b=bases[rnd(0,3)];
+  const n=rnd(1,5);
+  return { expr:`${b}<sup>${n}</sup>·${b}<sup>x</sup> = ${b}<sup>${n+2}</sup>`, sol:`x = 2`, tema:'Ec. Exp. Lineales Niv.1' };
+}
+function expGenL2() {
+  const bases=[2,3,5],b=bases[rnd(0,2)];
+  const a=rnd(1,3),c=rnd(0,2),n=rnd(2,5);
+  const x=rnd(1,4);
+  const exp=a*x+c;
+  return { expr:`${b}<sup>${a}x ${c>0?'+ '+c:c===0?'':c}</sup> = ${b}<sup>${exp}</sup>`, sol:`x = ${x}`, tema:'Ec. Exp. Lineales Niv.2' };
+}
+function expGenL3() {
+  const bases=[2,3],b=bases[rnd(0,1)];
+  const x=rnd(1,4);
+  return { expr:`${b}<sup>x+1</sup> − ${b}<sup>x</sup> = ${b**x*(b-1)}`, sol:`x = ${x}`, tema:'Ec. Exp. Lineales Niv.3' };
+}
+function expGenC1() {
+  const bases=[2,3],b=bases[rnd(0,1)];
+  const r1=rnd(1,5),r2=rnd(1,5);
+  const s=r1+r2,p=r1*r2;
+  const pStr=p>0?`+ ${p}`:p<0?`− ${Math.abs(p)}`:'';
+  return { expr:`(${b}<sup>x</sup>)² − ${s}·${b}<sup>x</sup> ${pStr} = 0`, sol:`x = log<sub>${b}</sub>(${r1}) o x = log<sub>${b}</sub>(${r2})`, tema:'Ec. Exp. Cuad. Niv.1' };
+}
+function expGenC2() {
+  const bases=[2,3],b=bases[rnd(0,1)];
+  const x1=rnd(1,4),x2=rnd(1,4);
+  return { expr:`${b}<sup>2x</sup> − ${b**x1+b**x2}·${b}<sup>x</sup> + ${b**x1*b**x2} = 0`, sol:`x = ${x1} o x = ${x2}`, tema:'Ec. Exp. Cuad. Niv.2' };
+}
+function expGenC3() {
+  const b=2,x=rnd(1,3);
+  return { expr:`4<sup>x</sup> − 3·2<sup>x</sup> + 2 = 0`, sol:`x = 0 o x = 1`, tema:'Ec. Exp. Cuad. Niv.3' };
+}
+
+// Logarithmic - simplified
+function logGenM1() {
+  const bases=[2,3,5,10],b=bases[rnd(0,3)];
+  const n=rnd(1,4),x=rnd(1,8);
+  return { expr:`log<sub>${b}</sub>(${x}) = ${Math.log(x)/Math.log(b)===Math.round(Math.log(x)/Math.log(b))?Math.round(Math.log(x)/Math.log(b)):rnd(1,3)}`, sol:`x = ${b**rnd(1,3)}`, tema:'Ec. Log. Niv.1' };
+}
+function logGenM1real() {
+  const bases=[2,3,5],b=bases[rnd(0,2)];
+  const n=rnd(1,3);
+  const val=b**n;
+  const c=rnd(1,5);
+  return { expr:`log<sub>${b}</sub>(x + ${c}) = ${n}`, sol:`x = ${val - c}`, tema:'Ec. Log. Niv.1' };
+}
+function logGenM2() {
+  const b=rnd(2,5);
+  const x=rnd(1,8);
+  const k=rnd(1,3);
+  return { expr:`log<sub>${b}</sub>(${x}) + log<sub>${b}</sub>(x) = ${k}`, sol:`x = ${Math.round(b**k/x*100)/100}`, tema:'Ec. Log. Niv.2' };
+}
+function logGenM2real() {
+  const b=rnd(2,4);
+  const r=rnd(1,5);
+  const c=rnd(1,4);
+  return { expr:`log<sub>${b}</sub>(x + ${c}) − log<sub>${b}</sub>(x) = 1`, sol:`x = ${c/(b-1)}`, tema:'Ec. Log. Niv.2' };
+}
+function logGenM3() {
+  const b=rnd(2,4);
+  const r1=rnd(2,6),r2=rnd(2,6);
+  return { expr:`log<sub>x</sub>(${r1*r1}) = 2`, sol:`x = ${r1}`, tema:'Ec. Log. Niv.3' };
+}
+
+// ══════════════════════════════════════════
+// TRIG GENERATORS (from trigonometria.html)
+// ══════════════════════════════════════════
+const TRIG_TABLE = [
+  {ang:0,sen:0,cos:1,tg:0,valid_tg:true},
+  {ang:30,sen:'1/2',cos:'√3/2',tg:'√3/3',valid_tg:true},
+  {ang:45,sen:'√2/2',cos:'√2/2',tg:1,valid_tg:true},
+  {ang:60,sen:'√3/2',cos:'1/2',tg:'√3',valid_tg:true},
+  {ang:90,sen:1,cos:0,tg:null,valid_tg:false},
+  {ang:120,sen:'√3/2',cos:'-1/2',tg:'-√3',valid_tg:true},
+  {ang:135,sen:'√2/2',cos:'-√2/2',tg:-1,valid_tg:true},
+  {ang:150,sen:'1/2',cos:'-√3/2',tg:'-√3/3',valid_tg:true},
+  {ang:180,sen:0,cos:-1,tg:0,valid_tg:true},
+  {ang:210,sen:'-1/2',cos:'-√3/2',tg:'√3/3',valid_tg:true},
+  {ang:225,sen:'-√2/2',cos:'-√2/2',tg:1,valid_tg:true},
+  {ang:240,sen:'-√3/2',cos:'-1/2',tg:'√3',valid_tg:true},
+  {ang:270,sen:-1,cos:0,tg:null,valid_tg:false},
+  {ang:300,sen:'-√3/2',cos:'1/2',tg:'-√3',valid_tg:true},
+  {ang:315,sen:'-√2/2',cos:'√2/2',tg:-1,valid_tg:true},
+  {ang:330,sen:'-1/2',cos:'√3/2',tg:'-√3/3',valid_tg:true},
+  {ang:360,sen:0,cos:1,tg:0,valid_tg:true},
+];
+const TRIG_VALS={'1/2':0.5,'-1/2':-0.5,'√2/2':Math.SQRT2/2,'-√2/2':-Math.SQRT2/2,'√3/2':Math.sqrt(3)/2,'-√3/2':-Math.sqrt(3)/2,'√3/3':Math.sqrt(3)/3,'-√3/3':-Math.sqrt(3)/3,'√3':Math.sqrt(3),'-√3':-Math.sqrt(3)};
+function trigNum(v){return typeof v==='number'?v:TRIG_VALS[v]??parseFloat(v);}
+function anglesForSen(v){const val=trigNum(v);return TRIG_TABLE.filter(e=>Math.abs(trigNum(e.sen)-val)<0.0001).map(e=>e.ang);}
+function anglesForCos(v){const val=trigNum(v);return TRIG_TABLE.filter(e=>Math.abs(trigNum(e.cos)-val)<0.0001).map(e=>e.ang);}
+function solAngles(a){return[...new Set(a)].sort((x,y)=>x-y).map(a=>a+'°').join('  |  ');}
+
+function trigMixGen1() {
+  const senVals=['1/2','-1/2','√2/2','-√2/2','√3/2','-√3/2',1,-1,0];
+  const func=rnd(0,1)?'sen':'cos';
+  const v=senVals[rnd(0,senVals.length-1)];
+  const a=rnd(1,3),b=rnd(-3,3);
+  const angFn=func==='sen'?anglesForSen:anglesForCos;
+  const angles=angFn(v);
+  if(!angles.length) return trigMixGen1();
+  const cVal=Math.round(a*trigNum(v)+b);
+  if(Math.abs(a*trigNum(v)+b-cVal)>0.01) return trigMixGen1();
+  const aStr=a===1?'':String(a);
+  const bStr=b===0?'':b>0?` + ${b}`:` − ${Math.abs(b)}`;
+  return { expr:`${aStr}${func}(<em>x</em>)${bStr} = ${cVal}`, sol:solAngles(angles), tema:'Ec. Trig. Niv.1' };
+}
+
+function trigMixGen2() {
+  const func=rnd(0,1)?'sen':'cos';
+  const angFn=func==='sen'?anglesForSen:anglesForCos;
+  const vals=['1/2','-1/2','√2/2','-√2/2','√3/2','-√3/2',0,1,-1];
+  const r1=vals[rnd(0,vals.length-1)],r2=vals[rnd(0,vals.length-1)];
+  if(r1===r2) return trigMixGen2();
+  const r1n=trigNum(r1),r2n=trigNum(r2);
+  const bC=-(r1n+r2n),cC=r1n*r2n;
+  if(Math.abs(Math.round(bC)-bC)>0.01||Math.abs(Math.round(cC)-cC)>0.01) return trigMixGen2();
+  const bR=Math.round(bC),cR=Math.round(cC);
+  const angles=[...new Set([...angFn(r1),...angFn(r2)])];
+  if(!angles.length) return trigMixGen2();
+  const bStr=bR===0?'':bR>0?` + ${bR}${func}(<em>x</em>)`:` − ${Math.abs(bR)}${func}(<em>x</em>)`;
+  const cStr=cR===0?'':cR>0?` + ${cR}`:` − ${Math.abs(cR)}`;
+  return { expr:`${func}²(<em>x</em>)${bStr}${cStr} = 0`, sol:solAngles(angles), tema:'Ec. Trig. Niv.2' };
+}
+
+function trigMixGen3() {
+  const k=rnd(2,4);
+  const val2x=2/k;
+  const angs2x=TRIG_TABLE.filter(e=>Math.abs(trigNum(e.sen)-val2x)<0.001).map(e=>e.ang);
+  const angsx=angs2x.map(a=>a/2).filter(a=>Number.isInteger(a)&&a>=0&&a<=360);
+  if(!angsx.length) return trigMixGen3();
+  return { expr:`tg(<em>x</em>) + cotg(<em>x</em>) = ${k}`, sol:solAngles(angsx), tema:'Ec. Trig. Niv.3' };
+}
+
+// ══════════════════════════════════════════
+// GEOMETRY GENERATORS (from geometria-analitica.html)
+// ══════════════════════════════════════════
+const ORIENTATIONS=['up','down','right','left'];
+
+function parabolaData(p,orient){
+  const ap=Math.abs(p);
+  const latus=4*ap;
+  let canonEq,focus,directrix,dirStr,axis;
+  if(orient==='up'){
+    canonEq=`x² = ${4*p}y`;focus={x:0,y:p};directrix={axis:'y',val:-p};axis='eje Y';
+  } else if(orient==='down'){
+    const pp=-ap;canonEq=`x² = ${4*pp}y`;focus={x:0,y:pp};directrix={axis:'y',val:-pp};axis='eje Y';p=pp;
+  } else if(orient==='right'){
+    canonEq=`y² = ${4*p}x`;focus={x:p,y:0};directrix={axis:'x',val:-p};axis='eje X';
+  } else {
+    const pp=-ap;canonEq=`y² = ${4*pp}x`;focus={x:pp,y:0};directrix={axis:'x',val:-pp};axis='eje X';p=pp;
+  }
+  dirStr=directrix.axis==='y'?`y = ${directrix.val}`:`x = ${directrix.val}`;
+  return {p,orient,canonEq,focus,directrix,dirStr,axis,latus};
+}
+
+function parabolaSVG(d){
+  const W=220,H=220,cx=W/2,cy=H/2,ap=Math.abs(d.p);
+  const range=Math.max(ap*3+2,7),scale=(W*0.4)/range;
+  function toSVG(mx,my){return{x:cx+mx*scale,y:cy-my*scale};}
+  let pts=[];
+  if(d.orient==='up'||d.orient==='down'){
+    for(let mx=-range;mx<=range;mx+=range/40){const my=mx*mx/(4*d.p);if(Math.abs(my)>range*1.2)continue;const pt=toSVG(mx,my);pts.push(`${pt.x.toFixed(1)},${pt.y.toFixed(1)}`);}
+  } else {
+    for(let my=-range;my<=range;my+=range/40){const mx=my*my/(4*d.p);if(Math.abs(mx)>range*1.2)continue;const pt=toSVG(mx,my);pts.push(`${pt.x.toFixed(1)},${pt.y.toFixed(1)}`);}
+  }
+  const fSVG=toSVG(d.focus.x,d.focus.y);
+  let dirLine='';
+  if(d.directrix.axis==='y'){const dy=toSVG(0,d.directrix.val).y;dirLine=`<line x1="5" y1="${dy.toFixed(1)}" x2="${W-5}" y2="${dy.toFixed(1)}" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/><text x="${W-8}" y="${(dy-3).toFixed(1)}" text-anchor="end" font-size="8" fill="#e74c3c">y=${d.directrix.val}</text>`;}
+  else{const dx=toSVG(d.directrix.val,0).x;dirLine=`<line x1="${dx.toFixed(1)}" y1="5" x2="${dx.toFixed(1)}" y2="${H-5}" stroke="#e74c3c" stroke-width="1.5" stroke-dasharray="4,3"/><text x="${(dx+2).toFixed(1)}" y="14" font-size="8" fill="#e74c3c">x=${d.directrix.val}</text>`;}
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:8px;background:#fafbff;">
+  <line x1="${cx}" y1="5" x2="${cx}" y2="${H-5}" stroke="#e0e4f0" stroke-width="1"/>
+  <line x1="5" y1="${cy}" x2="${W-5}" y2="${cy}" stroke="#e0e4f0" stroke-width="1"/>
+  ${dirLine}
+  <polyline points="${pts.join(' ')}" fill="none" stroke="#4f6ef7" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="${fSVG.x.toFixed(1)}" cy="${fSVG.y.toFixed(1)}" r="4" fill="#f97316"/>
+  <text x="${(fSVG.x+5).toFixed(1)}" y="${(fSVG.y-5).toFixed(1)}" font-size="8" fill="#f97316">F(${d.focus.x},${d.focus.y})</text>
+  <circle cx="${cx}" cy="${cy}" r="3" fill="#4f6ef7"/>
+  <text x="${cx+3}" y="${cy-5}" font-size="8" fill="#4f6ef7">V(0,0)</text>
+</svg>`;
+}
+
+function mixParGen(tipo,isHK){
+  const orient=ORIENTATIONS[rnd(0,3)];
+  const p=rndNZ(1,5)*(orient==='down'||orient==='left'?-1:1);
+  const d=parabolaData(Math.abs(p),orient);
+  const focusStr=`(${d.focus.x}, ${d.focus.y})`;
+  const graph=isHK?null:parabolaSVG(d); // simplified: only (0,0) graphs for now
+  const subtema=isHK?'Parábola (h,k)':'Parábola (0,0)';
+
+  if(tipo===1){
+    return {expr:`El foco de una parábola con vértice en el origen es F${focusStr}. Hallá la ecuación, directriz y lado recto.`, sol:`${d.canonEq} | Directriz: ${d.dirStr} | LR: ${d.latus}`, tema:subtema+' T1', graph:tipo===6?graph:null, showGraphInQ:false};
+  } else if(tipo===2){
+    const useG=rnd(0,1);
+    let eq=d.canonEq;
+    if(useG&&(orient==='up'||orient==='down'))eq=`x² ${d.p>0?'−':'+'}${Math.abs(4*d.p)}y = 0`;
+    return {expr:`Dada la parábola ${eq}. Hallá foco, directriz y lado recto.`, sol:`Foco: F${focusStr} | Directriz: ${d.dirStr} | LR: ${d.latus}`, tema:subtema+' T2'};
+  } else if(tipo===3){
+    let ptX,ptY;
+    if(orient==='up'||orient==='down'){ptX=rndNZ(-4,4);ptY=(ptX*ptX)/(4*d.p);if(!Number.isInteger(ptY))return mixParGen(tipo,isHK);}
+    else{ptY=rndNZ(-4,4);ptX=(ptY*ptY)/(4*d.p);if(!Number.isInteger(ptX))return mixParGen(tipo,isHK);}
+    return {expr:`Una parábola con vértice en el origen pasa por P(${ptX},${ptY}) y tiene directriz ${d.dirStr}. Hallá la ecuación y el foco.`, sol:`${d.canonEq} | Foco: F${focusStr} | LR: ${d.latus}`, tema:subtema+' T3'};
+  } else if(tipo===4){
+    let ptX,ptY;
+    if(orient==='up'||orient==='down'){ptX=rndNZ(-4,4);ptY=(ptX*ptX)/(4*d.p);if(!Number.isInteger(ptY))return mixParGen(tipo,isHK);}
+    else{ptY=rndNZ(-4,4);ptX=(ptY*ptY)/(4*d.p);if(!Number.isInteger(ptX))return mixParGen(tipo,isHK);}
+    const axStr=orient==='up'||orient==='down'?'eje Y':'eje X';
+    return {expr:`Una parábola con vértice en el origen pasa por P(${ptX},${ptY}), eje de simetría: ${axStr}. Hallá la ecuación, foco y directriz.`, sol:`${d.canonEq} | Foco: F${focusStr} | Directriz: ${d.dirStr} | LR: ${d.latus}`, tema:subtema+' T4'};
+  } else if(tipo===6){
+    return {expr:`A partir del gráfico, escribí la ecuación de la parábola, foco y directriz.`, sol:`${d.canonEq} | Foco: F${focusStr} | Directriz: ${d.dirStr} | LR: ${d.latus}`, tema:subtema+' T6', graph:graph, showGraphInQ:true};
+  }
+}
+
+// Circle generators
+function genCenter(){let h,k;do{h=rnd(-5,5);k=rnd(-5,5);}while(h===0&&k===0);return{h,k};}
+function circHKCanon(h,k,r){const xp=h===0?'x²':h>0?`(x − ${h})²`:`(x + ${Math.abs(h)})²`;const yp=k===0?'y²':k>0?`(y − ${k})²`:`(y + ${Math.abs(k)})²`;return`${xp} + ${yp} = ${r*r}`;}
+function circHKGeneral(h,k,r){const D=-2*h,E=-2*k,F=h*h+k*k-r*r;let eq='x² + y²';if(D!==0)eq+=` ${D>0?'+':'−'} ${Math.abs(D)}x`;if(E!==0)eq+=` ${E>0?'+':'−'} ${Math.abs(E)}y`;if(F!==0)eq+=` ${F>0?'+':'−'} ${Math.abs(F)}`;eq+=' = 0';return eq;}
+function circSVGsmall(h,k,r,extraFn){
+  const W=220,H=220,range=Math.max(Math.abs(h)+r+2,Math.abs(k)+r+2,5),scale=(W*0.38)/range;
+  const ox=W/2-h*scale,oy=H/2+k*scale;
+  function toSVG(mx,my){return{x:ox+mx*scale,y:oy-my*scale};}
+  const cSVG=toSVG(h,k),circR=r*scale,origin=toSVG(0,0);
+  let extra=extraFn?extraFn(toSVG,scale):'';
+  return`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:8px;background:#fafbff;">
+  <line x1="${origin.x.toFixed(1)}" y1="5" x2="${origin.x.toFixed(1)}" y2="${H-5}" stroke="#e0e4f0" stroke-width="1"/>
+  <line x1="5" y1="${origin.y.toFixed(1)}" x2="${W-5}" y2="${origin.y.toFixed(1)}" stroke="#e0e4f0" stroke-width="1"/>
+  ${extra}
+  <circle cx="${cSVG.x.toFixed(1)}" cy="${cSVG.y.toFixed(1)}" r="${circR.toFixed(1)}" fill="none" stroke="#4f6ef7" stroke-width="2"/>
+  <circle cx="${cSVG.x.toFixed(1)}" cy="${cSVG.y.toFixed(1)}" r="3" fill="#4f6ef7"/>
+  <text x="${(cSVG.x+4).toFixed(1)}" y="${(cSVG.y-5).toFixed(1)}" font-size="8" fill="#4f6ef7">C(${h},${k})</text>
+  <line x1="${cSVG.x.toFixed(1)}" y1="${cSVG.y.toFixed(1)}" x2="${(cSVG.x+circR).toFixed(1)}" y2="${cSVG.y.toFixed(1)}" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="${(cSVG.x+circR/2).toFixed(1)}" y="${(cSVG.y-3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#22c55e">r=${r}</text>
+</svg>`;
+}
+
+function mixCircGen(tipo,isHK){
+  if(!isHK){
+    const r=rnd(1,8);
+    if(tipo===1) return {expr:`Escribí la ecuación de la circunferencia con centro en el origen y radio r = ${r}.`, sol:`x² + y² = ${r*r}`, tema:'Circunf. (0,0) T1'};
+    if(tipo===2){const px=rndNZ(-6,6),py=rndNZ(-6,6),r2=px*px+py*py,rv=Math.sqrt(r2),rs=Number.isInteger(rv)?String(rv):`√${r2}`;return{expr:`La circunferencia con centro en el origen pasa por P(${px},${py}). Escribí su ecuación.`,sol:`r = ${rs} | x² + y² = ${r2}`,tema:'Circunf. (0,0) T2'};}
+    if(tipo===3){const eq=rnd(0,1)?`x² + y² = ${r*r}`:`x² + y² − ${r*r} = 0`;return{expr:`Dada la circunferencia: ${eq}. Hallá el radio y el centro.`,sol:`Centro: C(0,0) | r = ${r}`,tema:'Circunf. (0,0) T3'};}
+  } else {
+    const{h,k}=genCenter(),r=rnd(1,6);
+    const canon=circHKCanon(h,k,r),general=circHKGeneral(h,k,r);
+    const graph=circSVGsmall(h,k,r);
+    if(tipo===1) return{expr:`Escribí la ecuación canónica y general de la circunferencia con C(${h},${k}) y r = ${r}. Graficá.`,sol:`Canónica: ${canon}<br>General: ${general}`,tema:'Circunf. (h,k) T1',graph,showGraphInQ:false};
+    if(tipo===2){const offsets=[[r,0],[0,r],[-r,0],[0,-r]],[[ox,oy]]=offsets;const px=h+r,py=k;return{expr:`Circunferencia con C(${h},${k}) que pasa por P(${px},${py}). Hallá ecuación canónica y general. Graficá.`,sol:`r = ${r} | ${canon}<br>${general}`,tema:'Circunf. (h,k) T2',graph,showGraphInQ:false};}
+    if(tipo===3) return{expr:`Dada la ecuación general: ${general}. Hallá centro, radio y ecuación canónica. Graficá.`,sol:`C(${h},${k}) | r = ${r} | ${canon}`,tema:'Circunf. (h,k) T3',graph,showGraphInQ:false};
+    if(tipo===4){
+      const m=rnd(-2,2),b=k-m*h;
+      const bk=b-k,A=1+m*m,B=2*(m*bk-h),C=bk*bk+h*h-r*r;
+      const disc=B*B-4*A*C;
+      if(disc<0){const bExt=k-m*h+r*2;const dExt=Math.abs(m*h-k+bExt)/Math.sqrt(m*m+1);const lineEq=`y = ${m===0?'':m===1?'':m}${m!==0?'x':''} ${bExt>=0?(m!==0?'+ ':'')+bExt:'− '+Math.abs(bExt)}`;const gLine=circSVGsmall(h,k,r,(toSVG)=>{const p1=toSVG(h-r*2,m*(h-r*2)+bExt),p2=toSVG(h+r*2,m*(h+r*2)+bExt);return`<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="#e74c3c" stroke-width="1.5"/>`;});return{expr:`Circunferencia ${general} y recta y = ${m}x ${bExt>=0?'+ '+bExt:'− '+Math.abs(bExt)}. Posición relativa e intersecciones. Graficá.`,sol:`Exterior. No hay intersecciones.`,tema:'Circunf. (h,k) T4',graph:gLine,showGraphInQ:true};}
+      const x1=(-B+Math.sqrt(disc))/(2*A),x2=(-B-Math.sqrt(disc))/(2*A);
+      const y1=m*x1+b,y2=m*x2+b;
+      const fmt=v=>Math.abs(v-Math.round(v))<0.01?Math.round(v):v.toFixed(2);
+      const lineEq=`y = ${m===0?'':m===1?'':m===-1?'−':m}${m!==0?'x':''} ${b>=0?(m!==0?'+ ':'')+b:'− '+Math.abs(b)}`;
+      const gLine=circSVGsmall(h,k,r,(toSVG)=>{const p1=toSVG(h-r*2,m*(h-r*2)+b),p2=toSVG(h+r*2,m*(h+r*2)+b);return`<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="#e74c3c" stroke-width="1.5"/>`;});
+      return{expr:`Circunferencia ${general} y recta ${lineEq}. Posición relativa e intersecciones. Graficá.`,sol:`Secante. P₁(${fmt(x1)},${fmt(y1)}) y P₂(${fmt(x2)},${fmt(y2)})`,tema:'Circunf. (h,k) T4',graph:gLine,showGraphInQ:true};
+    }
+    if(tipo===5){const px=h+r,py=k;const gG=circSVGsmall(h,k,r,(toSVG)=>{const pS=toSVG(px,py);return`<circle cx="${pS.x.toFixed(1)}" cy="${pS.y.toFixed(1)}" r="3" fill="#f97316"/><text x="${(pS.x+4).toFixed(1)}" y="${(pS.y-4).toFixed(1)}" font-size="8" fill="#f97316">P(${px},${py})</text>`;});return{expr:`A partir del gráfico, escribí la ecuación general de la circunferencia.`,sol:general,tema:'Circunf. (h,k) T5',graph:gG,showGraphInQ:true};}
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// NUEVOS GENERADORES PARA MIXTO
+// ══════════════════════════════════════════════════════════════
+
+// ── Enteros: helpers ──
+function sup(n) { return '<sup>'+n+'</sup>'; }
+function opnd(n) { return n < 0 ? '('+n+')' : String(n); }
+function first(n) { return String(n); }
+function sqrtHTML(n) { return '\u221a<span style="text-decoration:overline">'+n+'</span>'; }
+function rootHTML_m(radicand, idx) {
+  if(idx===2) return '\u221a<span style="text-decoration:overline">'+radicand+'</span>';
+  if(idx===3) return '\u221b<span style="text-decoration:overline">'+radicand+'</span>';
+  if(idx===4) return '\u221c<span style="text-decoration:overline">'+radicand+'</span>';
+  return '<sup style="font-size:.68em;vertical-align:.5em">'+idx+'</sup>\u221a<span style="text-decoration:overline">'+radicand+'</span>';
+}
+function makeRoot(idx) {
+  var r = Math.max(1, Math.floor(Math.pow(rnd(1,50), 1/idx)));
+  return { str: rootHTML_m(Math.pow(r,idx), idx), val: r };
+}
+var currentMode = 'frac';
+
+// ── Enteros: generadores ──
+function genSR(lvl) {
+  const nTerms = lvl === 1 ? 2 : lvl === 2 ? rnd(3,4) : rnd(5,6);
+  const range   = lvl === 1 ? 20 : lvl === 2 ? 30 : 50;
+
+  // Build terms and operators separately so we can compute correctly
+  const terms = [rnd(-range, range)];
+  const ops   = [];
+  for (let i = 1; i < nTerms; i++) {
+    terms.push(rndNZ(-range, range));
+    ops.push(rnd(0,1) ? '+' : '−');
+  }
+
+  // Build display string: use the operator and the absolute value,
+  // but wrap negative numbers that come after + with parens: a + (−5)
+  let expr = first(terms[0]);
+  let result = terms[0];
+  for (let i = 0; i < ops.length; i++) {
+    const t = terms[i+1];
+    if (ops[i] === '+') {
+      expr += t < 0 ? ` + (${t})` : ` + ${t}`;
+      result += t;
+    } else {
+      expr += ` − ${Math.abs(t)}`;
+      result -= t;
+    }
+  }
+  return { expr: `${expr} =`, sol: String(result), lvl };
+}
+
+// ── MULTIPLICACIÓN ────────────────────────
+function genMU_ent(lvl) {
+  const nFactors = lvl === 1 ? 2 : lvl === 2 ? 3 : rnd(4,5);
+  const range    = lvl === 1 ? 12 : lvl === 2 ? 9 : 6;
+  const factors  = [];
+  for (let i = 0; i < nFactors; i++) factors.push(rndNZ(-range, range));
+  const expr   = factors.map(f => opnd(f)).join(' · ');
+  const result = factors.reduce((a,b) => a*b, 1);
+  return { expr: `${expr} =`, sol: String(result), lvl };
+}
+
+// ── DIVISIÓN ──────────────────────────────
+function genDV_ent(lvl) {
+  if (lvl === 1) {
+    const q = rndNZ(-15, 15);
+    const d = rndNZ(-12, 12);
+    const n = d * q;
+    return { expr: `${opnd(n)} ÷ ${opnd(d)} =`, sol: String(q), lvl };
+  }
+  if (lvl === 2) {
+    const d = rndNZ(2, 12);
+    const n = rndNZ(-50, 50);
+    const q = Math.trunc(n / d);
+    const r = n - q * d;
+    const sol = r === 0 ? String(q) : `Cociente: ${q}, Resto: ${r < 0 ? -r : r}`;
+    return { expr: `${opnd(n)} ÷ ${opnd(d)} =`, sol, lvl };
+  }
+  // Chain: make clean result
+  const b = rndNZ(2,8), c = rndNZ(2,6);
+  const q = rndNZ(-8,8);
+  const a = q * b * c;
+  return { expr: `${opnd(a)} ÷ ${opnd(b)} ÷ ${opnd(c)} =`, sol: String(q), lvl };
+}
+
+// ── POTENCIACIÓN ─────────────────────────
+function genPO_ent(lvl) {
+  if (lvl === 1) {
+    const base = rnd(-8,8);
+    const exp  = rnd(2,4);
+    const result = Math.pow(base, exp);
+    return { expr: `${opnd(base)}${sup(exp)} =`, sol: String(result), lvl };
+  }
+  if (lvl === 2) {
+    const base = rndNZ(-5,5);
+    const n1   = rnd(2,5), n2 = rnd(1,4);
+    const isDiv = rnd(0,1) && n1 > n2;
+    const expR  = isDiv ? n1-n2 : n1+n2;
+    const expr  = isDiv
+      ? `${opnd(base)}${sup(n1)} ÷ ${opnd(base)}${sup(n2)}`
+      : `${opnd(base)}${sup(n1)} · ${opnd(base)}${sup(n2)}`;
+    const result = Math.pow(base, expR);
+    return { expr: `${expr} =`, sol: `${opnd(base)}${sup(expR)} = ${result}`, lvl };
+  }
+  // lvl 3
+  if (rnd(0,1) === 0) {
+    const base = rndNZ(-4,4), n = rnd(2,3), m = rnd(2,3);
+    const result = Math.pow(base, n*m);
+    return { expr: `(${opnd(base)}${sup(n)})${sup(m)} =`, sol: `${opnd(base)}${sup(n*m)} = ${result}`, lvl };
+  } else {
+    const b1=rndNZ(-4,4),e1=rnd(2,3),b2=rndNZ(-4,4),e2=rnd(2,3);
+    const result = Math.pow(b1,e1)*Math.pow(b2,e2);
+    return { expr: `${opnd(b1)}${sup(e1)} · ${opnd(b2)}${sup(e2)} =`, sol: String(result), lvl };
+  }
+}
+
+// ── COMBINADAS SIN AGRUPACIÓN ─────────────
+// All levels use ALL operations: +, −, ·, ÷, powers (incl. exp=0), roots
+// Complexity grows by number of terms and nesting of powers/roots
+
+function randBase() { return rndNZ(-6, 6); }
+function randExp() { return rnd(0, 3); }  // includes 0!
+function randSqBase() { return rnd(1, 10); } // perfect square base (result = n²)
+
+// Returns { str, val } for a "power term": base^exp or root or just a number
+function powerTerm(forceRoot) {
+  const type = forceRoot ? 2 : rnd(0, 2);
+  if (type === 0) {
+    const n = rndNZ(-9, 9);
+    return { str: opnd(n), val: n };
+  }
+  if (type === 1) {
+    const base = randBase(), exp = randExp();
+    return { str: `${opnd(base)}${sup(exp)}`, val: Math.pow(base, exp) };
+  }
+  // root with varied index (2, 3, 4, 5)
+  const idx = [2, 3, 4, 5][rnd(0, 3)];
+  const r = makeRoot(idx);
+  return { str: r.str, val: r.val };
+}
+
+function genCS_ent(lvl) {
+  // Lvl 1: 3-4 terms, ops +/−/·, each term can be power/root/plain
+  // Lvl 2: 4-5 terms, adds ÷, more powers/roots
+  // Lvl 3: 5-6 terms, all operations, guaranteed mix of powers and roots
+  let expr, result, att = 0;
+
+  while (att++ < 60) {
+    try {
+      const nTerms = lvl === 1 ? rnd(3,4) : lvl === 2 ? rnd(4,5) : rnd(5,6);
+      const opsPool = lvl === 1 ? ['+','−','·'] : lvl === 2 ? ['+','−','·','÷'] : ['+','−','·','÷'];
+
+      // Build terms
+      const terms = [];
+      const ops = [];
+
+      // Force at least 1 power and 1 root in lvl 3, 1 power in lvl 2
+      const forceRoot = lvl === 3;
+      const forcePow  = lvl >= 2;
+
+      for (let i = 0; i < nTerms; i++) {
+        const forceR = forceRoot && i === 0;
+        const forceP = forcePow && i === 1;
+        terms.push(powerTerm(forceR ? true : false));
+        if (i < nTerms - 1) {
+          // avoid division when next term could be 0
+          ops.push(opsPool[rnd(0, opsPool.length - 1)]);
+        }
+      }
+
+      // Force a power in position 2 for lvl >= 2
+      if (forcePow && terms.length > 1) {
+        const base = randBase(), exp = rnd(0, 3);
+        terms[1] = { str: `${opnd(base)}${sup(exp)}`, val: Math.pow(base, exp) };
+      }
+
+      // Force a root in position 0 for lvl 3
+      if (forceRoot) {
+        const n = randSqBase();
+        terms[0] = { str: `${sqrtHTML(n*n)}`, val: n };
+      }
+
+      // Compute result respecting order of operations
+      // Build as a series of +/− with subexpressions that handle · and ÷ first
+      // Strategy: collect additive groups
+      let groups = [{ terms: [terms[0]], ops_in: [] }];
+      for (let i = 0; i < ops.length; i++) {
+        if (ops[i] === '+' || ops[i] === '−') {
+          groups.push({ terms: [terms[i+1]], ops_in: [], addOp: ops[i] });
+        } else {
+          groups[groups.length-1].terms.push(terms[i+1]);
+          groups[groups.length-1].ops_in.push(ops[i]);
+        }
+      }
+
+      // Evaluate each group (left to right within group: · and ÷)
+      const groupVals = groups.map(g => {
+        let v = g.terms[0].val;
+        for (let i = 0; i < g.ops_in.length; i++) {
+          const tv = g.terms[i+1].val;
+          if (g.ops_in[i] === '·') v *= tv;
+          else {
+            if (tv === 0) throw new Error('div by zero');
+            if (!Number.isInteger(v / tv)) throw new Error('non-integer div');
+            v /= tv;
+          }
+        }
+        return v;
+      });
+
+      // Sum groups
+      let total = groupVals[0];
+      for (let i = 1; i < groups.length; i++) {
+        total = groups[i].addOp === '+' ? total + groupVals[i] : total - groupVals[i];
+      }
+
+      if (!Number.isFinite(total) || !Number.isInteger(total)) continue;
+
+      // Build expression string
+      let exprParts = [terms[0].str];
+      for (let i = 0; i < ops.length; i++) {
+        const op = ops[i];
+        const tStr = terms[i+1].str;
+        if (op === '+') exprParts.push(`+ ${tStr}`);
+        else if (op === '−') exprParts.push(`− ${tStr}`);
+        else if (op === '·') exprParts.push(`· ${tStr}`);
+        else exprParts.push(`÷ ${tStr}`);
+      }
+
+      expr = exprParts.join(' ') + ' =';
+      result = total;
+      break;
+    } catch(e) { continue; }
+  }
+
+  if (!expr) return genCS_ent(lvl); // retry
+  return { expr, sol: String(result), lvl };
+}
+
+// ── COMBINADAS CON AGRUPACIÓN ─────────────
+function genCC_ent(lvl) {
+  let expr, result, att = 0;
+
+  while (att++ < 80) {
+    try {
+      if (lvl === 1) {
+        // ( ) only — one pair of parens, with powers/roots inside or outside
+        const type = rnd(0, 3);
+        let e, r;
+
+        if (type === 0) {
+          // a · (b + cⁿ) − √d²
+          const a=rndNZ(-6,6), b=rnd(-8,8), base=randBase(), exp=rnd(0,3), sq=randSqBase();
+          const inner = b + Math.pow(base,exp);
+          r = a*inner - sq;
+          e = `${opnd(a)} · (${first(b)} + ${opnd(base)}${sup(exp)}) − ${sqrtHTML(sq*sq)}`;
+        } else if (type === 1) {
+          // (aⁿ + b) · c − d
+          const base=randBase(), exp=rnd(0,3), b=rnd(-8,8), c=rndNZ(-6,6), d=rnd(-10,10);
+          r = (Math.pow(base,exp)+b)*c - d;
+          e = `(${opnd(base)}${sup(exp)} + ${opnd(b)}) · ${opnd(c)} − ${opnd(d)}`;
+        } else if (type === 2) {
+          // √a² · (b − c) + dⁿ
+          const sq=randSqBase(), b=rnd(-8,8), c=rnd(-8,8), base=randBase(), exp=rnd(0,3);
+          r = sq*(b-c) + Math.pow(base,exp);
+          e = `${sqrtHTML(sq*sq)} · (${first(b)} − ${Math.abs(c)}) + ${opnd(base)}${sup(exp)}`;
+        } else {
+          // aⁿ + (b · c − d)
+          const base=randBase(), exp=rnd(0,3), b=rndNZ(-6,6), c=rnd(-8,8), d=rnd(-10,10);
+          r = Math.pow(base,exp) + (b*c - d);
+          e = `${opnd(base)}${sup(exp)} + (${first(b)} · ${opnd(c)} − ${opnd(d)})`;
+        }
+
+        if (!Number.isInteger(r) || !Number.isFinite(r)) continue;
+        expr = e + ' ='; result = r; break;
+
+      } else if (lvl === 2) {
+        // [ ( ) ] — with powers and roots
+        const type = rnd(0, 2);
+        let e, r;
+
+        if (type === 0) {
+          // [aⁿ · (b + c) − √d²] + e
+          const base=randBase(), exp=rnd(0,3), b=rnd(-6,6), c=rnd(-6,6), sq=randSqBase(), e2=rnd(-10,10);
+          r = Math.pow(base,exp)*(b+c) - sq + e2;
+          e = `[${opnd(base)}${sup(exp)} · (${first(b)} + ${opnd(c)}) − ${sqrtHTML(sq*sq)}] + ${opnd(e2)}`;
+        } else if (type === 1) {
+          // √a² + [bⁿ − (c · d)]
+          const sq=randSqBase(), base=randBase(), exp=rnd(0,3), c=rndNZ(-6,6), d=rnd(-8,8);
+          r = sq + Math.pow(base,exp) - c*d;
+          e = `${sqrtHTML(sq*sq)} + [${opnd(base)}${sup(exp)} − (${first(c)} · ${opnd(d)})]`;
+        } else {
+          // [a + (b − cⁿ)] · √d²
+          const a=rnd(-8,8), b=rnd(-8,8), base=randBase(), exp=rnd(0,3), sq=randSqBase();
+          r = (a + (b - Math.pow(base,exp))) * sq;
+          e = `[${first(a)} + (${first(b)} − ${opnd(base)}${sup(exp)})] · ${sqrtHTML(sq*sq)}`;
+        }
+
+        if (!Number.isInteger(r) || !Number.isFinite(r)) continue;
+        expr = e + ' ='; result = r; break;
+
+      } else {
+        // { [ ( ) ] } — full nesting with all operations
+        const type = rnd(0, 2);
+        let e, r;
+
+        if (type === 0) {
+          // {aⁿ − [b · (c + √d²) − e]} · f
+          const base=randBase(), exp=rnd(0,3), b=rndNZ(-4,4), c=rnd(-6,6), sq=randSqBase(), e2=rnd(-8,8), f=rndNZ(-3,3);
+          r = (Math.pow(base,exp) - (b*(c+sq) - e2)) * f;
+          e = `{${opnd(base)}${sup(exp)} − [${first(b)} · (${first(c)} + ${sqrtHTML(sq*sq)}) − ${opnd(e2)}]} · ${opnd(f)}`;
+        } else if (type === 1) {
+          // {[√a² + (bⁿ − c)] · d} − e
+          const sq=randSqBase(), base=randBase(), exp=rnd(0,3), c=rnd(-8,8), d=rndNZ(-4,4), e2=rnd(-10,10);
+          r = (sq + (Math.pow(base,exp) - c)) * d - e2;
+          e = `{[${sqrtHTML(sq*sq)} + (${opnd(base)}${sup(exp)} − ${opnd(c)})] · ${opnd(d)}} − ${opnd(e2)}`;
+        } else {
+          // √a² · {[bⁿ + c] − (d − e)} 
+          const sq=randSqBase(), base=randBase(), exp=rnd(0,3), c=rnd(-6,6), d=rnd(-8,8), e2=rnd(-6,6);
+          r = sq * ((Math.pow(base,exp)+c) - (d-e2));
+          e = `${sqrtHTML(sq*sq)} · {[${opnd(base)}${sup(exp)} + ${opnd(c)}] − (${first(d)} − ${opnd(e2)})}`;
+        }
+
+        if (!Number.isInteger(r) || !Number.isFinite(r)) continue;
+        expr = e + ' ='; result = r; break;
+      }
+    } catch(err) { continue; }
+  }
+
+  if (!expr) return genCC_ent(lvl);
+  return { expr, sol: String(result), lvl };
+}
+
+
+
+// ── Racionales: helpers ──
+function frac(n, d) {
+  return '<span class="frac"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>';
+}
+// ── MATH HELPERS (racionales usa lcm además de gcd) ──
+function gcd(a,b) { a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function simplify(n,d) { if(d===0)return[n,1]; const g=gcd(Math.abs(n),Math.abs(d)); let sn=n/g,sd=d/g; if(sd<0){sn=-sn;sd=-sd;} return[sn,sd]; }
+function lcm(a,b) { return Math.abs(a*b)/gcd(a,b); }
+function mkF(n,d) { if(d===0)return{n:0,d:1}; const[sn,sd]=simplify(n,d); return{n:sn,d:sd}; }
+function addF(a,b){return mkF(a.n*b.d+b.n*a.d,a.d*b.d);}
+function subF(a,b){return mkF(a.n*b.d-b.n*a.d,a.d*b.d);}
+function mulF(a,b){return mkF(a.n*b.n,a.d*b.d);}
+function divF(a,b){return mkF(a.n*b.d,a.d*b.n);}
+function powF(a,e){if(e===0)return mkF(1,1);let r=mkF(1,1);for(let i=0;i<e;i++)r=mulF(r,a);return r;}
+function fracStr(f){return frac(f.n,f.d);}
+function solFrac(f){const[n,d]=simplify(f.n,f.d);return frac(n,d);}
+function randPosFrac(maxDen=8){const d=rnd(2,maxDen);const n=rndNZ(1,d*3);return mkF(n,d);}
+function randFrac(maxDen=8,allowNeg=true){const d=rnd(2,maxDen);const maxN=d*4;const n=allowNeg?rndNZ(-maxN,maxN):rnd(1,maxN);return mkF(n,d);}
+function rootHTML(radicand,idx){if(idx===2)return`√<span style="text-decoration:overline">${radicand}</span>`;if(idx===3)return`∛<span style="text-decoration:overline">${radicand}</span>`;if(idx===4)return`∜<span style="text-decoration:overline">${radicand}</span>`;return`<sup style="font-size:.68em;vertical-align:.5em">${idx}</sup>√<span style="text-decoration:overline">${radicand}</span>`;}
+
+
+
+// ── Racionales: generadores ──
+function rac_genSR(lvl){
+  let a,b,res,expr;
+  if(lvl===1){
+    if(currentMode==='frac'){const d=rnd(2,10);const n1=rndNZ(-d*2,d*2);const n2=rndNZ(-d*2,d*2);const op=rnd(0,1)?'+':'−';const resF=op==='+'?mkF(n1+n2,d):mkF(n1-n2,d);return{expr:`${fracStr(mkF(n1,d))} ${op} ${fracStr(mkF(op==='+'?n2:Math.abs(n2),d))} =`,sol:solFrac(resF),lvl};}
+    const ra=randRat(true),rb=randRat(true);const op=rnd(0,1)?'+':'−';const resF=op==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);return{expr:`${ra.disp} ${op} ${rb.disp} =`,sol:solFrac(resF),lvl};
+  }
+  if(lvl===2){const ra=randRat(false),rb=randRat(false);const op=rnd(0,1)?'+':'−';const resF=op==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);return{expr:`${ra.disp} ${op} ${rb.disp} =`,sol:solFrac(resF),lvl};}
+  const ra=randRat(true),rb=randRat(true),rc=randRat(false);const op1=rnd(0,1)?'+':'−',op2=rnd(0,1)?'+':'−';const r1=op1==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);const resF=op2==='+'?addF(r1,rc.f):subF(r1,rc.f);return{expr:`${ra.disp} ${op1} ${rb.disp} ${op2} ${rc.disp} =`,sol:solFrac(resF),lvl};
+}
+function rac_genMU(lvl){const n=lvl===1?2:lvl===2?3:rnd(4,5);const rats=Array.from({length:n},()=>randRat(lvl===3));const resF=rats.reduce((acc,r)=>mulF(acc,r.f),mkF(1,1));return{expr:rats.map(r=>r.disp).join(' · ')+' =',sol:solFrac(resF),lvl};}
+function rac_genDV(lvl){
+  if(lvl===1){const a=randRat(false),b=randPosRat();if(b.f.n===0)return rac_genDV(lvl);return{expr:`${a.disp} ÷ ${b.disp} =`,sol:solFrac(divF(a.f,b.f)),lvl};}
+  if(lvl===2){const a=randRat(false),b=randPosRat(),c=randPosRat();if(b.f.n===0||c.f.n===0)return rac_genDV(lvl);return{expr:`${a.disp} ÷ ${b.disp} ÷ ${c.disp} =`,sol:solFrac(divF(divF(a.f,b.f),c.f)),lvl};}
+  const a=randRat(true),b=randRat(false),c=randPosRat();if(c.f.n===0)return rac_genDV(lvl);return{expr:`(${a.disp} + ${b.disp}) ÷ ${c.disp} =`,sol:solFrac(divF(addF(a.f,b.f),c.f)),lvl};
+}
+function rac_genPO(lvl){
+  if(lvl===1){const base=randPosRat(),exp=rnd(2,3);const sup=exp===2?'²':'³';return{expr:`(${base.disp})${sup} =`,sol:solFrac(powF(base.f,exp)),lvl};}
+  if(lvl===2){const base=randPosRat();const e1=rnd(2,4),e2=rnd(1,3);const isDiv=rnd(0,1)&&e1>e2;const expR=isDiv?e1-e2:e1+e2;const sup=n=>n===1?'¹':n===2?'²':n===3?'³':n===4?'⁴':'⁵';const expr=isDiv?`(${base.disp})${sup(e1)} ÷ (${base.disp})${sup(e2)}`:`(${base.disp})${sup(e1)} · (${base.disp})${sup(e2)}`;return{expr:`${expr} =`,sol:`(${base.disp})${sup(expR)} = ${solFrac(powF(base.f,expR))}`,lvl};}
+  const b1=randPosRat(),b2=randPosRat();const e1=rnd(2,3),e2=rnd(2,3);const sup=n=>n===2?'²':'³';return{expr:`(${b1.disp})${sup(e1)} · (${b2.disp})${sup(e2)} =`,sol:solFrac(mulF(powF(b1.f,e1),powF(b2.f,e2))),lvl};
+}
+function rac_genRA(lvl){
+  if(lvl===1){const{f,resF}=perfectSqFrac();const disp=currentMode==='frac'?fracStr(f):(()=>{const e=EXACT_DECS.find(x=>x.f.n===f.n&&x.f.d===f.d);return e?e.disp:fracStr(f);})();return{expr:`${rootHTML(disp,2)} =`,sol:solFrac(resF),lvl};}
+  if(lvl===2){const type=rnd(0,1);if(type===0){const fourths=[1,16,81,256];const n=fourths[rnd(0,3)],d=fourths[rnd(1,3)];return{expr:`${rootHTML(fracStr(mkF(n,d)),4)} =`,sol:solFrac(mkF(Math.round(Math.pow(n,0.25)),Math.round(Math.pow(d,0.25)))),lvl};}const cubes=[1,8,27,64,125];const n=cubes[rnd(0,4)],d=cubes[rnd(1,4)];return{expr:`${rootHTML(fracStr(mkF(n,d)),3)} =`,sol:solFrac(mkF(Math.round(Math.cbrt(n)),Math.round(Math.cbrt(d)))),lvl};}
+  const ra=randRootFrac(),rb=randRootFrac();const op=rnd(0,1)?'+':'−';return{expr:`${ra.disp} ${op} ${rb.disp} =`,sol:solFrac(op==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f)),lvl};
+}
+function rac_genCS(lvl){
+  let expr,resF,att=0;
+  while(att++<80){try{const nTerms=lvl===1?rnd(3,4):lvl===2?rnd(3,5):rnd(4,5);const terms=Array.from({length:nTerms},()=>mkTerm(lvl));const opsPool=['+','−','·','÷'];const ops=Array.from({length:nTerms-1},()=>opsPool[rnd(0,3)]);let groups=[{terms:[terms[0]],mops:[]}];for(let i=0;i<ops.length;i++){if(ops[i]==='+'||ops[i]==='−'){groups.push({terms:[terms[i+1]],mops:[],addOp:ops[i]});}else{groups[groups.length-1].terms.push(terms[i+1]);groups[groups.length-1].mops.push(ops[i]);}}const gVals=groups.map(g=>{let v=g.terms[0].f;for(let i=0;i<g.mops.length;i++){const tv=g.terms[i+1].f;if(g.mops[i]==='·')v=mulF(v,tv);else{if(tv.n===0)throw new Error('div0');v=divF(v,tv);}}return v;});let total=gVals[0];for(let i=1;i<groups.length;i++){total=groups[i].addOp==='+'?addF(total,gVals[i]):subF(total,gVals[i]);}if(!total||Math.abs(total.n)>300||Math.abs(total.d)>300||total.d===0)continue;const parts=[terms[0].disp];for(let i=0;i<ops.length;i++)parts.push(`${ops[i]} ${terms[i+1].disp}`);expr=parts.join(' ')+' =';resF=total;break;}catch(e){continue;}}
+  if(!expr)return rac_genCS(lvl);return{expr,sol:solFrac(resF),lvl};
+}
+function rac_genCC(lvl){
+  let expr,resF,att=0;
+  while(att++<100){try{const T=()=>mkTerm(lvl);let e,r;
+    if(lvl===1){const type=rnd(0,3);const[a,b,c,d]=[T(),T(),T(),T()];if(type===0){r=mulF(a.f,addF(b.f,c.f));e=`${a.disp} · (${b.disp} + ${c.disp})`;}else if(type===1){if(c.f.n===0)continue;r=divF(addF(a.f,b.f),c.f);e=`(${a.disp} + ${b.disp}) ÷ ${c.disp}`;}else if(type===2){r=addF(mulF(subF(a.f,b.f),c.f),d.f);e=`(${a.disp} − ${b.disp}) · ${c.disp} + ${d.disp}`;}else{r=subF(addF(a.f,mulF(b.f,c.f)),d.f);e=`${a.disp} + (${b.disp} · ${c.disp}) − ${d.disp}`;}}
+    else if(lvl===2){const type=rnd(0,3);const[a,b,c,d,ef]=[T(),T(),T(),T(),T()];if(type===0){r=addF(subF(mulF(a.f,addF(b.f,c.f)),d.f),ef.f);e=`[${a.disp} · (${b.disp} + ${c.disp}) − ${d.disp}] + ${ef.disp}`;}else if(type===1){r=addF(a.f,subF(b.f,mulF(c.f,d.f)));e=`${a.disp} + [${b.disp} − (${c.disp} · ${d.disp})]`;}else if(type===2){if(d.f.n===0)continue;r=divF(addF(a.f,subF(b.f,c.f)),d.f);e=`[${a.disp} + (${b.disp} − ${c.disp})] ÷ ${d.disp}`;}else{r=subF(ef.f,addF(mulF(a.f,subF(b.f,c.f)),d.f));e=`${ef.disp} − [${a.disp} · (${b.disp} − ${c.disp}) + ${d.disp}]`;}}
+    else{const type=rnd(0,2);const[a,b,c,d,ef]=[T(),T(),T(),T(),T()];if(type===0){r=mulF(subF(a.f,mulF(b.f,addF(c.f,d.f))),ef.f);e=`{${a.disp} − [${b.disp} · (${c.disp} + ${d.disp})]} · ${ef.disp}`;}else if(type===1){if(ef.f.n===0)continue;r=divF(subF(addF(a.f,mulF(b.f,c.f)),d.f),ef.f);e=`{[${a.disp} + (${b.disp} · ${c.disp})] − ${d.disp}} ÷ ${ef.disp}`;}else{r=addF(mulF(a.f,subF(b.f,addF(c.f,d.f))),ef.f);e=`{${a.disp} · [${b.disp} − (${c.disp} + ${d.disp})]} + ${ef.disp}`;}}
+    if(!r||Math.abs(r.n)>300||Math.abs(r.d)>300||r.d===0)continue;expr=e+' =';resF=r;break;}catch(err){continue;}}
+  if(!expr)return rac_genCC(lvl);return{expr,sol:solFrac(resF),lvl};
+}
+
+
+
+// ── Op. Monomios: generadores ──
+// OPERACIONES CON MONOMIOS
+// ══════════════════════════════════════════════════════════════
+
+let omCurrentOp = 'suma';
+const omQtys = {1:0, 2:0};
+
+function omSetOp(op) {
+  omCurrentOp = op;
+  ['suma','resta','mult','div','pot','rad'].forEach(o => {
+    document.getElementById('om-op-'+o).classList.toggle('active', o===op);
+  });
+}
+function omToggle(n) {
+  const el = document.getElementById('om-lvl-'+n);
+  const active = el.classList.contains('active');
+  omQtys[n] = active ? 0 : 1;
+  document.getElementById('om-lqv-'+n).textContent = omQtys[n];
+  el.classList.toggle('active', !active);
+  omUpdateBadge();
+}
+function omQty(n, delta) {
+  omQtys[n] = Math.max(0, Math.min(30, (omQtys[n]||0) + delta));
+  document.getElementById('om-lqv-'+n).textContent = omQtys[n];
+  document.getElementById('om-lvl-'+n).classList.toggle('active', omQtys[n] > 0);
+  omUpdateBadge();
+}
+function omUpdateBadge() {
+  const t = omQtys[1] + omQtys[2];
+  document.getElementById('om-totalBadge').innerHTML = `Total: <span>${t}</span> ejercicios`;
+}
+
+// OM Combined mode
+let omMixMode = false;
+const OM_MIX_STATE = { suma:{1:0,2:0}, resta:{1:0,2:0}, mult:{1:0,2:0}, div:{1:0,2:0}, pot:{1:0,2:0}, rad:{1:0,2:0} };
+const OM_OP_NAMES = { suma:'Suma', resta:'Resta', mult:'Multiplicación', div:'División', pot:'Potenciación', rad:'Radicación' };
+
+function omMixQty(op, lvl, delta) {
+  OM_MIX_STATE[op][lvl] = Math.max(0, Math.min(30, (OM_MIX_STATE[op][lvl]||0)+delta));
+  document.getElementById('om-mix-'+op+'-lqv-'+lvl).textContent = OM_MIX_STATE[op][lvl];
+  const el = document.getElementById('om-mix-'+op+'-lvl-'+lvl);
+  if(el) el.classList.toggle('active', OM_MIX_STATE[op][lvl]>0);
+  const total = Object.values(OM_MIX_STATE).reduce((a,ops)=>a+Object.values(ops).reduce((b,v)=>b+v,0),0);
+  document.getElementById('om-mix-badge').innerHTML = 'Total: <span>'+total+'</span> ejercicios';
+}
+
+const _omSetOp = omSetOp;
+function omSetOp(op) {
+  omMixMode = (op === 'mix');
+  document.getElementById('om-single-card').style.display = omMixMode ? 'none' : '';
+  document.getElementById('om-mix-card').style.display = omMixMode ? '' : 'none';
+  document.getElementById('om-btn-generate').textContent = omMixMode ? '⚡ Generar ejercitario combinado' : '⚡ Generar ejercitario';
+  ['mix','suma','resta','mult','div','pot','rad'].forEach(o => {
+    const el = document.getElementById('om-op-'+o);
+    if(el) el.classList.toggle('active', o===op);
+  });
+  if(!omMixMode) omCurrentOp = op;
+}
+
+function generateOpMonoMix() {
+  const ejercicios=[], seen=new Set();
+  Object.keys(OM_MIX_STATE).forEach(op => {
+    [1,2].forEach(lvl => {
+      const qty = OM_MIX_STATE[op][lvl]||0; if(!qty) return;
+      let count=0, att=0;
+      while(count<qty && att<qty*100) {
+        att++;
+        try {
+          const e = OM_GENS[op](lvl);
+          if(!e || seen.has(e.expr)) continue;
+          seen.add(e.expr);
+          ejercicios.push({...e, _op:op, id:ejercicios.length+1});
+          count++;
+        } catch(err){}
+      }
+    });
+  });
+  if(ejercicios.length===0){alert('Agregá al menos un ejercicio con +');return;}
+  const fecha = new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+  let lastOp=null;
+  let ejHTML='<div class="ejercicios-list">';
+  ejercicios.forEach(e=>{
+    if(e._op!==lastOp){lastOp=e._op;ejHTML+='<div class="level-header">'+OM_OP_NAMES[e._op]+' de monomios — '+OM_LVL_LABELS[e.lvl]+'</div>';}
+    ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div><div class="work-space work-space-sm"></div></div></div>';
+  });
+  ejHTML+='</div>';
+  let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e=>{solHTML+='<div class="sol-item"><span class="sol-num">'+e.id+'.</span><div class="sol-val">'+e.sol+'</div></div>';});
+  solHTML+='</div>';
+  const el=document.getElementById('om-ejercitario');
+  el.innerHTML='<div class="ej-header"><div class="ej-title">Monomios</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div></div>'+ejHTML+solHTML+'<div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  el.style.display='block';
+  document.getElementById('om-btnDownload').style.display='block';
+}
+
+// ── Aritmética de fracciones ──────────────────────────────────
+function omGcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a||1; }
+function omSimp(n,d){ const g=omGcd(Math.abs(n),d); let sn=n/g,sd=d/g; if(sd<0){sn=-sn;sd=-sd;} return [sn,sd]; }
+function omAdd(n1,d1,n2,d2){ const g=omGcd(d1,d2),lcd=d1/g*d2; return omSimp(n1*(lcd/d1)+n2*(lcd/d2),lcd); }
+function omMul(n1,d1,n2,d2){ return omSimp(n1*n2, d1*d2); }
+function omDiv(n1,d1,n2,d2){ return omSimp(n1*d2, d1*n2); }
+function omPow(n,d,e){ let rn=1,rd=1; for(let i=0;i<e;i++){[rn,rd]=omMul(rn,rd,n,d);} return [rn,rd]; }
+
+// Muestra una fracción como HTML visual (usado en soluciones y coeficientes nivel 2)
+function omFracHTML(n, d, forceSign=false) {
+  if (d === 1) {
+    return (forceSign && n>0 ? '+' : '') + String(n);
+  }
+  const [sn, sd] = omSimp(n, d);
+  if (sd === 1) return (forceSign && sn>0 ? '+' : '') + String(sn);
+  const neg = sn < 0;
+  return `${neg?'−':(forceSign?'+':'')}` +
+    `<span class="frac"><span class="num">${Math.abs(sn)}</span><span class="den">${sd}</span></span>`;
+}
+
+// Muestra resultado n/d como string para la solución (con parte literal)
+function omResSol(n, d, lit) {
+  if (n === 0) return '0';
+  const [sn, sd] = omSimp(n, d);
+  if (sd === 1) {
+    if (Math.abs(sn)===1 && lit) return (sn<0?'−':'') + lit;  // 1 tácito
+    if (!lit) return String(sn);
+    return String(sn) + lit;
+  }
+  return omFracHTML(sn, sd) + lit;
+}
+
+// Pool de fracciones positivas para nivel 2
+const OM_FRACS_POS = [
+  [1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6]
+];
+// Pool de fracciones (pos y neg)
+const OM_FRACS_ALL = [
+  [1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],
+  [-1,2],[-1,3],[-2,3],[-1,4],[-3,4],[-2,5],[-3,5]
+];
+// Pool de decimales
+const OM_DECS = [
+  [1,2,'0.5'],[1,4,'0.25'],[3,4,'0.75'],[1,5,'0.2'],[2,5,'0.4'],
+  [3,5,'0.6'],[4,5,'0.8'],[3,2,'1.5'],[5,4,'1.25'],
+  [-1,2,'-0.5'],[-3,4,'-0.75'],[-1,5,'-0.2'],[-3,2,'-1.5']
+];
+
+// Devuelve {n, d, dispStr} para coef de nivel 1 o 2
+function omRandCoef(lvl, positivo=false, noUno=false) {
+  if (lvl === 1) {
+    let v;
+    do { v = positivo ? rnd(1,9) : rndNZ(-9,9); } while(noUno && Math.abs(v)===1);
+    // Coeficiente 1 es tácito: no se escribe (solo el signo si es -1)
+    const disp = v === 1 ? '' : v === -1 ? '−' : String(v);
+    return { n:v, d:1, disp };
+  }
+  // Nivel 2: 50% fracción, 50% decimal
+  const useDec = rnd(0,1);
+  if (useDec) {
+    const pool = positivo ? OM_DECS.filter(x=>x[0]>0) : OM_DECS;
+    const [n,d,s] = pool[rnd(0,pool.length-1)];
+    return { n, d, disp: s };
+  } else {
+    const pool = positivo ? OM_FRACS_POS : OM_FRACS_ALL;
+    const [n,d] = pool[rnd(0,pool.length-1)];
+    return { n, d, disp: omFracHTML(n,d) };
+  }
+}
+
+// Parte literal: ej. "x²y"
+function omRandLit(nVars, maxExp=4) {
+  const vs = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
+  return vs.map(v => { const e=rnd(1,maxExp); return {v,e}; });
+}
+function omLitStr(parts) {
+  return parts.map(({v,e}) => e===1 ? v : `${v}${toSup(e)}`).join('');
+}
+
+// String del monomio para el ENUNCIADO (con coef display)
+function omMonomioStr(coef, lit, wrapNeg=false) {
+  const c = coef.disp;
+  const s = c + lit;
+  return (wrapNeg && coef.n < 0) ? `(${s})` : s;
+}
+
+// ── SUMA ─────────────────────────────────────────────────────
+function omGenSuma(lvl) {
+  const nTerms = rnd(2,3);
+  const nv = rnd(1,2);
+  const parts = omRandLit(nv, 3);
+  const lit = omLitStr(parts);
+  const coefs = Array.from({length:nTerms}, () => omRandCoef(lvl));
+
+  // Suma de coeficientes
+  let [rn,rd] = [coefs[0].n, coefs[0].d];
+  for (let i=1; i<nTerms; i++) [rn,rd] = omAdd(rn,rd, coefs[i].n, coefs[i].d);
+
+  // Expresión: c1·lit + c2·lit ...
+  let expr = omMonomioStr(coefs[0], lit);
+  for (let i=1; i<nTerms; i++) {
+    const c = coefs[i];
+    if (c.n < 0) {
+      // Término negativo: mostrar como "− |c|lit"
+      const abs = omRandCoef(lvl); abs.n=Math.abs(c.n); abs.d=c.d;
+      const absVal = Math.abs(c.n);
+      abs.disp = lvl===1 ? (absVal===1?'':String(absVal)) : c.disp.replace(/^−/,'').replace(/^-/,'');
+      expr += ` − ${omMonomioStr(abs,lit)}`;
+    } else {
+      expr += ` + ${omMonomioStr(c,lit)}`;
+    }
+  }
+  expr += ' =';
+
+  return { expr, sol: omResSol(rn,rd,lit), lvl };
+}
+
+// ── RESTA ────────────────────────────────────────────────────
+function omGenResta(lvl) {
+  const nv = rnd(1,2);
+  const parts = omRandLit(nv, 3);
+  const lit = omLitStr(parts);
+  const cA = omRandCoef(lvl);
+  let cB; do { cB = omRandCoef(lvl); } while(cB.n===cA.n && cB.d===cA.d);
+
+  const [rn,rd] = omAdd(cA.n, cA.d, -cB.n, cB.d);
+  const sol = omResSol(rn, rd, lit);
+
+  // Dos formatos: "De A restar B" y "Restar B de A"
+  const fmt = rnd(0,1);
+  const mA = omMonomioStr(cA, lit, true);
+  const mB = omMonomioStr(cB, lit, true);
+  const expr = fmt===0
+    ? `De ${mA} restar ${mB}`
+    : `Restar ${mB} de ${mA}`;
+
+  return { expr, sol, lvl };
+}
+
+// ── MULTIPLICACIÓN ───────────────────────────────────────────
+function omGenMult(lvl) {
+  const nTerms = rnd(2,3);
+  // Cada monomio puede tener distintas variables
+  const allVars = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,3);
+  const coefs = Array.from({length:nTerms}, () => omRandCoef(lvl));
+  const termParts = Array.from({length:nTerms}, () => {
+    const nv = rnd(1,2);
+    return omRandLit(nv, 3).map(p => ({...p, v: allVars[rnd(0,allVars.length-1)]}));
+  });
+
+  // Coeficiente resultado
+  let [rn,rd] = [coefs[0].n, coefs[0].d];
+  for (let i=1; i<nTerms; i++) [rn,rd] = omMul(rn,rd, coefs[i].n, coefs[i].d);
+
+  // Parte literal resultado: sumar exponentes de cada variable
+  const expMap = {};
+  termParts.forEach(ps => ps.forEach(({v,e}) => { expMap[v] = (expMap[v]||0)+e; }));
+  const litRes = Object.entries(expMap).sort().map(([v,e])=>e===1?v:`${v}${toSup(e)}`).join('');
+
+  const monoStrs = coefs.map((c,i) => {
+    const lit = omLitStr(termParts[i]);
+    return `(${omMonomioStr(c,lit)})`;
+  });
+  const expr = monoStrs.join(' · ') + ' =';
+  return { expr, sol: omResSol(rn,rd,litRes), lvl };
+}
+
+// ── DIVISIÓN ─────────────────────────────────────────────────
+function omGenDiv(lvl) {
+  const nv = rnd(1,2);
+  const allVars = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nv);
+  const cA = omRandCoef(lvl);
+  const cB = omRandCoef(lvl, true, false); // divisor positivo, puede ser 1
+
+  // Exponentes: dividendo ≥ divisor
+  const expsA = allVars.map(() => rnd(2,5));
+  const expsB = allVars.map((_,i) => rnd(1, expsA[i]));
+  const expsR = expsA.map((e,i) => e - expsB[i]);
+
+  const litA = allVars.map((v,i)=>expsA[i]===1?v:`${v}${toSup(expsA[i])}`).join('');
+  const litB = allVars.map((v,i)=>expsB[i]===1?v:`${v}${toSup(expsB[i])}`).join('');
+  const litR = allVars.map((v,i)=>expsR[i]===0?'':expsR[i]===1?v:`${v}${toSup(expsR[i])}`).join('');
+
+  const [rn,rd] = omDiv(cA.n, cA.d, cB.n, cB.d);
+  let expr;
+  if (lvl === 1) {
+    // Nivel 1: formato con símbolo ÷
+    expr = `${cA.disp}${litA} ÷ ${cB.disp}${litB} =`;
+  } else {
+    // Nivel 2: formato fracción
+    expr = `<span class="frac" style="font-size:1em"><span class="num">${cA.disp}${litA}</span><span class="den">${cB.disp}${litB}</span></span> =`;
+  }
+  return { expr, sol: omResSol(rn,rd,litR), lvl };
+}
+
+// ── POTENCIACIÓN ─────────────────────────────────────────────
+function omGenPot(lvl) {
+  const nv = rnd(1,2);
+  const parts = omRandLit(nv, 3);
+  const lit = omLitStr(parts);
+  const coef = omRandCoef(lvl);
+  const potencia = rnd(2,4);
+
+  // Coef resultado
+  const [rn,rd] = omPow(coef.n, coef.d, potencia);
+
+  // Parte literal: multiplicar cada exponente por potencia
+  const litR = parts.map(({v,e}) => { const ne=e*potencia; return ne===1?v:`${v}${toSup(ne)}`; }).join('');
+
+  const pSup = toSup(potencia);
+  const inner = omMonomioStr(coef, lit);
+  const expr = `(${inner})${pSup} =`;
+  return { expr, sol: omResSol(rn,rd,litR), lvl };
+}
+
+// ── RADICACIÓN ───────────────────────────────────────────────
+// Estrategia: construir resultado primero, luego elevar al índice
+function omGenRad(lvl) {
+  const idx = [2,2,3][rnd(0,2)]; // índice 2 o 3
+
+  const nv = rnd(1,2);
+  const allVars = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nv);
+
+  // Resultado: coeficiente entero positivo pequeño
+  let resN, resD;
+  if (lvl===1) {
+    resN = rnd(1,5); resD = 1;
+  } else {
+    const pool = OM_FRACS_POS.filter(([n])=>n>0);
+    [resN, resD] = pool[rnd(0,pool.length-1)];
+  }
+
+  // Radicando coeficiente = resultado^idx
+  const [radN, radD] = omPow(resN, resD, idx);
+
+  // Exponentes resultado para cada variable
+  const resExps = allVars.map(() => rnd(1,3));
+  // Exponentes radicando = resultado * idx
+  const radExps = resExps.map(e => e*idx);
+
+  const litRad = allVars.map((v,i)=>radExps[i]===1?v:`${v}${toSup(radExps[i])}`).join('');
+  const litRes = allVars.map((v,i)=>resExps[i]===1?v:`${v}${toSup(resExps[i])}`).join('');
+
+  const radCoefStr = omFracHTML(radN, radD);
+  const rootSym = idx===2 ? '√' : '∛';
+  const expr = `${rootSym}<span style="text-decoration:overline">${radCoefStr}${litRad}</span> =`;
+  const sol = omResSol(resN, resD, litRes);
+  return { expr, sol, lvl };
+}
+
+// ── GENERADOR PRINCIPAL ──────────────────────────────────────
+const OM_GENS = { suma:omGenSuma, resta:omGenResta, mult:omGenMult, div:omGenDiv, pot:omGenPot, rad:omGenRad };
+
+// ── Op. Polinomios: generadores ──
+function opToggle(n) {
+  const el = document.getElementById('op-lvl-'+n);
+  const active = el.classList.contains('active');
+  opQtys[n] = active ? 0 : 1;
+  document.getElementById('op-lqv-'+n).textContent = opQtys[n];
+  el.classList.toggle('active', !active);
+  opUpdateBadge();
+}
+function opQty(n, delta) {
+  opQtys[n] = Math.max(0, Math.min(20, (opQtys[n]||0) + delta));
+  document.getElementById('op-lqv-'+n).textContent = opQtys[n];
+  document.getElementById('op-lvl-'+n).classList.toggle('active', opQtys[n] > 0);
+  opUpdateBadge();
+}
+function opUpdateBadge() {
+  const t = opQtys[1] + opQtys[2];
+  document.getElementById('op-totalBadge').innerHTML = `Total: <span>${t}</span> ejercicios`;
+}
+
+let opMixMode = false;
+const OP_MIX_STATE = { suma:{1:0,2:0}, resta:{1:0,2:0}, multmp:{1:0,2:0}, multpp:{1:0,2:0}, divpm:{1:0,2:0}, divpp:{1:0,2:0}, resto:{1:0,2:0}, ruffini:{1:0,2:0} };
+const OP_OP_NAMES = {"suma": "Suma", "resta": "Resta", "multmp": "Mon × Pol", "multpp": "Pol × Pol", "divpm": "Pol ÷ Mon", "divpp": "Pol ÷ Pol", "resto": "Teo. del Resto", "ruffini": "Ruffini"};
+
+function opMixQty(op, lvl, delta) {
+  OP_MIX_STATE[op][lvl] = Math.max(0, Math.min(20, (OP_MIX_STATE[op][lvl]||0)+delta));
+  document.getElementById('op-mix-'+op+'-lqv-'+lvl).textContent = OP_MIX_STATE[op][lvl];
+  const el = document.getElementById('op-mix-'+op+'-lvl-'+lvl);
+  if(el) el.classList.toggle('active', OP_MIX_STATE[op][lvl]>0);
+  const total = Object.values(OP_MIX_STATE).reduce((a,ops)=>a+Object.values(ops).reduce((b,v)=>b+v,0),0);
+  document.getElementById('op-mix-badge').innerHTML = 'Total: <span>'+total+'</span> ejercicios';
+}
+
+const _opSetOp = opSetOp;
+function opSetOp(op) {
+  opMixMode = (op === 'mix');
+  document.getElementById('op-single-card').style.display = opMixMode ? 'none' : '';
+  document.getElementById('op-mix-card').style.display = opMixMode ? '' : 'none';
+  document.getElementById('op-btn-generate').textContent = opMixMode ? '⚡ Generar ejercitario combinado' : '⚡ Generar ejercitario';
+  ['mix','suma','resta','multmp','multpp','divpm','divpp','resto','ruffini'].forEach(o => {
+    const el = document.getElementById('op-op-'+o);
+    if(el) el.classList.toggle('active', o===op);
+  });
+  const nota = document.getElementById('op-nota-enteros');
+  if(nota) nota.style.display = (!opMixMode && OP_ENTEROS_ONLY.includes(op)) ? 'block' : 'none';
+  if(!opMixMode) opCurrentOp = op;
+}
+
+function generateOpPolyMix() {
+  const ejercicios=[], seen=new Set();
+  Object.keys(OP_MIX_STATE).forEach(op => {
+    [1,2].forEach(lvl => {
+      const qty = OP_MIX_STATE[op][lvl]||0; if(!qty) return;
+      let count=0, att=0;
+      while(count<qty && att<qty*100) {
+        att++;
+        try {
+          const e = OP_GENS[op](lvl);
+          if(!e || seen.has(e.expr)) continue;
+          seen.add(e.expr);
+          ejercicios.push({...e, _op:op, id:ejercicios.length+1});
+          count++;
+        } catch(err){}
+      }
+    });
+  });
+  if(ejercicios.length===0){alert('Agregá al menos un ejercicio con +');return;}
+  const fecha = new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+  let lastOp=null;
+  let ejHTML='<div class="ejercicios-list">';
+  ejercicios.forEach(e=>{
+    if(e._op!==lastOp){lastOp=e._op;ejHTML+='<div class="level-header">'+OP_OP_NAMES[e._op]+' — '+OP_LVL_LABELS[e.lvl]+'</div>';}
+    ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div><div class="work-space work-space-md"></div></div></div>';
+  });
+  ejHTML+='</div>';
+  let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e=>{solHTML+='<div class="sol-item"><span class="sol-num">'+e.id+'.</span><div class="sol-val">'+e.sol+'</div></div>';});
+  solHTML+='</div>';
+  const el=document.getElementById('op-ejercitario');
+  el.innerHTML='<div class="ej-header"><div class="ej-title">Polinomios</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div></div>'+ejHTML+solHTML+'<div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  el.style.display='block';
+  document.getElementById('op-btnDownload').style.display='block';
+}
+
+// ── Aritmética de fracciones ──────────────────────────────────
+function opGcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a||1; }
+function opSimp(n,d){ const g=opGcd(Math.abs(n),Math.abs(d)||1); let sn=n/g, sd=(d||1)/g; if(sd<0){sn=-sn;sd=-sd;} return[sn,sd]; }
+function opAddF(n1,d1,n2,d2){ const g=opGcd(d1,d2), lcd=d1/g*d2; return opSimp(n1*(lcd/d1)+n2*(lcd/d2), lcd); }
+function opMulF(n1,d1,n2,d2){ return opSimp(n1*n2, d1*d2); }
+function opDivF(n1,d1,n2,d2){ return opSimp(n1*d2, d1*n2); }
+
+// ── Renderizado de coeficientes y términos ───────────────────
+
+// Fracción visual HTML
+function opFracH(n,d) {
+  const[sn,sd]=opSimp(n,d);
+  if(sd===1) return String(sn);
+  const neg=sn<0;
+  return `${neg?'−':''}<span class="frac"><span class="num">${Math.abs(sn)}</span><span class="den">${sd}</span></span>`;
+}
+
+// Display de coeficiente para enunciado (1 y -1 tácitos cuando hay parte literal)
+function opCDisp(n, d, hasLit) {
+  const[sn,sd]=opSimp(n,d);
+  if(!hasLit) return opFracH(sn,sd); // término independiente: siempre mostrar
+  if(sd===1) {
+    if(sn===1)  return '';
+    if(sn===-1) return '−';
+    return String(sn);
+  }
+  return opFracH(sn,sd);
+}
+
+// String de un término en posición i de un polinomio
+// t = {n, d, exp}; v = variable
+function opTStr(t, v, isFirst) {
+  const[sn,sd]=opSimp(t.n,t.d);
+  if(sn===0) return '';
+  const lit = t.exp===0 ? '' : t.exp===1 ? v : `${v}${toSup(t.exp)}`;
+  const hasLit = lit!=='';
+
+  if(isFirst) {
+    const cd = opCDisp(sn,sd,hasLit);
+    // Si es negativo y cd ya incluye el signo '−':
+    if(sn<0 && hasLit && Math.abs(sn)===1 && sd===1) return `−${lit}`;
+    if(sn<0 && hasLit) {
+      const[asn,asd]=opSimp(Math.abs(sn),sd);
+      return `−${opFracH(asn,asd)}${lit}`;
+    }
+    return `${cd}${lit}`;
+  }
+
+  // Términos siguientes
+  if(sn<0) {
+    const[asn,asd]=opSimp(Math.abs(sn),sd);
+    const absCD = opCDisp(asn,asd,hasLit);
+    if(hasLit && asn===1 && asd===1) return ` − ${lit}`;
+    return ` − ${absCD}${lit}`;
+  }
+  const cd = opCDisp(sn,sd,hasLit);
+  return ` + ${cd}${lit}`;
+}
+
+// Renderiza polinomio (array de {n,d,exp}) como HTML
+function opPolyStr(terms, v='x') {
+  const sorted = [...terms].filter(t=>t.n!==0).sort((a,b)=>b.exp-a.exp);
+  if(sorted.length===0) return '0';
+  return sorted.map((t,i)=>opTStr(t,v,i===0)).join('');
+}
+// Verifica que todos los términos tengan denominador 1 (resultado entero)
+function opIsInteger(terms) {
+  return terms.every(t=>{ const[,sd]=opSimp(t.n,t.d); return sd===1; });
+}
+
+// ── Construcción de polinomios ───────────────────────────────
+
+// Coeficiente aleatorio según nivel
+function opRndCoef(lvl, positivo=false) {
+  if(lvl===1) {
+    return { n: positivo ? rnd(1,8) : rndNZ(-8,8), d:1 };
+  }
+  if(rnd(0,1)) {
+    const pool = positivo ? OM_FRACS_POS : OM_FRACS_ALL;
+    const[n,d]=pool[rnd(0,pool.length-1)];
+    return{n,d};
+  } else {
+    const pool = positivo ? OM_DECS.filter(x=>x[0]>0) : OM_DECS;
+    const[n,d]=pool[rnd(0,pool.length-1)];
+    return{n,d};
+  }
+}
+
+// Polinomio aleatorio de grado maxDeg, nTerms términos (siempre incluye líder y constante)
+function opMkPoly(maxDeg, nTerms, lvl, positivo=false) {
+  const must = new Set([maxDeg, 0]);
+  const avail = [];
+  for(let g=maxDeg-1; g>=1; g--) avail.push(g);
+  const shuffle = [...avail].sort(()=>Math.random()-0.5);
+  const extras = shuffle.slice(0, Math.max(0, nTerms-2));
+  const degrees = [...new Set([...must,...extras])].sort((a,b)=>b-a);
+  return degrees.map(exp => {
+    const c = opRndCoef(lvl, positivo);
+    return{n:c.n, d:c.d, exp};
+  });
+}
+
+// Suma de dos polinomios
+function opAddPoly(A, B) {
+  const map = {};
+  [...A,...B].forEach(({n,d,exp}) => {
+    if(!map[exp]) map[exp]={n:0,d:1,exp};
+    const[rn,rd]=opAddF(map[exp].n,map[exp].d,n,d);
+    map[exp]={n:rn,d:rd,exp};
+  });
+  return Object.values(map).filter(t=>t.n!==0).sort((a,b)=>b.exp-a.exp);
+}
+
+// Resta B de A
+function opSubPoly(A,B) {
+  return opAddPoly(A, B.map(t=>({...t,n:-t.n})));
+}
+
+// Multiplica polinomio por monomio {n,d,exp}
+function opMulPolyMono(P, mono) {
+  return P.map(t => {
+    const[rn,rd]=opMulF(t.n,t.d,mono.n,mono.d);
+    return{n:rn,d:rd,exp:t.exp+mono.exp};
+  }).filter(t=>t.n!==0);
+}
+
+// Multiplica dos polinomios
+function opMulPoly(A,B) {
+  const all=[];
+  A.forEach(ta=>B.forEach(tb=>{
+    const[rn,rd]=opMulF(ta.n,ta.d,tb.n,tb.d);
+    all.push({n:rn,d:rd,exp:ta.exp+tb.exp});
+  }));
+  return opAddPoly(all,[]);
+}
+
+// División de polinomios: devuelve {cociente, resto}
+function opDivPoly(dividendo, divisor) {
+  let rem = [...dividendo].sort((a,b)=>b.exp-a.exp);
+  const divDeg = Math.max(...divisor.map(t=>t.exp));
+  const divLead = divisor.find(t=>t.exp===divDeg);
+  const cociente = [];
+  while(true) {
+    const remF = rem.filter(t=>t.n!==0).sort((a,b)=>b.exp-a.exp);
+    if(remF.length===0 || remF[0].exp<divDeg) break;
+    const[cn,cd]=opDivF(remF[0].n,remF[0].d,divLead.n,divLead.d);
+    const cExp=remF[0].exp-divDeg;
+    cociente.push({n:cn,d:cd,exp:cExp});
+    const sub=opMulPolyMono(divisor,{n:cn,d:cd,exp:cExp});
+    rem=opSubPoly(rem,sub);
+  }
+  const restoFinal = rem.filter(t=>t.n!==0);
+  return{
+    cociente: cociente.length>0 ? cociente : [{n:0,d:1,exp:0}],
+    resto:    restoFinal.length>0 ? restoFinal : [{n:0,d:1,exp:0}]
+  };
+}
+
+// ── Generadores ──────────────────────────────────────────────
+
+function opGenSuma(lvl) {
+  const deg=rnd(2,4);
+  const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const sol=opAddPoly(A,B);
+  if(lvl===1 && !opIsInteger(sol)) return opGenSuma(lvl);
+  return{
+    expr:`(${opPolyStr(A)}) + (${opPolyStr(B)}) =`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenResta(lvl) {
+  const deg=rnd(2,4);
+  const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const sol=opSubPoly(A,B);
+  if(lvl===1 && !opIsInteger(sol)) return opGenResta(lvl);
+  const fmt=rnd(0,1);
+  const sA=`(${opPolyStr(A)})`, sB=`(${opPolyStr(B)})`;
+  return{
+    expr: fmt===0 ? `De ${sA} restar ${sB}` : `Restar ${sB} de ${sA}`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenMultMP(lvl) {
+  // Monomio × Polinomio
+  const monoCoef=opRndCoef(lvl);
+  const monoExp=rnd(0,3);
+  const mono={n:monoCoef.n,d:monoCoef.d,exp:monoExp};
+  const deg=rnd(2,4);
+  const P=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const sol=opMulPolyMono(P,mono);
+  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
+  return{
+    expr:`${monoStr} · (${opPolyStr(P)}) =`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenMultPP(lvl) {
+  const degA=rnd(2,3), degB=rnd(2,3);
+  const A=opMkPoly(degA, rnd(2,degA+1), lvl);
+  const B=opMkPoly(degB, rnd(2,degB+1), lvl);
+  const sol=opMulPoly(A,B);
+  if(lvl===1 && !opIsInteger(sol)) return opGenMultPP(lvl);
+  return{
+    expr:`(${opPolyStr(A)}) · (${opPolyStr(B)}) =`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenDivPM(lvl) {
+  // Construir desde el cociente → dividendo = cociente × monomio (resultado exacto garantizado)
+  const monoCoef=opRndCoef(lvl,true);
+  const monoExp=rnd(0,2);
+  const mono={n:monoCoef.n,d:monoCoef.d,exp:monoExp};
+  const deg=rnd(2,4);
+  const Q=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const dividendo=opMulPolyMono(Q,mono);
+  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
+  return{
+    expr:`<span class="frac" style="font-size:1em"><span class="num">${opPolyStr(dividendo)}</span><span class="den">${monoStr}</span></span> =`,
+    sol: opPolyStr(Q)||'0', lvl
+  };
+}
+
+function opGenDivPP(lvl) {
+  // Siempre enteros — Construir desde cociente+resto → dividendo exacto
+  const degDiv=rnd(1,2), degQ=rnd(1,2);
+  const divisor=opMkPoly(degDiv, rnd(2,degDiv+1), 1);
+  const cociente=opMkPoly(degQ, rnd(2,degQ+1), 1);
+  // Resto de grado < degDiv
+  const restoCoef = rnd(0,2)===0 ? 0 : rndNZ(-5,5);
+  const restoExp  = degDiv>0 ? rnd(0,degDiv-1) : 0;
+  const resto     = restoCoef===0 ? [] : [{n:restoCoef,d:1,exp:restoExp}];
+  const dividendo = opAddPoly(opMulPoly(divisor,cociente), restoCoef===0?[{n:0,d:1,exp:0}]:resto);
+  const cocStr    = opPolyStr(cociente);
+  const solStr    = restoCoef!==0
+    ? `Cociente: ${cocStr} — Resto: ${opPolyStr(resto)}`
+    : `Cociente: ${cocStr}`;
+  return{
+    expr:`(${opPolyStr(dividendo)}) ÷ (${opPolyStr(divisor)}) =`,
+    sol: solStr, lvl
+  };
+}
+
+function opGenResto(lvl) {
+  // Teorema del resto: P(a) = resto de P(x)÷(x−a)
+  const deg=rnd(2,4);
+  // Polinomio completo (todos los grados) con coefs enteros
+  const P=[];
+  for(let g=deg;g>=0;g--) P.push({n:rndNZ(-6,6),d:1,exp:g});
+  const a=rndNZ(-4,4);
+  // Evaluar P(a)
+  let[rn,rd]=[0,1];
+  P.forEach(({n,d,exp})=>{
+    const aE=Math.pow(a,exp);
+    const[tn,td]=opMulF(n,d,aE,1);
+    [rn,rd]=opAddF(rn,rd,tn,td);
+  });
+  const aStr=a<0?`(${a})`:String(a);
+  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
+  return{
+    expr:`Hallá el resto de dividir <strong>${opPolyStr(P)}</strong> por <strong>(${divStr})</strong>`,
+    sol:`P${aStr} = ${opFracH(rn,rd)}`, lvl
+  };
+}
+
+function opGenRuffini(lvl) {
+  // División P(x)÷(x−a) con tabla de Ruffini
+  const deg=rnd(2,4);
+  const a=rndNZ(-4,4);
+  // Polinomio COMPLETO (todos los grados) con enteros
+  const coeffArr=Array.from({length:deg+1},()=>rndNZ(-6,6));
+  const P=coeffArr.map((c,i)=>({n:c,d:1,exp:deg-i}));
+
+  // Aplicar algoritmo de Ruffini
+  const row=[coeffArr[0]];
+  for(let i=1;i<=deg;i++) row.push(row[row.length-1]*a + coeffArr[i]);
+  const restoVal=row[deg];
+  const qCoeffs=row.slice(0,deg);
+  const cociente=qCoeffs.map((c,i)=>({n:c,d:1,exp:deg-1-i})).filter(t=>t.n!==0);
+
+  // Calcular los productos intermedios (a×cada valor del cociente)
+  const productos=qCoeffs.map(c=>c*a);
+
+  // Tabla de Ruffini — CSS grid con deg+2 columnas
+  const cols=deg+2;
+  const tabla=`<div class="ruffini-table" style="grid-template-columns:auto${' auto'.repeat(deg+1)}">
+    <div class="ruffini-header" style="display:contents">
+      <span class="ruffini-a">${a}</span>
+      ${coeffArr.map(c=>`<span>${c}</span>`).join('')}
+    </div>
+    <div class="ruffini-mid" style="display:contents">
+      <span class="ruffini-a"></span>
+      <span></span>
+      ${productos.map(p=>`<span>${p}</span>`).join('')}
+    </div>
+    <div class="ruffini-result" style="display:contents">
+      <span class="ruffini-a"></span>
+      ${row.map((v,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${v}</span>`).join('')}
+    </div>
+  </div>`;
+
+  const aStr=a<0?`(${a})`:String(a);
+  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
+  const cocStr=opPolyStr(cociente)||'0';
+  const sol=restoVal===0
+    ?`Cociente: ${cocStr}`
+    :`Cociente: ${cocStr} — Resto: ${restoVal}`;
+  return{
+    expr:`Dividí usando Ruffini: <strong>${opPolyStr(P)}</strong> ÷ <strong>(${divStr})</strong>`,
+    tabla, sol, lvl
+  };
+}
+
+// ── Generador principal ──────────────────────────────────────
+const OP_GENS={
+  suma:opGenSuma, resta:opGenResta,
+  multmp:opGenMultMP, multpp:opGenMultPP,
+  divpm:opGenDivPM, divpp:opGenDivPP,
+  resto:opGenResto, ruffini:opGenRuffini
+};
+const OP_TITLES={
+  suma:'Suma de polinomios', resta:'Resta de polinomios',
+  multmp:'Monomial × Polinomio', multpp:'Polinomio × Polinomio',
+  divpm:'Polinomio ÷ Monomio', divpp:'Polinomio ÷ Polinomio',
+  resto:'Teorema del Resto', ruffini:'División de Ruffini'
+};
+
+// ── Radicales: generadores ──
+const RAD_NIVELES = {
+  exactas:     ['Nivel único — Enteros'],
+  extraccion:  ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios'],
+  intro:       ['Nivel único — Introducción al signo radical'],
+  sumaresta:   ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios', 'Nivel 3 — Con extracción previa'],
+  multI:       ['Nivel único — Enteros'],
+  multII:      ['Nivel único — Enteros'],
+  multIII:     ['Nivel único — Enteros'],
+  divI:        ['Nivel único — Enteros'],
+  multIndices: ['Nivel único — Mínimo común índice'],
+  divIndices:  ['Nivel único — Mínimo común índice'],
+  potI:        ['Nivel único — Enteros'],
+  potII:       ['Nivel único — Enteros'],
+  radrad:      ['Nivel único — Enteros'],
+  racI:        ['Nivel único — Enteros'],
+  racII:       ['Nivel único — Enteros'],
+  racIII:      ['Nivel único — Enteros'],
+  racIV:       ['Nivel único — Enteros'],
+};
+
+const RAD_TITLES = {
+  exactas:     'Raíces exactas',
+  extraccion:  'Extracción de factores del radical',
+  intro:       'Introducción al signo radical',
+  sumaresta:   'Suma y resta de radicales',
+  multI:       'Multiplicación de radicales I — monomio × monomio',
+  multII:      'Multiplicación de radicales II — monomio × polinomio',
+  multIII:     'Multiplicación de radicales III — polinomio × polinomio',
+  divI:        'División de radicales — monomio ÷ monomio',
+  multIndices: 'Multiplicación con distintos índices',
+  divIndices:  'División con distintos índices',
+  potI:        'Potenciación de radicales I — monomio con potencia',
+  potII:       'Potenciación de radicales II — polinomio al cuadrado',
+  radrad:      'Radicación de radicales',
+  racI:        'Racionalización I — denominador monomio, índice 2',
+  racII:       'Racionalización II — denominador monomio, índice > 2',
+  racIII:      'Racionalización III — denominador binomio (conjugado)',
+  racIV:       'Racionalización IV — denominador trinomio',
+};
+
+let radCurrentOp = 'exactas';
+const radQtys = {};
+
+function radSetOp(op) {
+  radCurrentOp = op;
+  document.querySelectorAll('[id^="rad-op-"]').forEach(b =>
+    b.classList.toggle('active', b.id === 'rad-op-'+op));
+  radBuildLevels(op);
+  radUpdateBadge();
+}
+
+function radBuildLevels(op) {
+  const container = document.getElementById('rad-levels-container');
+  const niveles = RAD_NIVELES[op];
+  container.innerHTML = niveles.map((label, i) => {
+    const key = op+'_'+(i+1);
+    if (radQtys[key] === undefined) radQtys[key] = 0;
+    return '<div class="level-item '+(radQtys[key]>0?'active':'')+'" id="rad-lvl-'+key+'">'+
+      '<span class="level-dot"></span>'+
+      '<span class="level-name" onclick="radToggle(\''+key+'\')">'+label+'</span>'+
+      '<div class="level-qty">'+
+        '<button class="lq-btn" onclick="radQty(\''+key+'\',-1)">−</button>'+
+        '<span class="lq-val" id="rad-lqv-'+key+'">'+radQtys[key]+'</span>'+
+        '<button class="lq-btn" onclick="radQty(\''+key+'\',+1)">+</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+function radToggle(key) {
+  const el = document.getElementById('rad-lvl-'+key);
+  const active = el.classList.contains('active');
+  radQtys[key] = active ? 0 : 1;
+  document.getElementById('rad-lqv-'+key).textContent = radQtys[key];
+  el.classList.toggle('active', !active);
+  radUpdateBadge();
+}
+function radQty(key, delta) {
+  radQtys[key] = Math.max(0, Math.min(20, (radQtys[key]||0)+delta));
+  document.getElementById('rad-lqv-'+key).textContent = radQtys[key];
+  document.getElementById('rad-lvl-'+key).classList.toggle('active', radQtys[key]>0);
+  radUpdateBadge();
+}
+function radUpdateBadge() {
+  const t = Object.entries(radQtys)
+    .filter(function(e){ return e[0].startsWith(radCurrentOp+'_'); })
+    .reduce(function(s,e){ return s+e[1]; }, 0);
+  document.getElementById('rad-totalBadge').innerHTML = 'Total: <span>'+t+'</span> ejercicios';
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function radGcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a||1;}
+function radLcm(a,b){return a*b/radGcd(a,b);}
+function radSimp(n,d){if(!d)return[n,1];var g=radGcd(Math.abs(n),Math.abs(d));var sn=n/g,sd=d/g;if(sd<0){sn=-sn;sd=-sd;}return[sn,sd];}
+function radSym(idx){return idx===2?'√':idx===3?'∛':idx===4?'∜':toSup(idx)+'√';}
+function radStr(idx,inner){return radSym(idx)+'<span style="text-decoration:overline">'+inner+'</span>';}
+function radFrac(n,d){var s=radSimp(n,d);var sn=s[0],sd=s[1];if(sd===1)return String(sn);var neg=sn<0;return(neg?'−':'')+'<span class="frac"><span class="num">'+Math.abs(sn)+'</span><span class="den">'+sd+'</span></span>';}
+function radLit(v,e){return e===0?'':e===1?v:v+toSup(e);}
+// coef 1 TACITO: si hasLit y |n|=1 → '' o '−'
+function radC(n,hasLit){if(Math.abs(n)===1&&hasLit)return n<0?'−':'';return String(n);}
+function radFactor(n,idx){var best=1;for(var k=2;Math.pow(k,idx)<=Math.abs(n);k++){if(Math.abs(n)%Math.pow(k,idx)===0)best=k;}return{factor:best,resto:Math.abs(n)/Math.pow(best,idx)};}
+const RAD_FRACS=[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5]];
+
+// ── 1. RAÍCES EXACTAS ────────────────────────────────────────
+function radGenExactas(){
+  var idx=[2,2,3,3,4][rnd(0,4)];
+  var nVars=rnd(1,2);
+  var vars=[].concat(INTRO_VARS).sort(function(){return Math.random()-0.5;}).slice(0,nVars);
+  var a=rnd(2,idx===2?12:idx===3?5:4);
+  var aRad=Math.pow(a,idx);
+  var varExps=vars.map(function(){return rnd(1,3)*idx;});
+  var litRad=vars.map(function(v,i){return radLit(v,varExps[i]);}).join('');
+  var litRes=vars.map(function(v,i){return radLit(v,varExps[i]/idx);}).join('');
+  var expr=radStr(idx,aRad+litRad)+' =';
+  var sol=radC(a,litRes!=='')+litRes;
+  return{expr:expr,sol:sol};
+}
+
+// ── 2. EXTRACCIÓN DE FACTORES ─────────────────────────────────
+function radGenExtraccion(lvl){
+  var idx=[2,2,3][rnd(0,2)];
+  var nVars=rnd(1,2);
+  var vars=[].concat(INTRO_VARS).sort(function(){return Math.random()-0.5;}).slice(0,nVars);
+  var coefRad;
+  if(lvl===1){
+    var factor=rnd(2,6);
+    var restos=[2,3,5,6,7,10,11,13];
+    coefRad=Math.pow(factor,idx)*restos[rnd(0,restos.length-1)];
+  } else {
+    var f2=rnd(2,4);
+    var restos2=[2,3,5,6];
+    coefRad=Math.pow(f2,idx)*restos2[rnd(0,3)];
+  }
+  var varExps=vars.map(function(){var e;do{e=rnd(1,5);}while(e%idx===0);return e+Math.floor(rnd(0,2))*idx;});
+  var litRad=vars.map(function(v,i){return radLit(v,varExps[i]);}).join('');
+  var expr=radStr(idx,coefRad+litRad)+' =';
+  var fObj=radFactor(coefRad,idx);
+  var fc=fObj.factor,rc=fObj.resto;
+  var vFuera=vars.map(function(v,i){return Math.floor(varExps[i]/idx);});
+  var vDentro=vars.map(function(v,i){return varExps[i]%idx;});
+  var litFuera=vars.map(function(v,i){return radLit(v,vFuera[i]);}).join('');
+  var litDentro=vars.map(function(v,i){return radLit(v,vDentro[i]);}).join('');
+  var fDisp=radC(fc,litFuera!=='');
+  var rDentro=(rc===1&&litDentro!=='')?litDentro:(rc===1&&litDentro===''?'1':rc+litDentro);
+  var sol=fDisp+litFuera+radStr(idx,rDentro);
+  return{expr:expr,sol:sol};
+}
+
+// ── 3. INTRODUCCIÓN — introducir factores dentro del radical ──
+function radGenIntro(){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var coefFuera=rnd(2,6);
+  var expFuera=rnd(1,3);
+  var coefDentro=rnd(2,10);
+  var expDentro=rnd(0,3);
+  var litFuera=radLit(v,expFuera);
+  var litDentro=radLit(v,expDentro);
+  var fDisp=radC(coefFuera,litFuera!=='');
+  var radDentro=radStr(idx,(coefDentro===1&&litDentro!==''?litDentro:coefDentro+litDentro));
+  var expr=fDisp+litFuera+' · '+radDentro+' =';
+  var newCoef=Math.pow(coefFuera,idx)*coefDentro;
+  var newExp=expFuera*idx+expDentro;
+  var litNew=radLit(v,newExp);
+  var sol=radStr(idx,(newCoef===1&&litNew!==''?litNew:newCoef+litNew));
+  return{expr:expr,sol:sol,consigna:'Introducí los factores exteriores dentro del radical'};
+}
+
+// ── 4. SUMA Y RESTA ───────────────────────────────────────────
+function radGenSumaResta(lvl){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var m=rnd(1,3);
+  var baseRad=radLit(v,m)||String(rnd(2,10));
+  var nTerms=rnd(2,4);
+
+  if(lvl===3){
+    var baseCoef=[2,3,5,6,7][rnd(0,4)];
+    var factor1=rnd(2,4),factor2=rnd(2,4);
+    var expBase=rnd(1,2)*idx;
+    var expResto=rnd(0,1);
+    var rad1Coef=Math.pow(factor1,idx)*baseCoef;
+    var rad2Coef=Math.pow(factor2,idx)*baseCoef;
+    var e1=expBase+expResto;
+    var c1=rndNZ(-5,5),c2=rndNZ(-5,5);
+    var c1D=Math.abs(c1)===1?'':String(Math.abs(c1));
+    var c2D=Math.abs(c2)===1?'':String(Math.abs(c2));
+    var s1=c1<0?'−':'';
+    var s2=c2<0?' − ':' + ';
+    var expr=s1+c1D+radStr(idx,rad1Coef+radLit(v,e1))+s2+c2D+radStr(idx,rad2Coef+radLit(v,e1))+' =';
+    var vFuera=Math.floor(e1/idx),vResto=e1%idx;
+    var baseLit=radLit(v,vResto);
+    var baseRadStr=(baseCoef===1&&baseLit!=='')?baseLit:(baseCoef===1?'1':baseCoef+baseLit);
+    var termBase=radStr(idx,baseRadStr);
+    var cf1=c1*factor1,cf2=c2*factor2,cfSum=cf1+cf2;
+    var vFueraLit=radLit(v,vFuera);
+    var cfD=Math.abs(cfSum)===1&&vFueraLit?'':String(Math.abs(cfSum));
+    var sol=cfSum===0?'0':(cfSum<0?'−':'')+cfD+vFueraLit+termBase;
+    return{expr:expr,sol:sol,consigna:'Extraé factores y reducí radicales semejantes'};
+  }
+
+  var cNorm=[];
+  if(lvl===1){
+    for(var i=0;i<nTerms;i++) cNorm.push({n:rndNZ(-8,8),d:1});
+  } else {
+    for(var i=0;i<nTerms;i++){
+      if(rnd(0,1)){var fr=RAD_FRACS[rnd(0,RAD_FRACS.length-1)];cNorm.push({n:rnd(0,1)?fr[0]:-fr[0],d:fr[1]});}
+      else cNorm.push({n:rndNZ(-5,5),d:1});
+    }
+  }
+  var rn=0,rd=1;
+  cNorm.forEach(function(c){var lcd=rd*c.d/radGcd(rd,c.d);rn=rn*(lcd/rd)+c.n*(lcd/c.d);rd=lcd;var g=radGcd(Math.abs(rn),rd);rn=rn/g;rd=rd/g;});
+  var radical=radStr(idx,baseRad);
+  var expr='';
+  cNorm.forEach(function(c,i){
+    var s=radSimp(c.n,c.d);var sn=s[0],sd=s[1];
+    var cD=Math.abs(sn)===1&&sd===1?'':radFrac(Math.abs(sn),sd);
+    if(i===0)expr+=(sn<0?'−':'')+cD+radical;
+    else expr+=(sn<0?' − ':' + ')+cD+radical;
+  });
+  expr+=' =';
+  var rs=radSimp(rn,rd);var rsn=rs[0],rsd=rs[1];
+  var rD=Math.abs(rsn)===1&&rsd===1?'':radFrac(Math.abs(rsn),rsd);
+  var sol=rsn===0?'0':(rsn<0?'−':'')+rD+radical;
+  return{expr:expr,sol:sol};
+}
+
+// ── 5. MULTIPLICACIÓN I ───────────────────────────────────────
+function radGenMultI(){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var v2=INTRO_VARS.find(function(x){return x!==v;})||'y';
+  var useSame=rnd(0,1);
+  var a1=rnd(2,8),e1=rnd(1,4),a2=rnd(2,8),e2=rnd(1,4);
+  var vB=useSame?v:v2;
+  var expr=radStr(idx,a1+radLit(v,e1))+' · '+radStr(idx,a2+radLit(vB,e2))+' =';
+  var prod=a1*a2;
+  var totE=useSame?e1+e2:0;
+  var litP=useSame?radLit(v,totE):(radLit(v,e1)+radLit(v2,e2));
+  var fObj=radFactor(prod,idx);var fc=fObj.factor,rc=fObj.resto;
+  var vf=useSame?Math.floor(totE/idx):0,vr=useSame?totE%idx:0;
+  var fLit=useSame?radLit(v,vf):'';
+  var inLit=useSame?radLit(v,vr):litP;
+  var ins=(rc===1&&inLit==='')?'1':((rc===1?'':rc)+inLit);
+  var sol;
+  if(fc===1&&vf===0)sol=radStr(idx,prod+litP);
+  else sol=radC(fc,fLit!=='')+fLit+radStr(idx,ins);
+  return{expr:expr,sol:sol};
+}
+
+// ── 6. MULTIPLICACIÓN II ──────────────────────────────────────
+function radGenMultII(){
+  var idx=2,v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,8),ea=rnd(0,2),b=rnd(2,8),eb=rnd(0,3),c=rnd(2,8),ec=rnd(0,3);
+  var sign=rnd(0,1)===0?'+':'−';
+  var rA=radStr(idx,a+radLit(v,ea));
+  var rB=radStr(idx,b+radLit(v,eb));
+  var rC=radStr(idx,c+radLit(v,ec));
+  var expr=rA+' · ('+rB+' '+sign+' '+rC+') =';
+  function mR(a1,e1,a2,e2){
+    var p=a1*a2,es=e1+e2;
+    var fO=radFactor(p,idx);var fc=fO.factor,rc=fO.resto;
+    var vf=Math.floor(es/idx),vr=es%idx;
+    var fLit=radLit(v,vf),inLit=radLit(v,vr);
+    var ins=(rc===1&&inLit==='')?'1':((rc===1?'':rc)+inLit);
+    if(fc===1&&vf===0)return radStr(idx,p+radLit(v,es));
+    return radC(fc,fLit!=='')+fLit+radStr(idx,ins);
+  }
+  return{expr:expr,sol:mR(a,ea,b,eb)+' '+sign+' '+mR(a,ea,c,ec)};
+}
+
+// ── 7. MULTIPLICACIÓN III ─────────────────────────────────────
+function radGenMultIII(){
+  var idx=2;
+  var a=rnd(2,8),b=rnd(2,8),c=rnd(2,8),d=rnd(2,8);
+  var s1=rnd(0,1)===0?'+':'−',s2=rnd(0,1)===0?'+':'−';
+  var s1n=s1==='+'?1:-1,s2n=s2==='+'?1:-1;
+  var rA=radStr(idx,String(a)),rB=radStr(idx,String(b));
+  var rC=radStr(idx,String(c)),rD=radStr(idx,String(d));
+  var expr='('+rA+' '+s1+' '+rB+')('+rC+' '+s2+' '+rD+') =';
+  function sr(x){var fO=radFactor(x,2);var f=fO.factor,r=fO.resto;if(f===1)return radStr(2,String(x));return radC(f,r!==1)+radStr(2,String(r));}
+  var terms=[{v:a*c,s:1},{v:a*d,s:s2n},{v:b*c,s:s1n},{v:b*d,s:s1n*s2n}];
+  var sol='';
+  terms.forEach(function(t,i){var st=sr(t.v);if(i===0)sol=t.s<0?'−'+st:st;else sol+=t.s<0?' − '+st:' + '+st;});
+  return{expr:expr,sol:sol};
+}
+
+// ── 8. DIVISIÓN I ─────────────────────────────────────────────
+function radGenDivI(){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var solCoef=rnd(2,8),solExp=rnd(0,3);
+  var denCoef=rnd(2,6),denExp=rnd(0,2);
+  var numRad=Math.pow(solCoef,idx)*denCoef;
+  var litNum=radLit(v,solExp*idx+denExp);
+  var litDen=radLit(v,denExp);
+  var rNum=radStr(idx,numRad+litNum);
+  var rDen=radStr(idx,denCoef+litDen);
+  var expr='<span class="frac"><span class="num">'+rNum+'</span><span class="den">'+rDen+'</span></span> =';
+  var solLit=radLit(v,solExp);
+  return{expr:expr,sol:radC(solCoef,solLit!=='')+solLit};
+}
+
+// ── 9. MULTIPLICACIÓN DISTINTOS ÍNDICES ───────────────────────
+function radGenMultIndices(){
+  var pairs=[[2,3],[2,4],[3,4]];
+  var p=pairs[rnd(0,2)];var idx1=p[0],idx2=p[1];
+  var mcm=radLcm(idx1,idx2);
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,6),ea=rnd(1,3),b=rnd(2,6),eb=rnd(1,3);
+  var rA=radStr(idx1,a+radLit(v,ea));
+  var rB=radStr(idx2,b+radLit(v,eb));
+  var expr=rA+' · '+rB+' =';
+  var p1=mcm/idx1,p2=mcm/idx2;
+  var nA=Math.pow(a,p1),eA=ea*p1,nB=Math.pow(b,p2),eB=eb*p2;
+  var prod=nA*nB,totE=eA+eB;
+  var fO=radFactor(prod,mcm);var fc=fO.factor,rc=fO.resto;
+  var vf=Math.floor(totE/mcm),vr=totE%mcm;
+  var fLit=radLit(v,vf),inLit=radLit(v,vr);
+  var paso=toSup(mcm)+'√<span style="text-decoration:overline">'+prod+radLit(v,totE)+'</span>';
+  var ins=(rc===1&&inLit==='')?'1':((rc===1?'':rc)+inLit);
+  var sol=(fc===1&&vf===0)?paso:paso+' = '+radC(fc,fLit!=='')+fLit+radStr(mcm,ins);
+  return{expr:expr,sol:sol,consigna:'mcm('+idx1+','+idx2+') = '+mcm+' — Convertí ambos radicales al mismo índice'};
+}
+
+// ── 10. DIVISIÓN DISTINTOS ÍNDICES ────────────────────────────
+function radGenDivIndices(){
+  var pairs=[[2,3],[2,4],[3,4]];
+  var p=pairs[rnd(0,2)];var idx1=p[0],idx2=p[1];
+  var mcm=radLcm(idx1,idx2);
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,6),ea=rnd(1,3),b=rnd(2,6),eb=rnd(0,2);
+  var rA=radStr(idx1,a+radLit(v,ea));
+  var rB=radStr(idx2,b+radLit(v,eb));
+  var expr='<span class="frac"><span class="num">'+rA+'</span><span class="den">'+rB+'</span></span> =';
+  var p1=mcm/idx1,p2=mcm/idx2;
+  var nA=Math.pow(a,p1),eA=ea*p1,nB=Math.pow(b,p2),eB=eb*p2;
+  var rs=radSimp(nA,nB);var rn=rs[0],rd=rs[1];
+  var expDif=eA-eB;
+  var rNum=(rn===1?'':rn)+radLit(v,Math.max(expDif,0));
+  var rDen=(rd===1?'':rd)+radLit(v,Math.max(-expDif,0));
+  var paso=rd===1&&expDif>=0?radStr(mcm,rNum||'1'):
+    '<span class="frac"><span class="num">'+radStr(mcm,rNum||'1')+'</span><span class="den">'+radStr(mcm,rDen||'1')+'</span></span>';
+  var fullPaso=toSup(mcm)+'√<span style="text-decoration:overline">'+nA+radLit(v,eA)+'</span> / '+toSup(mcm)+'√<span style="text-decoration:overline">'+nB+radLit(v,eB)+'</span> = '+paso;
+  return{expr:expr,sol:fullPaso,consigna:'mcm('+idx1+','+idx2+') = '+mcm+' — Convertí al mismo índice y dividí'};
+}
+
+// ── 11. POTENCIACIÓN I ───────────────────────────────────────
+function radGenPotI(){
+  var idx=[2,3][rnd(0,1)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,5),m=rnd(1,3),p=rnd(2,4);
+  var litM=radLit(v,m);
+  var inner=radC(a,litM!=='')+radStr(idx,litM);
+  var expr='('+inner+')'+toSup(p)+' =';
+  var ap=Math.pow(a,p),totE=m*p;
+  var rs=radSimp(totE,idx);var rN=rs[0],rD=rs[1];
+  var apD=radC(ap,rN>0||rD>1);
+  var sol;
+  if(rD===1){sol=apD+radLit(v,rN);}
+  else{var vOut=Math.floor(totE/idx),vIn=totE%idx;sol=radC(ap,vOut>0||vIn>0)+radLit(v,vOut)+(vIn>0?radStr(idx,radLit(v,vIn)||'1'):'');}
+  return{expr:expr,sol:sol};
+}
+
+// ── 12. POTENCIACIÓN II ──────────────────────────────────────
+function radGenPotII(){
+  var idx=2;
+  var a=rnd(2,8),b=rnd(2,8);
+  var sign=rnd(0,1)===0?'+':'−';
+  var rA=radStr(idx,String(a)),rB=radStr(idx,String(b));
+  var expr='('+rA+' '+sign+' '+rB+')'+toSup(2)+' =';
+  var fO=radFactor(a*b,2);var f=fO.factor,r=fO.resto;
+  var fD=radC(f*2,r!==1);
+  var sol=(a+b)+' '+sign+' '+fD+radStr(2,String(r));
+  return{expr:expr,sol:sol};
+}
+
+// ── 13. RADICACIÓN DE RADICALES ──────────────────────────────
+function radGenRadRad(){
+  var idx1=[2,3][rnd(0,1)],idx2=[2,3][rnd(0,1)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,8),m=rnd(1,3);
+  var litM=radLit(v,m);
+  var inner=radStr(idx1,(a===1?litM:a+litM));
+  var expr=radStr(idx2,inner)+' =';
+  var newIdx=idx1*idx2;
+  var sol=toSup(newIdx)+'√<span style="text-decoration:overline">'+a+litM+'</span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 14. RACIONALIZACIÓN I ────────────────────────────────────
+function radGenRacI(){
+  var v=INTRO_VARS[rnd(0,3)];
+  var hasVar=rnd(0,1);
+  var num=rnd(2,8),denCoef=rnd(2,8),denExp=hasVar?rnd(1,3):0;
+  var litDen=radLit(v,denExp);
+  var radDen=denCoef+litDen;
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+radStr(2,radDen)+'</span></span> =';
+  var g=radGcd(num,denCoef);
+  var nR=num/g,dR=denCoef/g;
+  var nStr=(nR===1?'':nR)+radStr(2,radDen);
+  var dStr=(dR===1?'':dR)+litDen;
+  var sol='<span class="frac"><span class="num">'+nStr+'</span><span class="den">'+dStr+'</span></span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 15. RACIONALIZACIÓN II ───────────────────────────────────
+function radGenRacII(){
+  var idx=[3,4][rnd(0,1)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var num=rnd(2,6),denCoef=rnd(2,6),denExp=rnd(1,idx-1);
+  var litDen=radLit(v,denExp);
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+radStr(idx,denCoef+litDen)+'</span></span> =';
+  var mC=Math.pow(denCoef,idx-1),mE=idx-denExp;
+  var mLit=radLit(v,mE);
+  var nStr=num+radStr(idx,mC+mLit);
+  var dStr=denCoef+radLit(v,1);
+  var sol='<span class="frac"><span class="num">'+nStr+'</span><span class="den">'+dStr+'</span></span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 16. RACIONALIZACIÓN III ──────────────────────────────────
+function radGenRacIII(){
+  var num=rnd(2,6);
+  var b,c;do{b=rnd(2,8);c=rnd(2,8);}while(b===c);
+  var sign=rnd(0,1)===0?'+':'−';
+  var signN=sign==='+'?1:-1;
+  var rB=radStr(2,String(b)),rC=radStr(2,String(c));
+  var conj=sign==='+'?'−':'+';
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+rB+' '+sign+' '+rC+'</span></span> =';
+  var dv=b-signN*c;
+  var g=radGcd(Math.abs(num),Math.abs(dv));
+  var nR=num/g,dR=dv/g;
+  var nStr=(nR===1?'':nR)+'('+rB+' '+conj+' '+rC+')';
+  var sol=Math.abs(dR)===1?(dR<0?'−':'')+nStr:'<span class="frac"><span class="num">'+nStr+'</span><span class="den">'+dR+'</span></span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 17. RACIONALIZACIÓN IV ───────────────────────────────────
+function radGenRacIV(){
+  var num=rnd(2,4);
+  var a,b,c;do{a=rnd(2,6);b=rnd(2,6);c=rnd(2,6);}while(a===b||b===c||a===c);
+  var s1=rnd(0,1)===0?'+':'−';
+  var rA=radStr(2,String(a)),rB=radStr(2,String(b)),rC=radStr(2,String(c));
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+rA+' '+s1+' '+rB+' + '+rC+'</span></span> =';
+  var conj1=rA+' '+s1+' '+rB+' − '+rC;
+  var sol='1° conjugado: ('+conj1+'), luego aplicar conjugado al resultado';
+  return{expr:expr,sol:sol};
+}
+
+const RAD_GENS={
+  exactas:radGenExactas,extraccion:radGenExtraccion,intro:radGenIntro,
+  sumaresta:radGenSumaResta,multI:radGenMultI,multII:radGenMultII,
+  multIII:radGenMultIII,divI:radGenDivI,multIndices:radGenMultIndices,
+  divIndices:radGenDivIndices,potI:radGenPotI,potII:radGenPotII,
+  radrad:radGenRadRad,racI:radGenRacI,racII:radGenRacII,
+  racIII:radGenRacIII,racIV:radGenRacIV
+};
+
+function generateRadicales(){
+  var op=radCurrentOp;
+  var niveles=RAD_NIVELES[op];
+  var total=0;
+  niveles.forEach(function(_,i){total+=radQtys[op+'_'+(i+1)]||0;});
+  if(total===0){alert('Agregá al menos un ejercicio con +');return;}
+  var ejercicios=[],seen=new Set();
+  niveles.forEach(function(label,i){
+    var lvl=i+1,qty=radQtys[op+'_'+lvl]||0;if(!qty)return;
+    var count=0,att=0;
+    while(count<qty&&att<qty*150){
+      att++;
+      try{
+        var e=RAD_GENS[op](lvl);
+        if(!e||seen.has(e.expr))continue;
+        seen.add(e.expr);
+        ejercicios.push(Object.assign({},e,{lvl:lvl,label:label,id:ejercicios.length+1}));
+        count++;
+      }catch(err){}
+    }
+  });
+  var fecha=new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+  var currentLvl=null;
+  var ejHTML='<div class="ejercicios-list">';
+  ejercicios.forEach(function(e){
+    if(e.lvl!==currentLvl){currentLvl=e.lvl;ejHTML+='<div class="level-header">'+e.label+'</div>';}
+    var cons=e.consigna?'<div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">'+e.consigna+'</div>':'';
+    ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span>'+
+      '<div class="ej-content">'+cons+'<div class="ej-question">'+e.expr+'</div>'+
+      '<div class="work-space work-space-lg"></div></div></div>';
+  });
+  ejHTML+='</div>';
+  var solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(function(e){
+    solHTML+='<div class="sol-item"><span class="sol-num">'+e.id+'.</span><div class="sol-val">'+e.sol+'</div></div>';
+  });
+  solHTML+='</div><div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  var el=document.getElementById('rad-ejercitario');
+  if(el){
+    el.innerHTML='<div class="ej-header">'+
+      '<div class="ej-title">Radicales</div>'+
+      '<div class="ej-meta"></div>'+
+      '<div class="ej-data-row"><span>Nombre: ____________________________</span>'+
+      '<span>Curso: _____________  Fecha: _____________</span></div>'+
+      indGetTablaHTML('ind-filas')+'</div>'+ejHTML+solHTML;
+    el.classList.add('visible');
+    var btnD=document.getElementById('rad-btnDownload');
+    if(btnP) btnP.style.display='block';
+    if(btnD) btnD.style.display='block';
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+const GENERATORS = {
+  alg_lin1: ()=>({...gen1(),tema:'Ec. Lineales Niv.1'}),
+  alg_lin2: ()=>({...gen2(),tema:'Ec. Lineales Niv.2'}),
+  alg_lin3: ()=>({...gen3(),tema:'Ec. Lineales Niv.3'}),
+  alg_lin4: ()=>({...gen4(),tema:'Ec. Lineales Niv.4'}),
+  alg_lin5: ()=>({...gen5(),tema:'Ec. Lineales Niv.5'}),
+  alg_expL1: expGenL1, alg_expL2: expGenL2, alg_expL3: expGenL3,
+  alg_expC1: expGenC1, alg_expC2: expGenC2, alg_expC3: expGenC3,
+  alg_log1: logGenM1real, alg_log2: logGenM2real, alg_log3: logGenM3,
+  trig1: trigMixGen1, trig2: trigMixGen2, trig3: trigMixGen3,
+  par00_1: ()=>mixParGen(1,false), par00_2: ()=>mixParGen(2,false),
+  par00_3: ()=>mixParGen(3,false), par00_4: ()=>mixParGen(4,false),
+  par00_6: ()=>mixParGen(6,false),
+  parhk_1: ()=>mixParGen(1,true), parhk_2: ()=>mixParGen(2,true),
+  parhk_3: ()=>mixParGen(3,true), parhk_4: ()=>mixParGen(4,true),
+  parhk_6: ()=>mixParGen(6,true),
+  circ00_1: ()=>mixCircGen(1,false), circ00_2: ()=>mixCircGen(2,false), circ00_3: ()=>mixCircGen(3,false),
+  circhk_1: ()=>mixCircGen(1,true), circhk_2: ()=>mixCircGen(2,true),
+  circhk_3: ()=>mixCircGen(3,true), circhk_4: ()=>mixCircGen(4,true), circhk_5: ()=>mixCircGen(5,true),
+
+  // ── NÚMEROS ENTEROS ──
+  ent_sr1: ()=>({...genSR(1), tema:'Enteros: Suma y Resta Niv.1'}),
+  ent_sr2: ()=>({...genSR(2), tema:'Enteros: Suma y Resta Niv.2'}),
+  ent_sr3: ()=>({...genSR(3), tema:'Enteros: Suma y Resta Niv.3'}),
+  ent_mu1: ()=>({...genMU_ent(1), tema:'Enteros: Multiplicación Niv.1'}),
+  ent_mu2: ()=>({...genMU_ent(2), tema:'Enteros: Multiplicación Niv.2'}),
+  ent_mu3: ()=>({...genMU_ent(3), tema:'Enteros: Multiplicación Niv.3'}),
+  ent_dv1: ()=>({...genDV_ent(1), tema:'Enteros: División Niv.1'}),
+  ent_dv2: ()=>({...genDV_ent(2), tema:'Enteros: División Niv.2'}),
+  ent_dv3: ()=>({...genDV_ent(3), tema:'Enteros: División Niv.3'}),
+  ent_po1: ()=>({...genPO_ent(1), tema:'Enteros: Potenciación Niv.1'}),
+  ent_po2: ()=>({...genPO_ent(2), tema:'Enteros: Potenciación Niv.2'}),
+  ent_po3: ()=>({...genPO_ent(3), tema:'Enteros: Potenciación Niv.3'}),
+  ent_ra1: ()=>({...genRA_ent(1), tema:'Enteros: Radicación Niv.1'}),
+  ent_ra2: ()=>({...genRA_ent(2), tema:'Enteros: Radicación Niv.2'}),
+  ent_ra3: ()=>({...genRA_ent(3), tema:'Enteros: Radicación Niv.3'}),
+  ent_cs1: ()=>({...genCS_ent(1), tema:'Enteros: Combinadas s/Agrup. Niv.1'}),
+  ent_cs2: ()=>({...genCS_ent(2), tema:'Enteros: Combinadas s/Agrup. Niv.2'}),
+  ent_cs3: ()=>({...genCS_ent(3), tema:'Enteros: Combinadas s/Agrup. Niv.3'}),
+  ent_cc1: ()=>({...genCC_ent(1), tema:'Enteros: Combinadas c/Agrup. Niv.1'}),
+  ent_cc2: ()=>({...genCC_ent(2), tema:'Enteros: Combinadas c/Agrup. Niv.2'}),
+  ent_cc3: ()=>({...genCC_ent(3), tema:'Enteros: Combinadas c/Agrup. Niv.3'}),
+  // ── NÚMEROS RACIONALES ──
+  rac_sr1: ()=>({...rac_genSR(1), tema:'Racionales: Suma y Resta Niv.1'}),
+  rac_sr2: ()=>({...rac_genSR(2), tema:'Racionales: Suma y Resta Niv.2'}),
+  rac_sr3: ()=>({...rac_genSR(3), tema:'Racionales: Suma y Resta Niv.3'}),
+  rac_mu1: ()=>({...rac_genMU(1), tema:'Racionales: Multiplicación Niv.1'}),
+  rac_mu2: ()=>({...rac_genMU(2), tema:'Racionales: Multiplicación Niv.2'}),
+  rac_mu3: ()=>({...rac_genMU(3), tema:'Racionales: Multiplicación Niv.3'}),
+  rac_dv1: ()=>({...rac_genDV(1), tema:'Racionales: División Niv.1'}),
+  rac_dv2: ()=>({...rac_genDV(2), tema:'Racionales: División Niv.2'}),
+  rac_dv3: ()=>({...rac_genDV(3), tema:'Racionales: División Niv.3'}),
+  rac_po1: ()=>({...rac_genPO(1), tema:'Racionales: Potenciación Niv.1'}),
+  rac_po2: ()=>({...rac_genPO(2), tema:'Racionales: Potenciación Niv.2'}),
+  rac_po3: ()=>({...rac_genPO(3), tema:'Racionales: Potenciación Niv.3'}),
+  rac_ra1: ()=>({...rac_genRA(1), tema:'Racionales: Radicación Niv.1'}),
+  rac_ra2: ()=>({...rac_genRA(2), tema:'Racionales: Radicación Niv.2'}),
+  rac_ra3: ()=>({...rac_genRA(3), tema:'Racionales: Radicación Niv.3'}),
+  rac_cs1: ()=>({...rac_genCS(1), tema:'Racionales: Combinadas s/Agrup. Niv.1'}),
+  rac_cs2: ()=>({...rac_genCS(2), tema:'Racionales: Combinadas s/Agrup. Niv.2'}),
+  rac_cs3: ()=>({...rac_genCS(3), tema:'Racionales: Combinadas s/Agrup. Niv.3'}),
+  rac_cc1: ()=>({...rac_genCC(1), tema:'Racionales: Combinadas c/Agrup. Niv.1'}),
+  rac_cc2: ()=>({...rac_genCC(2), tema:'Racionales: Combinadas c/Agrup. Niv.2'}),
+  rac_cc3: ()=>({...rac_genCC(3), tema:'Racionales: Combinadas c/Agrup. Niv.3'}),
+  // ── MONOMIOS ──
+  mono_suma1: ()=>({...omGenSuma(1), tema:'Monomios: Suma Niv.1'}),
+  mono_suma2: ()=>({...omGenSuma(2), tema:'Monomios: Suma Niv.2'}),
+  mono_resta1: ()=>({...omGenResta(1), tema:'Monomios: Resta Niv.1'}),
+  mono_resta2: ()=>({...omGenResta(2), tema:'Monomios: Resta Niv.2'}),
+  mono_mult1: ()=>({...omGenMult(1), tema:'Monomios: Mult. Niv.1'}),
+  mono_mult2: ()=>({...omGenMult(2), tema:'Monomios: Mult. Niv.2'}),
+  mono_div1: ()=>({...omGenDiv(1), tema:'Monomios: Div. Niv.1'}),
+  mono_div2: ()=>({...omGenDiv(2), tema:'Monomios: Div. Niv.2'}),
+  mono_pot1: ()=>({...omGenPot(1), tema:'Monomios: Pot. Niv.1'}),
+  mono_pot2: ()=>({...omGenPot(2), tema:'Monomios: Pot. Niv.2'}),
+  mono_rad1: ()=>({...omGenRad(1), tema:'Monomios: Rad. Niv.1'}),
+  mono_rad2: ()=>({...omGenRad(2), tema:'Monomios: Rad. Niv.2'}),
+  // ── POLINOMIOS ──
+  poly_suma1: ()=>({...OP_GENS.suma(1), tema:'Polinomios: Suma Niv.1'}),
+  poly_suma2: ()=>({...OP_GENS.suma(2), tema:'Polinomios: Suma Niv.2'}),
+  poly_resta1: ()=>({...OP_GENS.resta(1), tema:'Polinomios: Resta Niv.1'}),
+  poly_resta2: ()=>({...OP_GENS.resta(2), tema:'Polinomios: Resta Niv.2'}),
+  poly_multmp1: ()=>({...OP_GENS.multmp(1), tema:'Polinomios: Mon×Pol Niv.1'}),
+  poly_multmp2: ()=>({...OP_GENS.multmp(2), tema:'Polinomios: Mon×Pol Niv.2'}),
+  poly_multpp1: ()=>({...OP_GENS.multpp(1), tema:'Polinomios: Pol×Pol Niv.1'}),
+  poly_multpp2: ()=>({...OP_GENS.multpp(2), tema:'Polinomios: Pol×Pol Niv.2'}),
+  poly_divpm1: ()=>({...OP_GENS.divpm(1), tema:'Polinomios: Pol÷Mon Niv.1'}),
+  poly_divpm2: ()=>({...OP_GENS.divpm(2), tema:'Polinomios: Pol÷Mon Niv.2'}),
+  poly_divpp1: ()=>({...OP_GENS.divpp(1), tema:'Polinomios: Pol÷Pol Niv.1'}),
+  poly_divpp2: ()=>({...OP_GENS.divpp(2), tema:'Polinomios: Pol÷Pol Niv.2'}),
+  poly_resto1: ()=>({...OP_GENS.resto(1), tema:'Polinomios: Teo. Resto'}),
+  poly_ruffini1: ()=>({...OP_GENS.ruffini(1), tema:'Polinomios: Ruffini'}),
+  // ── RADICALES ──
+  rad_exactas1: ()=>({...RAD_GENS.exactas(1), tema:'Radicales: Raíces exactas'}),
+  rad_extraccion1: ()=>({...RAD_GENS.extraccion(1), tema:'Radicales: Extracción Niv.1'}),
+  rad_extraccion2: ()=>({...RAD_GENS.extraccion(2), tema:'Radicales: Extracción Niv.2'}),
+  rad_intro1: ()=>({...RAD_GENS.intro(1), tema:'Radicales: Intro'}),
+  rad_sumaresta1: ()=>({...RAD_GENS.sumaresta(1), tema:'Radicales: Suma y Resta Niv.1'}),
+  rad_sumaresta2: ()=>({...RAD_GENS.sumaresta(2), tema:'Radicales: Suma y Resta Niv.2'}),
+  rad_sumaresta3: ()=>({...RAD_GENS.sumaresta(3), tema:'Radicales: Suma y Resta Niv.3'}),
+  rad_multI1: ()=>({...RAD_GENS.multI(1), tema:'Radicales: Mult. I'}),
+  rad_multII1: ()=>({...RAD_GENS.multII(1), tema:'Radicales: Mult. II'}),
+  rad_multIII1: ()=>({...RAD_GENS.multIII(1), tema:'Radicales: Mult. III'}),
+  rad_divI1: ()=>({...RAD_GENS.divI(1), tema:'Radicales: División'}),
+  rad_multIndices1: ()=>({...RAD_GENS.multIndices(1), tema:'Radicales: Mult. distintos índices'}),
+  rad_divIndices1: ()=>({...RAD_GENS.divIndices(1), tema:'Radicales: Div. distintos índices'}),
+  rad_potI1: ()=>({...RAD_GENS.potI(1), tema:'Radicales: Pot. I'}),
+  rad_potII1: ()=>({...RAD_GENS.potII(1), tema:'Radicales: Pot. II'}),
+  rad_radrad1: ()=>({...RAD_GENS.radrad(1), tema:'Radicales: Radicación'}),
+  rad_racI1: ()=>({...RAD_GENS.racI(1), tema:'Radicales: Rac. I'}),
+  rad_racII1: ()=>({...RAD_GENS.racII(1), tema:'Radicales: Rac. II'}),
+  rad_racIII1: ()=>({...RAD_GENS.racIII(1), tema:'Radicales: Rac. III'}),
+  rad_racIV1: ()=>({...RAD_GENS.racIV(1), tema:'Radicales: Rac. IV'}),
+
+};
+
+// ══════════════════════════════════════════
+// GENERATE MIXTO
+// ══════════════════════════════════════════
+// Map from level-1 keys to their level-2 fallback
+const LEVEL1_FALLBACK = {
+  alg_lin1:  'alg_lin2',
+  alg_expL1: 'alg_expL2',
+  alg_expC1: 'alg_expC2',
+  alg_log1:  'alg_log2',
+  trig1:     'trig2',
+  par00_1:   'par00_2',
+  parhk_1:   'parhk_2',
+  circ00_1:  'circ00_2',
+  circhk_1:  'circhk_2',
+};
+
+function updateSkipBadge() {
+  // visual feedback only — nothing else needed
+}
+
+function generateMixto() {
+  const total = ALL_KEYS.reduce((s,k) => s+(qtys[k]||0), 0);
+  if (total === 0) { alert('Elegí al menos un ejercicio.'); return; }
+
+  const skipLvl1 = document.getElementById('skipLevel1').checked;
+
+  const ejercicios = [];
+  let id = 1;
+  for (const key of ALL_KEYS) {
+    const qty = qtys[key] || 0;
+    if (!qty) continue;
+    // If skip level 1 is on and this is a level-1 key, use its fallback generator
+    const effectiveKey = (skipLvl1 && LEVEL1_FALLBACK[key]) ? LEVEL1_FALLBACK[key] : key;
+    const gen = GENERATORS[effectiveKey];
+    if (!gen) continue;
+    let count = 0, att = 0;
+    const seen = new Set();
+    while (count < qty && att < qty*30) {
+      att++;
+      try {
+        const e = gen();
+        if (!e || seen.has(e.expr)) continue;
+        seen.add(e.expr);
+        ejercicios.push({ id: id++, ...e });
+        count++;
+      } catch(err) {}
+    }
+  }
+
+  renderMixto(ejercicios);
+}
+
+function renderMixto(ejercicios) {
+  const fecha = new Date().toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+
+  let ejHTML = '<div class="ejercicios-list">';
+  ejercicios.forEach(e => {
+    const graphInQ = e.showGraphInQ && e.graph ? `<div class="ej-graph">${e.graph}</div>` : '';
+    ejHTML += `<div class="ejercicio-item">
+      <span class="ej-num">(${e.id})</span>
+      <div class="ej-content">
+        <span class="ej-tema-tag">${e.tema}</span>
+        <div class="ej-question">${e.expr||e.question||''}</div>
+        ${graphInQ}
+        <div class="work-space work-space-lg"></div>
+      </div>
+    </div>`;
+  });
+  ejHTML += '</div>';
+
+  let solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e => {
+    const graphInSol = (!e.showGraphInQ && e.graph) ? `<div class="ej-graph" style="margin-top:0.3rem">${e.graph}</div>` : '';
+    solHTML += `<div class="sol-item">
+      <span class="sol-num">${e.id}.</span>
+      <div class="sol-val">${e.sol||''}${graphInSol}</div>
+    </div>`;
+  });
+  solHTML += '</div>';
+
+  const el = document.getElementById('mix-ejercitario');
+  el.innerHTML = `
+    <div class="ej-header">
+      <div class="ej-title">Ejercitario Mixto</div>
+      <div class="ej-meta"></div>
+      <div class="ej-data-row">
+        <span>Nombre: ____________________________</span>
+        <span>Curso: _____________ Fecha: _____________</span>
+      </div>
+      ${indGetTablaHTML('ind-filas')}
+    </div>
+    ${ejHTML}
+    ${solHTML}
+    <div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>
+  `;
+  el.style.display = 'block';
+  document.getElementById('mix-btnDownload').style.display = 'block';
+  var _msa = document.getElementById('mix-btnSolAparte'); if (_msa) _msa.style.display = 'block';
+}
+
+
+
+// ── Recopilar nodos de solución para la hoja aparte ──────────────────────────
+function collectSolutionNodes(container) {
+  var nodes = [];
+  var selectors = [
+    '.soluciones-section',
+    '.sol-section',
+    '.intro-sol-block',
+    '.ineq-sol'
+  ];
+  selectors.forEach(function(sel) {
+    container.querySelectorAll(sel).forEach(function(el) {
+      nodes.push(el.cloneNode(true));
+    });
+  });
+  // Pares: .solutions-title / .sp-sol-title / .intro-sol-title + hermano
+  container.querySelectorAll('.solutions-title, .sp-sol-title, .intro-sol-title').forEach(function(el) {
+    var wrap = document.createElement('div');
+    wrap.appendChild(el.cloneNode(true));
+    var next = el.nextElementSibling;
+    if (next) wrap.appendChild(next.cloneNode(true));
+    nodes.push(wrap);
+  });
+  return nodes;
+}
+
+// ── Descargar SOLO soluciones (hoja para el docente) ─────────────────────────
+function downloadSolucionesAparte(containerId, filename) {
+  var ejEl = document.getElementById(containerId);
+  if (!ejEl || ejEl.style.display === 'none') {
+    alert('Primero generá el ejercitario.');
+    return;
+  }
+  var solNodes = collectSolutionNodes(ejEl);
+  if (solNodes.length === 0) {
+    alert('Este ejercitario no tiene soluciones para descargar.');
+    return;
+  }
+  // Recoger encabezado (ej-header) si existe
+  var headerEl = ejEl.querySelector('.ej-header');
+  var headerHTML = headerEl ? headerEl.outerHTML : '';
+  // Armar body de soluciones
+  var solHTML = solNodes.map(function(n) { return n.outerHTML; }).join('\n');
+  var html = '<!DOCTYPE html><html lang="es"><head>'
+    + '<meta charset="UTF-8">'
+    + '<title>Soluciones - ' + filename + '<\/title>'
+    + '<style>'
+    + 'body{font-family:Georgia,serif;max-width:800px;margin:2rem auto;padding:1rem;color:#111}'
+    + '.ej-title{font-size:1.4rem;font-weight:bold}'
+    + '.ej-meta{font-size:.75rem;color:#666;margin-top:.3rem;display:flex;gap:1.5rem;flex-wrap:wrap}'
+    + '.ej-data-row{font-size:.75rem;display:flex;gap:2rem;margin-top:.8rem;border-top:1px solid #ddd;padding-top:.8rem;color:#444;flex-wrap:wrap}'
+    + '.ej-header{border-bottom:2px solid #111;padding-bottom:1rem;margin-bottom:2rem}'
+    + '.sol-sheet-title{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#c0392b;background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;padding:.35rem .8rem;display:inline-block;margin-bottom:1.5rem}'
+    + '.soluciones-section{border-top:2px solid #111;padding-top:1.2rem}'
+    + '.sol-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#999;margin-bottom:.8rem}'
+    + '.soluciones-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem 1rem}'
+    + '.sol-item{font-size:.8rem;display:flex;gap:.5rem;align-items:baseline;padding:.3rem 0;border-bottom:1px solid #eee}'
+    + '.sol-num{color:#aaa}.sol-val{font-weight:bold}'
+    + '.sol-section{margin-top:1.5rem;padding-top:1rem;border-top:1px dashed #ccc}'
+    + '.solutions-title,.sp-sol-title,.intro-sol-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding-top:1.5rem;border-top:2px solid #dde2f0;margin-bottom:.8rem;margin-top:2rem}'
+    + '.solutions-list{display:grid;grid-template-columns:repeat(3,1fr);gap:.2rem 1.5rem}'
+    + '.sol-item{display:flex;gap:.5rem;font-size:.85rem;padding:.2rem 0}'
+    + '.sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}'
+    + '.sol-val{font-weight:600}'
+    + '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}'
+    + '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}'
+    + '.frac .den{padding:1px 3px 0;text-align:center}'
+    + '.ineq-sol{margin-top:.5rem;padding:.4rem .7rem;background:#f0f4ff;border-radius:6px;font-size:.85rem}'
+    + '.intro-sol-block{margin-top:.5rem;padding:.4rem .7rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:.85rem}'
+    + '.ej-copyright{font-size:.68rem;color:#aaa;text-align:right;margin-top:2rem;padding-top:.5rem;border-top:1px solid #eee}'
+    + '@media print{'
+    + '.print-footer{display:block!important;position:fixed;bottom:.3cm;left:0;right:0;text-align:center;font-size:.65rem;color:#aaa;font-family:Georgia,serif}'
+    + 'body{margin:.5rem}'
+    + '}'
+    + '.print-footer{display:none}'
+    + '<\/style><\/head><body>'
+    + headerHTML
+    + '<div class="sol-sheet-title">🔑 HOJA DE SOLUCIONES — solo para el docente<\/div>'
+    + solHTML
+    + '<div class="ej-copyright">© 2026 Maria Lopez Nery Huerta<\/div>'
+    + '<div class="print-footer">© 2026 Maria Lopez Nery Huerta — Hoja de Soluciones<\/div>'
+    + '<\/body><\/html>';
+  var blob = new Blob([html], {type: 'text/html'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename + '-soluciones.html';
+  a.click();
+}
+
+function stripSolutions(container) {
+  // Elimina todos los bloques de soluciones del DOM clonado
+  var selectors = [
+    '.soluciones-section',
+    '.sol-section',
+    '.intro-sol-block'
+  ];
+  selectors.forEach(function(sel) {
+    container.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+  });
+  // Elimina pares: .solutions-title + .solutions-list
+  container.querySelectorAll('.solutions-title, .sp-sol-title, .intro-sol-title').forEach(function(el) {
+    var next = el.nextElementSibling;
+    if (next) next.remove();
+    el.remove();
+  });
+}
+
+// ── v47: iOS print helpers ────────────────────────────────────────
+var _printMode = null;
+
+function _isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function _showIOSToast() {
+  var toast = document.getElementById('_ios-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = '_ios-toast';
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1d2e;color:#fff;padding:14px 20px;border-radius:14px;font-family:Nunito,sans-serif;font-size:0.88rem;line-height:1.5;max-width:320px;text-align:center;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,0.25);opacity:0;transition:opacity 0.3s;';
+    toast.innerHTML = '\u{1F4C4} En el diálogo que se abre,<br>tocá <strong>Compartir \u2192 Guardar en Archivos</strong><br>para guardar tu PDF.';
+    document.body.appendChild(toast);
+  }
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ toast.style.opacity = '0'; }, 6000);
+}
+
+window.addEventListener('beforeprint', function() {
+  if (_printMode === 'ej-show') {
+    document.body.removeAttribute('data-hide-sol');
+  } else if (_printMode === 'ej-hide') {
+    document.body.setAttribute('data-hide-sol', '1');
+  } else if (_printMode === 'sol') {
+    document.body.setAttribute('data-print-sol', '1');
+  }
+});
+
+window.addEventListener('afterprint', function() {
+  document.body.removeAttribute('data-hide-sol');
+  document.body.removeAttribute('data-print-sol');
+  _printMode = null;
+});
+
+function downloadEjercitario(containerId, filename) {
+  var _chk = document.getElementById('chk-incluir-sol');
+  if (_isIOS()) { _showIOSToast(); }
+  _printMode = (_chk && !_chk.checked) ? 'ej-hide' : 'ej-show';
+  window.print();
+}
+
+// ── PDF GENERATION — funciones compartidas ──────────────────────
+function getEjercitarioPDFCss() {
+  return [
+    'body,*{-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '.ej-title{font-family:"Nunito",sans-serif;font-size:1.35rem;font-weight:900;margin-bottom:.4rem;color:#1a1d2e}',
+    '.ej-meta,.ej-data-row{font-size:.75rem;color:#8b92b1;margin-bottom:.3rem;display:flex;gap:1rem;flex-wrap:wrap}',
+    '.ej-data-row{margin-bottom:1.4rem}',
+    '.ej-header{border-bottom:2px solid #dde2f0;padding-bottom:1rem;margin-bottom:1.8rem}',
+    '.level-header,.sp-level-header,.sol-title,.fc-section-title,.ri-section-title,.not-section-title,.ineq-section-title,.ineqc-section-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding:.3rem 0;margin-top:.8rem;border-bottom:1px dashed #dde2f0;display:block}',
+    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem;margin-bottom:2rem}',
+    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start}',
+    '.ej-num,.sp-num{font-weight:900;font-size:.82rem;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
+    '.ej-content{flex:1;min-width:0}',
+    '.ej-question,.ej-expr{font-size:.97rem;line-height:1.55}',
+    '.soluciones-section,.sol-section{margin-top:1rem;padding:.5rem .8rem;background:#f9fafb;border-radius:6px}',
+    '.solutions-title,.sol-title,.sp-sol-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding-top:1.4rem;border-top:2px solid #dde2f0;margin-bottom:.8rem;margin-top:2rem;display:block}',
+    '.solutions-list,.soluciones-grid,.sp-sol-grid,.intro-sol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.2rem 1.5rem}',
+    '.sol-item,.sp-sol-item,.intro-sol-item{display:flex;gap:.5rem;font-size:.83rem;padding:.2rem 0}',
+    '.sol-num,.intro-sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
+    '.sol-val,.intro-sol-val{font-weight:600}',
+    '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}',
+    '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}',
+    '.frac .den{padding:1px 3px 0;text-align:center}',
+    '.mult-table{border-collapse:collapse;margin:8px 0 6px 0;font-size:.92rem}',
+    '.mult-table td{border:1.5px solid #94a3b8;min-width:48px;height:38px;text-align:center;padding:3px 7px}',
+    '.mult-table .mult-header{background:#f1f5f9;font-weight:700;color:#334155}',
+    '.mult-table .mult-cell{background:#fff}',
+    '.work-space{display:block;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'28\'%3E%3Crect width=\'28\' height=\'28\' fill=\'white\'/%3E%3Cpath d=\'M 28 0 L 0 0 0 28\' fill=\'none\' stroke=\'%23cccccc\' stroke-width=\'0.6\'/%3E%3C%2Fsvg%3E");background-size:28px 28px;background-color:white;border:1px solid #e8eaf0;border-radius:4px;margin-top:7px;margin-bottom:7px;width:100%;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
+    '.work-space-xs{height:32px}.work-space-sm{height:84px}.work-space-md{height:140px}.work-space-lg{height:196px}.work-space-xl{height:280px}.work-space-xxl{height:392px}',
+    '.sp-problem-list,.sp-list{display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}',
+    '.sp-problem-item,.sp-item{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;border:1px solid #dde2f0;border-radius:8px;background:#fafbff;page-break-inside:avoid}',
+    '.sp-body{flex:1;display:flex;flex-direction:column;gap:.4rem}',
+    '.sp-enunciado{font-size:.93rem;line-height:1.65;color:#1a1d2e}',
+    '.sp-ec-line,.sp-res-line{font-size:.78rem;color:#8b92b1;border-bottom:1px solid #dde2f0;padding-bottom:.1rem}',
+    '.ineq-sol,.intro-sol-block{margin-top:.5rem;padding:.35rem .6rem;background:#f0f4ff;border-radius:5px;font-size:.83rem}',
+    '.intro-sol-block{background:#f9fafb;border:1px solid #e5e7eb}',
+    '.ri-section{margin-bottom:2.5rem}.ri-section-title{font-size:.72rem;font-weight:bold;text-transform:uppercase;letter-spacing:.12em;color:#8b92b1;padding:.4rem 0;margin-bottom:1.2rem;border-bottom:2px solid #dde2f0}',
+    '.ri-ej{display:flex;gap:.7rem;margin-bottom:1.6rem;align-items:flex-start;page-break-inside:avoid}',
+    '.ri-ej-num{font-weight:700;font-size:1rem;color:#4f6ef7;min-width:1.6rem;padding-top:.1rem}',
+    '.ri-ej-body{flex:1}.ri-consigna{font-size:.95rem;font-weight:600;color:#1a1d2e;margin-bottom:.7rem;line-height:1.5}',
+    '.ri-svg-wrap{margin-bottom:.5rem;overflow-x:auto}',
+    '.ri-blank-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin:.6rem 0 .2rem 0}',
+    '.ri-blank-label{font-size:.85rem;color:#555;white-space:nowrap}',
+    '.ri-blank-line{display:inline-block;min-width:140px;border-bottom:1.5px solid #aaa;height:1.1em}',
+    '.not-section{margin-bottom:2.5rem}.not-section-title{font-size:.72rem;font-weight:bold;text-transform:uppercase;letter-spacing:.12em;color:#8b92b1;padding:.4rem 0;margin-bottom:1.2rem;border-bottom:2px solid #dde2f0}',
+    '.not-table{border-collapse:collapse;width:100%;font-size:.92rem;margin-bottom:1rem}',
+    '.not-table th{background:#fff7ed;color:#c2410c;font-weight:bold;font-size:.78rem;padding:.55rem .9rem;text-align:center;border:1px solid #fed7aa}',
+    '.not-table td{padding:.65rem 1rem;border:1px solid #dde2f0;text-align:center;vertical-align:middle;min-width:120px}',
+    '.not-td-dada{background:#f8faff;font-weight:600;color:#1a1d2e}',
+    '.ineq-section{margin-bottom:2rem}.ineq-section-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding:.3rem 0;margin-top:1rem;border-bottom:1px dashed #dde2f0}',
+    '.ineq-ej-list,.ineqc-ej-list{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 2rem;margin-bottom:1.5rem}',
+    '.ineq-item,.ineqc-item{display:flex;flex-direction:column;gap:.2rem;padding:.4rem 0;border-bottom:1px solid #f5f5fa}',
+    '.ineq-expr,.ineqc-expr{font-size:.97rem;line-height:1.5}',
+    '.fc-section{margin-bottom:2.5rem}.fc-section-title{font-size:.72rem;font-weight:bold;text-transform:uppercase;letter-spacing:.12em;color:#8b92b1;padding:.4rem 0;margin-bottom:1rem;border-bottom:2px solid #dde2f0}',
+    '.fc-consigna{font-size:.95rem;font-weight:bold;color:#1a1d2e;margin-bottom:1.2rem;line-height:1.5}',
+    '.rel-list{display:flex;flex-direction:column;gap:.8rem;margin-bottom:1rem}',
+    '.rel-item{display:flex;gap:.8rem;align-items:flex-start;padding:.7rem 1rem;border:1px solid #ccc;border-radius:9px;page-break-inside:avoid}',
+    '.rel-letra{font-weight:900;font-size:.9rem;color:#8b92b1;min-width:1.4rem;padding-top:.1rem}',
+    '.rel-body{flex:1}',
+    '.ej-tema-tag{display:inline-block;font-size:.65rem;font-weight:800;padding:.15rem .5rem;border-radius:10px;background:#eef1ff;color:#4f6ef7;margin-bottom:.3rem;text-transform:uppercase}',
+    '.intro-section-title{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#8b92b1;padding:.5rem 0;margin:1.2rem 0 .6rem;border-bottom:2px solid #dde2f0;display:block}',
+    '.intro-table{width:100%;border-collapse:collapse;font-size:.88rem}',
+    '.intro-table th{background:#eef1ff;color:#4f6ef7;font-weight:800;font-size:.72rem;text-transform:uppercase;padding:.55rem .9rem;text-align:left;border:1px solid #dde2f0}',
+    '.intro-table td{padding:.7rem .9rem;border:1px solid #dde2f0;vertical-align:middle;line-height:1.6}',
+    '.intro-table td:first-child{font-weight:700;color:#1a1d2e;background:#fafbff}',
+    '.intro-table td.blank{background:#fff;min-width:110px}',
+    '.intro-classify-list{display:grid;grid-template-columns:1fr 1fr;gap:.5rem 2rem;margin-bottom:1rem}',
+    '.intro-classify-item{display:flex;gap:.6rem;align-items:baseline;padding:.55rem 0;border-bottom:1px solid #f0f1fa}',
+    '.intro-classify-num{font-weight:900;font-size:.85rem;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
+    '.intro-classify-blank{display:inline-block;min-width:120px;border-bottom:2px solid #dde2f0;margin-left:.5rem}',
+    '.intro-mc-block{margin-bottom:1.2rem;padding:.9rem 1rem;border:1px solid #dde2f0;border-radius:12px;background:#fafbff;page-break-inside:avoid}',
+    '.intro-mc-stem{font-size:.9rem;color:#8b92b1;margin-bottom:.5rem}',
+    '.intro-mc-mono{font-size:1.1rem;font-weight:700;color:#1a1d2e;margin-bottom:.8rem}',
+    '.intro-mc-options{display:grid;grid-template-columns:1fr 1fr;gap:.3rem 1.5rem}',
+    '.intro-mc-option{display:flex;align-items:center;gap:.5rem;font-size:.92rem;padding:.25rem 0}',
+    '.ej-equation{font-family:Georgia,serif;font-size:1.05rem;font-weight:bold;margin:.4rem 0}',
+    '.ej-steps{font-size:.88rem;color:#555;margin-top:.3rem;line-height:1.7}',
+    '.tri-item{margin-bottom:1.5rem;page-break-inside:avoid}',
+    IND_PRINT_CSS
+  ].join('');
+}
+function ejGenerarPDF(wrapper, filename) { /* no longer used */ }
+
+function downloadMixto() {
+  downloadEjercitario('mix-ejercitario', 'ejercitario-mixto');
+}
+
+  // Inicializar widget de indicadores al cargar
+  indInicializar('ind-filas');
+
+
+// ── Sincronizar checkbox con atributo body para @media print ──
+(function() {
+  var chk = document.getElementById('chk-incluir-sol');
+  if (!chk) return;
+  function sync() {
+    if (chk.checked) {
+      document.body.removeAttribute('data-hide-sol');
+    } else {
+      document.body.setAttribute('data-hide-sol', '');
+    }
+  }
+  chk.addEventListener('change', sync);
+  sync();
+})();
+
+// ── Clase sin-soluciones en body para controlar impresión ──
+document.addEventListener('DOMContentLoaded', function() {
+  var chk = document.getElementById('chk-incluir-sol');
+  if (!chk) return;
+  chk.addEventListener('change', function() {
+    if (chk.checked) {
+      document.body.classList.remove('sin-soluciones');
+    } else {
+      document.body.classList.add('sin-soluciones');
+    }
+  });
+});
+
+// ── Mostrar btn-download-sol cuando aparezca btn-download ────────────────────
+(function() {
+  function syncSolAparteButtons() {
+    document.querySelectorAll('.btn-download').forEach(function(btn) {
+      if (btn.style.display === 'block') {
+        var baseId = btn.id.replace('-btnDownload','').replace('-btnDL','');
+        var solBtn = document.getElementById(baseId + '-btnSolAparte');
+        if (solBtn) solBtn.style.display = 'block';
+      }
+    });
+  }
+  // Observer en body para detectar cambios de display en botones
+  var _obs = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.type === 'attributes' && m.attributeName === 'style') {
+        var target = m.target;
+        if (target.classList && target.classList.contains('btn-download') && target.style.display === 'block') {
+          var baseId = target.id.replace('-btnDownload','').replace('-btnDL','');
+          var solBtn = document.getElementById(baseId + '-btnSolAparte');
+          if (solBtn) solBtn.style.display = 'block';
+        }
+      }
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-download').forEach(function(btn) {
+      _obs.observe(btn, { attributes: true, attributeFilter: ['style'] });
+    });
+  });
+})();
+</script>
+
+<!-- ── Opción global: incluir soluciones ── -->
+<div class="sol-opt-bar" id="sol-opt-bar">
+  <input type="checkbox" id="chk-incluir-sol" checked>
+  <label for="chk-incluir-sol" style="cursor:pointer">Incluir soluciones en el ejercitario</label>
+</div>
+
+  <div class="print-footer">© 2026 Maria Lopez Nery Huerta</div>
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de ejercitarios — Generador de Ejercitarios</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0f4ff;
+  --white: #ffffff;
+  --ink: #1a1d2e;
+  --muted: #8b92b1;
+  --border: #dde2f0;
+  --accent: #4f6ef7;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Nunito Sans', sans-serif;
+  min-height: 100vh;
+}
+
+/* NAV */
+nav {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 1px 8px rgba(79,110,247,0.06);
+}
+.nav-logo {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.nav-logo span { color: var(--ink); }
+nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #4f6ef7 0%, #7c3aed 100%);
+  color: white;
+  padding: 4rem 2rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -40px;
+  width: 250px; height: 250px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+
+.hero h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.8rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero p {
+  font-size: 1.05rem;
+  opacity: 0.88;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  line-height: 1.6;
+}
+
+/* MAIN */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.section-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+/* GRID */
+.branches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+/* BRANCH CARD */
+.branch-card {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 1.6rem;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(79,110,247,0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.branch-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--card-color, #dde2f0);
+  border-radius: 18px 18px 0 0;
+  transition: height 0.2s;
+}
+
+.branch-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(79,110,247,0.12);
+  border-color: var(--card-color, var(--border));
+}
+
+.branch-card:hover::before { height: 6px; }
+
+.branch-card.disabled {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
+}
+
+.card-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.card-body { flex: 1; }
+
+.card-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.3rem;
+}
+
+.card-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.card-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.6rem;
+}
+
+.topic-tag {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  background: var(--tag-bg, #f0f4ff);
+  color: var(--tag-color, var(--muted));
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+}
+
+.card-status {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+}
+
+.status-ready {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.status-soon {
+  background: #f9f9f9;
+  color: #aaa;
+}
+
+.card-arrow {
+  font-size: 1.1rem;
+  color: var(--card-color, var(--muted));
+  transition: transform 0.2s;
+}
+
+.branch-card:hover .card-arrow { transform: translateX(4px); }
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Generador de <span>ejercitarios</span></div>
+  <p>Generador de ejercitarios de matemáticas</p>
+</nav>
+
+<div class="hero">
+  <h1>📐 Generador de ejercitarios</h1>
+  <p>Generá ejercitarios personalizados para cada rama de la matemática. Elegí el tema, el nivel y la cantidad — listo para imprimir.</p>
+</div>
+
+<main>
+  <div class="section-title">Elegí una rama</div>
+
+  <div class="branches-grid">
+
+    <!-- ARITMÉTICA -->
+    <a class="branch-card" href="aritmetica.html"
+       style="--card-color:#f97316; --tag-bg:#fff7ed; --tag-color:#c2510a">
+      <div class="card-icon">🔢</div>
+      <div class="card-body">
+        <div class="card-title">Aritmética</div>
+        <div class="card-desc">Operaciones con números enteros y racionales (fracciones y decimales, incluidos periódicos).</div>
+        <div class="card-topics">
+          <span class="topic-tag">Números Enteros</span>
+          <span class="topic-tag">Fracciones</span>
+          <span class="topic-tag">Decimales</span>
+          <span class="topic-tag">Combinadas</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-active">Disponible</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- ÁLGEBRA -->
+    <a class="branch-card" href="algebra.html"
+       style="--card-color:#4f6ef7; --tag-bg:#eef1ff; --tag-color:#3451c7">
+      <div class="card-icon">✏️</div>
+      <div class="card-body">
+        <div class="card-title">Álgebra</div>
+        <div class="card-desc">Ecuaciones, inecuaciones, sistemas y expresiones algebraicas.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Ec. lineales</span>
+          <span class="topic-tag">Sistemas</span>
+          <span class="topic-tag">Factorización</span>
+          <span class="topic-tag">Polinomios</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-ready">✓ Disponible</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- GEOMETRÍA -->
+    <a class="branch-card disabled" href="geometria.html"
+       style="--card-color:#22c55e; --tag-bg:#f0fdf4; --tag-color:#15803d">
+      <div class="card-icon">📐</div>
+      <div class="card-body">
+        <div class="card-title">Geometría</div>
+        <div class="card-desc">Perímetros, áreas, volúmenes y propiedades de figuras.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Áreas</span>
+          <span class="topic-tag">Perímetros</span>
+          <span class="topic-tag">Volúmenes</span>
+          <span class="topic-tag">Ángulos</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-soon">Próximamente</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- TRIGONOMETRÍA -->
+    <a class="branch-card" href="trigonometria.html"
+       style="--card-color:#ec4899; --tag-bg:#fdf2f8; --tag-color:#be185d">
+      <div class="card-icon">📐</div>
+      <div class="card-body">
+        <div class="card-title">Trigonometría</div>
+        <div class="card-desc">Ecuaciones trigonométricas, identidades y resolución de triángulos.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Ec. trigonométricas</span>
+          <span class="topic-tag">Identidades</span>
+          <span class="topic-tag">Triángulos</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-ready">✓ Disponible</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- GEOMETRÍA ANALÍTICA -->
+    <a class="branch-card" href="geometria-analitica.html"
+       style="--card-color:#a855f7; --tag-bg:#faf5ff; --tag-color:#7e22ce">
+      <div class="card-icon">📈</div>
+      <div class="card-body">
+        <div class="card-title">Geometría Analítica</div>
+        <div class="card-desc">Rectas, cónicas y lugares geométricos en el plano cartesiano.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Parábola</span>
+          <span class="topic-tag">Circunferencia</span>
+          <span class="topic-tag">Rectas</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-ready">✓ Disponible</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- ESTADÍSTICA -->
+    <a class="branch-card disabled" href="estadistica.html"
+       style="--card-color:#06b6d4; --tag-bg:#f0fdff; --tag-color:#0e7490">
+      <div class="card-icon">📊</div>
+      <div class="card-body">
+        <div class="card-title">Estadística y Probabilidad</div>
+        <div class="card-desc">Medidas de tendencia central, dispersión y probabilidades.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Media / Mediana</span>
+          <span class="topic-tag">Varianza</span>
+          <span class="topic-tag">Probabilidad</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-soon">Próximamente</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- CÁLCULO -->
+    <a class="branch-card" href="calculo.html"
+       style="--card-color:#ef4444; --tag-bg:#fff5f5; --tag-color:#b91c1c">
+      <div class="card-icon">∫</div>
+      <div class="card-body">
+        <div class="card-title">Cálculo</div>
+        <div class="card-desc">Funciones: concepto, diagramas, tabla de valores y ley de formación.</div>
+        <div class="card-topics">
+          <span class="topic-tag">¿Es función?</span>
+          <span class="topic-tag">Diagramas</span>
+          <span class="topic-tag">Tabla de valores</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-soon">Próximamente</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- EJERCITARIO MIXTO -->
+    <a class="branch-card" href="mixto.html"
+       style="--card-color:#1a1d2e; --tag-bg:#f0f4ff; --tag-color:#4f6ef7; grid-column: 1 / -1;">
+      <div class="card-icon">🎲</div>
+      <div class="card-body">
+        <div class="card-title">Ejercitario Mixto</div>
+        <div class="card-desc">Combiná ejercicios de distintos temas en un solo ejercitario. Elegí cuántos de cada tipo y generá.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Álgebra</span>
+          <span class="topic-tag">Trigonometría</span>
+          <span class="topic-tag">Geometría Analítica</span>
+          <span class="topic-tag">Temas mixtos</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-ready">✓ Disponible</span>
+        <span class="card-arrow">→</span>
+      </div>
+
+    <!-- CONSTRUCTOR DE EXÁMENES -->
+    <a class="branch-card" href="examen-builder.html"
+       style="--card-color:#0ea5e9; --tag-bg:#f0f9ff; --tag-color:#0369a1; grid-column: 1 / -1; background: linear-gradient(135deg, #f0f9ff 0%, #fff 60%);">
+      <div class="card-icon">📋</div>
+      <div class="card-body">
+        <div class="card-title">Constructor de Exámenes <span style="font-size:0.65rem;background:#0ea5e9;color:white;padding:0.2rem 0.6rem;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;vertical-align:middle;margin-left:0.4rem">✦ Nuevo</span></div>
+        <div class="card-desc">Armá exámenes personalizados eligiendo ejercicio por ejercicio. Elige tema, nivel y dificultad — revisá la resolución antes de incluirlo. Genera dos PDFs: uno para el alumno y uno con soluciones para el docente.</div>
+        <div class="card-topics">
+          <span class="topic-tag">Álgebra</span>
+          <span class="topic-tag">Aritmética</span>
+          <span class="topic-tag">Trigonometría</span>
+          <span class="topic-tag">Geometría Analítica</span>
+          <span class="topic-tag">Cálculo</span>
+          <span class="topic-tag">Racionales</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-status status-ready">✓ Disponible</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+</main>
+
+<footer>
+  Generador de ejercitarios · Generador de ejercitarios para docentes
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,3573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de ejercitarios — Aritmética</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0f4ff; --white: #ffffff; --ink: #1a1d2e;
+  --muted: #8b92b1; --border: #dde2f0; --accent: #4f6ef7;
+  --accent-light: #eef1ff; --green: #22c55e; --green-light: #f0fdf4;
+  --orange: #f97316; --orange-light: #fff7ed; --pink: #ec4899;
+  --pink-light: #fdf2f8; --purple: #a855f7; --purple-light: #faf5ff;
+  --red: #ef4444; --red-light: #fff5f5;
+}
+body { background: var(--bg); color: var(--ink); font-family: 'Nunito Sans', sans-serif; min-height: 100vh; }
+nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0.9rem 2rem; display: flex; align-items: center; gap: 0.6rem; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 8px rgba(79,110,247,0.06); }
+.nav-logo { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--accent); letter-spacing: -0.02em; }
+.nav-logo span { color: var(--ink); }
+nav a { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; text-decoration: none; }
+nav a:hover { color: var(--accent); }
+.hero { background: linear-gradient(135deg, #f97316 0%, #ef4444 100%); color: white; padding: 3rem 2rem; text-align: center; }
+.hero h1 { font-family: 'Nunito', sans-serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 0.6rem; }
+.hero p { font-size: 1rem; opacity: 0.85; max-width: 480px; margin: 0 auto; }
+main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid; gap: 1.5rem; }
+.topic-selector { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.topic-btn { font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 800; padding: 0.6rem 1rem; border: 2.5px solid var(--border); background: var(--white); color: var(--muted); border-radius: 12px; cursor: pointer; transition: all 0.18s; }
+.topic-btn:hover { border-color: var(--orange); color: var(--orange); }
+.topic-btn.active { background: var(--orange); border-color: var(--orange); color: white; box-shadow: 0 4px 14px rgba(249,115,22,0.25); }
+.section-panel { display: none; animation: fadeIn 0.25s ease; }
+.section-panel.active { display: grid; gap: 1.5rem; }
+/* ── Chips de selección múltiple ── */
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.4rem; }
+.chip { font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 700; padding: 0.45rem 1rem; border: 2px solid #dde2f0; border-radius: 20px; background: white; color: #8b92b1; cursor: pointer; transition: all 0.18s; }
+.chip:hover { border-color: #4f6ef7; color: #4f6ef7; }
+.chip.selected { background: #4f6ef7; border-color: #4f6ef7; color: white; }
+.chip.chip-all { border-color: #a5b4fc; color: #4f6ef7; background: #eef1ff; }
+.chip.chip-all:hover { background: #e0e7ff; }
+.chip.chip-all.selected { background: #4f6ef7; border-color: #4f6ef7; color: white; }
+/* ── Controles de cantidad ── */
+.qty-row { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; border-bottom: 1px solid #f0f0f0; }
+.qty-row:last-child { border-bottom: none; }
+.qty-label { flex: 1; font-size: 0.85rem; color: #4b5563; }
+.qty-btn { width: 28px; height: 28px; border: 1.5px solid #dde2f0; border-radius: 7px; background: white; font-size: 1rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #4f6ef7; transition: all 0.15s; }
+.qty-btn:hover { background: #eef1ff; border-color: #4f6ef7; }
+.qty-val { min-width: 1.8rem; text-align: center; font-weight: 800; font-size: 1rem; color: #1a1d2e; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(79,110,247,0.05); }
+.card-title { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.card-title .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+.levels { display: flex; flex-direction: column; gap: 0.5rem; }
+.level-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 1rem; border: 2px solid var(--border); border-radius: 12px; transition: all 0.15s; background: var(--white); }
+.level-item[data-level="1"].active { border-color: var(--green); background: var(--green-light); }
+.level-item[data-level="2"].active { border-color: var(--orange); background: var(--orange-light); }
+.level-item[data-level="3"].active { border-color: var(--pink); background: var(--pink-light); }
+.level-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.15s; }
+.level-item[data-level="1"].active .level-dot { background: var(--green); }
+.level-item[data-level="2"].active .level-dot { background: var(--orange); }
+.level-item[data-level="3"].active .level-dot { background: var(--pink); }
+.level-item[data-level="4"].active { border-color: #8b5cf6; background: #f5f3ff; }
+.level-item[data-level="4"].active .level-dot { background: #8b5cf6; }
+.level-item[data-level="4"].active .level-name { color: var(--ink); }
+.level-item[data-level="5"].active { border-color: #0d9488; background: #f0fdfa; }
+.level-item[data-level="5"].active .level-dot { background: #0d9488; }
+.level-item[data-level="5"].active .level-name { color: var(--ink); }
+.level-item[data-level="6"].active { border-color: #dc2626; background: #fef2f2; }
+.level-item[data-level="6"].active .level-dot { background: #dc2626; }
+.level-item[data-level="6"].active .level-name { color: var(--ink); }
+.level-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; color: var(--muted); flex: 1; cursor: pointer; }
+.level-item.active .level-name { color: var(--ink); }
+.level-qty { display: flex; align-items: center; gap: 0.5rem; }
+.lq-btn { width: 28px; height: 28px; border: 2px solid var(--border); background: white; color: var(--muted); border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-weight: 700; }
+.lq-btn:hover { border-color: var(--accent); color: var(--accent); }
+.lq-val { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.1rem; min-width: 28px; text-align: center; color: var(--muted); }
+.level-item.active .lq-val { color: var(--ink); }
+.level-item:not(.active) .lq-btn:first-child { opacity: 0.4; pointer-events: none; }
+.total-badge { text-align: right; font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--muted); margin-top: 0.5rem; }
+.total-badge span { color: var(--orange); }
+.btn-generate { width: 100%; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #f97316, #ef4444); color: white; border: none; padding: 1rem 2rem; border-radius: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(249,115,22,0.3); }
+.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(249,115,22,0.4); }
+.btn-download { display: none; width: 100%; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; padding: 0.75rem; border-radius: 12px; cursor: pointer; border: 2px solid var(--border); background: var(--white); color: var(--muted); transition: all 0.15s; margin-top: 0; }
+.btn-download-sol { width: 100%; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; background: #fee2e2; color: #b91c1c; border: 2px solid #fca5a5; padding: 0.8rem; border-radius: 14px; cursor: pointer; transition: all 0.15s; display: none; margin-top: 0.5rem; }
+.btn-download-sol:hover { background: #fca5a5; border-color: #ef4444; color: #7f1d1d; }
+.btn-download:hover { border-color: var(--accent); color: var(--accent); }
+.sol-opt-bar { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.4rem; padding: 0.45rem 0.8rem; background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 10px; font-size: 0.82rem; color: #1a1d2e; font-family: 'Nunito', sans-serif; font-weight: 600; cursor: pointer; user-select: none; }
+.sol-opt-bar input[type="checkbox"] { width: 1rem; height: 1rem; accent-color: #4f6ef7; cursor: pointer; flex-shrink: 0; }
+.ejercitario { display: none; background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; box-shadow: 0 2px 12px rgba(79,110,247,0.05); }
+.ej-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--border); }
+.ej-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--ink); }
+.ej-meta { display: flex; gap: 1rem; font-size: 0.78rem; color: var(--muted); margin-top: 0.3rem; }
+.ej-data-row { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 0.8rem; font-size: 0.82rem; color: var(--muted); }
+.level-header { font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding: 0.4rem 0; margin-top: 0.8rem; border-bottom: 1px dashed var(--border); }
+.level-header.level-sub { font-size: 0.68rem; color: #9ca3af; margin-top: 0.4rem; border-bottom: 1px dotted #e5e7eb; }
+.sol-subtitle { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #7c3aed; margin: 0.6rem 0 0.2rem; }
+.ejercicios-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 2rem; margin-bottom: 2rem; }
+.ejercicios-list .level-header { grid-column: 1 / -1; }
+.ejercicio-item { display: flex; gap: 0.6rem; align-items: baseline; padding: 0.5rem 0; border-bottom: 1px solid #f5f5fa; }
+.ej-num { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.85rem; color: var(--muted); min-width: 1.4rem; flex-shrink: 0; }
+.ej-question { font-size: 1rem; line-height: 1.5; }
+.solutions-title { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding-top: 1.5rem; border-top: 2px solid var(--border); margin-bottom: 0.8rem; grid-column: 1 / -1; }
+.solutions-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.2rem 1.5rem; }
+.sol-item { display: flex; gap: 0.5rem; font-size: 0.85rem; padding: 0.2rem 0; }
+.sol-num { font-family: 'Nunito', sans-serif; font-weight: 800; color: var(--muted); min-width: 1.4rem; flex-shrink: 0; }
+.sol-val { color: var(--ink); font-weight: 600; }
+@media print {
+  /* Ocultar toda la interfaz */
+  nav, .topic-selector, .card, .btn-generate, .btn-download,
+  .btn-download-sol, .sol-opt-bar, .ej-copyright, .section-panel:not(.active),
+  .ind-card, .main-selector, .hero,
+  #sol-opt-bar, #_ios-toast { display: none !important; }
+
+  /* Mostrar solo el ejercitario activo */
+  .ejercitario { display: block !important; border: none !important;
+    box-shadow: none !important; padding: 0 !important; }
+  .section-panel { display: block !important; }
+  body { background: white !important; }
+  main { padding: 0 !important; max-width: 100% !important; }
+
+  /* Cuadrícula visible al imprimir */
+  .work-space { -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important; }
+
+  /* Ocultar soluciones si checkbox desmarcado */
+  body.sin-soluciones .soluciones-section,
+  body.sin-soluciones .sol-section,
+  body.sin-soluciones .intro-sol-block,
+  body.sin-soluciones .ineq-sol,
+  body.sin-soluciones .solutions-title,
+  body.sin-soluciones .solutions-list,
+  body.sin-soluciones .sp-sol-title,
+  body.sin-soluciones .sp-sol-grid { display: none !important; }
+
+  /* No cortar ejercicios entre páginas */
+  .ejercicio-item, .sp-item, .sp-problem-item, .rel-item,
+  .intro-mc-block, .ri-ej, .not-table, .ineq-item,
+  .ineqc-item, .tri-item { break-inside: avoid; }
+
+  /* Pie de página en CADA página con copyright y número */
+  @page {
+    margin: 15mm 15mm 22mm 15mm;
+    @bottom-left {
+      content: "\00A9 2026 Maria Lopez Nery Huerta";
+      font-family: "Nunito Sans", Arial, sans-serif;
+      font-size: 7pt;
+      color: #a0a5be;
+    }
+    @bottom-right {
+      content: "P\00E1gina " counter(page) " de " counter(pages);
+      font-family: "Nunito Sans", Arial, sans-serif;
+      font-size: 7pt;
+      color: #a0a5be;
+    }
+  }
+}
+
+/* ── Variables extra para Racionales ── */
+:root { --teal: #0d9488; --teal-light: #f0fdfa; }
+
+/* ── Selector principal Enteros / Racionales ── */
+.main-selector { display: flex; gap: 0.5rem; background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 0.5rem; margin-bottom: 0.5rem; }
+.main-btn { flex: 1; font-family: 'Nunito', sans-serif; font-size: 0.92rem; font-weight: 800; padding: 0.7rem; border: 2px solid transparent; background: transparent; color: var(--muted); border-radius: 10px; cursor: pointer; transition: all 0.15s; text-align: center; }
+.main-btn:hover { color: var(--orange); }
+.main-btn.active { background: var(--orange); color: white; border-color: var(--orange); box-shadow: 0 3px 10px rgba(249,115,22,0.25); }
+.main-btn.teal.active { background: var(--teal); border-color: var(--teal); box-shadow: 0 3px 10px rgba(13,148,136,0.25); }
+
+/* ── Mode selector (fracciones/decimales/ambos) ── */
+.mode-selector { display: flex; gap: 0.5rem; background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 0.5rem; }
+.mode-btn { flex: 1; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 800; padding: 0.6rem; border: 2px solid transparent; background: transparent; color: var(--muted); border-radius: 10px; cursor: pointer; transition: all 0.15s; text-align: center; }
+.mode-btn:hover { color: var(--teal); }
+.mode-btn.active { background: var(--teal); color: white; border-color: var(--teal); box-shadow: 0 3px 10px rgba(13,148,136,0.25); }
+
+/* ── Racionales: topic buttons override color ── */
+#rac-section .topic-btn:hover { border-color: var(--teal); color: var(--teal); }
+#rac-section .topic-btn.active { background: var(--teal); border-color: var(--teal); box-shadow: 0 4px 14px rgba(13,148,136,0.25); }
+#rac-section .btn-generate { background: linear-gradient(135deg, #0d9488, #4f6ef7); box-shadow: 0 4px 16px rgba(13,148,136,0.3); }
+#rac-section .btn-generate:hover { box-shadow: 0 6px 24px rgba(13,148,136,0.4); }
+#rac-section .total-badge span { color: var(--teal); }
+
+/* ── Decimal periódico ── */
+.per { text-decoration: overline; }
+
+/* Fracciones verticales */
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.92em; line-height: 1.1; }
+.frac .num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; }
+.frac .den { padding: 1px 3px 0; text-align: center; }
+
+/* Situaciones Problemáticas */
+.sp-list { display: grid; grid-template-columns: 1fr; gap: 0.6rem; margin-bottom: 2rem; }
+.sp-item { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.8rem; border: 1px solid var(--border); border-radius: 10px; background: #fafbff; }
+.sp-enunciado { font-size: 0.95rem; line-height: 1.7; color: var(--ink); }
+@media print {
+  .sp-item { border: 1px solid #ccc; break-inside: avoid; }
+}
+
+/* ══════════════════════════════════════════════════
+   ESPACIO DE TRABAJO — SOLO AL IMPRIMIR
+   Cuadrícula estilo cuaderno matemática
+   ══════════════════════════════════════════════════ */
+.work-space {
+  display: block;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Crect width='28' height='28' fill='white'/%3E%3Cpath d='M 28 0 L 0 0 0 28' fill='none' stroke='%23cccccc' stroke-width='0.6'/%3E%3C/svg%3E");
+  background-size: 28px 28px;
+  background-color: white;
+  border: 1px solid #e8eaf0;
+  border-radius: 4px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.work-space-xs  { height: 32px;  }   /* 1 renglón  */
+.work-space-sm  { height: 84px;  }   /* 3 renglones */
+.work-space-md  { height: 140px; }   /* 5 renglones */
+.work-space-lg  { height: 196px; }   /* 7 renglones */
+.work-space-xl  { height: 280px; }   /* 10 renglones */
+.work-space-xxl { height: 392px; }   /* 14 renglones */
+.mult-table {
+  border-collapse: collapse;
+  margin: 10px 0 6px 0;
+  font-size: 0.95rem;
+}
+.mult-table td {
+  border: 1.5px solid #94a3b8;
+  min-width: 52px;
+  height: 40px;
+  text-align: center;
+  padding: 4px 8px;
+}
+.mult-table .mult-header {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #334155;
+}
+.mult-table .mult-cell {
+  background: #fff;
+  /* celda vacía para que el alumno complete */
+}
+
+.ej-copyright {
+  font-size: 0.65rem;
+  color: #b0b7d0;
+  text-align: right;
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #eef0f8;
+  font-style: italic;
+}
+/* ── INDICADORES DE LOGRO ─────────────────────── */
+.ind-card { background: #fffbeb; border: 1.5px solid #fcd34d; border-radius: 14px; padding: 1rem 1.2rem; }
+.ind-card-title { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #92400e; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
+.ind-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+.ind-input-texto { flex: 1; font-family: 'Nunito', sans-serif; font-size: 0.85rem; padding: 0.45rem 0.7rem; border: 1.5px solid #fcd34d; border-radius: 8px; background: white; color: #111; outline: none; }
+.ind-input-texto:focus { border-color: #f59e0b; box-shadow: 0 0 0 2px #fef3c7; }
+.ind-input-pts { width: 68px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; padding: 0.45rem 0.5rem; border: 1.5px solid #fcd34d; border-radius: 8px; background: white; color: #111; text-align: center; outline: none; }
+.ind-input-pts:focus { border-color: #f59e0b; box-shadow: 0 0 0 2px #fef3c7; }
+.ind-btn-remove { background: none; border: none; cursor: pointer; font-size: 1rem; color: #d97706; padding: 0.2rem; line-height: 1; }
+.ind-btn-add { font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 700; background: white; border: 1.5px dashed #fcd34d; color: #92400e; border-radius: 8px; padding: 0.4rem 0.9rem; cursor: pointer; margin-top: 0.3rem; transition: all 0.15s; }
+.ind-btn-add:hover { background: #fef3c7; }
+.ind-hint { font-size: 0.72rem; color: #a16207; margin-top: 0.6rem; font-style: italic; }
+.ind-table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.8rem; }
+.ind-table th { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; text-align: left; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.ind-table th:last-child { text-align: center; width: 70px; }
+.ind-table td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #e5e7eb; }
+.ind-table td:last-child { text-align: center; font-weight: 700; }
+.ind-table tr:last-child td { border-bottom: none; }
+.ind-table-wrap { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }
+
+/* ── Ocultar soluciones al imprimir si el checkbox está desmarcado ── */
+body[data-hide-sol] .soluciones-section,
+body[data-hide-sol] .sol-section,
+body[data-hide-sol] .intro-sol-block,
+body[data-hide-sol] .solutions-title,
+body[data-hide-sol] .solutions-list,
+body[data-hide-sol] .sp-sol-title,
+body[data-hide-sol] .sp-sol-grid,
+body[data-hide-sol] .intro-sol-title,
+body[data-hide-sol] .sol-opt-bar { display: none !important; }
+
+/* ── Modo hoja de soluciones (data-print-sol): ocultar ejercicios, mostrar solo soluciones ── */
+body[data-print-sol] .ejercicios-list,
+body[data-print-sol] .sp-list,
+body[data-print-sol] .co-grid,
+body[data-print-sol] .plano-grid,
+body[data-print-sol] .ej-data-row,
+body[data-print-sol] .intro-section,
+body[data-print-sol] .not-table,
+body[data-print-sol] .ri-ej-list,
+body[data-print-sol] .prop-list,
+body[data-print-sol] .ejercicio-item { display: none !important; }
+
+/* Badge "HOJA DE SOLUCIONES" solo visible en modo data-print-sol al imprimir */
+.sol-print-badge { display: none; }
+body[data-print-sol] .sol-print-badge { display: block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #b91c1c; background: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 0.35rem 0.8rem; margin-bottom: 1.2rem; }
+
+  /* Copyright fijo en todas las páginas al imprimir */
+  .print-footer { display: none; }
+  @media print {
+    .print-footer {
+      display: block;
+      position: fixed;
+      bottom: 0.3cm;
+      left: 0; right: 0;
+      text-align: right;
+      font-size: 0.6rem;
+      color: #b0b7d0;
+      font-style: italic;
+      padding-right: 1.2cm;
+      padding-top: 2px;
+      border-top: 1px solid #eef0f8;
+    }
+    .ej-copyright { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Generador<span>Ejercitarios</span></div>
+  <a href="index.html">← Inicio</a>
+</nav>
+
+<div class="hero">
+  <h1>🔢 Aritmética</h1>
+  <p>Operaciones con números enteros. Elegí el tema, configurá los niveles y generá tu ejercitario.</p>
+</div>
+
+<main>
+  <div class="sol-print-badge">🔑 HOJA DE SOLUCIONES — solo para el docente</div>
+  <div class="main-selector">
+    <button class="main-btn active" id="main-btn-enteros" onclick="switchMain('enteros')">🔢 Números Enteros</button>
+    <button class="main-btn teal" id="main-btn-racionales" onclick="switchMain('racionales')">⅔ Números Racionales</button>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECCIÓN: NÚMEROS ENTEROS              -->
+  <!-- ══════════════════════════════════════ -->
+  <div id="enteros-section">
+  <div class="topic-selector">
+    <button class="topic-btn active" id="topic-ent" onclick="toggleTopic('ent')">🔢 Operaciones</button>
+    <button class="topic-btn" id="topic-co" onclick="toggleTopic('co')">📖 Conceptos</button>
+    <button class="topic-btn" id="topic-prop-mu" onclick="toggleTopic('prop-mu')">📐 Propiedades de la Multiplicación</button>
+    <button class="topic-btn" id="topic-sp" onclick="toggleTopic('sp')">📝 Situaciones Problemáticas</button>
+    <button class="topic-btn" id="topic-pc" onclick="toggleTopic('pc')">📍 Plano Cartesiano</button>
+    <button class="topic-btn" id="topic-rc" onclick="toggleTopic('rc')">√ Raíz Cuadrada</button>
+  </div>
+  <div id="ent-generar-todo-wrap" style="display:none;margin:0.5rem 0 0.2rem">
+    <button class="btn-generate" style="width:100%" onclick="generarTodoEnteros()">⚡ Generar todo lo seleccionado</button>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- WIDGET INDICADORES DE LOGRO           -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="ind-card" id="ind-widget" style="display:none">
+    <div class="ind-card-title">
+      <span style="font-size:1.1rem">🎯</span> Indicadores
+      <span style="margin-left:auto;font-size:0.7rem;font-weight:600;color:#a16207;cursor:pointer" onclick="indToggleWidget()">▲ Ocultar</span>
+    </div>
+    <div id="ind-filas"></div>
+    <button class="ind-btn-add" onclick="indAgregar('ind-filas')">+ Agregar indicador</button>
+    <div class="ind-hint">Opcional — si completás al menos uno, aparece una tabla en el encabezado del ejercitario impreso.</div>
+  </div>
+
+  <!-- EJERCITARIO COMBINADO -->
+  <!-- PANEL UNIFICADO: OPERACIONES CON NÚMEROS ENTEROS -->
+  <div class="section-panel active" id="panel-ent">
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#eef1ff">🔢</span> Operaciones a incluir</div>
+      <div class="chips" id="ent-chips">
+        <button class="chip chip-all" id="ent-chip-all" onclick="entSelectAll(this)">☑ Todos</button>
+        <button class="chip selected" data-pfx="sr" onclick="entToggleChip(this)">➕ Suma y Resta</button>
+        <button class="chip" data-pfx="mu" onclick="entToggleChip(this)">✖ Multiplicación</button>
+        <button class="chip" data-pfx="dv" onclick="entToggleChip(this)">➗ División</button>
+        <button class="chip" data-pfx="po" onclick="entToggleChip(this)">🔺 Potenciación</button>
+        <button class="chip" data-pfx="ra" onclick="entToggleChip(this)">√ Radicación</button>
+        <button class="chip" data-pfx="cs" onclick="entToggleChip(this)">🔣 Comb. sin agrup.</button>
+        <button class="chip" data-pfx="cc" onclick="entToggleChip(this)">{ } Comb. con agrup.</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4">🔢</span> Cantidad de ejercicios por nivel</div>
+      <div id="ent-qty-controls"></div>
+    </div>
+
+    <div class="card">
+      <button class="btn-generate" onclick="generateEnteros()">⚡ Generar ejercitario</button>
+    </div>
+
+    <button class="btn-download" id="ent-btnDL" onclick="downloadEj('ent-ej','enteros-operaciones')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="ent-btnSolAparte" onclick="downloadSolucionesAparte('ent-ej', 'enteros-operaciones')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    <div class="ejercitario" id="ent-ej"></div>
+  </div>
+
+  <div class="section-panel" id="panel-co">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#eff6ff">📖</span> Cantidad de ejercicios</div>
+      <p style="font-size:0.85rem;color:#555;margin:0 0 12px">
+        El ejercitario incluye <strong>4 bloques fijos</strong> en cada generación: situaciones con enteros, recta numérica, comparación y verdadero/falso.<br>
+        Elegí cuántos ejercicios querés en cada bloque.
+      </p>
+      <div class="levels">
+        <div class="level-item active" id="co-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name">Bloque 1 — Situaciones con enteros</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty_co(1,-1)">−</button>
+            <span class="lq-val" id="co-lqv-1">5</span>
+            <button class="lq-btn" onclick="arChangeQty_co(1,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item active" id="co-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name">Bloque 2 — Completar recta numérica</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty_co(2,-1)">−</button>
+            <span class="lq-val" id="co-lqv-2">2</span>
+            <button class="lq-btn" onclick="arChangeQty_co(2,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item active" id="co-lvl-3">
+          <span class="level-dot"></span>
+          <span class="level-name">Bloque 3 — Comparar con &gt; o &lt;</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty_co(3,-1)">−</button>
+            <span class="lq-val" id="co-lqv-3">6</span>
+            <button class="lq-btn" onclick="arChangeQty_co(3,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item active" id="co-lvl-4">
+          <span class="level-dot"></span>
+          <span class="level-name">Bloque 4 — Verdadero o Falso</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty_co(4,-1)">−</button>
+            <span class="lq-val" id="co-lqv-4">5</span>
+            <button class="lq-btn" onclick="arChangeQty_co(4,+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="total-badge" id="co-badge">Total: <span>18</span> ejercicios</div>
+    </div>
+    <button class="btn-generate" onclick="generateCO()">⚡ Generar ejercitario</button>
+    <button class="btn-download" id="co-btnDL" onclick="downloadEj('co-ej','enteros-conceptos')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="co-btnSolAparte" onclick="downloadSolucionesAparte('co-ej', 'enteros-conceptos')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    <div class="ejercitario" id="co-ej"></div>
+  </div>
+
+
+  <div class="section-panel" id="panel-prop-mu">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fef3c7">📐</span> Niveles y cantidad</div>
+      <div class="levels">
+        <div class="level-item" data-level="1" id="prop-mu-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="propMuChangeLevel(1)">Nivel 1 — Propiedad distributiva</span>
+          <div class="level-qty"><button class="lq-btn" onclick="propMuChangeQty(1,-1)">−</button><span class="lq-val" id="prop-mu-lqv-1">0</span><button class="lq-btn" onclick="propMuChangeQty(1,1)">+</button></div>
+        </div>
+        <div class="level-item" data-level="2" id="prop-mu-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="propMuChangeLevel(2)">Nivel 2 — Identificar la propiedad</span>
+          <div class="level-qty"><button class="lq-btn" onclick="propMuChangeQty(2,-1)">−</button><span class="lq-val" id="prop-mu-lqv-2">0</span><button class="lq-btn" onclick="propMuChangeQty(2,1)">+</button></div>
+        </div>
+      </div>
+      <div class="total-badge" id="prop-mu-badge">Total: <span>0</span> ejercicios</div>
+    </div>
+    <button class="btn-generate" onclick="generatePropMU()">⚡ Generar ejercitario</button>
+    <button class="btn-download" id="prop-mu-btnDL" onclick="downloadEj('prop-mu-ej','propiedades-multiplicacion')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="prop-mu-btnSolAparte" onclick="downloadSolucionesAparte('prop-mu-ej', 'propiedades-multiplicacion')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    <div class="ejercitario" id="prop-mu-ej"></div>
+  </div>
+
+
+  <!-- PANEL: SITUACIONES PROBLEMÁTICAS -->
+  <div class="section-panel" id="panel-sp">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4">📝</span> Niveles y cantidad</div>
+      <div class="levels">
+        <div class="level-item" data-level="1" id="sp-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="arChangeLevel('sp',1)">Nivel 1 — Suma y Resta</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty('sp',1,-1)">−</button>
+            <span class="lq-val" id="sp-lqv-1">0</span>
+            <button class="lq-btn" onclick="arChangeQty('sp',1,1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="2" id="sp-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="arChangeLevel('sp',2)">Nivel 2 — Multiplicación</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty('sp',2,-1)">−</button>
+            <span class="lq-val" id="sp-lqv-2">0</span>
+            <button class="lq-btn" onclick="arChangeQty('sp',2,1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="3" id="sp-lvl-3">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="arChangeLevel('sp',3)">Nivel 3 — División</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty('sp',3,-1)">−</button>
+            <span class="lq-val" id="sp-lqv-3">0</span>
+            <button class="lq-btn" onclick="arChangeQty('sp',3,1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="4" id="sp-lvl-4">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="arChangeLevel('sp',4)">Nivel 4 — Potenciación</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty('sp',4,-1)">−</button>
+            <span class="lq-val" id="sp-lqv-4">0</span>
+            <button class="lq-btn" onclick="arChangeQty('sp',4,1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="5" id="sp-lvl-5">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="arChangeLevel('sp',5)">Nivel 5 — Radicación</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty('sp',5,-1)">−</button>
+            <span class="lq-val" id="sp-lqv-5">0</span>
+            <button class="lq-btn" onclick="arChangeQty('sp',5,1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="6" id="sp-lvl-6">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="arChangeLevel('sp',6)">Nivel 6 — Varias operaciones</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="arChangeQty('sp',6,-1)">−</button>
+            <span class="lq-val" id="sp-lqv-6">0</span>
+            <button class="lq-btn" onclick="arChangeQty('sp',6,1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="total-badge" id="sp-badge">Total: <span>0</span> problemas</div>
+    </div>
+    <button class="btn-generate" onclick="generateSP()">⚡ Generar ejercitario</button>
+    <button class="btn-download" id="sp-btnDL" onclick="downloadEj('sp-ej','situaciones-problematicas-enteros')">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="sp-btnSolAparte" onclick="downloadSolucionesAparte('sp-ej', 'situaciones-problematicas-enteros')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    <div class="ejercitario" id="sp-ej"></div>
+  </div><!-- /panel-sp -->
+
+  <!-- PLANO CARTESIANO -->
+  <div class="section-panel" id="panel-pc">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4">📍</span> Plano Cartesiano</div>
+      <p style="font-size:0.85rem;color:#555;margin:0 0 14px">
+        Dos tipos de ejercicios: el alumno <strong>ubica puntos</strong> dados en coordenadas, o <strong>lee coordenadas</strong> de puntos marcados en el gráfico.
+      </p>
+      <div class="levels">
+        <div class="level-item active" id="pc-lvl-0" style="background:#f8faff;border-left:3px solid #4f6ef7">
+          <span class="level-dot"></span>
+          <span class="level-name" style="font-weight:700">Cantidad de puntos por ejercicio</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="pcChangeQty(0,-1)">−</button>
+            <span class="lq-val" id="pc-lqv-0">4</span>
+            <button class="lq-btn" onclick="pcChangeQty(0,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item active" id="pc-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name">Tipo 1 — Ubicar puntos en el plano</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="pcChangeQty(1,-1)">−</button>
+            <span class="lq-val" id="pc-lqv-1">2</span>
+            <button class="lq-btn" onclick="pcChangeQty(1,+1)">+</button>
+          </div>
+          <span style="font-size:0.8rem;color:#888;margin-left:6px">ejercicios</span>
+        </div>
+        <div class="level-item active" id="pc-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name">Tipo 2 — Leer coordenadas del gráfico</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="pcChangeQty(2,-1)">−</button>
+            <span class="lq-val" id="pc-lqv-2">2</span>
+            <button class="lq-btn" onclick="pcChangeQty(2,+1)">+</button>
+          </div>
+          <span style="font-size:0.8rem;color:#888;margin-left:6px">ejercicios</span>
+        </div>
+      </div>
+      <div class="total-badge" id="pc-badge">Total: <span>4</span> ejercicios</div>
+    </div>
+    <button class="btn-generate" onclick="generatePC()">⚡ Generar ejercitario</button>
+    <button class="btn-download" id="pc-btnDL" onclick="downloadEj('pc-ej','plano-cartesiano-enteros')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="pc-btnSolAparte" onclick="downloadSolucionesAparte('pc-ej', 'plano-cartesiano-enteros')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    <div class="ejercitario" id="pc-ej"></div>
+  </div><!-- /panel-pc -->
+
+  <!-- RAÍZ CUADRADA -->
+  <div class="section-panel" id="panel-rc">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fdf4ff">√</span> Raíz Cuadrada — Exactas</div>
+      <p style="font-size:0.85rem;color:#555;margin:0 0 12px">
+        El radicando es un cuadrado perfecto. El alumno calcula la raíz exacta.
+      </p>
+      <div class="levels">
+        <div class="level-item" id="rc-ex-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name">Nivel 1 — Raíz de 2 cifras (resultado entre 10 y 99)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="rcChangeQty('ex',1,-1)">−</button>
+            <span class="lq-val" id="rc-ex-lqv-1">0</span>
+            <button class="lq-btn" onclick="rcChangeQty('ex',1,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" id="rc-ex-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name">Nivel 2 — Raíz de 3 cifras (resultado entre 100 y 999)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="rcChangeQty('ex',2,-1)">−</button>
+            <span class="lq-val" id="rc-ex-lqv-2">0</span>
+            <button class="lq-btn" onclick="rcChangeQty('ex',2,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" id="rc-ex-lvl-3">
+          <span class="level-dot"></span>
+          <span class="level-name">Nivel 3 — Raíz de 4 cifras o más (resultado desde 1000)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="rcChangeQty('ex',3,-1)">−</button>
+            <span class="lq-val" id="rc-ex-lqv-3">0</span>
+            <button class="lq-btn" onclick="rcChangeQty('ex',3,+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fff7ed">√</span> Raíz Cuadrada — Inexactas</div>
+      <p style="font-size:0.85rem;color:#555;margin:0 0 12px">
+        El radicando <strong>no</strong> es cuadrado perfecto. El alumno indica entre qué dos enteros consecutivos se encuentra la raíz.
+      </p>
+      <div class="levels">
+        <div class="level-item" id="rc-inex-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name">Nivel 1 — Raíz de 2 cifras (resultado entre 10 y 99)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="rcChangeQty('inex',1,-1)">−</button>
+            <span class="lq-val" id="rc-inex-lqv-1">0</span>
+            <button class="lq-btn" onclick="rcChangeQty('inex',1,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" id="rc-inex-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name">Nivel 2 — Raíz de 3 cifras (resultado entre 100 y 999)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="rcChangeQty('inex',2,-1)">−</button>
+            <span class="lq-val" id="rc-inex-lqv-2">0</span>
+            <button class="lq-btn" onclick="rcChangeQty('inex',2,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" id="rc-inex-lvl-3">
+          <span class="level-dot"></span>
+          <span class="level-name">Nivel 3 — Raíz de 4 cifras o más (resultado desde 1000)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="rcChangeQty('inex',3,-1)">−</button>
+            <span class="lq-val" id="rc-inex-lqv-3">0</span>
+            <button class="lq-btn" onclick="rcChangeQty('inex',3,+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <button class="btn-generate" onclick="generateRC()">⚡ Generar ejercitario</button>
+    </div>
+
+    <button class="btn-download" id="rc-btnDL" onclick="downloadEj('rc-ej','raiz-cuadrada')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="rc-btnSolAparte" onclick="downloadSolucionesAparte('rc-ej', 'raiz-cuadrada')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    <div class="ejercitario" id="rc-ej"></div>
+  </div><!-- /panel-rc -->
+
+  </div><!-- /enteros-section -->
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- SECCIÓN: NÚMEROS RACIONALES           -->
+  <!-- ══════════════════════════════════════ -->
+  <div id="rac-section" style="display:none">
+
+    <!-- Modo: Fracciones / Decimales / Ambos -->
+    <div class="mode-selector" id="modeSelector">
+      <button class="mode-btn active" id="mode-frac" onclick="setMode('frac')">🔢 Solo fracciones</button>
+      <button class="mode-btn" id="mode-dec" onclick="setMode('dec')">🔣 Solo decimales</button>
+      <button class="mode-btn" id="mode-both" onclick="setMode('both')">⚡ Fracciones y decimales</button>
+    </div>
+
+    <div class="topic-selector" id="rac-topic-selector">
+      <button class="topic-btn active" id="rac-topic-rac" onclick="racSwitchTopic('rac')">🔢 Operaciones</button>
+    </div>
+
+    <div id="rac-panels"></div>
+
+  </div><!-- /rac-section -->
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════
+// UI — SELECTOR PRINCIPAL
+// ═══════════════════════════════════════════
+function switchMain(section) {
+  document.getElementById('main-btn-enteros').classList.toggle('active', section === 'enteros');
+  document.getElementById('main-btn-racionales').classList.toggle('active', section === 'racionales');
+  document.getElementById('enteros-section').style.display = section === 'enteros' ? '' : 'none';
+  document.getElementById('rac-section').style.display = section === 'racionales' ? '' : 'none';
+}
+
+// ═══════════════════════════════════════════
+// UI — ENTEROS
+// ═══════════════════════════════════════════
+const PREFIXES = ['sr','mu','dv','po','ra','cs','cc'];
+// 'co' state managed separately (4 levels, default quantities)
+const CO_STATE = {1:5, 2:2, 3:6, 4:5};
+// PC_STATE: 0=puntos por ejercicio, 1=cant ej Tipo1, 2=cant ej Tipo2
+const PC_STATE = {0:4, 1:2, 2:2};
+
+// MIX STATE for combined ejercitario
+const MIX_STATE = { sr:{1:0,2:0,3:0}, mu:{1:0,2:0,3:0}, dv:{1:0,2:0,3:0}, po:{1:0,2:0,3:0}, ra:{1:0,2:0,3:0}, cs:{1:0,2:0,3:0}, cc:{1:0,2:0,3:0} };
+function mixQty(pfx,lvl,delta){
+  MIX_STATE[pfx][lvl] = Math.max(0, Math.min(30, (MIX_STATE[pfx][lvl]||0)+delta));
+  document.getElementById('mix-'+pfx+'-lqv-'+lvl).textContent = MIX_STATE[pfx][lvl];
+  const el = document.getElementById('mix-'+pfx+'-lvl-'+lvl);
+  if(el) el.classList.toggle('active', MIX_STATE[pfx][lvl]>0);
+  const total = Object.values(MIX_STATE).reduce((a,ops)=>a+Object.values(ops).reduce((b,v)=>b+v,0),0);
+  document.getElementById('mix-badge').innerHTML = 'Total: <span>'+total+'</span> ejercicios';
+}
+const MIX_TOPIC_LABELS = { sr:'Suma y Resta', mu:'Multiplicación', dv:'División', po:'Potenciación', ra:'Radicación', cs:'Combinadas sin agrup.', cc:'Combinadas con agrup.' };
+
+// ═══════════════════════════════════════════
+// NÚMEROS ENTEROS — CONCEPTOS (generateCO)
+// ═══════════════════════════════════════════
+
+const CO_SITUACIONES = [
+  { sit: 'En el año 2011 se registró en Asunción una temperatura de 2 °C bajo cero.', sol: '−2' },
+  { sit: 'El cerro Lambaré se encuentra a 450 m sobre el nivel del mar.', sol: '+450' },
+  { sit: 'Una empresa en Villarrica tuvo una deuda de 3 500 000 Gs.', sol: '−3 500 000' },
+  { sit: 'La selección paraguaya marcó 3 goles a favor.', sol: '+3' },
+  { sit: 'Un buzo desciende 18 m bajo el nivel del agua en el río Paraná.', sol: '−18' },
+  { sit: 'En Encarnación la temperatura subió 7 °C respecto al día anterior.', sol: '+7' },
+  { sit: 'Un edificio en Asunción tiene 5 pisos debajo del nivel de la calle (subsuelos).', sol: '−5' },
+  { sit: 'Un comercio de San Lorenzo ganó 850 000 Gs. en la semana.', sol: '+850 000' },
+  { sit: 'En el año 300 a. C. los guaraníes habitaban la región del Guairá.', sol: '−300' },
+  { sit: 'Una persona en Ciudad del Este retiró 200 000 Gs. de su cuenta bancaria.', sol: '−200 000' },
+  { sit: 'El río Paraguay creció 4 m por encima del nivel normal.', sol: '+4' },
+  { sit: 'El equipo Olimpia perdió 2 goles de diferencia en el partido.', sol: '−2' },
+  { sit: 'En Caaguazú se registró una temperatura de 3 °C bajo cero una noche de invierno.', sol: '−3' },
+  { sit: 'Un camión que transporta mercadería pesa 12 toneladas más que el límite permitido.', sol: '+12' },
+  { sit: 'Una cueva en la región del Chaco tiene su entrada a 6 m bajo la superficie.', sol: '−6' },
+  { sit: 'El año de fundación de Asunción fue en 1537 d. C.', sol: '+1537' },
+  { sit: 'Una familia en Luque ahorró 500 000 Gs. durante el mes.', sol: '+500 000' },
+  { sit: 'El nivel del Lago Ypacaraí bajó 3 m respecto al año anterior.', sol: '−3' },
+  { sit: 'Un submarino navega a 90 m de profundidad.', sol: '−90' },
+  { sit: 'En una feria de Pedro Juan Caballero, un vendedor tuvo una pérdida de 150 000 Gs.', sol: '−150 000' },
+  { sit: 'La cumbre del cerro Peró, el más alto de Paraguay, está a 842 m sobre el nivel del mar.', sol: '+842' },
+  { sit: 'Una deuda de un club deportivo de Concepción asciende a 10 000 000 Gs.', sol: '−10 000 000' },
+  { sit: 'En el año 200 a. C. existían civilizaciones en el territorio que hoy es Paraguay.', sol: '−200' },
+  { sit: 'El ascensor de un hotel en Asunción sube 8 pisos desde la planta baja.', sol: '+8' },
+];
+
+// Recta: genera un SVG con cajitas vacías intercaladas
+function coGenerateRecta() {
+  // Configuraciones posibles: [inicio, fin, paso, cuántos visibles]
+  const configs = [
+    { min: -9, max: 9, step: 1 },
+    { min: -12, max: 12, step: 2 },
+    { min: -15, max: 15, step: 3 },
+    { min: -20, max: 20, step: 4 },
+    { min: -8, max: 8, step: 1 },
+    { min: -10, max: 10, step: 2 },
+  ];
+  const cfg = configs[Math.floor(Math.random() * configs.length)];
+  const nums = [];
+  for (let n = cfg.min; n <= cfg.max; n += cfg.step) nums.push(n);
+
+  // Seleccionar índices a ocultar: aprox. 1 de cada 3, siempre al menos 3
+  const hidden = new Set();
+  // Nunca ocultar el primero ni el último
+  for (let i = 1; i < nums.length - 1; i++) {
+    if (Math.random() < 0.38) hidden.add(i);
+  }
+  // Garantizar mínimo 3 ocultos
+  while (hidden.size < 3) {
+    const idx = 1 + Math.floor(Math.random() * (nums.length - 2));
+    hidden.add(idx);
+  }
+  // No ocultar dos consecutivos
+  const hiddenArr = [...hidden].sort((a,b) => a-b);
+  const finalHidden = new Set();
+  let prev = -99;
+  hiddenArr.forEach(i => {
+    if (i - prev > 1) { finalHidden.add(i); prev = i; }
+  });
+  while (finalHidden.size < 3) {
+    for (let i = 1; i < nums.length - 1; i++) {
+      if (!finalHidden.has(i) && !finalHidden.has(i-1) && !finalHidden.has(i+1)) {
+        finalHidden.add(i); if (finalHidden.size >= 3) break;
+      }
+    }
+  }
+
+  // SVG dimensions
+  const boxW = 28, boxH = 22, spacing = 44, arrowExtra = 24;
+  const totalW = nums.length * spacing + arrowExtra * 2;
+  const svgH = 80;
+  const startX = arrowExtra + spacing / 2;
+  const lineY = svgH / 2 + 6;
+
+  let svgPoints = '';
+  let solParts = [];
+
+  nums.forEach((n, i) => {
+    const cx = startX + i * spacing;
+    if (finalHidden.has(i)) {
+      // Cajita vacía
+      svgPoints += `<rect x="${cx - boxW/2}" y="${lineY - boxH - 2}" width="${boxW}" height="${boxH}" rx="3" fill="white" stroke="#4f6ef7" stroke-width="1.5"/>`;
+      svgPoints += `<line x1="${cx}" y1="${lineY - 2}" x2="${cx}" y2="${lineY + 6}" stroke="#555" stroke-width="1.5"/>`;
+      solParts.push(String(n));
+    } else {
+      // Número visible
+      svgPoints += `<line x1="${cx}" y1="${lineY - 4}" x2="${cx}" y2="${lineY + 6}" stroke="#555" stroke-width="1.5"/>`;
+      const label = n === 0 ? '0' : (n > 0 ? String(n) : '−' + Math.abs(n));
+      svgPoints += `<text x="${cx}" y="${lineY - 8}" text-anchor="middle" font-size="12" font-family="Nunito,sans-serif" fill="#222">${label}</text>`;
+    }
+  });
+
+  // Flecha izquierda y derecha
+  const x0 = startX - spacing/2 - arrowExtra + 4;
+  const xN = startX + (nums.length - 1) * spacing + spacing/2 + arrowExtra - 4;
+  svgPoints += `<line x1="${x0}" y1="${lineY}" x2="${xN}" y2="${lineY}" stroke="#555" stroke-width="1.5"/>`;
+  svgPoints += `<polygon points="${x0},${lineY} ${x0+10},${lineY-4} ${x0+10},${lineY+4}" fill="#555"/>`;
+  svgPoints += `<polygon points="${xN},${lineY} ${xN-10},${lineY-4} ${xN-10},${lineY+4}" fill="#555"/>`;
+
+  const svg = `<svg width="100%" viewBox="0 0 ${totalW} ${svgH}" style="max-width:${totalW}px;min-width:280px;overflow:visible">${svgPoints}</svg>`;
+  const sol = 'Números que faltan: ' + solParts.join(', ');
+  return { svg, sol };
+}
+
+// Pares para comparar
+function coGenPares(qty) {
+  const pares = [];
+  const seen = new Set();
+  // Pool amplio de pares
+  const pool = [];
+  // negativos vs positivos
+  for (let i = 0; i < 15; i++) {
+    const a = -(1 + Math.floor(Math.random() * 12));
+    const b = 1 + Math.floor(Math.random() * 12);
+    const k = a + '_' + b;
+    if (!seen.has(k)) { seen.add(k); pool.push({ a, b, sol: '<' }); }
+  }
+  // ambos negativos
+  for (let i = 0; i < 10; i++) {
+    const a = -(1 + Math.floor(Math.random() * 15));
+    const b = -(1 + Math.floor(Math.random() * 15));
+    if (a !== b) {
+      const k = a + '_' + b;
+      if (!seen.has(k)) { seen.add(k); pool.push({ a, b, sol: a < b ? '<' : '>' }); }
+    }
+  }
+  // con valor absoluto
+  const vaCases = [
+    { expr: '|−8|', cmp: 12, sol: '<' },
+    { expr: '|−5|', cmp: 3, sol: '>' },
+    { expr: '|7|', cmp: -7, sol: '>' },
+    { expr: '|−10|', cmp: 10, sol: '=' },
+    { expr: '|−3|', cmp: -6, sol: '>' },
+    { expr: '|−15|', cmp: 14, sol: '>' },
+    { expr: '|6|', cmp: -8, sol: '>' },
+    { expr: '|−4|', cmp: 5, sol: '<' },
+  ];
+  // con opuestos
+  const opCases = [
+    { expr: 'El opuesto de −7', cmp: 5, sol: '>' },
+    { expr: 'El opuesto de 4', cmp: -3, sol: '<' },
+    { expr: 'El opuesto de 9', cmp: -9, sol: '=' },
+    { expr: 'El opuesto de −2', cmp: 1, sol: '>' },
+  ];
+
+  // Mezcla
+  const allPool = [...pool];
+  const shuffledVA = vaCases.sort(() => Math.random() - 0.5);
+  const shuffledOP = opCases.sort(() => Math.random() - 0.5);
+
+  const result = [];
+  let pi = 0, vi = 0, oi = 0;
+  for (let i = 0; i < qty; i++) {
+    const r = Math.random();
+    if (r < 0.5 && pi < allPool.length) {
+      const p = allPool[pi++];
+      const aLabel = p.a < 0 ? '−' + Math.abs(p.a) : String(p.a);
+      const bLabel = p.b < 0 ? '−' + Math.abs(p.b) : String(p.b);
+      result.push({ expr: `${aLabel} ___ ${bLabel}`, sol: p.sol });
+    } else if (r < 0.75 && vi < shuffledVA.length) {
+      const v = shuffledVA[vi++];
+      const cLabel = v.cmp < 0 ? '−' + Math.abs(v.cmp) : String(v.cmp);
+      result.push({ expr: `${v.expr} ___ ${cLabel}`, sol: v.sol });
+    } else if (oi < shuffledOP.length) {
+      const o = shuffledOP[oi++];
+      const cLabel = o.cmp < 0 ? '−' + Math.abs(o.cmp) : String(o.cmp);
+      result.push({ expr: `${o.expr} ___ ${cLabel}`, sol: o.sol });
+    } else if (pi < allPool.length) {
+      const p = allPool[pi++];
+      const aLabel = p.a < 0 ? '−' + Math.abs(p.a) : String(p.a);
+      const bLabel = p.b < 0 ? '−' + Math.abs(p.b) : String(p.b);
+      result.push({ expr: `${aLabel} ___ ${bLabel}`, sol: p.sol });
+    }
+  }
+  return result;
+}
+
+// Verdadero o Falso
+const CO_VF = [
+  { af: '|−8| = 8', sol: 'V', just: '|−8| = 8, porque el valor absoluto es la distancia al cero, siempre positiva.' },
+  { af: '|5| = −5', sol: 'F', just: 'F — El valor absoluto nunca es negativo. |5| = 5.' },
+  { af: 'El opuesto de −7 es 7.', sol: 'V', just: 'V — El opuesto de −7 es +7, ya que están a igual distancia del cero en sentidos contrarios.' },
+  { af: '|−12| > |9|', sol: 'V', just: 'V — |−12| = 12 y |9| = 9. Como 12 > 9, es verdadero.' },
+  { af: 'Todo número entero negativo es mayor que cero.', sol: 'F', just: 'F — Los números negativos son siempre menores que cero.' },
+  { af: '−3 > −10', sol: 'V', just: 'V — En la recta numérica, −3 está a la derecha de −10, por lo tanto es mayor.' },
+  { af: 'El valor absoluto de cualquier número es siempre positivo.', sol: 'V', just: 'V — Por definición, el valor absoluto es la distancia al cero, que siempre es positiva o cero.' },
+  { af: 'El opuesto de 0 es 0.', sol: 'V', just: 'V — El cero es su propio opuesto, ya que −0 = 0.' },
+  { af: '|−6| = |6|', sol: 'V', just: 'V — Ambos valen 6, ya que el valor absoluto es la distancia al cero sin signo.' },
+  { af: '−15 < −8', sol: 'V', just: 'V — −15 está más a la izquierda en la recta numérica que −8.' },
+  { af: 'Todo número positivo es mayor que cualquier número negativo.', sol: 'V', just: 'V — Los positivos se ubican a la derecha del cero y los negativos a la izquierda.' },
+  { af: '|0| = 1', sol: 'F', just: 'F — |0| = 0. El cero está a distancia cero del cero.' },
+  { af: 'El entero −1 es el mayor de todos los números negativos.', sol: 'V', just: 'V — En la recta numérica, −1 es el entero negativo más cercano al cero, por lo tanto el mayor.' },
+  { af: '|−20| < 15', sol: 'F', just: 'F — |−20| = 20, y 20 > 15.' },
+  { af: '−4 y 4 son números opuestos.', sol: 'V', just: 'V — Son opuestos porque están a igual distancia del cero en sentidos contrarios.' },
+  { af: 'El valor absoluto de −100 es −100.', sol: 'F', just: 'F — |−100| = 100. El valor absoluto siempre es positivo.' },
+  { af: 'En la recta numérica, los números crecen de derecha a izquierda.', sol: 'F', just: 'F — Los números crecen de izquierda a derecha en la recta numérica.' },
+  { af: '|7| = |−7|', sol: 'V', just: 'V — Ambos valen 7.' },
+  { af: 'El conjunto de los números enteros incluye el cero.', sol: 'V', just: 'V — ℤ = {…, −2, −1, 0, 1, 2, …}. El cero es un entero.' },
+  { af: '−5 > 0', sol: 'F', just: 'F — Todo número negativo es menor que cero.' },
+];
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateCO() {
+  const q1 = CO_STATE[1]; // situaciones
+  const q2 = CO_STATE[2]; // rectas
+  const q3 = CO_STATE[3]; // comparar
+  const q4 = CO_STATE[4]; // V/F
+  const total = q1 + q2 + q3 + q4;
+  if (total === 0) { alert('Agregá al menos un ejercicio con +'); return; }
+
+  const fecha = new Date().toLocaleDateString('es-PY', {day:'numeric', month:'long', year:'numeric'});
+
+  let ejHTML = '<div class="ejercicios-list">';
+  let solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  let numEj = 0;
+
+  // ── Bloque 1: Situaciones ──────────────────────────────
+  if (q1 > 0) {
+    ejHTML += '<div class="level-header">Bloque 1 — Situaciones con enteros</div>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Expresá cada situación con un número entero positivo o negativo.</p>';
+    const pool = shuffleArr(CO_SITUACIONES).slice(0, q1);
+    pool.forEach(s => {
+      numEj++;
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">${numEj}.</span>
+        <div class="ej-content">
+          <div class="ej-question">${s.sit}</div>
+          <div style="margin-top:6px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:0.85rem;color:#555">Respuesta:</span>
+            <div style="width:80px;border-bottom:1.5px solid #aaa;height:20px"></div>
+          </div>
+        </div>
+      </div>`;
+      solHTML += `<div class="sol-item"><span class="sol-num">${numEj}.</span><div class="sol-val">${s.sol}</div></div>`;
+    });
+  }
+
+  // ── Bloque 2: Recta numérica ───────────────────────────
+  if (q2 > 0) {
+    ejHTML += '<div class="level-header">Bloque 2 — Completar la recta numérica</div>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Escribí en cada casilla el número entero que corresponde.</p>';
+    for (let i = 0; i < q2; i++) {
+      numEj++;
+      const recta = coGenerateRecta();
+      ejHTML += `<div class="ejercicio-item" style="align-items:flex-start">
+        <span class="ej-num">${numEj}.</span>
+        <div class="ej-content" style="overflow-x:auto;padding-bottom:8px">
+          ${recta.svg}
+        </div>
+      </div>`;
+      solHTML += `<div class="sol-item"><span class="sol-num">${numEj}.</span><div class="sol-val">${recta.sol}</div></div>`;
+    }
+  }
+
+  // ── Bloque 3: Comparar ────────────────────────────────
+  if (q3 > 0) {
+    ejHTML += '<div class="level-header">Bloque 3 — Comparar números</div>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Escribí &gt;, &lt; o = entre cada par de números.</p>';
+    const pares = coGenPares(q3);
+    pares.forEach(p => {
+      numEj++;
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">${numEj}.</span>
+        <div class="ej-content">
+          <div class="ej-question" style="font-size:1.05rem;letter-spacing:0.04em">${p.expr}</div>
+        </div>
+      </div>`;
+      solHTML += `<div class="sol-item"><span class="sol-num">${numEj}.</span><div class="sol-val">${p.sol}</div></div>`;
+    });
+  }
+
+  // ── Bloque 4: Verdadero o Falso ────────────────────────
+  if (q4 > 0) {
+    ejHTML += '<div class="level-header">Bloque 4 — Verdadero o Falso</div>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Indicá si cada afirmación es verdadera (V) o falsa (F). Justificá las falsas.</p>';
+    const vfPool = shuffleArr(CO_VF).slice(0, q4);
+    vfPool.forEach(v => {
+      numEj++;
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">${numEj}.</span>
+        <div class="ej-content">
+          <div class="ej-question">${v.af}</div>
+          <div style="margin-top:6px;display:flex;align-items:center;gap:16px">
+            <span style="font-size:0.9rem;border:1.5px solid #aaa;border-radius:4px;padding:2px 10px">V</span>
+            <span style="font-size:0.9rem;border:1.5px solid #aaa;border-radius:4px;padding:2px 10px">F</span>
+          </div>
+          <div style="margin-top:6px;font-size:0.82rem;color:#555">Justificación (si es F): <span style="display:inline-block;width:280px;border-bottom:1px solid #aaa">&nbsp;</span></div>
+        </div>
+      </div>`;
+      solHTML += `<div class="sol-item"><span class="sol-num">${numEj}.</span><div class="sol-val">${v.sol} — ${v.just}</div></div>`;
+    });
+  }
+
+  ejHTML += '</div>';
+  solHTML += `</div><div class="ej-copyright">${COPYRIGHT_TXT}</div>`;
+
+  const el = document.getElementById('co-ej');
+  el.innerHTML = `
+    <div class="ej-header">
+      <div class="ej-title">Números Enteros</div>
+      <div class="ej-meta"></div>
+      <div class="ej-data-row">
+        <span>Nombre: ____________________________</span>
+        <span>Curso: _____________ &nbsp; Fecha: _____________</span>
+      </div>
+      ${indGetTablaHTML('ind-filas')}
+    </div>
+    ${ejHTML}${solHTML}
+  `;
+  el.style.display = 'block';
+  document.getElementById('co-btnDL').style.display = 'block';
+}
+
+
+function generateMix(){
+  const ejercicios=[], seen=new Set();
+  ['sr','mu','dv','po','ra','cs','cc'].forEach(pfx=>{
+    for(let lvl=1;lvl<=3;lvl++){
+      const qty=MIX_STATE[pfx][lvl]||0; if(!qty) continue;
+      let count=0,att=0;
+      while(count<qty && att<qty*60){
+        att++;
+        try{
+          const e=GENS[pfx](lvl);
+          if(!e||seen.has(e.expr)) continue;
+          if(e.sol!==undefined){
+            const s=String(e.sol);
+            if(/\.\d/.test(s)&&!s.includes('Cociente')&&!s.includes('Resto')) continue;
+          }
+          seen.add(e.expr);
+          ejercicios.push({...e, _pfx:pfx});
+          count++;
+        }catch(err){}
+      }
+    }
+  });
+  if(ejercicios.length===0){alert('Agregá al menos un ejercicio con +');return;}
+  ejercicios.forEach((e,i)=>e.id=i+1);
+  const fecha=new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+  let lastPfx=null;
+  let ejHTML='<div class="ejercicios-list">';
+  ejercicios.forEach(e=>{
+    if(e._pfx!==lastPfx){lastPfx=e._pfx;ejHTML+='<div class="level-header">'+MIX_TOPIC_LABELS[e._pfx]+' — '+LEVEL_NAMES[e._pfx][e.lvl]+'</div>';}
+    const wsMix={sr:'work-space-sm',mu:'work-space-sm',dv:'work-space-md',po:'work-space-sm',ra:'work-space-sm',cs:'work-space-md',cc:'work-space-lg'}[e._pfx]||'work-space-md';
+    ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div><div class="work-space '+wsMix+'"></div></div></div>';
+  });
+  ejHTML+='</div>';
+  let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e=>{solHTML+='<div class="sol-item"><span class="sol-num">'+e.id+'.</span><div class="sol-val">'+e.sol+'</div></div>';});
+  solHTML+='</div><div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  const el=document.getElementById('mix-ej');
+  el.innerHTML='<div class="ej-header"><div class="ej-title">Números Enteros</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>'+indGetTablaHTML('ind-filas')+'</div>'+ejHTML+solHTML;
+  el.style.display='block';
+  document.getElementById('mix-btnDL').style.display='block';
+}
+
+// ═══════════════════════════════════════════════════════════
+// PANEL UNIFICADO DE OPERACIONES — NÚMEROS ENTEROS
+// ═══════════════════════════════════════════════════════════
+
+// Definición de niveles por operación
+const ENT_OPS = {
+  sr: { label: '➕ Suma y Resta',          levels: { 1:'Nivel 1 — Corto (2 términos)', 2:'Nivel 2 — Medio (3-4 términos)', 3:'Nivel 3 — Largo (5-6 términos)' } },
+  mu: { label: '✖ Multiplicación',          levels: { 1:'Nivel 1 — 2 factores', 2:'Nivel 2 — 3 factores', 3:'Nivel 3 — 4 o más factores', 4:'Nivel 4 — Múltiplo de', 5:'Nivel 5 — Factor faltante', 6:'Nivel 6 — Pares de factores', 7:'Nivel 7 — Cuadro de productos' } },
+  dv: { label: '➗ División',               levels: { 1:'Nivel 1 — División exacta', 2:'Nivel 2 — Con resto', 3:'Nivel 3 — Cadena de divisiones' } },
+  po: { label: '🔺 Potenciación',           levels: { 1:'Nivel 1 — Potencia simple', 2:'Nivel 2 — Misma base', 3:'Nivel 3 — Potencia de potencia' } },
+  ra: { label: '√ Radicación',              levels: { 1:'Nivel 1 — Raíz cuadrada', 2:'Nivel 2 — Raíz cúbica y potencias', 3:'Nivel 3 — Combinadas con radicales' } },
+  cs: { label: '🔣 Comb. sin agrup.',       levels: { 1:'Nivel 1 — +/−/·', 2:'Nivel 2 — + División y potencias', 3:'Nivel 3 — + Raíces' } },
+  cc: { label: '{ } Comb. con agrup.',      levels: { 1:'Nivel 1 — Solo paréntesis', 2:'Nivel 2 — Paréntesis y corchetes', 3:'Nivel 3 — + Llaves' } }
+};
+
+// State: prefix → { 1:qty, 2:qty, 3:qty }
+const STATE = {};
+PREFIXES.forEach(p => STATE[p] = {1:0, 2:0, 3:0});
+STATE['mu'] = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0};
+STATE['sp'] = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0};
+
+// Función para renderizar los controles de cantidad según chips activos
+function entRenderQty() {
+  const wrap = document.getElementById('ent-qty-controls');
+  if (!wrap) return;
+  const selectedChips = document.querySelectorAll('#ent-chips .chip.selected');
+  wrap.innerHTML = '';
+  if (selectedChips.length === 0) {
+    wrap.innerHTML = '<p style="font-size:0.85rem;color:#8b92b1;text-align:center;padding:0.5rem 0">Seleccioná al menos una operación.</p>';
+    return;
+  }
+  selectedChips.forEach(function(chip) {
+    const pfx = chip.dataset.pfx;
+    const op = ENT_OPS[pfx];
+    // Cabecera de operación
+    const header = document.createElement('div');
+    header.style.cssText = 'font-weight:800;font-size:0.82rem;color:#4f6ef7;text-transform:uppercase;letter-spacing:0.08em;padding:0.6rem 0 0.2rem;margin-top:0.4rem;border-top:1px solid #f0f0f0;';
+    header.textContent = op.label;
+    wrap.appendChild(header);
+    // Filas de niveles
+    Object.entries(op.levels).forEach(function(entry) {
+      const lvl = parseInt(entry[0]);
+      const name = entry[1];
+      const row = document.createElement('div');
+      row.className = 'qty-row';
+      row.innerHTML =
+        '<span class="qty-label">' + name + '</span>' +
+        '<button class="qty-btn" onclick="entChangeQty(\'' + pfx + '\',' + lvl + ',-1)">&#8722;<\/button>' +
+        '<span class="qty-val" id="ent-qv-' + pfx + '-' + lvl + '">' + (STATE[pfx][lvl] || 0) + '<\/span>' +
+        '<button class="qty-btn" onclick="entChangeQty(\'' + pfx + '\',' + lvl + ',1)">+<\/button>';
+      wrap.appendChild(row);
+    });
+  });
+}
+
+function entSelectAll(btn) {
+  const chips = document.querySelectorAll('#ent-chips .chip:not(.chip-all)');
+  const allSelected = Array.from(chips).every(function(c) { return c.classList.contains('selected'); });
+  chips.forEach(function(c) {
+    if (allSelected) { c.classList.remove('selected'); }
+    else { c.classList.add('selected'); }
+  });
+  entSyncAllBtn();
+  entRenderQty();
+}
+
+function entSyncAllBtn() {
+  const chips = document.querySelectorAll('#ent-chips .chip:not(.chip-all)');
+  const allBtn = document.getElementById('ent-chip-all');
+  if (!allBtn) return;
+  const allSelected = Array.from(chips).every(function(c) { return c.classList.contains('selected'); });
+  if (allSelected) { allBtn.classList.add('selected'); }
+  else { allBtn.classList.remove('selected'); }
+}
+
+function entToggleChip(btn) {
+  btn.classList.toggle('selected');
+  entSyncAllBtn();
+  entRenderQty();
+}
+
+function entChangeQty(pfx, lvl, delta) {
+  STATE[pfx][lvl] = Math.max(0, Math.min(30, (STATE[pfx][lvl] || 0) + delta));
+  const el = document.getElementById('ent-qv-' + pfx + '-' + lvl);
+  if (el) el.textContent = STATE[pfx][lvl];
+}
+
+// Inicializar controles al cargar
+entRenderQty();
+
+// Función generadora unificada
+function generateEnteros() {
+  // Recolectar ejercicios de todos los pfx/niveles activos en STATE
+  const selectedChips = document.querySelectorAll('#ent-chips .chip.selected');
+  const activePfx = Array.from(selectedChips).map(function(c) { return c.dataset.pfx; });
+  if (activePfx.length === 0) { alert('Seleccioná al menos una operación.'); return; }
+
+  const hasQty = activePfx.some(function(pfx) {
+    return Object.values(STATE[pfx]).some(function(v) { return v > 0; });
+  });
+  if (!hasQty) { alert('Agregá al menos un ejercicio usando los botones +'); return; }
+
+  const ejercicios = [], seen = new Set();
+  activePfx.forEach(function(pfx) {
+    const lvls = Object.keys(STATE[pfx]).map(Number).sort(function(a,b){return a-b;});
+    lvls.forEach(function(lvl) {
+      const qty = STATE[pfx][lvl] || 0; if (!qty) return;
+      let count = 0, att = 0;
+      while (count < qty && att < qty * 60) {
+        att++;
+        try {
+          const e = GENS[pfx](lvl);
+          if (!e || seen.has(e.expr)) continue;
+          if (e.sol !== undefined) {
+            const s = String(e.sol);
+            if (/\.\d/.test(s) && !s.includes('Cociente') && !s.includes('Resto')) continue;
+          }
+          seen.add(e.expr);
+          ejercicios.push({ ...e, _pfx: pfx });
+          count++;
+        } catch(err) {}
+      }
+    });
+  });
+
+  if (ejercicios.length === 0) { alert('No se pudieron generar ejercicios. Revisá los niveles seleccionados.'); return; }
+  ejercicios.forEach(function(e, i) { e.id = i + 1; });
+
+  const fecha = new Date().toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
+  const opNames = activePfx.map(function(p) { return ENT_OPS[p].label.replace(/^[^\s]+ /, ''); }).join(', ');
+
+  // Agrupar por operación si hay más de una
+  const multiOp = activePfx.length > 1;
+  let lastPfx = null;
+  let ejHTML = '<div class="ejercicios-list">';
+  ejercicios.forEach(function(e) {
+    if (multiOp && e._pfx !== lastPfx) {
+      lastPfx = e._pfx;
+      ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].label + ' — ' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
+    } else if (!multiOp && e.lvl !== lastPfx) {
+      lastPfx = e.lvl;
+      ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
+    }
+    const wsSize = { sr:'work-space-sm', mu:'work-space-sm', dv:'work-space-md', po:'work-space-sm', ra:'work-space-sm', cs:'work-space-md', cc:'work-space-lg' }[e._pfx] || 'work-space-md';
+    const wsFinal = (e._pfx === 'mu' && e.lvl >= 4) ? 'work-space-md' : wsSize;
+    if (e.isTable) {
+      ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span><div class="ej-content"><div class="ej-question">Completá el cuadro de productos:<\/div>' + e.expr + '<\/div><\/div>';
+    } else {
+      ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span><div class="ej-content"><div class="ej-question">' + e.expr + '<\/div><div class="work-space ' + wsFinal + '"><\/div><\/div><\/div>';
+    }
+  });
+  ejHTML += '<\/div>';
+
+  let solHTML = '<div class="solutions-title">✓ Soluciones<\/div><div class="solutions-list">';
+  ejercicios.forEach(function(e) {
+    solHTML += '<div class="sol-item"><span class="sol-num">' + e.id + '.<\/span><div class="sol-val">' + e.sol + '<\/div><\/div>';
+  });
+  solHTML += '<\/div><div class="ej-copyright">' + COPYRIGHT_TXT + '<\/div>';
+
+  const el = document.getElementById('ent-ej');
+  el.innerHTML =
+    '<div class="ej-header">' +
+      '<div class="ej-title">Números Enteros<\/div>' +
+      '<div class="ej-meta"><\/div>' +
+      '<div class="ej-data-row"><span>Nombre: ____________________________<\/span><span>Curso: _____________ &nbsp; Fecha: _____________<\/span><\/div>' +
+      indGetTablaHTML('ind-filas') +
+    '<\/div>' + ejHTML + solHTML;
+  el.style.display = 'block';
+  document.getElementById('ent-btnDL').style.display = 'block';
+}
+
+function toggleTopic(t) {
+  const btn = document.getElementById('topic-' + t);
+  const panel = document.getElementById('panel-' + t);
+  const isActive = btn.classList.contains('active');
+
+  // Si es el único activo, no permitir deseleccionar
+  const activeTopics = document.querySelectorAll('#enteros-section .topic-btn.active');
+  if (isActive && activeTopics.length === 1) return;
+
+  btn.classList.toggle('active');
+  panel.classList.toggle('active');
+
+  // Mostrar/ocultar botón "Generar todo"
+  const activos = document.querySelectorAll('#enteros-section .topic-btn.active');
+  const wrap = document.getElementById('ent-generar-todo-wrap');
+  if (wrap) wrap.style.display = activos.length > 1 ? 'block' : 'none';
+
+  // Mostrar widget de indicadores si hay al menos uno activo
+  const widget = document.getElementById('ind-widget');
+  if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+}
+
+function generarTodoEnteros() {
+  const activos = Array.from(document.querySelectorAll('#enteros-section .topic-btn.active'))
+    .map(function(b) { return b.id.replace('topic-', ''); });
+  activos.forEach(function(t) {
+    if (t === 'ent') generateEnteros();
+    else if (t === 'co') generateCO();
+    else if (t === 'prop-mu') generatePropMU();
+    else if (t === 'sp') generateSP();
+    else if (t === 'pc') generatePC();
+    else if (t === 'rc') generateRC();
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   INDICADORES DE LOGRO
+   ══════════════════════════════════════════════════ */
+function indToggleWidget() {
+  const filas = document.getElementById('ind-filas');
+  const hint = document.querySelector('.ind-hint');
+  const btnAdd = document.querySelector('.ind-btn-add');
+  const toggle = document.querySelector('#ind-widget .ind-card-title span[style*="cursor"]');
+  const hidden = filas.style.display === 'none';
+  filas.style.display = hidden ? '' : 'none';
+  if (hint) hint.style.display = hidden ? '' : 'none';
+  if (btnAdd) btnAdd.style.display = hidden ? '' : 'none';
+  if (toggle) toggle.textContent = hidden ? '▲ Ocultar' : '▼ Mostrar';
+}
+function indAgregar(containerId) {
+  const wrap = document.getElementById(containerId);
+  const idx = wrap.children.length + 1;
+  if (idx > 6) return;
+  const row = document.createElement('div');
+  row.className = 'ind-row';
+  row.innerHTML = `
+    <input class="ind-input-texto" type="text" placeholder="Indicador ${idx}" maxlength="120">
+    <input class="ind-input-pts" type="number" placeholder="pts" min="1" max="999">
+    <button class="ind-btn-remove" title="Quitar" onclick="this.parentElement.remove()">✕</button>`;
+  wrap.appendChild(row);
+}
+function indInicializar(containerId) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap || wrap.children.length > 0) return;
+  indAgregar(containerId);
+  indAgregar(containerId);
+}
+function indGetTablaHTML(containerId) {
+  const wrap = document.getElementById(containerId);
+  if (!wrap) return '';
+  const filas = [];
+  wrap.querySelectorAll('.ind-row').forEach(row => {
+    const texto = row.querySelector('.ind-input-texto').value.trim();
+    const pts = row.querySelector('.ind-input-pts').value.trim();
+    if (texto) filas.push({ texto, pts: pts || '—' });
+  });
+  if (filas.length === 0) return '';
+  const rows = filas.map(f => `<tr><td>${f.texto}</td><td>${f.pts}</td></tr>`).join('');
+  return `<div class="ind-table-wrap"><table class="ind-table"><thead><tr><th>Indicadores</th><th>Puntaje</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+const IND_PRINT_CSS =
+  '  .ind-table-wrap { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\n' +
+  '  .ind-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }\n' +
+  '  .ind-table th { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; text-align: left; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }\n' +
+  '  .ind-table th:last-child { text-align: center; width: 70px; }\n' +
+  '  .ind-table td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #e5e7eb; }\n' +
+  '  .ind-table td:last-child { text-align: center; font-weight: 700; }\n' +
+  '  .ind-table tr:last-child td { border-bottom: none; }\n';
+
+function arChangeQty_co(lvl, delta) {
+  CO_STATE[lvl] = Math.max(0, Math.min(30, (CO_STATE[lvl]||0) + delta));
+  document.getElementById('co-lqv-' + lvl).textContent = CO_STATE[lvl];
+  const el = document.getElementById('co-lvl-' + lvl);
+  if (CO_STATE[lvl] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  const t = Object.values(CO_STATE).reduce((a,b)=>a+b, 0);
+  document.getElementById('co-badge').innerHTML = 'Total: <span>' + t + '</span> ejercicios';
+}
+
+function arChangeLevel(pfx, lvl) {
+  const el = document.getElementById(pfx + '-lvl-' + lvl);
+  const isActive = el.classList.contains('active');
+  if (isActive) {
+    STATE[pfx][lvl] = 0;
+    document.getElementById(pfx + '-lqv-' + lvl).textContent = 0;
+    el.classList.remove('active');
+  } else {
+    STATE[pfx][lvl] = 1;
+    document.getElementById(pfx + '-lqv-' + lvl).textContent = 1;
+    el.classList.add('active');
+  }
+  updateBadge(pfx);
+}
+
+function arChangeQty(pfx, lvl, delta) {
+  STATE[pfx][lvl] = Math.max(0, Math.min(30, (STATE[pfx][lvl]||0) + delta));
+  document.getElementById(pfx + '-lqv-' + lvl).textContent = STATE[pfx][lvl];
+  const el = document.getElementById(pfx + '-lvl-' + lvl);
+  if (STATE[pfx][lvl] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  updateBadge(pfx);
+}
+
+function updateBadge(pfx) {
+  const t = Object.values(STATE[pfx]).reduce((a,b)=>a+b, 0);
+  document.getElementById(pfx + '-badge').innerHTML = `Total: <span>${t}</span> ejercicios`;
+}
+
+// ═══════════════════════════════════════════
+// MATH HELPERS
+// ═══════════════════════════════════════════
+
+// Fracción vertical HTML
+function frac(n, d) {
+  if (d === 1) return String(n);
+  return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+}
+function rnd(a,b) { return Math.floor(Math.random()*(b-a+1))+a; }
+function rndNZ(a,b) { let v; do { v=rnd(a,b); } while(v===0); return v; }
+
+// Format a number as operand: negative in parens when following an operator
+function opnd(n) { return n < 0 ? `(${n})` : `${n}`; }
+// First term: no parens needed
+function first(n) { return `${n}`; }
+
+// Unicode superscripts for exponents
+function sup(n) {
+  const map = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+  return String(n).split('').map(c => map[c]||c).join('');
+}
+
+// Raíz con línea superior usando HTML
+// idx: índice de la raíz (2=cuadrada, 3=cúbica, 4, 5...)
+function rootHTML(radicand, idx) {
+  const idxMap = {'2':'', '3':'∛', '4':'∜'};
+  const idxStr = idxMap[String(idx)] !== undefined
+    ? idxMap[String(idx)]
+    : `<sup style="font-size:0.7em;vertical-align:super;margin-right:1px">${idx}</sup>`;
+  const sign = idxStr === '' ? '√' : (idx <= 4 ? idxStr : `${idxStr}√`.replace('√',''));
+  // For idx > 4, use superscript + √
+  if (idx > 4) {
+    return `<sup style="font-size:0.68em;vertical-align:0.5em;margin-right:1px">${idx}</sup>√<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
+  }
+  if (idx === 2) {
+    return `√<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
+  }
+  if (idx === 3) {
+    return `∛<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
+  }
+  if (idx === 4) {
+    return `∜<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
+  }
+}
+function sqrtHTML(n) { return rootHTML(n, 2); }
+function cbrtHTML(n) { return rootHTML(n, 3); }
+
+// Returns { str, val } for a radical term with given index
+// If idx is odd, base can be negative
+function makeRoot(idx) {
+  const canBeNeg = idx % 2 === 1; // odd index → negative radicand ok
+  let base, val;
+  if (idx === 2) {
+    base = rnd(1, 12); val = base;
+    return { str: rootHTML(base*base, 2), val };
+  }
+  if (idx === 3) {
+    base = canBeNeg ? rndNZ(-5, 5) : rnd(1, 5);
+    val = base;
+    return { str: rootHTML(base >= 0 ? base*base*base : `(${base*base*base})`, 3), val };
+  }
+  if (idx === 4) {
+    base = rnd(1, 4);
+    val = base;
+    return { str: rootHTML(Math.pow(base,4), 4), val };
+  }
+  if (idx === 5) {
+    base = canBeNeg ? rndNZ(-3, 3) : rnd(1, 3);
+    val = base;
+    const rad = Math.pow(base, 5);
+    return { str: rootHTML(rad < 0 ? `(${rad})` : rad, 5), val };
+  }
+  // fallback
+  base = rnd(1,10);
+  return { str: rootHTML(base*base, 2), val: base };
+}
+
+// ── RADICACIÓN ────────────────────────────
+function genRA(lvl) {
+  if (lvl === 1) {
+    // Square roots only, exact results
+    const n = rnd(1, 12);
+    return { expr: `${rootHTML(n*n, 2)} =`, sol: String(n), lvl };
+  }
+
+  if (lvl === 2) {
+    // Cube roots (with negatives), 4th roots, 5th roots (with negatives)
+    const type = rnd(0, 3);
+    if (type === 0) {
+      // Cube root, possibly negative
+      const n = rndNZ(-5, 5);
+      const rad = n*n*n;
+      return {
+        expr: `${rootHTML(rad < 0 ? `(${rad})` : rad, 3)} =`,
+        sol: String(n), lvl
+      };
+    }
+    if (type === 1) {
+      // 4th root
+      const n = rnd(1, 4);
+      return { expr: `${rootHTML(Math.pow(n,4), 4)} =`, sol: String(n), lvl };
+    }
+    if (type === 2) {
+      // 5th root, possibly negative
+      const n = rndNZ(-3, 3);
+      const rad = Math.pow(n, 5);
+      return {
+        expr: `${rootHTML(rad < 0 ? `(${rad})` : rad, 5)} =`,
+        sol: String(n), lvl
+      };
+    }
+    // Root of a power: ⁴√(a⁴) or ³√(a⁶) = a²
+    const idx = rnd(0,1) ? 3 : 4;
+    const base = rnd(2, 5), mult = idx === 3 ? 2 : 2; // e.g. ³√(a⁶) = a²
+    const exp = idx * mult;
+    return {
+      expr: `${rootHTML(`${opnd(base)}${sup(exp)}`, idx)} =`,
+      sol: `${base}${sup(mult)}`, lvl
+    };
+  }
+
+  // lvl 3 — mixed operations with different-index roots
+  const type = rnd(0, 3);
+
+  if (type === 0) {
+    // √a² + ∛b³ (sum, possibly neg cube)
+    const a = rnd(1, 10), b = rndNZ(-5, 5);
+    const radB = b*b*b;
+    return {
+      expr: `${rootHTML(a*a, 2)} + ${rootHTML(radB < 0 ? `(${radB})` : radB, 3)} =`,
+      sol: String(a + b), lvl
+    };
+  }
+  if (type === 1) {
+    // ⁴√a⁴ · ∛b³  (product)
+    const a = rnd(1, 4), b = rndNZ(-4, 4);
+    const radB = b*b*b;
+    return {
+      expr: `${rootHTML(Math.pow(a,4), 4)} · ${rootHTML(radB < 0 ? `(${radB})` : radB, 3)} =`,
+      sol: String(a * b), lvl
+    };
+  }
+  if (type === 2) {
+    // √a² − ⁵√b⁵  (difference, neg 5th root)
+    const a = rnd(1, 8), b = rndNZ(-3, 3);
+    const radB = Math.pow(b, 5);
+    return {
+      expr: `${rootHTML(a*a, 2)} − ${rootHTML(radB < 0 ? `(${radB})` : radB, 5)} =`,
+      sol: String(a - b), lvl
+    };
+  }
+  // Sum of three roots with mixed indices
+  const a = rnd(1,8), b = rndNZ(-4,4), c = rnd(1,4);
+  const radB = b*b*b;
+  return {
+    expr: `${rootHTML(a*a, 2)} + ${rootHTML(radB < 0 ? `(${radB})` : radB, 3)} + ${rootHTML(Math.pow(c,4), 4)} =`,
+    sol: String(a + b + c), lvl
+  };
+}
+
+
+function genSR(lvl) {
+  const nTerms = lvl === 1 ? 2 : lvl === 2 ? rnd(3,4) : rnd(5,6);
+  const range   = lvl === 1 ? 20 : lvl === 2 ? 30 : 50;
+
+  // Build terms and operators separately so we can compute correctly
+  const terms = [rnd(-range, range)];
+  const ops   = [];
+  for (let i = 1; i < nTerms; i++) {
+    terms.push(rndNZ(-range, range));
+    ops.push(rnd(0,1) ? '+' : '−');
+  }
+
+  // Build display string: use the operator and the absolute value,
+  // but wrap negative numbers that come after + with parens: a + (−5)
+  let expr = first(terms[0]);
+  let result = terms[0];
+  for (let i = 0; i < ops.length; i++) {
+    const t = terms[i+1];
+    if (ops[i] === '+') {
+      expr += t < 0 ? ` + (${t})` : ` + ${t}`;
+      result += t;
+    } else {
+      expr += ` − ${Math.abs(t)}`;
+      result -= t;
+    }
+  }
+  return { expr: `${expr} =`, sol: String(result), lvl };
+}
+
+// ── MULTIPLICACIÓN ────────────────────────
+function genMU(lvl) {
+  if (lvl === 1) {
+    const nFactors = 2, range = 12;
+    const factors = [rndNZ(-range, range), rndNZ(-range, range)];
+    const expr = factors.map(f => opnd(f)).join(' · ');
+    const result = factors.reduce((a,b) => a*b, 1);
+    return { expr: `${expr} =`, sol: String(result), lvl };
+  }
+  if (lvl === 2) {
+    const factors = [rndNZ(-9, 9), rndNZ(-9, 9), rndNZ(-9, 9)];
+    const expr = factors.map(f => opnd(f)).join(' · ');
+    const result = factors.reduce((a,b) => a*b, 1);
+    return { expr: `${expr} =`, sol: String(result), lvl };
+  }
+  if (lvl === 3) {
+    const nFactors = rnd(4,5), range = 6;
+    const factors = [];
+    for (let i = 0; i < nFactors; i++) factors.push(rndNZ(-range, range));
+    const expr = factors.map(f => opnd(f)).join(' · ');
+    const result = factors.reduce((a,b) => a*b, 1);
+    return { expr: `${expr} =`, sol: String(result), lvl };
+  }
+  if (lvl === 4) {
+    // "El [múltiplo] de [número]"
+    const MULTIPLES = [
+      {name:'doble',n:2},{name:'triple',n:3},{name:'cuádruple',n:4},
+      {name:'quíntuple',n:5},{name:'séxtuple',n:6},{name:'séptuple',n:7},
+      {name:'óctuple',n:8}
+    ];
+    const m = MULTIPLES[rnd(0, MULTIPLES.length - 1)];
+    // Variantes: directo, del opuesto, del valor absoluto, del doble del doble, etc.
+    const variant = rnd(0, 3);
+    let expr, sol;
+    if (variant === 0) {
+      const base = rndNZ(-12, 12);
+      expr = `El ${m.name} de ${opnd(base)}`;
+      sol = String(m.n * base);
+    } else if (variant === 1) {
+      const base = rndNZ(-12, 12);
+      expr = `El ${m.name} del opuesto de ${opnd(base)}`;
+      sol = String(m.n * (-base));
+    } else if (variant === 2) {
+      const base = rndNZ(-12, 12);
+      expr = `El ${m.name} del valor absoluto de ${opnd(base)}`;
+      sol = String(m.n * Math.abs(base));
+    } else {
+      // "El doble del triple de..."
+      const m2 = MULTIPLES[rnd(0, 3)];
+      const base = rndNZ(-6, 6);
+      expr = `El ${m.name} del ${m2.name} de ${opnd(base)}`;
+      sol = String(m.n * m2.n * base);
+    }
+    return { expr: `${expr} =`, sol, lvl };
+  }
+  if (lvl === 5) {
+    // "A · (   ) = C" o "(   ) · B = C"
+    const known = rndNZ(-12, 12);
+    const missing = rndNZ(-12, 12);
+    const product = known * missing;
+    const side = rnd(0, 1);
+    let expr;
+    if (side === 0) {
+      expr = `${opnd(known)} · (____) = ${opnd(product)}`;
+    } else {
+      expr = `(____) · ${opnd(known)} = ${opnd(product)}`;
+    }
+    return { expr, sol: `( ${opnd(missing)} )`, lvl };
+  }
+  if (lvl === 6) {
+    // "El producto es P. Escribí dos pares de factores enteros posibles."
+    // Usamos productos que tengan varias factorizaciones interesantes
+    const PRODUCTS = [-24,-18,-15,-12,-10,-8,-6,6,8,10,12,15,18,24,-30,30,-36,36];
+    const P = PRODUCTS[rnd(0, PRODUCTS.length - 1)];
+    // Encontrar todos los pares de factores enteros (a,b) con a<=b, a*b=P
+    const pairs = [];
+    for (let a = -Math.abs(P); a <= Math.abs(P); a++) {
+      if (a === 0) continue;
+      if (P % a === 0) {
+        const b = P / a;
+        if (a <= b) pairs.push([a, b]);
+      }
+    }
+    // Elegir 2 pares distintos al azar
+    const shuffled = pairs.sort(() => Math.random() - 0.5).slice(0, 2);
+    const solStr = shuffled.map(([a,b]) => `(${a}) · (${b})`).join(' &nbsp;&nbsp; y &nbsp;&nbsp; ');
+    return {
+      expr: `El producto es ${opnd(P)}. Escribí dos pares de factores enteros posibles:`,
+      sol: solStr,
+      lvl
+    };
+  }
+  if (lvl === 7) {
+    const rows = [rndNZ(-9,9), rndNZ(-9,9)];
+    const cols = [rndNZ(-9,9), rndNZ(-9,9)];
+    let tableHTML = `<table class="mult-table"><tr><td class="mult-header">×</td>`;
+    cols.forEach(c => { tableHTML += `<td class="mult-header">${opnd(c)}</td>`; });
+    tableHTML += '</tr>';
+    rows.forEach(r => {
+      tableHTML += `<tr><td class="mult-header">${opnd(r)}</td>`;
+      cols.forEach(() => { tableHTML += `<td class="mult-cell"></td>`; });
+      tableHTML += '</tr>';
+    });
+    tableHTML += '</table>';
+    const solPairs = [];
+    rows.forEach(r => cols.forEach(c => solPairs.push(`${opnd(r)} × ${opnd(c)} = ${r*c}`)));
+    return { expr: tableHTML, sol: solPairs.join(' &nbsp;|&nbsp; '), lvl, isTable: true };
+  }
+}
+
+// ── PROPIEDADES DE LA MULTIPLICACIÓN ─────
+const PROP_MU_STATE = {1:0, 2:0};
+
+function propMuChangeQty(lvl, delta) {
+  PROP_MU_STATE[lvl] = Math.max(0, Math.min(20, (PROP_MU_STATE[lvl]||0) + delta));
+  document.getElementById('prop-mu-lqv-' + lvl).textContent = PROP_MU_STATE[lvl];
+  const total = Object.values(PROP_MU_STATE).reduce((a,b)=>a+b, 0);
+  document.getElementById('prop-mu-badge').innerHTML = 'Total: <span>' + total + '</span> ejercicios';
+}
+
+function propMuChangeLevel(lvl) {
+  document.querySelectorAll('#panel-prop-mu .level-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('prop-mu-lvl-' + lvl).classList.add('active');
+}
+
+// Nivel 1: Cuadro de productos
+function genPropMU_cuadro() {
+  // Genera una tabla de multiplicación con 2 filas y 2 columnas (factores aleatorios)
+  const rows = [rndNZ(-9,9), rndNZ(-9,9)];
+  const cols = [rndNZ(-9,9), rndNZ(-9,9)];
+  let tableHTML = `<table class="mult-table">
+    <tr><td class="mult-header">×</td>`;
+  cols.forEach(c => { tableHTML += `<td class="mult-header">${opnd(c)}</td>`; });
+  tableHTML += '</tr>';
+  rows.forEach(r => {
+    tableHTML += `<tr><td class="mult-header">${opnd(r)}</td>`;
+    cols.forEach(() => { tableHTML += `<td class="mult-cell"></td>`; });
+    tableHTML += '</tr>';
+  });
+  tableHTML += '</table>';
+  const solPairs = [];
+  rows.forEach(r => cols.forEach(c => solPairs.push(`${opnd(r)} × ${opnd(c)} = ${r*c}`)));
+  return { expr: tableHTML, sol: solPairs.join(' &nbsp;|&nbsp; '), lvl: 1, isTable: true };
+}
+
+// Nivel 2: Propiedad distributiva — a(b+c) o a(b-c)
+function genPropMU_dist() {
+  const a = rndNZ(-9,9);
+  const b = rnd(-9,9), c = rnd(-9,9);
+  const op = rnd(0,1) === 0 ? '+' : '−';
+  const cVal = op === '−' ? -Math.abs(c) : Math.abs(c);
+  // expr: a(b + c) = a·b + a·c
+  const left = a * (b + cVal);
+  const part1 = a * b, part2 = a * cVal;
+  const bStr = b >= 0 ? String(b) : `(${b})`;
+  const cStr = Math.abs(cVal) === cVal ? String(Math.abs(cVal)) : String(Math.abs(cVal));
+  const opHtml = op === '+' ? '+' : '−';
+  const expr = `${opnd(a)} · (${b} ${opHtml} ${Math.abs(cVal)}) =`;
+  const sol = `${a}·${b} + ${a}·(${cVal}) = ${part1} + (${part2}) = ${left}`;
+  return { expr, sol, lvl: 1 };
+}
+
+// Nivel 3: Identificar la propiedad
+function genPropMU_prop() {
+  const PROPS = [
+    // Conmutativa: a·b = b·a
+    () => {
+      const a = rndNZ(-9,9), b = rndNZ(-9,9);
+      return { expr: `${opnd(a)} · ${opnd(b)} = ${opnd(b)} · ${opnd(a)}`, sol: 'Propiedad conmutativa', lvl: 2 };
+    },
+    // Asociativa: (a·b)·c = a·(b·c)
+    () => {
+      const a = rndNZ(-6,6), b = rndNZ(-6,6), c = rndNZ(-6,6);
+      return { expr: `(${opnd(a)} · ${opnd(b)}) · ${opnd(c)} = ${opnd(a)} · (${opnd(b)} · ${opnd(c)})`, sol: 'Propiedad asociativa', lvl: 2 };
+    },
+    // Distributiva: a·(b+c) = a·b + a·c
+    () => {
+      const a = rndNZ(-6,6), b = rnd(-6,6), c = rnd(-6,6);
+      const op = c >= 0 ? '+' : '−';
+      const absC = Math.abs(c);
+      return { expr: `${opnd(a)} · (${b} ${op} ${absC}) = ${opnd(a)} · ${opnd(b)} + ${opnd(a)} · ${opnd(c)}`, sol: 'Propiedad distributiva', lvl: 2 };
+    },
+    // Elemento neutro: a·1 = a
+    () => {
+      const a = rndNZ(-12,12);
+      return { expr: `${opnd(a)} · 1 = ${opnd(a)}`, sol: 'Elemento neutro de la multiplicación', lvl: 2 };
+    },
+    // Elemento absorbente: a·0 = 0
+    () => {
+      const a = rndNZ(-12,12);
+      return { expr: `${opnd(a)} · 0 = 0`, sol: 'Elemento absorbente (propiedad del cero)', lvl: 2 };
+    },
+    // Opuesto: a·(-1) = -a
+    () => {
+      const a = rndNZ(-12,12);
+      return { expr: `${opnd(a)} · (−1) = ${opnd(-a)}`, sol: 'Multiplicación por −1 (da el opuesto)', lvl: 2 };
+    }
+  ];
+  return PROPS[rnd(0, PROPS.length-1)]();
+}
+
+function generatePropMU() {
+  const total = Object.values(PROP_MU_STATE).reduce((a,b)=>a+b, 0);
+  if (total === 0) { alert('Agregá al menos un ejercicio con +'); return; }
+
+  const ejercicios = [], seen = new Set();
+  const PROP_GENS = { 1: genPropMU_dist, 2: genPropMU_prop };
+  const PROP_LEVEL_NAMES = {
+    1: 'Nivel 1 — Propiedad distributiva',
+    2: 'Nivel 2 — Identificar la propiedad'
+  };
+
+  [1,2].forEach(lvl => {
+    const qty = PROP_MU_STATE[lvl] || 0; if (!qty) return;
+    let count = 0, att = 0;
+    while (count < qty && att < qty*40) {
+      att++;
+      try {
+        const e = PROP_GENS[lvl]();
+        if (!e || seen.has(e.expr)) continue;
+        seen.add(e.expr);
+        ejercicios.push(e);
+        count++;
+      } catch(err) {}
+    }
+  });
+  ejercicios.forEach((e,i) => e.id = i+1);
+
+  const fecha = new Date().toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+
+  let currentLvl = null;
+  let ejHTML = '<div class="ejercicios-list">';
+  ejercicios.forEach(e => {
+    if (e.lvl !== currentLvl) {
+      currentLvl = e.lvl;
+      ejHTML += `<div class="level-header">${PROP_LEVEL_NAMES[e.lvl]}</div>`;
+    }
+    if (e.lvl === 2) {
+      // Identificar propiedad: espacio para escribir el nombre
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">(${e.id})</span>
+        <div class="ej-content">
+          <div class="ej-question">${e.expr}</div>
+          <div style="margin-top:8px">Propiedad: ___________________________________</div>
+        </div>
+      </div>`;
+    } else {
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">(${e.id})</span>
+        <div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space work-space-md"></div></div>
+      </div>`;
+    }
+  });
+  ejHTML += '</div>';
+
+  let solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e => {
+    solHTML += `<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}</div></div>`;
+  });
+  solHTML += `</div><div class="ej-copyright">${COPYRIGHT_TXT}</div>`;
+
+  const el = document.getElementById('prop-mu-ej');
+  el.innerHTML = `
+    <div class="ej-header">
+      <div class="ej-title">Números Enteros</div>
+      <div class="ej-meta"></div>
+      <div class="ej-data-row">
+        <span>Nombre: ____________________________</span>
+        <span>Curso: _____________ &nbsp; Fecha: _____________</span>
+      </div>
+      ${indGetTablaHTML('ind-filas')}
+    </div>
+    ${ejHTML}${solHTML}
+  `;
+  el.style.display = 'block';
+  document.getElementById('prop-mu-btnDL').style.display = 'block';
+}
+
+// ── DIVISIÓN ──────────────────────────────
+function genDV(lvl) {
+  if (lvl === 1) {
+    const q = rndNZ(-15, 15);
+    const d = rndNZ(-12, 12);
+    const n = d * q;
+    return { expr: `${opnd(n)} ÷ ${opnd(d)} =`, sol: String(q), lvl };
+  }
+  if (lvl === 2) {
+    const d = rndNZ(2, 12);
+    const n = rndNZ(-50, 50);
+    const q = Math.trunc(n / d);
+    const r = n - q * d;
+    const sol = r === 0 ? String(q) : `Cociente: ${q}, Resto: ${r < 0 ? -r : r}`;
+    return { expr: `${opnd(n)} ÷ ${opnd(d)} =`, sol, lvl };
+  }
+  // Chain: make clean result
+  const b = rndNZ(2,8), c = rndNZ(2,6);
+  const q = rndNZ(-8,8);
+  const a = q * b * c;
+  return { expr: `${opnd(a)} ÷ ${opnd(b)} ÷ ${opnd(c)} =`, sol: String(q), lvl };
+}
+
+// ── POTENCIACIÓN ─────────────────────────
+function genPO(lvl) {
+  if (lvl === 1) {
+    const base = rnd(-8,8);
+    const exp  = rnd(2,4);
+    const result = Math.pow(base, exp);
+    return { expr: `${opnd(base)}${sup(exp)} =`, sol: String(result), lvl };
+  }
+  if (lvl === 2) {
+    const base = rndNZ(-5,5);
+    const n1   = rnd(2,5), n2 = rnd(1,4);
+    const isDiv = rnd(0,1) && n1 > n2;
+    const expR  = isDiv ? n1-n2 : n1+n2;
+    const expr  = isDiv
+      ? `${opnd(base)}${sup(n1)} ÷ ${opnd(base)}${sup(n2)}`
+      : `${opnd(base)}${sup(n1)} · ${opnd(base)}${sup(n2)}`;
+    const result = Math.pow(base, expR);
+    return { expr: `${expr} =`, sol: `${opnd(base)}${sup(expR)} = ${result}`, lvl };
+  }
+  // lvl 3
+  if (rnd(0,1) === 0) {
+    const base = rndNZ(-4,4), n = rnd(2,3), m = rnd(2,3);
+    const result = Math.pow(base, n*m);
+    return { expr: `(${opnd(base)}${sup(n)})${sup(m)} =`, sol: `${opnd(base)}${sup(n*m)} = ${result}`, lvl };
+  } else {
+    const b1=rndNZ(-4,4),e1=rnd(2,3),b2=rndNZ(-4,4),e2=rnd(2,3);
+    const result = Math.pow(b1,e1)*Math.pow(b2,e2);
+    return { expr: `${opnd(b1)}${sup(e1)} · ${opnd(b2)}${sup(e2)} =`, sol: String(result), lvl };
+  }
+}
+
+// ── COMBINADAS SIN AGRUPACIÓN ─────────────
+// All levels use ALL operations: +, −, ·, ÷, powers (incl. exp=0), roots
+// Complexity grows by number of terms and nesting of powers/roots
+
+function randBase() { return rndNZ(-6, 6); }
+function randExp() { return rnd(0, 3); }  // includes 0!
+function randSqBase() { return rnd(1, 10); } // perfect square base (result = n²)
+
+// Returns { str, val } for a "power term": base^exp or root or just a number
+function powerTerm(forceRoot) {
+  const type = forceRoot ? 2 : rnd(0, 2);
+  if (type === 0) {
+    const n = rndNZ(-9, 9);
+    return { str: opnd(n), val: n };
+  }
+  if (type === 1) {
+    const base = randBase(), exp = randExp();
+    return { str: `${opnd(base)}${sup(exp)}`, val: Math.pow(base, exp) };
+  }
+  // root with varied index (2, 3, 4, 5)
+  const idx = [2, 3, 4, 5][rnd(0, 3)];
+  const r = makeRoot(idx);
+  return { str: r.str, val: r.val };
+}
+
+function genCS(lvl) {
+  // Lvl 1: 3-4 terms, ops +/−/·, each term can be power/root/plain
+  // Lvl 2: 4-5 terms, adds ÷, more powers/roots
+  // Lvl 3: 5-6 terms, all operations, guaranteed mix of powers and roots
+  let expr, result, att = 0;
+
+  while (att++ < 60) {
+    try {
+      const nTerms = lvl === 1 ? rnd(3,4) : lvl === 2 ? rnd(4,5) : rnd(5,6);
+      const opsPool = lvl === 1 ? ['+','−','·'] : lvl === 2 ? ['+','−','·','÷'] : ['+','−','·','÷'];
+
+      // Build terms
+      const terms = [];
+      const ops = [];
+
+      // Force at least 1 power and 1 root in lvl 3, 1 power in lvl 2
+      const forceRoot = lvl === 3;
+      const forcePow  = lvl >= 2;
+
+      for (let i = 0; i < nTerms; i++) {
+        const forceR = forceRoot && i === 0;
+        const forceP = forcePow && i === 1;
+        terms.push(powerTerm(forceR ? true : false));
+        if (i < nTerms - 1) {
+          // avoid division when next term could be 0
+          ops.push(opsPool[rnd(0, opsPool.length - 1)]);
+        }
+      }
+
+      // Force a power in position 2 for lvl >= 2
+      if (forcePow && terms.length > 1) {
+        const base = randBase(), exp = rnd(0, 3);
+        terms[1] = { str: `${opnd(base)}${sup(exp)}`, val: Math.pow(base, exp) };
+      }
+
+      // Force a root in position 0 for lvl 3
+      if (forceRoot) {
+        const n = randSqBase();
+        terms[0] = { str: `${sqrtHTML(n*n)}`, val: n };
+      }
+
+      // Compute result respecting order of operations
+      // Build as a series of +/− with subexpressions that handle · and ÷ first
+      // Strategy: collect additive groups
+      let groups = [{ terms: [terms[0]], ops_in: [] }];
+      for (let i = 0; i < ops.length; i++) {
+        if (ops[i] === '+' || ops[i] === '−') {
+          groups.push({ terms: [terms[i+1]], ops_in: [], addOp: ops[i] });
+        } else {
+          groups[groups.length-1].terms.push(terms[i+1]);
+          groups[groups.length-1].ops_in.push(ops[i]);
+        }
+      }
+
+      // Evaluate each group (left to right within group: · and ÷)
+      const groupVals = groups.map(g => {
+        let v = g.terms[0].val;
+        for (let i = 0; i < g.ops_in.length; i++) {
+          const tv = g.terms[i+1].val;
+          if (g.ops_in[i] === '·') v *= tv;
+          else {
+            if (tv === 0) throw new Error('div by zero');
+            if (!Number.isInteger(v / tv)) throw new Error('non-integer div');
+            v /= tv;
+          }
+        }
+        return v;
+      });
+
+      // Sum groups
+      let total = groupVals[0];
+      for (let i = 1; i < groups.length; i++) {
+        total = groups[i].addOp === '+' ? total + groupVals[i] : total - groupVals[i];
+      }
+
+      if (!Number.isFinite(total) || !Number.isInteger(total)) continue;
+
+      // Build expression string
+      let exprParts = [terms[0].str];
+      for (let i = 0; i < ops.length; i++) {
+        const op = ops[i];
+        const tStr = terms[i+1].str;
+        if (op === '+') exprParts.push(`+ ${tStr}`);
+        else if (op === '−') exprParts.push(`− ${tStr}`);
+        else if (op === '·') exprParts.push(`· ${tStr}`);
+        else exprParts.push(`÷ ${tStr}`);
+      }
+
+      expr = exprParts.join(' ') + ' =';
+      result = total;
+      break;
+    } catch(e) { continue; }
+  }
+
+  if (!expr) return genCS(lvl); // retry
+  return { expr, sol: String(result), lvl };
+}
+
+// ── COMBINADAS CON AGRUPACIÓN ─────────────
+function genCC(lvl) {
+  let expr, result, att = 0;
+
+  while (att++ < 80) {
+    try {
+      if (lvl === 1) {
+        // ( ) only — one pair of parens, with powers/roots inside or outside
+        const type = rnd(0, 3);
+        let e, r;
+
+        if (type === 0) {
+          // a · (b + cⁿ) − √d²
+          const a=rndNZ(-6,6), b=rnd(-8,8), base=randBase(), exp=rnd(0,3), sq=randSqBase();
+          const inner = b + Math.pow(base,exp);
+          r = a*inner - sq;
+          e = `${opnd(a)} · (${first(b)} + ${opnd(base)}${sup(exp)}) − ${sqrtHTML(sq*sq)}`;
+        } else if (type === 1) {
+          // (aⁿ + b) · c − d
+          const base=randBase(), exp=rnd(0,3), b=rnd(-8,8), c=rndNZ(-6,6), d=rnd(-10,10);
+          r = (Math.pow(base,exp)+b)*c - d;
+          e = `(${opnd(base)}${sup(exp)} + ${opnd(b)}) · ${opnd(c)} − ${opnd(d)}`;
+        } else if (type === 2) {
+          // √a² · (b − c) + dⁿ
+          const sq=randSqBase(), b=rnd(-8,8), c=rnd(-8,8), base=randBase(), exp=rnd(0,3);
+          r = sq*(b-c) + Math.pow(base,exp);
+          e = `${sqrtHTML(sq*sq)} · (${first(b)} − ${Math.abs(c)}) + ${opnd(base)}${sup(exp)}`;
+        } else {
+          // aⁿ + (b · c − d)
+          const base=randBase(), exp=rnd(0,3), b=rndNZ(-6,6), c=rnd(-8,8), d=rnd(-10,10);
+          r = Math.pow(base,exp) + (b*c - d);
+          e = `${opnd(base)}${sup(exp)} + (${first(b)} · ${opnd(c)} − ${opnd(d)})`;
+        }
+
+        if (!Number.isInteger(r) || !Number.isFinite(r)) continue;
+        expr = e + ' ='; result = r; break;
+
+      } else if (lvl === 2) {
+        // [ ( ) ] — with powers and roots
+        const type = rnd(0, 2);
+        let e, r;
+
+        if (type === 0) {
+          // [aⁿ · (b + c) − √d²] + e
+          const base=randBase(), exp=rnd(0,3), b=rnd(-6,6), c=rnd(-6,6), sq=randSqBase(), e2=rnd(-10,10);
+          r = Math.pow(base,exp)*(b+c) - sq + e2;
+          e = `[${opnd(base)}${sup(exp)} · (${first(b)} + ${opnd(c)}) − ${sqrtHTML(sq*sq)}] + ${opnd(e2)}`;
+        } else if (type === 1) {
+          // √a² + [bⁿ − (c · d)]
+          const sq=randSqBase(), base=randBase(), exp=rnd(0,3), c=rndNZ(-6,6), d=rnd(-8,8);
+          r = sq + Math.pow(base,exp) - c*d;
+          e = `${sqrtHTML(sq*sq)} + [${opnd(base)}${sup(exp)} − (${first(c)} · ${opnd(d)})]`;
+        } else {
+          // [a + (b − cⁿ)] · √d²
+          const a=rnd(-8,8), b=rnd(-8,8), base=randBase(), exp=rnd(0,3), sq=randSqBase();
+          r = (a + (b - Math.pow(base,exp))) * sq;
+          e = `[${first(a)} + (${first(b)} − ${opnd(base)}${sup(exp)})] · ${sqrtHTML(sq*sq)}`;
+        }
+
+        if (!Number.isInteger(r) || !Number.isFinite(r)) continue;
+        expr = e + ' ='; result = r; break;
+
+      } else {
+        // { [ ( ) ] } — full nesting with all operations
+        const type = rnd(0, 2);
+        let e, r;
+
+        if (type === 0) {
+          // {aⁿ − [b · (c + √d²) − e]} · f
+          const base=randBase(), exp=rnd(0,3), b=rndNZ(-4,4), c=rnd(-6,6), sq=randSqBase(), e2=rnd(-8,8), f=rndNZ(-3,3);
+          r = (Math.pow(base,exp) - (b*(c+sq) - e2)) * f;
+          e = `{${opnd(base)}${sup(exp)} − [${first(b)} · (${first(c)} + ${sqrtHTML(sq*sq)}) − ${opnd(e2)}]} · ${opnd(f)}`;
+        } else if (type === 1) {
+          // {[√a² + (bⁿ − c)] · d} − e
+          const sq=randSqBase(), base=randBase(), exp=rnd(0,3), c=rnd(-8,8), d=rndNZ(-4,4), e2=rnd(-10,10);
+          r = (sq + (Math.pow(base,exp) - c)) * d - e2;
+          e = `{[${sqrtHTML(sq*sq)} + (${opnd(base)}${sup(exp)} − ${opnd(c)})] · ${opnd(d)}} − ${opnd(e2)}`;
+        } else {
+          // √a² · {[bⁿ + c] − (d − e)} 
+          const sq=randSqBase(), base=randBase(), exp=rnd(0,3), c=rnd(-6,6), d=rnd(-8,8), e2=rnd(-6,6);
+          r = sq * ((Math.pow(base,exp)+c) - (d-e2));
+          e = `${sqrtHTML(sq*sq)} · {[${opnd(base)}${sup(exp)} + ${opnd(c)}] − (${first(d)} − ${opnd(e2)})}`;
+        }
+
+        if (!Number.isInteger(r) || !Number.isFinite(r)) continue;
+        expr = e + ' ='; result = r; break;
+      }
+    } catch(err) { continue; }
+  }
+
+  if (!expr) return genCC(lvl);
+  return { expr, sol: String(result), lvl };
+}
+
+const COPYRIGHT_TXT = '© 2026 Maria Lopez Nery Huerta';
+const GENS = { sr:genSR, mu:genMU, dv:genDV, po:genPO, ra:genRA, cs:genCS, cc:genCC };
+
+const TOPIC_NAMES = {
+  sr:'Números Enteros', mu:'Números Enteros', dv:'Números Enteros',
+  po:'Números Enteros', ra:'Números Enteros',
+  cs:'Números Enteros', cc:'Números Enteros',
+  sp:'Números Enteros'
+};
+
+const LEVEL_NAMES = {
+  sr:{1:'Nivel 1 — Corto',2:'Nivel 2 — Medio',3:'Nivel 3 — Largo'},
+  mu:{1:'Nivel 1 — 2 factores',2:'Nivel 2 — 3 factores',3:'Nivel 3 — 4+ factores',
+      4:'Nivel 4 — Múltiplo de',5:'Nivel 5 — Factor faltante (____)',6:'Nivel 6 — Pares de factores posibles',7:'Nivel 7 — Cuadro de productos'},
+  dv:{1:'Nivel 1 — Exacta',2:'Nivel 2 — Con resto',3:'Nivel 3 — Cadena'},
+  po:{1:'Nivel 1 — Simple',2:'Nivel 2 — Misma base',3:'Nivel 3 — Potencia de potencia'},
+  ra:{1:'Nivel 1 — Raíz cuadrada',2:'Nivel 2 — Cúbica y potencias',3:'Nivel 3 — Combinadas'},
+  cs:{1:'Nivel 1 — Suma/resta/mult.',2:'Nivel 2 — + División y potencias',3:'Nivel 3 — + Raíces'},
+  cc:{1:'Nivel 1 — Paréntesis',2:'Nivel 2 — Paréntesis y corchetes',3:'Nivel 3 — + Llaves'},
+  sp:{1:'Nivel 1 — Suma y Resta',2:'Nivel 2 — Multiplicación',3:'Nivel 3 — División',
+      4:'Nivel 4 — Potenciación',5:'Nivel 5 — Radicación',6:'Nivel 6 — Varias operaciones'}
+};
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function generateTopic(pfx) {
+  const total = Object.values(STATE[pfx]).reduce((a,b)=>a+b, 0);
+  if (total === 0) { alert('Agregá al menos un ejercicio con +'); return; }
+
+  const ejercicios = [], seen = new Set();
+  const allLvls = Object.keys(STATE[pfx]).map(Number).sort((a,b)=>a-b);
+  for (const lvl of allLvls) {
+    const qty = STATE[pfx][lvl] || 0; if (!qty) continue;
+    let count = 0, att = 0;
+    while (count < qty && att < qty*40) {
+      att++;
+      try {
+        const e = GENS[pfx](lvl);
+        if (!e || seen.has(e.expr)) continue;
+        // Verificar que el resultado sea entero (no fraccionario)
+        if (e.sol !== undefined) {
+          const solStr = String(e.sol);
+          // Rechazar si la solución contiene punto decimal (ej: 1.5) o fracción visual
+          if (/\.\d/.test(solStr) && !solStr.includes('Cociente') && !solStr.includes('Resto')) continue;
+        }
+        seen.add(e.expr);
+        ejercicios.push(e);
+        count++;
+      } catch(err) {}
+    }
+  }
+  ejercicios.forEach((e,i) => e.id = i+1);
+
+  const fecha = new Date().toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+
+  let currentLvl = null;
+  let ejHTML = '<div class="ejercicios-list">';
+  ejercicios.forEach(e => {
+    if (e.lvl !== currentLvl) {
+      currentLvl = e.lvl;
+      ejHTML += `<div class="level-header">${LEVEL_NAMES[pfx][e.lvl]}</div>`;
+    }
+    const wsSize = {sr:'work-space-sm',dv:'work-space-md',
+      po:'work-space-sm',ra:'work-space-sm',cs:'work-space-md',cc:'work-space-lg'}[pfx]
+      || (pfx==='mu' ? (e.lvl >= 4 ? 'work-space-md' : 'work-space-sm') : 'work-space-md');
+    if (e.isTable) {
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">(${e.id})</span>
+        <div class="ej-content"><div class="ej-question">Completá el cuadro de productos:</div>${e.expr}</div>
+      </div>`;
+    } else {
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">(${e.id})</span>
+        <div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsSize}"></div></div>
+      </div>`;
+    }
+  });
+  ejHTML += '</div>';
+
+  let solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e => {
+    solHTML += `<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}</div></div>`;
+  });
+  solHTML += `</div><div class="ej-copyright">${COPYRIGHT_TXT}</div>`;
+
+  const el = document.getElementById(pfx + '-ej');
+  el.innerHTML = `
+    <div class="ej-header">
+      <div class="ej-title">${TOPIC_NAMES[pfx]}</div>
+      <div class="ej-meta"></div>
+      <div class="ej-data-row">
+        <span>Nombre: ____________________________</span>
+        <span>Curso: _____________ &nbsp; Fecha: _____________</span>
+      </div>
+      ${indGetTablaHTML('ind-filas')}
+    </div>
+    ${ejHTML}${solHTML}
+  `;
+  el.style.display = 'block';
+  document.getElementById(pfx + '-btnDL').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════
+// PLANO CARTESIANO
+// ═══════════════════════════════════════════
+function pcChangeQty(lvl, delta) {
+  const minV = lvl === 0 ? 2 : 0;
+  const maxV = lvl === 0 ? 10 : 8;
+  PC_STATE[lvl] = Math.max(minV, Math.min(maxV, (PC_STATE[lvl]||0) + delta));
+  document.getElementById('pc-lqv-' + lvl).textContent = PC_STATE[lvl];
+  const total = PC_STATE[1] + PC_STATE[2];
+  document.getElementById('pc-badge').innerHTML = 'Total: <span>' + total + '</span> ejercicios';
+}
+
+function pcMakePlane(size) {
+  // size: rango del plano (ej: 6 → muestra de -6 a 6)
+  const S = size || 6;
+  const W = 300; // ancho SVG
+  const H = 300; // alto SVG
+  const PAD = 30; // padding para labels
+  const step = (W - PAD * 2) / (S * 2); // px por unidad
+  const cx = PAD + S * step; // centro x
+  const cy = PAD + S * step; // centro y
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" style="display:block;margin:0 auto">`;
+
+  // Cuadrícula
+  svg += `<g stroke="#e0e0e0" stroke-width="0.7">`;
+  for (let i = -S; i <= S; i++) {
+    const x = cx + i * step;
+    const y = cy + i * step;
+    svg += `<line x1="${x}" y1="${PAD}" x2="${x}" y2="${H - PAD}"/>`;
+    svg += `<line x1="${PAD}" y1="${y}" x2="${W - PAD}" y2="${y}"/>`;
+  }
+  svg += `</g>`;
+
+  // Ejes
+  svg += `<line x1="${PAD}" y1="${cy}" x2="${W - PAD}" y2="${cy}" stroke="#333" stroke-width="1.8"/>`;
+  svg += `<line x1="${cx}" y1="${PAD}" x2="${cx}" y2="${H - PAD}" stroke="#333" stroke-width="1.8"/>`;
+
+  // Flechas ejes
+  svg += `<polygon points="${W-PAD},${cy} ${W-PAD-6},${cy-4} ${W-PAD-6},${cy+4}" fill="#333"/>`;
+  svg += `<polygon points="${cx},${PAD} ${cx-4},${PAD+6} ${cx+4},${PAD+6}" fill="#333"/>`;
+
+  // Labels ejes
+  svg += `<text x="${W-PAD+4}" y="${cy+4}" font-size="11" fill="#333" font-family="Arial">x</text>`;
+  svg += `<text x="${cx+4}" y="${PAD-4}" font-size="11" fill="#333" font-family="Arial">y</text>`;
+
+  // Números en ejes (cada 2 unidades excepto 0)
+  svg += `<g font-size="9" fill="#666" font-family="Arial" text-anchor="middle">`;
+  for (let i = -S; i <= S; i++) {
+    if (i === 0) continue;
+    if (Math.abs(i) % 2 !== 0) continue;
+    const x = cx + i * step;
+    const y = cy + i * step;
+    svg += `<text x="${x}" y="${cy + 14}">${i}</text>`;
+    svg += `<text x="${cx - 12}" y="${y + 3}" text-anchor="middle">${-i}</text>`;
+  }
+  // Origen
+  svg += `<text x="${cx - 10}" y="${cy + 13}">0</text>`;
+  svg += `</g>`;
+
+  return { svg, cx, cy, step, S, svgClose: '' };
+}
+
+function pcSVGEmpty(size) {
+  // Plano sin puntos (para Tipo 1 - el alumno ubica)
+  const p = pcMakePlane(size);
+  return p.svg + '</svg>';
+}
+
+function pcSVGWithPoints(points, labels, size) {
+  // Plano con puntos marcados (para Tipo 2 - el alumno lee)
+  const p = pcMakePlane(size);
+  let inner = p.svg;
+  const COLORS = ['#e53e3e','#2b6cb0','#276749','#b7791f','#6b46c1','#c53030','#2c7a7b','#744210','#553c9a'];
+  points.forEach((pt, idx) => {
+    const px = p.cx + pt[0] * p.step;
+    const py = p.cy - pt[1] * p.step;
+    const col = COLORS[idx % COLORS.length];
+    inner += `<circle cx="${px}" cy="${py}" r="5" fill="${col}" stroke="white" stroke-width="1.5"/>`;
+    // Label desplazado para evitar solapamiento con el punto
+    const lx = px + (pt[0] >= 0 ? 8 : -8);
+    const ly = py + (pt[1] >= 0 ? -8 : 12);
+    inner += `<text x="${lx}" y="${ly}" font-size="11" font-weight="bold" fill="${col}" font-family="Arial">${labels[idx]}</text>`;
+  });
+  return inner + '</svg>';
+}
+
+function pcGenPoints(qty, size) {
+  // Genera puntos únicos en coordenadas enteras, en los 4 cuadrantes
+  const used = new Set();
+  const pts = [];
+  const S = size - 1; // dejar margen del borde
+  let attempts = 0;
+  while (pts.length < qty && attempts < 200) {
+    attempts++;
+    const x = rnd(-S, S);
+    const y = rndNZ(-S, S);
+    if (x === 0) continue; // evitar ejes para claridad
+    const key = x + ',' + y;
+    if (used.has(key)) continue;
+    // Distribuir en cuadrantes: verificar que haya variedad
+    used.add(key);
+    pts.push([x, y]);
+  }
+  return pts;
+}
+
+function generatePC() {
+  const qPts1 = PC_STATE[0]; // puntos por ej (ambos tipos)
+  const qPts2 = PC_STATE[0];
+  const nEj1  = PC_STATE[1]; // cantidad ej Tipo1
+  const nEj2  = PC_STATE[2]; // cantidad ej Tipo2
+  const totalEj = nEj1 + nEj2;
+  if (totalEj === 0) { alert('Configurá al menos 1 ejercicio.'); return; }
+
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const fecha = new Date().toLocaleDateString('es-PY', {day:'2-digit',month:'long',year:'numeric'});
+  const SIZE = 6; // plano de -6 a 6
+
+  let ejHTML = '';
+  let solHTML = '<div style="page-break-before:always"></div>';
+  solHTML += '<div class="ej-title" style="margin-top:1rem">✔ Soluciones — Plano Cartesiano</div>';
+  let ejNum = 1;
+
+  // TIPO 1 — Dar coordenadas, alumno ubica
+  if (nEj1 > 0) {
+    ejHTML += `<div class="level-header">Tipo 1 — Ubicar puntos en el plano cartesiano</div>`;
+    for (let e = 0; e < nEj1; e++) {
+      const pts = pcGenPoints(qPts1, SIZE);
+      const labels = pts.map((_, i) => LETTERS[i]);
+
+      // Tabla de coordenadas dada al alumno
+      let tabla = `<table style="border-collapse:collapse;margin-bottom:8px;font-size:0.9rem">
+        <tr style="background:#f0fdf4"><th style="padding:4px 12px;border:1px solid #ccc">Punto</th>`;
+      labels.forEach(l => { tabla += `<th style="padding:4px 12px;border:1px solid #ccc">${l}</th>`; });
+      tabla += `</tr><tr><td style="padding:4px 12px;border:1px solid #ccc;font-weight:bold">Coordenadas</td>`;
+      pts.forEach(p => { tabla += `<td style="padding:4px 12px;border:1px solid #ccc">(${p[0]};&nbsp;${p[1]})</td>`; });
+      tabla += `</tr></table>`;
+
+      ejHTML += `<div class="ej-item">
+        <div class="ej-num">${ejNum}</div>
+        <div>
+          <p style="margin:0 0 6px;font-size:0.9rem">Ubica los siguientes puntos en el plano cartesiano:</p>
+          ${tabla}
+          ${pcSVGEmpty(SIZE)}
+        </div>
+      </div>`;
+
+      // Solución Tipo 1: plano con puntos marcados
+      solHTML += `<div class="ej-item"><div class="ej-num">${ejNum}</div><div>
+        ${pcSVGWithPoints(pts, labels, SIZE)}
+      </div></div>`;
+      ejNum++;
+    }
+  }
+
+  // TIPO 2 — Dar gráfico, alumno lee coordenadas
+  if (nEj2 > 0) {
+    ejHTML += `<div class="level-header">Tipo 2 — Leer las coordenadas de los puntos</div>`;
+    for (let e = 0; e < nEj2; e++) {
+      const pts = pcGenPoints(qPts2, SIZE);
+      const labels = pts.map((_, i) => LETTERS[i]);
+
+      // Tabla para que el alumno complete
+      let tablaAlumno = `<table style="border-collapse:collapse;margin-left:16px;font-size:0.9rem">
+        <tr style="background:#eff6ff"><th style="padding:5px 14px;border:1px solid #ccc">Punto</th><th style="padding:5px 14px;border:1px solid #ccc">Coordenadas</th></tr>`;
+      labels.forEach(l => {
+        tablaAlumno += `<tr><td style="padding:5px 14px;border:1px solid #ccc;font-weight:bold;text-align:center">${l}</td>
+          <td style="padding:5px 28px;border:1px solid #ccc">( ___ ; ___ )</td></tr>`;
+      });
+      tablaAlumno += `</table>`;
+
+      ejHTML += `<div class="ej-item">
+        <div class="ej-num">${ejNum}</div>
+        <div>
+          <p style="margin:0 0 8px;font-size:0.9rem">Escribí las coordenadas de cada punto indicado en el plano:</p>
+          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+            ${pcSVGWithPoints(pts, labels, SIZE)}
+            ${tablaAlumno}
+          </div>
+        </div>
+      </div>`;
+
+      // Solución Tipo 2: tabla con valores
+      let tablaSol = `<table style="border-collapse:collapse;margin-left:16px;font-size:0.9rem">
+        <tr style="background:#eff6ff"><th style="padding:5px 14px;border:1px solid #ccc">Punto</th><th style="padding:5px 14px;border:1px solid #ccc">Coordenadas</th></tr>`;
+      labels.forEach((l, i) => {
+        tablaSol += `<tr><td style="padding:5px 14px;border:1px solid #ccc;font-weight:bold;text-align:center">${l}</td>
+          <td style="padding:5px 14px;border:1px solid #ccc;color:#2b6cb0;font-weight:bold">(${pts[i][0]} ; ${pts[i][1]})</td></tr>`;
+      });
+      tablaSol += `</table>`;
+
+      solHTML += `<div class="ej-item"><div class="ej-num">${ejNum}</div><div>
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          ${pcSVGWithPoints(pts, labels, SIZE)}
+          ${tablaSol}
+        </div>
+      </div></div>`;
+      ejNum++;
+    }
+  }
+
+  const el = document.getElementById('pc-ej');
+  el.innerHTML = `<div class="ej-header">
+    <div class="ej-title">Plano Cartesiano</div>
+    <div class="ej-meta"></div>
+    <div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>
+      ${indGetTablaHTML('ind-filas')}
+  </div>` + ejHTML + solHTML +
+  `<div class="copyright">${COPYRIGHT_TXT}</div>`;
+
+  el.style.display = 'block';
+  document.getElementById('pc-btnDL').style.display = 'inline-block';
+  document.getElementById('pc-btnDL').style.display = 'inline-block';
+}
+
+// ═══════════════════════════════════════════
+// DOWNLOAD
+// ═══════════════════════════════════════════
+
+
+// ── Recopilar nodos de solución para la hoja aparte ──────────────────────────
+function collectSolutionNodes(container) {
+  var nodes = [];
+  var selectors = [
+    '.soluciones-section',
+    '.sol-section',
+    '.intro-sol-block',
+    '.ineq-sol'
+  ];
+  selectors.forEach(function(sel) {
+    container.querySelectorAll(sel).forEach(function(el) {
+      nodes.push(el.cloneNode(true));
+    });
+  });
+  // Pares: .solutions-title / .sp-sol-title / .intro-sol-title + hermano
+  container.querySelectorAll('.solutions-title, .sp-sol-title, .intro-sol-title').forEach(function(el) {
+    var wrap = document.createElement('div');
+    wrap.appendChild(el.cloneNode(true));
+    var next = el.nextElementSibling;
+    if (next) wrap.appendChild(next.cloneNode(true));
+    nodes.push(wrap);
+  });
+  return nodes;
+}
+
+// ── Descargar SOLO soluciones (hoja para el docente) ─────────────────────────
+function downloadSolucionesAparte(containerId, filename) {
+  var ejEl = document.getElementById(containerId);
+  if (!ejEl || ejEl.style.display === 'none') {
+    alert('Primero generá el ejercitario.');
+    return;
+  }
+  var solNodes = collectSolutionNodes(ejEl);
+  if (solNodes.length === 0) {
+    alert('Este ejercitario no tiene soluciones para descargar.');
+    return;
+  }
+  if (_isIOS()) { _showIOSToast(); }
+  _printMode = 'sol';
+  window.print();
+}
+
+function stripSolutions(container) {
+  // Elimina todos los bloques de soluciones del DOM clonado
+  var selectors = [
+    '.soluciones-section',
+    '.sol-section',
+    '.intro-sol-block'
+  ];
+  selectors.forEach(function(sel) {
+    container.querySelectorAll(sel).forEach(function(el) { el.remove(); });
+  });
+  // Elimina pares: .solutions-title + .solutions-list
+  container.querySelectorAll('.solutions-title, .sp-sol-title, .intro-sol-title').forEach(function(el) {
+    var next = el.nextElementSibling;
+    if (next) next.remove();
+    el.remove();
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// RAÍZ CUADRADA — EXACTAS E INEXACTAS
+// ══════════════════════════════════════════════════════
+
+// STATE: rc_STATE[tipo][nivel] = cantidad
+// tipo: 'ex' (exactas) | 'inex' (inexactas)
+const RC_STATE = { ex:{1:0,2:0,3:0}, inex:{1:0,2:0,3:0} };
+
+function rcChangeQty(tipo, lvl, delta) {
+  RC_STATE[tipo][lvl] = Math.max(0, Math.min(30, (RC_STATE[tipo][lvl] || 0) + delta));
+  var el = document.getElementById('rc-' + tipo + '-lqv-' + lvl);
+  if (el) el.textContent = RC_STATE[tipo][lvl];
+  var li = document.getElementById('rc-' + tipo + '-lvl-' + lvl);
+  if (li) li.classList.toggle('active', RC_STATE[tipo][lvl] > 0);
+}
+
+// Genera todos los cuadrados perfectos dentro de un rango de cifras
+// Generador de EXACTAS — elige raíz aleatoria en rango y eleva al cuadrado
+function rcGenExacta(lvl) {
+  // N1: raíz 10-99, N2: raíz 100-999, N3: raíz 1000-9999
+  var rangosRaiz = { 1: {min:10, max:99}, 2: {min:100, max:999}, 3: {min:1000, max:9999} };
+  var r = rangosRaiz[lvl];
+  var raiz = rnd(r.min, r.max);
+  var rad = raiz * raiz;
+  return { expr: sqrtHTML(rad) + ' =', sol: String(raiz), lvl: lvl, tipo: 'ex' };
+}
+
+// Generador de INEXACTAS — elige raíz aleatoria y suma offset para que NO sea perfecta
+function rcGenInexacta(lvl) {
+  var rangosRaiz = { 1: {min:10, max:98}, 2: {min:100, max:998}, 3: {min:1000, max:9998} };
+  var r = rangosRaiz[lvl];
+  var n1 = rnd(r.min, r.max);  // entero inferior
+  var n2 = n1 + 1;
+  // radicando entre n1² y n2², excluyendo ambos extremos
+  var radMin = n1 * n1 + 1;
+  var radMax = n2 * n2 - 1;
+  var rad = rnd(radMin, radMax);
+  return {
+    expr: sqrtHTML(rad) + ' = ?',
+    sol: '<span style="white-space:nowrap">' + n1 + ' &lt; ' + sqrtHTML(rad) + ' &lt; ' + n2 + '</span>' +
+         ' &nbsp; <span style="white-space:nowrap">(ya que ' + sqrtHTML(n1*n1) + ' = ' + n1 + ' y ' + sqrtHTML(n2*n2) + ' = ' + n2 + ')</span>',
+    lvl: lvl, tipo: 'inex'
+  };
+}
+
+function generateRC() {
+  var totalEx = RC_STATE.ex[1] + RC_STATE.ex[2] + RC_STATE.ex[3];
+  var totalInex = RC_STATE.inex[1] + RC_STATE.inex[2] + RC_STATE.inex[3];
+  if (totalEx + totalInex === 0) {
+    alert('Seleccioná al menos un nivel con cantidad mayor a 0.');
+    return;
+  }
+
+  var ejHTML = '';
+  var solHTML = '<div class="soluciones-section"><div class="sol-title">Soluciones</div>';
+  var ejNum = 1;
+
+  // EXACTAS
+  var hayExactas = totalEx > 0;
+  if (hayExactas) {
+    ejHTML += '<div class="level-header">Raíz Cuadrada — Exactas</div>';
+    solHTML += '<div class="sol-subtitle">Raíz Cuadrada — Exactas</div>';
+    for (var lvl = 1; lvl <= 3; lvl++) {
+      var qty = RC_STATE.ex[lvl];
+      if (!qty) continue;
+      var labelEx = ['', 'Nivel 1 — Raíz de 2 cifras', 'Nivel 2 — Raíz de 3 cifras', 'Nivel 3 — Raíz de 4 cifras o más'][lvl];
+      ejHTML += '<div class="level-header level-sub">' + labelEx + '</div>';
+      var seen = new Set();
+      var count = 0, att = 0;
+      while (count < qty && att < qty * 80) {
+        att++;
+        var e = rcGenExacta(lvl);
+        if (!e || seen.has(e.expr)) continue;
+        seen.add(e.expr);
+        ejHTML += '<div class="ejercicio-item"><span class="ej-num">(' + ejNum + ')</span>' +
+          '<div class="ej-content"><div class="ej-question">' + e.expr + '</div>' +
+          '<div class="work-space work-space-sm"></div></div></div>';
+        solHTML += '<div class="sol-item"><span class="ej-num">(' + ejNum + ')</span> ' + e.sol + '</div>';
+        ejNum++;
+        count++;
+      }
+    }
+  }
+
+  // INEXACTAS
+  var hayInexactas = totalInex > 0;
+  if (hayInexactas) {
+    ejHTML += '<div class="level-header">Raíz Cuadrada — Inexactas</div>';
+    ejHTML += '<p style="font-size:0.88rem;color:#555;margin:2px 0 10px 2px">Indicá entre qué dos números enteros consecutivos se encuentra cada raíz.</p>';
+    solHTML += '<div class="sol-subtitle">Raíz Cuadrada — Inexactas</div>';
+    for (var lvl2 = 1; lvl2 <= 3; lvl2++) {
+      var qty2 = RC_STATE.inex[lvl2];
+      if (!qty2) continue;
+      var labelInex = ['', 'Nivel 1 — Raíz de 2 cifras', 'Nivel 2 — Raíz de 3 cifras', 'Nivel 3 — Raíz de 4 cifras o más'][lvl2];
+      ejHTML += '<div class="level-header level-sub">' + labelInex + '</div>';
+      var seen2 = new Set();
+      var count2 = 0, att2 = 0;
+      while (count2 < qty2 && att2 < qty2 * 80) {
+        att2++;
+        var ei = rcGenInexacta(lvl2);
+        if (!ei || seen2.has(ei.expr)) continue;
+        seen2.add(ei.expr);
+        ejHTML += '<div class="ejercicio-item"><span class="ej-num">(' + ejNum + ')</span>' +
+          '<div class="ej-content"><div class="ej-question">' + ei.expr +
+          ' &nbsp; ___ &lt; √ &lt; ___</div>' +
+          '<div class="work-space work-space-sm"></div></div></div>';
+        solHTML += '<div class="sol-item"><span class="ej-num">(' + ejNum + ')</span> ' + ei.sol + '</div>';
+        ejNum++;
+        count2++;
+      }
+    }
+  }
+
+  solHTML += '</div>';
+
+  var el = document.getElementById('rc-ej');
+  el.innerHTML = '<div class="ej-header">' +
+    '<div class="ej-title">Raíz Cuadrada</div>' +
+    '<div class="ej-meta"></div>' +
+    '<div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>' +
+    indGetTablaHTML('ind-filas') +
+    '</div>' + ejHTML + solHTML +
+    '<div class="copyright">' + COPYRIGHT_TXT + '</div>';
+
+  el.style.display = 'block';
+  document.getElementById('rc-btnDL').style.display = 'inline-block';
+}
+
+// ── Modo de impresión: 'ej' (ejercicios sin sol) | 'sol' (solo soluciones) | null (normal) ──
+var _printMode = null;
+
+function _isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function _showIOSToast() {
+  var toast = document.getElementById('_ios-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = '_ios-toast';
+    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1d2e;color:#fff;padding:14px 20px;border-radius:14px;font-family:Nunito,sans-serif;font-size:0.88rem;line-height:1.5;max-width:320px;text-align:center;z-index:9999;box-shadow:0 4px 24px rgba(0,0,0,0.25);opacity:0;transition:opacity 0.3s;';
+    toast.innerHTML = '📄 En el diálogo que se abre,<br>tocá <strong>Compartir → Guardar en Archivos</strong><br>para guardar tu PDF.';
+    document.body.appendChild(toast);
+  }
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ toast.style.opacity = '0'; }, 6000);
+}
+
+// beforeprint: aplicar atributo de body ANTES de que Safari capture la página
+window.addEventListener('beforeprint', function() {
+  if (_printMode === 'ej') {
+    document.body.setAttribute('data-hide-sol', '1');
+  } else if (_printMode === 'sol') {
+    document.body.setAttribute('data-print-sol', '1');
+  }
+});
+
+// afterprint: limpiar siempre
+window.addEventListener('afterprint', function() {
+  document.body.removeAttribute('data-hide-sol');
+  document.body.removeAttribute('data-print-sol');
+  _printMode = null;
+});
+
+function downloadEj(containerId, filename) {
+  if (_isIOS()) { _showIOSToast(); }
+  _printMode = 'ej';
+  window.print();
+}
+
+// ═══════════════════════════════════════════
+// SITUACIONES PROBLEMÁTICAS — ENTEROS
+// ═══════════════════════════════════════════
+
+// Helpers
+function rndItem(arr) { return arr[rnd(0, arr.length-1)]; }
+function rndPos(a, b) { let v; do { v = rnd(a,b); } while(v <= 0); return v; }
+
+// Contextual pools
+const NOMBRES = ['Lucía','Valentina','Mateo','Santiago','Camila','Andrés','Sofía','Diego','Romina','Pablo','Florencia','Nicolás','Ana','Carlos','Belén'];
+const CIUDADES = ['Asunción','Ciudad del Este','Encarnación','Luque','Capiata','Lambaré','Fernando de la Mora','San Lorenzo','Villarrica','Concepción'];
+const MONEDA = 'guaraníes';
+const MONEDA_SYM = 'Gs.';
+const PRODUCTOS = ['cuadernos','lápices','gomas','reglas','mochilas','carpetas','libros','bolígrafos','marcadores','calculadoras'];
+const COMIDA = ['chipas','sándwiches','empanadas','facturas','alfajores','medialunas','panes','yogures','jugos','galletas'];
+const DEPORTES = ['fútbol','básquet','vóley','atletismo','natación','tenis','ciclismo'];
+const EQUIPOS = ['Olimpia','Cerro Porteño','Libertad','Nacional','Sol de América','Guaraní','Sportivo Luqueño'];
+const UNIDADES_TEMP = ['°C','°F'];
+const LUGARES = ['el aula','el patio','la biblioteca','el laboratorio','el comedor','el gimnasio','la cancha'];
+
+// Format number with dots for thousands (paraguayan style)
+function fmtN(n) {
+  return Math.abs(n).toLocaleString('es-PY');
+}
+function fmtGs(n) {
+  return `${MONEDA_SYM} ${fmtN(n)}`;
+}
+
+// ── NIVEL 1: Suma y Resta ────────────────────────────────────────────────────
+// Helpers
+function negStr(n) { return n < 0 ? `−${Math.abs(n)}` : `${n}`; }
+function signed(n) { return n < 0 ? `−${Math.abs(n)}` : `+${n}`; }
+function showN(n) { return n < 0 ? `−${Math.abs(n)}` : String(n); }
+// Format integer with thousands separator, keeping sign visible
+function fmt(n) {
+  if (n < 0) return `−${Math.abs(n).toLocaleString('es-PY')}`;
+  if (n > 0) return n.toLocaleString('es-PY');
+  return '0';
+}
+// Format guaraníes with sign
+function fmtGsSigned(n) {
+  if (n < 0) return `−Gs. ${Math.abs(n).toLocaleString('es-PY')}`;
+  return `Gs. ${n.toLocaleString('es-PY')}`;
+}
+
+// ── NIVEL 1: Suma y Resta — negativos VISIBLES en el enunciado ───────────────
+const TEMPLATES_SR = [
+  () => {
+    const t1 = rnd(-20,-3), t2 = rnd(-12,-1);
+    const ciudad = rndItem(CIUDADES);
+    const dif = t2 - t1;
+    return { enunciado: `El lunes la temperatura en ${ciudad} fue de ${t1}°C y el martes fue de ${t2}°C. ¿Cuántos grados cambió la temperatura de un día al otro?`, sol: `${t2}°C − (${t1}°C) = ${dif}°C` };
+  },
+  () => {
+    const t_ini = rnd(-15,-3), baja = rnd(2,8);
+    const t_fin = t_ini - baja;
+    const ciudad = rndItem(CIUDADES);
+    return { enunciado: `La temperatura en ${ciudad} era de ${fmt(t_ini)}°C y bajó ${baja}°C más. ¿Cuál es la temperatura final?`, sol: `${fmt(t_ini)} + (−${baja}) = ${fmt(t_fin)}°C` };
+  },
+  () => {
+    const piso = rnd(-4,-1), bajada = rnd(1,3);
+    const piso_fin = piso - bajada;
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `${nom} está en el piso ${fmt(piso)} de un edificio y baja ${bajada} pisos más. ¿En qué piso queda?`, sol: `${fmt(piso)} − ${bajada} = ${fmt(piso_fin)}` };
+  },
+  () => {
+    const saldo = rnd(-300,-50)*1000, retiro = rnd(20,100)*1000;
+    const nom = rndItem(NOMBRES);
+    const saldo_fin = saldo - retiro;
+    return { enunciado: `La cuenta de ${nom} tiene un saldo de ${fmtGsSigned(saldo)}. Retira ${fmtGs(retiro)} más. ¿Cuál es el nuevo saldo?`, sol: `${fmtGsSigned(saldo)} − ${fmtGs(retiro)} = ${fmtGsSigned(saldo_fin)}` };
+  },
+  () => {
+    const p1 = rnd(-10,-2), p2 = rnd(-8,-1), p3 = rnd(5,20);
+    const nom = rndItem(NOMBRES), deporte = rndItem(DEPORTES);
+    return { enunciado: `En un torneo de ${deporte}, ${nom} obtiene ${p1} puntos en la primera ronda, ${p2} en la segunda y ${p3} en la tercera. ¿Cuál es su puntaje total?`, sol: `${p1} + (${p2}) + ${p3} = ${p1+p2+p3} puntos` };
+  },
+  () => {
+    const prof = -rnd(30,150), asc = rnd(10, Math.abs(prof)-5);
+    const prof_fin = prof + asc;
+    return { enunciado: `Un submarino se encuentra a ${prof} metros (bajo el nivel del mar). Asciende ${asc} metros. ¿A qué profundidad queda?`, sol: `${prof} + ${asc} = ${prof_fin} metros` };
+  },
+  () => {
+    const a1 = -rnd(50,500), años = rnd(10,200);
+    const a2 = a1 + años;
+    const eraFin = a2 < 0 ? `${Math.abs(a2)} a.C.` : `${a2} d.C.`;
+    return { enunciado: `Un evento histórico ocurrió en el año ${fmt(a1)} (a.C.). ¿En qué año ocurrió otro evento ${años} años después?`, sol: `${fmt(a1)} + ${años} = ${fmt(a2)} → ${eraFin}` };
+  },
+  () => {
+    const gf = rnd(1,4), gc = rnd(gf+1,7);
+    const dif = gf - gc;
+    const equipo = rndItem(EQUIPOS);
+    return { enunciado: `${equipo} tiene ${gf} goles a favor y ${gc} goles en contra. ¿Cuál es su diferencia de goles?`, sol: `${gf} − ${gc} = ${dif}` };
+  },
+  () => {
+    const t1 = rnd(-8,-2), t2 = rnd(-5,-1);
+    const sube = rnd(3,10);
+    const t_fin = t1 + t2 + sube;
+    return { enunciado: `La temperatura bajó ${Math.abs(t1)}°C el viernes y otros ${Math.abs(t2)}°C el sábado. El domingo subió ${sube}°C. Si el jueves era 0°C, ¿cuál es la temperatura el domingo?`, sol: `0 + (${t1}) + (${t2}) + ${sube} = ${t_fin}°C` };
+  },
+  () => {
+    const nom1 = rndItem(NOMBRES), nom2 = rndItem(NOMBRES.filter(n=>n!==nom1));
+    const deuda = -rnd(50,200)*1000, pago = rnd(10,80)*1000;
+    const saldo = deuda + pago;
+    return { enunciado: `El saldo de ${nom1} es de ${fmtGsSigned(deuda)}. Recibe ${fmtGs(pago)} de ${nom2}. ¿Cuál es su nuevo saldo?`, sol: `${fmtGsSigned(deuda)} + ${fmtGs(pago)} = ${fmtGsSigned(saldo)}` };
+  },
+];
+
+// ── NIVEL 2: Multiplicación — negativos VISIBLES en el enunciado ─────────────
+const TEMPLATES_MU = [
+  () => {
+    const perdida = -rnd(10,80)*1000, dias = rnd(3,10);
+    const nom = rndItem(NOMBRES), ciudad = rndItem(CIUDADES);
+    return { enunciado: `El negocio de ${nom} en ${ciudad} registra ${fmtGsSigned(perdida)} guaraníes por día. ¿Cuánto acumula en ${dias} días?`, sol: `${fmtGsSigned(perdida)} × ${dias} = ${fmtGsSigned(perdida*dias)} guaraníes` };
+  },
+  () => {
+    const baja = -rnd(2,6), horas = rnd(3,8);
+    return { enunciado: `La temperatura cambia ${baja}°C por hora durante ${horas} horas seguidas. ¿Cuántos grados cambia en total?`, sol: `${baja} × ${horas} = ${baja*horas}°C` };
+  },
+  () => {
+    const pen = -rnd(3,8), veces = rnd(3,7);
+    const equipo = rndItem(EQUIPOS);
+    return { enunciado: `${equipo} recibió ${veces} penalizaciones de ${pen} puntos cada una. ¿Cuántos puntos perdió en total?`, sol: `${pen} × ${veces} = ${pen*veces} puntos` };
+  },
+  () => {
+    const desc = -rnd(5,20), inmersiones = rnd(2,6);
+    return { enunciado: `Un buzo cambia su posición ${desc} metros en cada inmersión (descenso). Si realiza ${inmersiones} inmersiones iguales, ¿cuál es su posición final respecto al nivel del mar?`, sol: `${desc} × ${inmersiones} = ${desc*inmersiones} metros` };
+  },
+  () => {
+    const reduccion = -rnd(2,5), semanas = -rnd(3,8);
+    const nom = rndItem(NOMBRES), deporte = rndItem(DEPORTES);
+    return { enunciado: `En el ranking de ${deporte}, ${nom} tenía una variación de ${reduccion} puntos por semana. Si esa tendencia duró ${semanas} semanas (valor negativo por ser tiempo "antes"), ¿cuántos puntos acumuló?`, sol: `(${reduccion}) × (${semanas}) = ${reduccion*semanas} puntos (positivo: negativo × negativo)` };
+  },
+  () => {
+    const retiro = -rnd(50,200)*1000, veces = rnd(3,7);
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `${nom} tiene una variación de ${fmtGsSigned(retiro)} por día en su cuenta. ¿Cuánto cambia el saldo en ${veces} días?`, sol: `${fmtGsSigned(retiro)} × ${veces} = ${fmtGsSigned(retiro*veces)}` };
+  },
+  () => {
+    const perd = -rnd(100,400)*1000, meses = rnd(2,5);
+    const nom = rndItem(NOMBRES), ciudad = rndItem(CIUDADES);
+    return { enunciado: `La empresa de ${nom} en ${ciudad} tiene un flujo de ${fmtGsSigned(perd)} por mes. ¿Cuánto acumula en ${meses} meses?`, sol: `${fmtGsSigned(perd)} × ${meses} = ${fmtGsSigned(perd*meses)}` };
+  },
+];
+
+// ── NIVEL 3: División — negativos VISIBLES en el enunciado ───────────────────
+const TEMPLATES_DV = [
+  () => {
+    const dias = rnd(3,10), perdida_diaria = -rnd(10,60)*1000;
+    const total = perdida_diaria * dias;
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `El negocio de ${nom} acumuló ${fmtGsSigned(total)} en ${dias} días, con la misma variación diaria. ¿Cuánto fue la variación por día?`, sol: `${fmtGsSigned(total)} ÷ ${dias} = ${fmtGsSigned(perdida_diaria)} por día` };
+  },
+  () => {
+    const pasos = rnd(4,10), desc = -rnd(5,20);
+    const total = desc * pasos;
+    return { enunciado: `Un submarino llegó a ${total} metros (respecto al nivel del mar) en ${pasos} descensos iguales. ¿Cuántos metros cambió en cada descenso?`, sol: `${total} ÷ ${pasos} = ${desc} metros por descenso` };
+  },
+  () => {
+    const personas = rnd(3,8), deuda_c = -rnd(20,100)*1000;
+    const total = deuda_c * personas;
+    return { enunciado: `Un grupo de ${personas} amigos tiene una deuda total de ${fmtGsSigned(total)}, repartida en partes iguales. ¿Cuánto corresponde a cada uno?`, sol: `${fmtGsSigned(total)} ÷ ${personas} = ${fmtGsSigned(deuda_c)} por persona` };
+  },
+  () => {
+    const horas = rnd(3,8), baja = -rnd(2,5);
+    const total = baja * horas;
+    const ciudad = rndItem(CIUDADES);
+    return { enunciado: `En ${ciudad} la temperatura pasó de 0°C a ${total}°C en ${horas} horas, bajando igual cada hora. ¿Cuántos grados bajó por hora?`, sol: `${total} ÷ ${horas} = ${baja}°C por hora` };
+  },
+  () => {
+    const partidos = rnd(3,7), pen = -rnd(2,6);
+    const total = pen * partidos;
+    const equipo = rndItem(EQUIPOS);
+    return { enunciado: `${equipo} acumuló ${total} puntos en ${partidos} partidos por penalizaciones iguales. ¿Cuántos puntos sumó por partido?`, sol: `${total} ÷ ${partidos} = ${pen} puntos por partido` };
+  },
+  () => {
+    const retiros = rnd(4,8), monto = -rnd(50,200)*1000;
+    const total = monto * retiros;
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `El saldo de ${nom} cambió ${fmtGsSigned(total)} en ${retiros} operaciones iguales. ¿Cuánto fue cada operación?`, sol: `${fmtGsSigned(total)} ÷ ${retiros} = ${fmtGsSigned(monto)} por operación` };
+  },
+];
+
+// ── NIVEL 4: Potenciación — base negativa VISIBLE ────────────────────────────
+const TEMPLATES_PO = [
+  () => {
+    const b = rnd(2,6);
+    return { enunciado: `Calculá (−${b})². ¿El resultado es positivo o negativo? Justificá tu respuesta.`, sol: `(−${b})² = (−${b}) × (−${b}) = ${b*b} → positivo (negativo × negativo = positivo)` };
+  },
+  () => {
+    const b = rnd(2,5);
+    return { enunciado: `Calculá (−${b})³. ¿El resultado es positivo o negativo? Justificá tu respuesta.`, sol: `(−${b})³ = (−${b}) × (−${b}) × (−${b}) = ${-b*b*b} → negativo (tres factores negativos)` };
+  },
+  () => {
+    const b = rnd(2,6);
+    return { enunciado: `¿Es lo mismo (−${b})² que −${b}²? Calculá ambos y compará.`, sol: `(−${b})² = ${b*b} (positivo) y −${b}² = −${b*b} (negativo). Son distintos.` };
+  },
+  () => {
+    const b = rnd(2,4);
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `La cuenta de ${nom} tiene una variación de −${b} millones de guaraníes cada mes. Si esa variación se repite durante 3 meses, el cambio total se puede calcular como (−${b})³. ¿Cuánto vale?`, sol: `(−${b})³ = ${Math.pow(-b,3)} millones de guaraníes` };
+  },
+  () => {
+    const b = rnd(2,5);
+    return { enunciado: `Una cámara frigorífica tiene una variación de −${b}°C por hora. Si elevamos ese valor al cuadrado, ¿qué obtenemos? ¿Por qué el resultado es positivo?`, sol: `(−${b})² = ${b*b} (positivo: al elevar al cuadrado, el signo negativo desaparece)` };
+  },
+  () => {
+    const b = rnd(2,4);
+    return { enunciado: `Calculá (−${b})⁴. ¿El resultado es positivo o negativo?`, sol: `(−${b})⁴ = ${Math.pow(b,4)} → positivo (exponente par: el número de factores negativos es par)` };
+  },
+];
+
+// ── NIVEL 5: Radicación ───────────────────────────────────────────────────────
+const TEMPLATES_RA = [
+  () => {
+    const lado = rndPos(3,12), area = lado*lado;
+    const ciudad = rndItem(CIUDADES);
+    return { enunciado: `Una plaza cuadrada de ${ciudad} tiene ${area} m² de superficie. ¿Cuánto mide cada lado?`, sol: `√${area} = ${lado} m` };
+  },
+  () => {
+    const n = rndPos(2,5), vol = n*n*n;
+    return { enunciado: `Una caja cúbica tiene ${vol} cm³ de volumen. ¿Cuánto mide la arista?`, sol: `∛${vol} = ${n} cm` };
+  },
+  () => {
+    const lado = rndPos(4,10), area = lado*lado;
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `${nom} tiene una parcela cuadrada de ${area} m². ¿Cuánto mide cada lado?`, sol: `√${area} = ${lado} m` };
+  },
+  () => {
+    const lado = rndPos(3,8);
+    return { enunciado: `Se necesita cercar un terreno cuadrado de ${lado*lado} m². ¿Cuánto mide cada lado? ¿Cuántos metros de cerca se necesitan?`, sol: `√${lado*lado} = ${lado} m por lado → perímetro = 4 × ${lado} = ${4*lado} m` };
+  },
+  () => {
+    const n = rndPos(2,4), vol = n*n*n;
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `${nom} necesita un envase cúbico de ${vol} litros. ¿Cuánto debe medir la arista?`, sol: `∛${vol} = ${n} dm` };
+  },
+];
+
+// ── NIVEL 6: Varias operaciones — negativos VISIBLES ─────────────────────────
+const TEMPLATES_VO = [
+  () => {
+    const saldo_ini = -rnd(100,500)*1000, perd_dia = -rnd(20,80)*1000, dias = rnd(2,5), ingreso = rnd(200,800)*1000;
+    const total = saldo_ini + perd_dia*dias + ingreso;
+    const nom = rndItem(NOMBRES);
+    return { enunciado: `${nom} tiene un saldo de ${fmtGsSigned(saldo_ini)}. Su cuenta cambia ${fmtGsSigned(perd_dia)} por día durante ${dias} días y luego recibe ${fmtGs(ingreso)}. ¿Cuál es el saldo final?`, sol: `${fmtGsSigned(saldo_ini)} + (${fmtGsSigned(perd_dia)}) × ${dias} + ${fmtGs(ingreso)} = ${fmtGsSigned(total)}` };
+  },
+  () => {
+    const t_ini = rnd(-10,-2), baja = -rnd(2,5), dias = rnd(2,4), sube = rnd(3,12);
+    const t_fin = t_ini + baja*dias + sube;
+    return { enunciado: `La temperatura era de ${t_ini}°C. Cambió ${baja}°C por día durante ${dias} días y luego subió ${sube}°C. ¿Cuál es la temperatura final?`, sol: `${t_ini} + (${baja}) × ${dias} + ${sube} = ${t_fin}°C` };
+  },
+  () => {
+    const vic = rnd(3,8), pts_vic = rnd(2,4), pen = rnd(1,3), pts_pen = -rnd(1,3), bonus = rnd(2,8);
+    const equipo = rndItem(EQUIPOS);
+    const total = vic*pts_vic + pen*pts_pen + bonus;
+    return { enunciado: `${equipo} ganó ${vic} partidos (${pts_vic} puntos cada uno), recibió ${pen} penalizaciones de ${pts_pen} puntos cada una y sumó ${bonus} puntos extra. ¿Cuál es su puntaje total?`, sol: `${vic}×${pts_vic} + ${pen}×(${pts_pen}) + ${bonus} = ${total} puntos` };
+  },
+  () => {
+    const b = rnd(2,5), ajuste = rnd(5,15);
+    const res = b*b + ajuste;
+    return { enunciado: `Se calcula (−${b})² + ${ajuste}. ¿Cuánto vale?`, sol: `(−${b})² + ${ajuste} = ${b*b} + ${ajuste} = ${res}` };
+  },
+  () => {
+    const deuda = -rnd(100,400)*1000, factor = rnd(2,3), pago = rnd(100,600)*1000;
+    const nom = rndItem(NOMBRES);
+    const final = deuda * factor + pago;
+    const sol = `${fmtGsSigned(deuda)} × ${factor} + ${fmtGs(pago)} = ${fmtGsSigned(final)}`;
+    return { enunciado: `${nom} tiene un saldo de ${fmtGsSigned(deuda)}. Por intereses, ese saldo se multiplica por ${factor}. Luego deposita ${fmtGs(pago)}. ¿Cuál es el saldo final?`, sol };
+  },
+  () => {
+    const alt = -rnd(20,80), sube1 = rnd(30,100), sube2 = rnd(10,40);
+    const final = alt + sube1 + sube2;
+    return { enunciado: `Un vehículo está en la posición ${alt} m (bajo el nivel del mar). Asciende ${sube1} m y luego ${sube2} m más. ¿Cuál es su posición final?`, sol: `${alt} + ${sube1} + ${sube2} = ${final >= 0 ? '+'+final : final} metros` };
+  },
+  () => {
+    const p1 = -rnd(5,15), p2 = -rnd(3,10), p3 = rnd(10,25), p4 = -rnd(2,8);
+    const nom = rndItem(NOMBRES), deporte = rndItem(DEPORTES);
+    const total = p1+p2+p3+p4;
+    return { enunciado: `En un torneo de ${deporte}, ${nom} obtiene ${p1}, ${p2}, ${p3} y ${p4} puntos en cuatro rondas. ¿Cuál es su puntaje final?`, sol: `(${p1}) + (${p2}) + ${p3} + (${p4}) = ${total} puntos` };
+  },
+];
+
+const SP_POOLS = [TEMPLATES_SR, TEMPLATES_MU, TEMPLATES_DV, TEMPLATES_PO, TEMPLATES_RA, TEMPLATES_VO];
+
+function genSP(lvl) {
+  const pool = SP_POOLS[lvl-1];
+  const gen = rndItem(pool);
+  try {
+    const result = gen();
+    return { enunciado: result.enunciado, sol: result.sol, lvl };
+  } catch(e) {
+    return genSP(lvl);
+  }
+}
+
+// ── RENDER ESPECIAL PARA SITUACIONES PROBLEMÁTICAS ──────────────────────────
+function generateSP() {
+  const total = Object.values(STATE.sp).reduce((a,b)=>a+b, 0);
+  if (total === 0) { alert('Agregá al menos un problema con +'); return; }
+
+  const problemas = [];
+  for (let lvl = 1; lvl <= 6; lvl++) {
+    const qty = STATE.sp[lvl] || 0;
+    if (!qty) continue;
+    const seen = new Set();
+    let count = 0, att = 0;
+    while (count < qty && att < qty*40) {
+      att++;
+      try {
+        const p = genSP(lvl);
+        if (!p || seen.has(p.enunciado)) continue;
+        seen.add(p.enunciado);
+        problemas.push(p);
+        count++;
+      } catch(e) {}
+    }
+  }
+  problemas.forEach((p,i) => p.id = i+1);
+
+  const lvlLabels = LEVEL_NAMES.sp;
+  const fecha = new Date().toLocaleDateString('es-AR', {day:'numeric',month:'long',year:'numeric'});
+
+  let currentLvl = null;
+  let ejHTML = '<div class="sp-list">';
+  problemas.forEach(p => {
+    if (p.lvl !== currentLvl) {
+      currentLvl = p.lvl;
+      ejHTML += `<div class="level-header" style="grid-column:1/-1">${lvlLabels[p.lvl]}</div>`;
+    }
+    ejHTML += `<div class="sp-item">
+      <span class="ej-num">${p.id}.</span>
+      <div class="sp-enunciado">${p.enunciado}</div><div class="work-space work-space-xl"></div>
+    </div>`;
+  });
+  ejHTML += '</div>';
+
+  let solHTML = '<div class="solutions-title">✓ Respuestas</div><div class="solutions-list">';
+  problemas.forEach(p => {
+    solHTML += `<div class="sol-item"><span class="sol-num">${p.id}.</span><div class="sol-val">${p.sol}</div></div>`;
+  });
+  solHTML += '</div>';
+
+  const el = document.getElementById('sp-ej');
+  el.innerHTML = `
+    <div class="ej-header">
+      <div class="ej-title">Números Enteros</div>
+      <div class="ej-meta"></div>
+      <div class="ej-data-row">
+        <span>Nombre: ____________________________</span>
+        <span>Curso: _____________ &nbsp; Fecha: _____________</span>
+      </div>
+      ${indGetTablaHTML('ind-filas')}
+    </div>
+    ${ejHTML}${solHTML}
+    <div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>
+  `;
+  el.style.display = 'block';
+  document.getElementById('sp-btnDL').style.display = 'block';
+  document.getElementById('sp-btnDL').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NÚMEROS RACIONALES — JS completo
+// ═══════════════════════════════════════════════════════════════
+
+const RAC_TOPICS = [
+  { id:'sr', icon:'➕', color:'#f0fdf4', desc:['Mismo denominador','Distinto denominador','Expresiones mixtas + simplificación'], descDec:['Dos decimales exactos','Hasta 4 decimales exactos','Decimal exacto + periódico'] },
+  { id:'mu', icon:'✖', color:'#fff7ed', desc:['2 factores','3 factores','4+ factores, potencias de fracción'] },
+  { id:'dv', icon:'➗', color:'#faf5ff', desc:['División exacta (resultado fracción simple)','División encadenada','Divisiones con expresiones mixtas'] },
+  { id:'po', icon:'🔺', color:'#fdf2f8', desc:['Potencia simple (exp. entero positivo)','Producto/cociente misma base','Potencia de fracción al cuadrado/cubo'], descDec:['Base decimal con signo, exp. 2 o 3','Propiedades: mult. y div. igual base','Potencia de potencia (aⁿ)ᵐ'] },
+  { id:'ra', icon:'√',  color:'#eef1ff', desc:['Raíz cuadrada de fracción perfecta','Raíz de fracción con simplificación','Operaciones con radicales de fracciones'] },
+  { id:'cs', icon:'🔣', color:'#fff7ed', desc:['Fracciones propias simples + decimales exactos','Fracciones impropias + decimales periódicos','Números mixtos + todo mezclado'] },
+  { id:'cc', icon:'{ }',color:'#fdf2f8', desc:['Fracciones propias simples + decimales exactos','Fracciones impropias + decimales periódicos','Números mixtos + todo mezclado'] },
+];
+const RAC_LEVEL_LABELS = {
+  sr:{1:'Nivel 1 — Mismo denom.',2:'Nivel 2 — Distinto denom.',3:'Nivel 3 — Expresiones mixtas'},
+  srDec:{1:'Nivel 1 — Dos decimales exactos',2:'Nivel 2 — Hasta 4 decimales exactos',3:'Nivel 3 — Exacto + periódico'},
+  mu:{1:'Nivel 1 — 2 factores',2:'Nivel 2 — 3 factores',3:'Nivel 3 — 4+ factores'},
+  dv:{1:'Nivel 1 — División exacta',2:'Nivel 2 — División encadenada',3:'Nivel 3 — Expresiones mixtas'},
+  po:{1:'Nivel 1 — Potencia simple',2:'Nivel 2 — Misma base',3:'Nivel 3 — Potencia de fracción'},
+  poDec:{1:'Nivel 1 — Potencia simple (con negativos)',2:'Nivel 2 — Propiedades: mult. y div. igual base',3:'Nivel 3 — Potencia de potencia'},
+  ra:{1:'Nivel 1 — Raíz cuadrada exacta',2:'Nivel 2 — Simplificación',3:'Nivel 3 — Operaciones'},
+  cs:{1:'Nivel 1 — Fracciones propias',2:'Nivel 2 — Fracciones impropias',3:'Nivel 3 — Números mixtos'},
+  cc:{1:'Nivel 1 — Fracciones propias',2:'Nivel 2 — Fracciones impropias',3:'Nivel 3 — Números mixtos'},
+};
+function racGetLabel(pfx, lvl) {
+  if (pfx === 'sr' && currentMode === 'dec') return RAC_LEVEL_LABELS.srDec[lvl];
+  if (pfx === 'po' && currentMode === 'dec') return RAC_LEVEL_LABELS.poDec[lvl];
+  return RAC_LEVEL_LABELS[pfx][lvl];
+}
+const RAC_TOPIC_NAMES = {
+  sr:'Números Racionales', mu:'Números Racionales',
+  dv:'Números Racionales', po:'Números Racionales',
+  ra:'Números Racionales', cs:'Números Racionales',
+  cc:'Números Racionales'
+};
+
+// ═══════════════════════════════════════════════════════════
+// PANEL UNIFICADO DE OPERACIONES — NÚMEROS RACIONALES
+// ═══════════════════════════════════════════════════════════
+
+// Construir el panel unificado de racionales
+const racPanelsEl = document.getElementById('rac-panels');
+const racEntPanel = document.createElement('div');
+racEntPanel.className = 'section-panel active';
+racEntPanel.id = 'rac-panel-rac';
+racEntPanel.innerHTML =
+  '<div class="card">' +
+    '<div class="card-title"><span class="icon" style="background:#ccfbf1">🔢</span> Operaciones a incluir</div>' +
+    '<div class="chips" id="rac-chips">' +
+      '<button class="chip chip-all" id="rac-chip-all" onclick="racSelectAll(this)">☑ Todos</button>' +
+      '<button class="chip selected" data-pfx="sr" onclick="racToggleChip(this)">➕ Suma y Resta</button>' +
+      '<button class="chip" data-pfx="mu" onclick="racToggleChip(this)">✖ Multiplicación</button>' +
+      '<button class="chip" data-pfx="dv" onclick="racToggleChip(this)">➗ División</button>' +
+      '<button class="chip" data-pfx="po" onclick="racToggleChip(this)">🔺 Potenciación</button>' +
+      '<button class="chip" data-pfx="ra" onclick="racToggleChip(this)">√ Radicación</button>' +
+      '<button class="chip" data-pfx="cs" onclick="racToggleChip(this)">🔣 Comb. sin agrup.</button>' +
+      '<button class="chip" data-pfx="cc" onclick="racToggleChip(this)">{ } Comb. con agrup.</button>' +
+    '</div>' +
+  '</div>' +
+  '<div class="card">' +
+    '<div class="card-title"><span class="icon" style="background:#f0fdf4">🔢</span> Cantidad de ejercicios por nivel</div>' +
+    '<div id="rac-qty-controls"></div>' +
+  '</div>' +
+  '<div class="card">' +
+    '<button class="btn-generate" onclick="generateRacUnif()">⚡ Generar ejercitario</button>' +
+  '</div>' +
+  '<button class="btn-download" id="rac-unif-btnDL" onclick="racDownloadEj(\'rac-unif-ej\',\'racionales-operaciones\')" style="display:none">⬇️ Descargar PDF</button>' +
+  '<button class="btn-download-sol" id="rac-unif-btnSolAparte" onclick="downloadSolucionesAparte(\'rac-unif-ej\',\'racionales-operaciones\')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>' +
+  '<div class="ejercitario" id="rac-unif-ej"></div>';
+racPanelsEl.appendChild(racEntPanel);
+
+const RAC_STATE = {};
+['sr','mu','dv','po','ra','cs','cc'].forEach(p => RAC_STATE[p] = {1:0,2:0,3:0});
+
+function racSelectAll(btn) {
+  const chips = document.querySelectorAll('#rac-chips .chip:not(.chip-all)');
+  const allSelected = Array.from(chips).every(function(c) { return c.classList.contains('selected'); });
+  chips.forEach(function(c) {
+    if (allSelected) { c.classList.remove('selected'); }
+    else { c.classList.add('selected'); }
+  });
+  racSyncAllBtn();
+  racRenderQty();
+}
+
+function racSyncAllBtn() {
+  const chips = document.querySelectorAll('#rac-chips .chip:not(.chip-all)');
+  const allBtn = document.getElementById('rac-chip-all');
+  if (!allBtn) return;
+  const allSelected = Array.from(chips).every(function(c) { return c.classList.contains('selected'); });
+  if (allSelected) { allBtn.classList.add('selected'); }
+  else { allBtn.classList.remove('selected'); }
+}
+
+function racToggleChip(btn) {
+  btn.classList.toggle('selected');
+  racSyncAllBtn();
+  racRenderQty();
+}
+
+function racRenderQty() {
+  const wrap = document.getElementById('rac-qty-controls');
+  if (!wrap) return;
+  const selectedChips = document.querySelectorAll('#rac-chips .chip.selected');
+  wrap.innerHTML = '';
+  if (selectedChips.length === 0) {
+    wrap.innerHTML = '<p style="font-size:0.85rem;color:#8b92b1;text-align:center;padding:0.5rem 0">Seleccioná al menos una operación.</p>';
+    return;
+  }
+  selectedChips.forEach(function(chip) {
+    const pfx = chip.dataset.pfx;
+    const t = RAC_TOPICS.find(function(x) { return x.id === pfx; });
+    if (!t) return;
+    const header = document.createElement('div');
+    header.style.cssText = 'font-weight:800;font-size:0.82rem;color:#0d9488;text-transform:uppercase;letter-spacing:0.08em;padding:0.6rem 0 0.2rem;margin-top:0.4rem;border-top:1px solid #f0f0f0;';
+    header.textContent = t.icon + ' ' + RAC_TOPIC_NAMES[pfx];
+    wrap.appendChild(header);
+    [1, 2, 3].forEach(function(lvl) {
+      const row = document.createElement('div');
+      row.className = 'qty-row';
+      row.innerHTML =
+        '<span class="qty-label">' + racGetLabel(pfx, lvl) + '<\/span>' +
+        '<button class="qty-btn" onclick="racUnifChangeQty(\'' + pfx + '\',' + lvl + ',-1)">&#8722;<\/button>' +
+        '<span class="qty-val" id="rac-unif-qv-' + pfx + '-' + lvl + '">' + (RAC_STATE[pfx][lvl] || 0) + '<\/span>' +
+        '<button class="qty-btn" onclick="racUnifChangeQty(\'' + pfx + '\',' + lvl + ',1)">+<\/button>';
+      wrap.appendChild(row);
+    });
+  });
+}
+
+function racUnifChangeQty(pfx, lvl, delta) {
+  RAC_STATE[pfx][lvl] = Math.max(0, Math.min(30, (RAC_STATE[pfx][lvl] || 0) + delta));
+  const el = document.getElementById('rac-unif-qv-' + pfx + '-' + lvl);
+  if (el) el.textContent = RAC_STATE[pfx][lvl];
+}
+
+function generateRacUnif() {
+  const selectedChips = document.querySelectorAll('#rac-chips .chip.selected');
+  const activePfx = Array.from(selectedChips).map(function(c) { return c.dataset.pfx; });
+  if (activePfx.length === 0) { alert('Seleccioná al menos una operación.'); return; }
+  const hasQty = activePfx.some(function(pfx) {
+    return Object.values(RAC_STATE[pfx]).some(function(v) { return v > 0; });
+  });
+  if (!hasQty) { alert('Agregá al menos un ejercicio usando los botones +'); return; }
+
+  const ejercicios = [], seen = new Set();
+  activePfx.forEach(function(pfx) {
+    for (let lvl = 1; lvl <= 3; lvl++) {
+      const qty = RAC_STATE[pfx][lvl] || 0; if (!qty) continue;
+      let count = 0, att = 0;
+      while (count < qty && att < qty * 60) {
+        att++;
+        try {
+          const e = RAC_GENS[pfx](lvl);
+          if (!e || seen.has(e.expr)) continue;
+          seen.add(e.expr);
+          ejercicios.push(Object.assign({}, e, { _pfx: pfx }));
+          count++;
+        } catch(err) {}
+      }
+    }
+  });
+
+  if (ejercicios.length === 0) { alert('No se pudieron generar ejercicios.'); return; }
+  ejercicios.forEach(function(e, i) { e.id = i + 1; });
+
+  const modeLabel = currentMode === 'frac' ? 'Solo fracciones' : currentMode === 'dec' ? 'Solo decimales' : 'Fracciones y decimales';
+  const fecha = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const multiOp = activePfx.length > 1;
+  const opNames = activePfx.map(function(p) { return RAC_TOPIC_NAMES[p]; }).join(', ');
+
+  let lastPfx = null, lastLvl = null;
+  let ejHTML = '<div class="ejercicios-list">';
+  ejercicios.forEach(function(e) {
+    const wsSize = { sr:'work-space-md', mu:'work-space-md', dv:'work-space-md', po:'work-space-sm', ra:'work-space-md', cs:'work-space-lg', cc:'work-space-lg' }[e._pfx] || 'work-space-md';
+    if (multiOp && e._pfx !== lastPfx) {
+      lastPfx = e._pfx; lastLvl = null;
+      ejHTML += '<div class="level-header">' + RAC_TOPIC_NAMES[e._pfx] + ' — ' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
+    } else if (!multiOp && e.lvl !== lastLvl) {
+      lastLvl = e.lvl;
+      ejHTML += '<div class="level-header">' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
+    }
+    ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span>' +
+      '<div class="ej-content"><div class="ej-question">' + e.expr + '<\/div>' +
+      '<div class="work-space ' + wsSize + '"><\/div><\/div><\/div>';
+  });
+  ejHTML += '<\/div>';
+
+  let solHTML = '<div class="solutions-title">✓ Soluciones<\/div><div class="solutions-list">';
+  ejercicios.forEach(function(e) {
+    solHTML += '<div class="sol-item"><span class="sol-num">' + e.id + '.<\/span><div class="sol-val">' + e.sol + '<\/div><\/div>';
+  });
+  solHTML += '<\/div><div class="ej-copyright">' + COPYRIGHT_TXT + '<\/div>';
+
+  const el = document.getElementById('rac-unif-ej');
+  el.innerHTML =
+    '<div class="ej-header">' +
+      '<div class="ej-title">Números Racionales<\/div>' +
+      '<div class="ej-meta"><span style="color:var(--teal);font-weight:700">' + modeLabel + '<\/span><\/div>' +
+      '<div class="ej-data-row"><span>Nombre: ____________________________<\/span>' +
+        '<span>Curso: _____________  &nbsp; Fecha: _____________<\/span><\/div>' +
+      indGetTablaHTML('ind-filas') +
+    '<\/div>' + ejHTML + solHTML;
+  el.style.display = 'block';
+  document.getElementById('rac-unif-btnDL').style.display = 'block';
+  document.getElementById('rac-unif-btnDL').style.display = 'block';
+  var _ru = document.getElementById('rac-unif-btnSolAparte'); if(_ru) _ru.style.display='block';
+}
+
+// Inicializar controles de cantidad al cargar
+racRenderQty();
+
+function racSwitchTopic(t) {
+  document.querySelectorAll('#rac-topic-selector .topic-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('#rac-panels .section-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('rac-topic-' + t).classList.add('active');
+  document.getElementById('rac-panel-' + t).classList.add('active');
+}
+
+var currentMode = 'frac';
+
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + m).classList.add('active');
+  racRenderQty();
+}
+
+function racChangeLevel(pfx, lvl) {
+  const el = document.getElementById('rac-'+pfx+'-lvl-'+lvl);
+  const isActive = el.classList.contains('active');
+  RAC_STATE[pfx][lvl] = isActive ? 0 : 1;
+  document.getElementById('rac-'+pfx+'-lqv-'+lvl).textContent = RAC_STATE[pfx][lvl];
+  el.classList.toggle('active', !isActive);
+  racUpdateBadge(pfx);
+}
+function racChangeQty(pfx, lvl, delta) {
+  RAC_STATE[pfx][lvl] = Math.max(0, Math.min(30, (RAC_STATE[pfx][lvl]||0)+delta));
+  document.getElementById('rac-'+pfx+'-lqv-'+lvl).textContent = RAC_STATE[pfx][lvl];
+  document.getElementById('rac-'+pfx+'-lvl-'+lvl).classList.toggle('active', RAC_STATE[pfx][lvl] > 0);
+  racUpdateBadge(pfx);
+}
+function racUpdateBadge(pfx) {
+  const t = Object.values(RAC_STATE[pfx]).reduce((a,b)=>a+b,0);
+  document.getElementById('rac-'+pfx+'-badge').innerHTML = `Total: <span>${t}</span> ejercicios`;
+}
+
+// ── MATH HELPERS (racionales usa lcm además de gcd) ──
+function gcd(a,b) { a=Math.abs(a); b=Math.abs(b); while(b){[a,b]=[b,a%b];} return a; }
+function simplify(n,d) { if(d===0)return[n,1]; const g=gcd(Math.abs(n),Math.abs(d)); let sn=n/g,sd=d/g; if(sd<0){sn=-sn;sd=-sd;} return[sn,sd]; }
+function lcm(a,b) { return Math.abs(a*b)/gcd(a,b); }
+function mkF(n,d) { if(d===0)return{n:0,d:1}; const[sn,sd]=simplify(n,d); return{n:sn,d:sd}; }
+function addF(a,b){return mkF(a.n*b.d+b.n*a.d,a.d*b.d);}
+function subF(a,b){return mkF(a.n*b.d-b.n*a.d,a.d*b.d);}
+function mulF(a,b){return mkF(a.n*b.n,a.d*b.d);}
+function divF(a,b){return mkF(a.n*b.d,a.d*b.n);}
+function powF(a,e){if(e===0)return mkF(1,1);let r=mkF(1,1);for(let i=0;i<e;i++)r=mulF(r,a);return r;}
+function fracStr(f){return frac(f.n,f.d);}
+function solFrac(f){const[n,d]=simplify(f.n,f.d);return frac(n,d);}
+function randPosFrac(maxDen=8){const d=rnd(2,maxDen);const n=rndNZ(1,d*3);return mkF(n,d);}
+function randFrac(maxDen=8,allowNeg=true){const d=rnd(2,maxDen);const maxN=d*4;const n=allowNeg?rndNZ(-maxN,maxN):rnd(1,maxN);return mkF(n,d);}
+function rootHTML(radicand,idx){if(idx===2)return`√<span style="text-decoration:overline">${radicand}</span>`;if(idx===3)return`∛<span style="text-decoration:overline">${radicand}</span>`;if(idx===4)return`∜<span style="text-decoration:overline">${radicand}</span>`;return`<sup style="font-size:.68em;vertical-align:.5em">${idx}</sup>√<span style="text-decoration:overline">${radicand}</span>`;}
+
+const PERIODIC=[
+  {f:mkF(1,3),disp:`0.<span class="per">3</span>`,val:1/3},{f:mkF(2,3),disp:`0.<span class="per">6</span>`,val:2/3},
+  {f:mkF(1,6),disp:`0.1<span class="per">6</span>`,val:1/6},{f:mkF(5,6),disp:`0.8<span class="per">3</span>`,val:5/6},
+  {f:mkF(1,9),disp:`0.<span class="per">1</span>`,val:1/9},{f:mkF(2,9),disp:`0.<span class="per">2</span>`,val:2/9},
+  {f:mkF(4,9),disp:`0.<span class="per">4</span>`,val:4/9},{f:mkF(7,9),disp:`0.<span class="per">7</span>`,val:7/9},
+  {f:mkF(1,7),disp:`0.<span class="per">142857</span>`,val:1/7},{f:mkF(1,11),disp:`0.<span class="per">09</span>`,val:1/11},
+  {f:mkF(2,11),disp:`0.<span class="per">18</span>`,val:2/11},{f:mkF(3,11),disp:`0.<span class="per">27</span>`,val:3/11},
+  {f:mkF(1,12),disp:`0.08<span class="per">3</span>`,val:1/12},{f:mkF(5,12),disp:`0.41<span class="per">6</span>`,val:5/12},
+];
+const EXACT_DECS=[
+  {f:mkF(1,2),disp:'0.5',val:0.5},{f:mkF(1,4),disp:'0.25',val:0.25},{f:mkF(3,4),disp:'0.75',val:0.75},
+  {f:mkF(1,5),disp:'0.2',val:0.2},{f:mkF(2,5),disp:'0.4',val:0.4},{f:mkF(3,5),disp:'0.6',val:0.6},
+  {f:mkF(4,5),disp:'0.8',val:0.8},{f:mkF(1,8),disp:'0.125',val:0.125},{f:mkF(3,8),disp:'0.375',val:0.375},
+  {f:mkF(7,8),disp:'0.875',val:0.875},{f:mkF(1,10),disp:'0.1',val:0.1},{f:mkF(3,10),disp:'0.3',val:0.3},
+  {f:mkF(7,10),disp:'0.7',val:0.7},{f:mkF(9,10),disp:'0.9',val:0.9},{f:mkF(3,2),disp:'1.5',val:1.5},
+  {f:mkF(5,4),disp:'1.25',val:1.25},{f:mkF(5,2),disp:'2.5',val:2.5},
+];
+function randExact(){return EXACT_DECS[rnd(0,EXACT_DECS.length-1)];}
+function randPeriodic(){return PERIODIC[rnd(0,PERIODIC.length-1)];}
+function randRat(allowPeriodic=true){
+  if(currentMode==='frac'){const f=randFrac(8,true);return{disp:fracStr(f),f};}
+  if(currentMode==='dec'){const useP=allowPeriodic&&rnd(0,2)===0;const e=useP?randPeriodic():randExact();return{disp:e.disp,f:e.f};}
+  const type=rnd(0,2);
+  if(type===0){const f=randFrac(8,true);return{disp:fracStr(f),f};}
+  if(type===1){const e=randExact();return{disp:e.disp,f:e.f};}
+  const e=allowPeriodic?randPeriodic():randExact();return{disp:e.disp,f:e.f};
+}
+function randPosRat(){
+  if(currentMode==='frac'){const f=randPosFrac(8);return{disp:fracStr(f),f};}
+  if(currentMode==='dec'){const e=randExact();return{disp:e.disp,f:e.f};}
+  return rnd(0,1)?{disp:fracStr(randPosFrac(8)),f:randPosFrac(8)}:(()=>{const e=randExact();return{disp:e.disp,f:e.f};})();
+}
+function mixedDisp(whole,f){if(whole===0)return fracStr(f);const sign=whole<0?'−':'';const w=Math.abs(whole);return`${sign}${w}<span class="frac" style="font-size:0.8em"><span class="num">${f.n}</span><span class="den">${f.d}</span></span>`;}
+function randNum(lvl,allowNeg=true){
+  if(lvl===1){
+    if(currentMode==='dec'||(currentMode==='both'&&rnd(0,1))){const exactSimple=EXACT_DECS.filter(e=>e.val<1&&e.val>0);const e=exactSimple[rnd(0,exactSimple.length-1)];const sign=allowNeg&&rnd(0,2)===0;return{disp:(sign?'−':'')+e.disp,f:sign?mkF(-e.f.n,e.f.d):e.f};}
+    const d=rnd(2,6);const n=rnd(1,d-1);const neg=allowNeg&&rnd(0,2)===0;const f=mkF(neg?-n:n,d);return{disp:fracStr(f),f};
+  }
+  if(lvl===2){
+    if(currentMode==='dec'||(currentMode==='both'&&rnd(0,1))){const pool=rnd(0,1)?PERIODIC:EXACT_DECS;const e=pool[rnd(0,pool.length-1)];const sign=allowNeg&&rnd(0,2)===0;return{disp:(sign?'−':'')+e.disp,f:sign?mkF(-e.f.n,e.f.d):e.f};}
+    const d=rnd(2,8);const n=rnd(d+1,d*3);const neg=allowNeg&&rnd(0,2)===0;const f=mkF(neg?-n:n,d);return{disp:fracStr(f),f};
+  }
+  if(currentMode==='dec'||(currentMode==='both'&&rnd(0,2)===0)){const pool=[...PERIODIC,...EXACT_DECS];const e=pool[rnd(0,pool.length-1)];return{disp:e.disp,f:e.f};}
+  const whole=rnd(1,3);const d=rnd(2,6);const n=rnd(1,d-1);const neg=allowNeg&&rnd(0,2)===0;const totalN=whole*d+n;const f=mkF(neg?-totalN:totalN,d);const fracPart=mkF(n,d);return{disp:mixedDisp(neg?-whole:whole,fracPart),f};
+}
+function perfectSqFrac(){const sq=[1,4,9,16,25,36,49,64,81,100];const n=sq[rnd(0,sq.length-1)];const d=sq[rnd(1,sq.length-1)];const f=mkF(n,d);return{f,resF:mkF(Math.round(Math.sqrt(n)),Math.round(Math.sqrt(d)))};}
+function perfectCbFrac(){const cb=[1,8,27,64,125];const n=cb[rnd(0,4)],d=cb[rnd(1,4)];return{f:mkF(n,d),resF:mkF(Math.round(Math.cbrt(n)),Math.round(Math.cbrt(d)))};}
+function perfect4thFrac(){const f4=[1,16,81,256];const n=f4[rnd(0,3)],d=f4[rnd(1,3)];return{f:mkF(n,d),resF:mkF(Math.round(Math.pow(n,0.25)),Math.round(Math.pow(d,0.25)))};}
+function randRootFrac(){const idx=[2,2,3,4][rnd(0,3)];let data;if(idx===2)data=perfectSqFrac();else if(idx===3)data=perfectCbFrac();else data=perfect4thFrac();return{disp:rootHTML(fracStr(data.f),idx),f:data.resF};}
+function mkTerm(lvl){const type=rnd(0,3);if(type<=1||type===3)return randNum(lvl);if(type===2){const base=randNum(lvl,false);if(base.f.n<=0)return randNum(lvl);const e=rnd(2,3);const sup=e===2?'²':'³';return{disp:`(${base.disp})${sup}`,f:powF(base.f,e)};}const rr=randRootFrac();return{disp:rr.disp,f:rr.f};}
+
+// Generador de Suma/Resta de DECIMALES (modo dec)
+// N1: dos decimales exactos de 1 cifra decimal
+// N2: tres o cuatro decimales exactos (pool completa)
+// N3: un decimal exacto + un periódico
+const EXACT_DECS_SIMPLE = [
+  {f:mkF(1,10),disp:'0.1',val:0.1},{f:mkF(2,10),disp:'0.2',val:0.2},{f:mkF(3,10),disp:'0.3',val:0.3},
+  {f:mkF(4,10),disp:'0.4',val:0.4},{f:mkF(5,10),disp:'0.5',val:0.5},{f:mkF(6,10),disp:'0.6',val:0.6},
+  {f:mkF(7,10),disp:'0.7',val:0.7},{f:mkF(8,10),disp:'0.8',val:0.8},{f:mkF(9,10),disp:'0.9',val:0.9},
+  {f:mkF(3,2),disp:'1.5',val:1.5},{f:mkF(5,2),disp:'2.5',val:2.5},{f:mkF(7,2),disp:'3.5',val:3.5},
+  {f:mkF(11,10),disp:'1.1',val:1.1},{f:mkF(12,10),disp:'1.2',val:1.2},{f:mkF(15,10),disp:'1.5',val:1.5},
+  {f:mkF(21,10),disp:'2.1',val:2.1},{f:mkF(23,10),disp:'2.3',val:2.3},{f:mkF(31,10),disp:'3.1',val:3.1},
+];
+function randExactSimple(){ return EXACT_DECS_SIMPLE[rnd(0,EXACT_DECS_SIMPLE.length-1)]; }
+function rac_genSR_dec(lvl){
+  if(lvl===1){
+    const a=randExactSimple(), b=randExactSimple();
+    const op=rnd(0,1)?'+':'−';
+    const resF=op==='+'?addF(a.f,b.f):subF(a.f,b.f);
+    const sol=solFrac(resF);
+    return{expr:`${a.disp} ${op} ${b.disp} =`,sol,lvl};
+  }
+  if(lvl===2){
+    const n=rnd(3,4);
+    const terms=Array.from({length:n},()=>EXACT_DECS[rnd(0,EXACT_DECS.length-1)]);
+    const ops=Array.from({length:n-1},()=>rnd(0,1)?'+':'−');
+    let resF=terms[0].f;
+    for(let i=0;i<ops.length;i++) resF=ops[i]==='+'?addF(resF,terms[i+1].f):subF(resF,terms[i+1].f);
+    const parts=[terms[0].disp];
+    for(let i=0;i<ops.length;i++) parts.push(ops[i]+' '+terms[i+1].disp);
+    return{expr:parts.join(' ')+' =',sol:solFrac(resF),lvl};
+  }
+  // lvl 3: un exacto + un periódico
+  const a=EXACT_DECS[rnd(0,EXACT_DECS.length-1)];
+  const b=PERIODIC[rnd(0,PERIODIC.length-1)];
+  const op=rnd(0,1)?'+':'−';
+  const resF=op==='+'?addF(a.f,b.f):subF(a.f,b.f);
+  return{expr:`${a.disp} ${op} ${b.disp} =`,sol:solFrac(resF),lvl};
+}
+
+function rac_genSR(lvl){
+  if(currentMode==='dec') return rac_genSR_dec(lvl);
+  let a,b,res,expr;
+  if(lvl===1){
+    if(currentMode==='frac'){const d=rnd(2,10);const n1=rndNZ(-d*2,d*2);const n2=rndNZ(-d*2,d*2);const op=rnd(0,1)?'+':'−';const resF=op==='+'?mkF(n1+n2,d):mkF(n1-n2,d);return{expr:`${fracStr(mkF(n1,d))} ${op} ${fracStr(mkF(op==='+'?n2:Math.abs(n2),d))} =`,sol:solFrac(resF),lvl};}
+    const ra=randRat(true),rb=randRat(true);const op=rnd(0,1)?'+':'−';const resF=op==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);return{expr:`${ra.disp} ${op} ${rb.disp} =`,sol:solFrac(resF),lvl};
+  }
+  if(lvl===2){const ra=randRat(false),rb=randRat(false);const op=rnd(0,1)?'+':'−';const resF=op==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);return{expr:`${ra.disp} ${op} ${rb.disp} =`,sol:solFrac(resF),lvl};}
+  const ra=randRat(true),rb=randRat(true),rc=randRat(false);const op1=rnd(0,1)?'+':'−',op2=rnd(0,1)?'+':'−';const r1=op1==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);const resF=op2==='+'?addF(r1,rc.f):subF(r1,rc.f);return{expr:`${ra.disp} ${op1} ${rb.disp} ${op2} ${rc.disp} =`,sol:solFrac(resF),lvl};
+}
+function rac_genMU(lvl){const n=lvl===1?2:lvl===2?3:rnd(4,5);const rats=Array.from({length:n},()=>randRat(lvl===3));const resF=rats.reduce((acc,r)=>mulF(acc,r.f),mkF(1,1));return{expr:rats.map(r=>r.disp).join(' · ')+' =',sol:solFrac(resF),lvl};}
+function rac_genDV(lvl){
+  if(lvl===1){const a=randRat(false),b=randPosRat();if(b.f.n===0)return rac_genDV(lvl);return{expr:`${a.disp} ÷ ${b.disp} =`,sol:solFrac(divF(a.f,b.f)),lvl};}
+  if(lvl===2){const a=randRat(false),b=randPosRat(),c=randPosRat();if(b.f.n===0||c.f.n===0)return rac_genDV(lvl);return{expr:`${a.disp} ÷ ${b.disp} ÷ ${c.disp} =`,sol:solFrac(divF(divF(a.f,b.f),c.f)),lvl};}
+  const a=randRat(true),b=randRat(false),c=randPosRat();if(c.f.n===0)return rac_genDV(lvl);return{expr:`(${a.disp} + ${b.disp}) ÷ ${c.disp} =`,sol:solFrac(divF(addF(a.f,b.f),c.f)),lvl};
+}
+// Generador de Potenciación de DECIMALES (modo dec)
+// N1: base decimal con signo (pos o neg), exponente 2 o 3
+// N2: misma base decimal, propiedad mult (aⁿ·aᵐ=aⁿ⁺ᵐ) o div (aⁿ÷aᵐ=aⁿ⁻ᵐ)
+// N3: potencia de potencia (aⁿ)ᵐ = aⁿ·ᵐ
+function rac_genPO_dec(lvl){
+  const SUP = n=>['⁰','¹','²','³','⁴','⁵','⁶'][n]||String(n);
+  if(lvl===1){
+    const e=EXACT_DECS[rnd(0,EXACT_DECS.length-1)];
+    const neg=rnd(0,1)===1;
+    const fBase=neg?mkF(-e.f.n,e.f.d):e.f;
+    const baseDisp=neg?'(−'+e.disp+')':e.disp;
+    const exp=rnd(2,3);
+    const resF=powF(fBase,exp);
+    return{expr:`(${baseDisp})${SUP(exp)} =`,sol:solFrac(resF),lvl};
+  }
+  if(lvl===2){
+    const e=EXACT_DECS[rnd(0,EXACT_DECS.length-1)];
+    const baseDisp=e.disp;
+    const e1=rnd(2,4),e2=rnd(1,3);
+    const isDiv=rnd(0,1)===1&&e1>e2;
+    const expR=isDiv?e1-e2:e1+e2;
+    const expr=isDiv
+      ?`(${baseDisp})${SUP(e1)} ÷ (${baseDisp})${SUP(e2)}`
+      :`(${baseDisp})${SUP(e1)} · (${baseDisp})${SUP(e2)}`;
+    const resF=powF(e.f,expR);
+    return{expr:`${expr} =`,sol:`(${baseDisp})${SUP(expR)} = ${solFrac(resF)}`,lvl};
+  }
+  // N3: potencia de potencia (aⁿ)ᵐ
+  const e=EXACT_DECS[rnd(0,EXACT_DECS.length-1)];
+  const baseDisp=e.disp;
+  const e1=rnd(2,3),e2=rnd(2,3);
+  const expR=e1*e2;
+  const resF=powF(e.f,expR);
+  return{expr:`((${baseDisp})${SUP(e1)})${SUP(e2)} =`,sol:`(${baseDisp})${SUP(expR)} = ${solFrac(resF)}`,lvl};
+}
+
+function rac_genPO(lvl){
+  if(currentMode==='dec') return rac_genPO_dec(lvl);
+  const sup=n=>n===1?'¹':n===2?'²':n===3?'³':n===4?'⁴':'⁵';
+  if(lvl===1){const base=randPosRat(),exp=rnd(2,3);const s=exp===2?'²':'³';return{expr:`(${base.disp})${s} =`,sol:solFrac(powF(base.f,exp)),lvl};}
+  if(lvl===2){const base=randPosRat();const e1=rnd(2,4),e2=rnd(1,3);const isDiv=rnd(0,1)&&e1>e2;const expR=isDiv?e1-e2:e1+e2;const expr=isDiv?`(${base.disp})${sup(e1)} ÷ (${base.disp})${sup(e2)}`:`(${base.disp})${sup(e1)} · (${base.disp})${sup(e2)}`;return{expr:`${expr} =`,sol:`(${base.disp})${sup(expR)} = ${solFrac(powF(base.f,expR))}`,lvl};}
+  const b1=randPosRat(),b2=randPosRat();const e1=rnd(2,3),e2=rnd(2,3);const s=n=>n===2?'²':'³';return{expr:`(${b1.disp})${s(e1)} · (${b2.disp})${s(e2)} =`,sol:solFrac(mulF(powF(b1.f,e1),powF(b2.f,e2))),lvl};
+}
+function rac_genRA(lvl){
+  if(lvl===1){const{f,resF}=perfectSqFrac();const disp=currentMode==='frac'?fracStr(f):(()=>{const e=EXACT_DECS.find(x=>x.f.n===f.n&&x.f.d===f.d);return e?e.disp:fracStr(f);})();return{expr:`${rootHTML(disp,2)} =`,sol:solFrac(resF),lvl};}
+  if(lvl===2){const type=rnd(0,1);if(type===0){const fourths=[1,16,81,256];const n=fourths[rnd(0,3)],d=fourths[rnd(1,3)];return{expr:`${rootHTML(fracStr(mkF(n,d)),4)} =`,sol:solFrac(mkF(Math.round(Math.pow(n,0.25)),Math.round(Math.pow(d,0.25)))),lvl};}const cubes=[1,8,27,64,125];const n=cubes[rnd(0,4)],d=cubes[rnd(1,4)];return{expr:`${rootHTML(fracStr(mkF(n,d)),3)} =`,sol:solFrac(mkF(Math.round(Math.cbrt(n)),Math.round(Math.cbrt(d)))),lvl};}
+  const ra=randRootFrac(),rb=randRootFrac();const op=rnd(0,1)?'+':'−';return{expr:`${ra.disp} ${op} ${rb.disp} =`,sol:solFrac(op==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f)),lvl};
+}
+function rac_genCS(lvl){
+  let expr,resF,att=0;
+  while(att++<80){try{const nTerms=lvl===1?rnd(3,4):lvl===2?rnd(3,5):rnd(4,5);const terms=Array.from({length:nTerms},()=>mkTerm(lvl));const opsPool=['+','−','·','÷'];const ops=Array.from({length:nTerms-1},()=>opsPool[rnd(0,3)]);let groups=[{terms:[terms[0]],mops:[]}];for(let i=0;i<ops.length;i++){if(ops[i]==='+'||ops[i]==='−'){groups.push({terms:[terms[i+1]],mops:[],addOp:ops[i]});}else{groups[groups.length-1].terms.push(terms[i+1]);groups[groups.length-1].mops.push(ops[i]);}}const gVals=groups.map(g=>{let v=g.terms[0].f;for(let i=0;i<g.mops.length;i++){const tv=g.terms[i+1].f;if(g.mops[i]==='·')v=mulF(v,tv);else{if(tv.n===0)throw new Error('div0');v=divF(v,tv);}}return v;});let total=gVals[0];for(let i=1;i<groups.length;i++){total=groups[i].addOp==='+'?addF(total,gVals[i]):subF(total,gVals[i]);}if(!total||Math.abs(total.n)>300||Math.abs(total.d)>300||total.d===0)continue;const parts=[terms[0].disp];for(let i=0;i<ops.length;i++)parts.push(`${ops[i]} ${terms[i+1].disp}`);expr=parts.join(' ')+' =';resF=total;break;}catch(e){continue;}}
+  if(!expr)return rac_genCS(lvl);return{expr,sol:solFrac(resF),lvl};
+}
+function rac_genCC(lvl){
+  let expr,resF,att=0;
+  while(att++<100){try{const T=()=>mkTerm(lvl);let e,r;
+    if(lvl===1){const type=rnd(0,3);const[a,b,c,d]=[T(),T(),T(),T()];if(type===0){r=mulF(a.f,addF(b.f,c.f));e=`${a.disp} · (${b.disp} + ${c.disp})`;}else if(type===1){if(c.f.n===0)continue;r=divF(addF(a.f,b.f),c.f);e=`(${a.disp} + ${b.disp}) ÷ ${c.disp}`;}else if(type===2){r=addF(mulF(subF(a.f,b.f),c.f),d.f);e=`(${a.disp} − ${b.disp}) · ${c.disp} + ${d.disp}`;}else{r=subF(addF(a.f,mulF(b.f,c.f)),d.f);e=`${a.disp} + (${b.disp} · ${c.disp}) − ${d.disp}`;}}
+    else if(lvl===2){const type=rnd(0,3);const[a,b,c,d,ef]=[T(),T(),T(),T(),T()];if(type===0){r=addF(subF(mulF(a.f,addF(b.f,c.f)),d.f),ef.f);e=`[${a.disp} · (${b.disp} + ${c.disp}) − ${d.disp}] + ${ef.disp}`;}else if(type===1){r=addF(a.f,subF(b.f,mulF(c.f,d.f)));e=`${a.disp} + [${b.disp} − (${c.disp} · ${d.disp})]`;}else if(type===2){if(d.f.n===0)continue;r=divF(addF(a.f,subF(b.f,c.f)),d.f);e=`[${a.disp} + (${b.disp} − ${c.disp})] ÷ ${d.disp}`;}else{r=subF(ef.f,addF(mulF(a.f,subF(b.f,c.f)),d.f));e=`${ef.disp} − [${a.disp} · (${b.disp} − ${c.disp}) + ${d.disp}]`;}}
+    else{const type=rnd(0,2);const[a,b,c,d,ef]=[T(),T(),T(),T(),T()];if(type===0){r=mulF(subF(a.f,mulF(b.f,addF(c.f,d.f))),ef.f);e=`{${a.disp} − [${b.disp} · (${c.disp} + ${d.disp})]} · ${ef.disp}`;}else if(type===1){if(ef.f.n===0)continue;r=divF(subF(addF(a.f,mulF(b.f,c.f)),d.f),ef.f);e=`{[${a.disp} + (${b.disp} · ${c.disp})] − ${d.disp}} ÷ ${ef.disp}`;}else{r=addF(mulF(a.f,subF(b.f,addF(c.f,d.f))),ef.f);e=`{${a.disp} · [${b.disp} − (${c.disp} + ${d.disp})]} + ${ef.disp}`;}}
+    if(!r||Math.abs(r.n)>300||Math.abs(r.d)>300||r.d===0)continue;expr=e+' =';resF=r;break;}catch(err){continue;}}
+  if(!expr)return rac_genCC(lvl);return{expr,sol:solFrac(resF),lvl};
+}
+
+const RAC_GENS = {sr:rac_genSR,mu:rac_genMU,dv:rac_genDV,po:rac_genPO,ra:rac_genRA,cs:rac_genCS,cc:rac_genCC};
+
+function racGenerateTopic(pfx){
+  const total=Object.values(RAC_STATE[pfx]).reduce((a,b)=>a+b,0);
+  if(total===0){alert('Agregá al menos un ejercicio con +');return;}
+  const ejercicios=[],seen=new Set();
+  for(let lvl=1;lvl<=3;lvl++){const qty=RAC_STATE[pfx][lvl]||0;if(!qty)continue;let count=0,att=0;while(count<qty&&att<qty*60){att++;try{const e=RAC_GENS[pfx](lvl);if(!e||seen.has(e.expr))continue;seen.add(e.expr);ejercicios.push(e);count++;}catch(err){}}}
+  ejercicios.forEach((e,i)=>e.id=i+1);
+  const modeLabel=currentMode==='frac'?'Solo fracciones':currentMode==='dec'?'Solo decimales':'Fracciones y decimales';
+  const fecha=new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
+  let currentLvl=null;
+  let ejHTML='<div class="ejercicios-list">';
+  ejercicios.forEach(e=>{if(e.lvl!==currentLvl){currentLvl=e.lvl;ejHTML+=`<div class="level-header">${racGetLabel(pfx,e.lvl)}</div>`;}ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:'work-space-sm',ra:'work-space-md',cs:'work-space-lg',cc:'work-space-lg'}[pfx]||'work-space-md'}"></div></div></div>`;});
+  ejHTML+='</div>';
+  let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e=>{solHTML+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}</div></div>`;});
+  solHTML+='</div><div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  const el=document.getElementById('rac-'+pfx+'-ej');
+  el.innerHTML=`<div class="ej-header"><div class="ej-title">${RAC_TOPIC_NAMES[pfx]}</div><div class="ej-meta"><span style="color:var(--teal);font-weight:700">${modeLabel}</span></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>${indGetTablaHTML('ind-filas')}</div>${ejHTML}${solHTML}`;
+  el.style.display='block';
+  document.getElementById('rac-'+pfx+'-btnDL').style.display='block';
+}
+
+function racDownloadEj(containerId,filename){
+  // Reutiliza downloadEj que ahora genera PDF
+  downloadEj(containerId, filename);
+}
+
+
+  // Mostrar widget al cargar (panel mixto está activo por defecto)
+  (function() {
+    const widget = document.getElementById('ind-widget');
+    if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+  })();
+
+
+// ── Sincronizar checkbox con atributo body para @media print ──
+(function() {
+  var chk = document.getElementById('chk-incluir-sol');
+  if (!chk) return;
+  function sync() {
+    if (chk.checked) {
+      document.body.removeAttribute('data-hide-sol');
+    } else {
+      document.body.setAttribute('data-hide-sol', '');
+    }
+  }
+  chk.addEventListener('change', sync);
+  sync();
+})();
+
+// ── Clase sin-soluciones en body para controlar impresión ──
+document.addEventListener('DOMContentLoaded', function() {
+  var chk = document.getElementById('chk-incluir-sol');
+  if (!chk) return;
+  chk.addEventListener('change', function() {
+    if (chk.checked) {
+      document.body.classList.remove('sin-soluciones');
+    } else {
+      document.body.classList.add('sin-soluciones');
+    }
+  });
+});
+
+// ── Mostrar btn-download-sol cuando aparezca btn-download ────────────────────
+(function() {
+  var _obs = new MutationObserver(function(mutations) {
+    mutations.forEach(function(m) {
+      if (m.type === 'attributes' && m.attributeName === 'style') {
+        var target = m.target;
+        if (target.classList && target.classList.contains('btn-download') && target.style.display !== 'none' && target.style.display !== '') {
+          var baseId = target.id.replace('-btnDownload','').replace('-btnDL','');
+          var solBtn = document.getElementById(baseId + '-btnSolAparte');
+          if (solBtn) solBtn.style.display = target.style.display;
+        }
+      }
+    });
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-download').forEach(function(btn) {
+      _obs.observe(btn, { attributes: true, attributeFilter: ['style'] });
+    });
+  });
+})();
+</script>
+
+  <div class="print-footer">© 2026 Maria Lopez Nery Huerta</div>
+</body>
+</html>
