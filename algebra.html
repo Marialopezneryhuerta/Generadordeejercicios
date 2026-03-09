@@ -3363,6 +3363,14 @@ const SP_LVL2 = [
 ];
 
 // ── NIVEL 3: Con fracciones ──────────────────────────────────────────────────
+// Fracciones visuales para usar en ec: (concatenación, nunca template dentro de template)
+const FX2 = '<span class="frac"><span class="num"><em>x</em></span><span class="den">2</span></span>';
+const FX3 = '<span class="frac"><span class="num"><em>x</em></span><span class="den">3</span></span>';
+const FX4 = '<span class="frac"><span class="num"><em>x</em></span><span class="den">4</span></span>';
+const FX5 = '<span class="frac"><span class="num"><em>x</em></span><span class="den">5</span></span>';
+const F14 = '<span class="frac"><span class="num">1</span><span class="den">4</span></span>';
+const F34 = '<span class="frac"><span class="num">3</span><span class="den">4</span></span>';
+
 // Ecuaciones como: x/2 + x/3 = total  o  x/a = b  o  la mitad/tercio de algo
 const SP_LVL3 = [
 
@@ -3370,12 +3378,12 @@ const SP_LVL3 = [
   () => {
     const x = spRnd(4,30)*2, b = spRnd(2,10);
     const res = x/2 + b;
-    return { enunciado: `La mitad de un número más ${b} es igual a ${res}. ¿Cuál es el número?`, ec: `x/2 + ${b} = ${res}`, sol: `x = ${x}` };
+    return { enunciado: `La mitad de un número más ${b} es igual a ${res}. ¿Cuál es el número?`, ec: FX2 + ' + ' + b + ' = ' + res, sol: `x = ${x}` };
   },
   () => {
     const x = spRnd(3,20)*3, b = spRnd(2,8);
     const res = x/3 - b;
-    return { enunciado: `Un tercio de un número menos ${b} es igual a ${res}. ¿Cuál es el número?`, ec: `x/3 − ${b} = ${res}`, sol: `x = ${x}` };
+    return { enunciado: `Un tercio de un número menos ${b} es igual a ${res}. ¿Cuál es el número?`, ec: FX3 + ' − ' + b + ' = ' + res, sol: `x = ${x}` };
   },
 
   // Reparto en fracciones
@@ -3383,13 +3391,13 @@ const SP_LVL3 = [
     const total = spRnd(6,20)*6; // múltiplo de 6 para que den enteros
     const a = total/2, b = total/3, c = total - a - b;
     const nom = spItem(SP_NOMBRES);
-    return { enunciado: `${nom} gasta la mitad de su dinero en alquiler, un tercio en comida y le sobran ${spGs(c)} guaraníes. ¿Cuánto dinero tenía?`, ec: `x − x/2 − x/3 = ${c}`, sol: `x = ${spGs(total)}` };
+    return { enunciado: `${nom} gasta la mitad de su dinero en alquiler, un tercio en comida y le sobran ${spGs(c)} guaraníes. ¿Cuánto dinero tenía?`, ec: '<em>x</em> − ' + FX2 + ' − ' + FX3 + ' = ' + c, sol: `x = ${spGs(total)}` };
   },
   () => {
     const total = spRnd(4,15)*12; // múltiplo de 12
     const a = total/3, b = total/4, c = total - a - b;
     const nom = spItem(SP_NOMBRES), ciudad = spItem(SP_CIUDADES);
-    return { enunciado: `${nom} recorre un trayecto en ${ciudad}. Ya hizo un tercio caminando, un cuarto en colectivo, y le faltan ${c} metros. ¿Qué distancia total tiene el trayecto?`, ec: `x/3 + x/4 + ${c} = x`, sol: `x = ${total} metros` };
+    return { enunciado: `${nom} recorre un trayecto en ${ciudad}. Ya hizo un tercio caminando, un cuarto en colectivo, y le faltan ${c} metros. ¿Qué distancia total tiene el trayecto?`, ec: FX3 + ' + ' + FX4 + ' + ' + c + ' = <em>x</em>', sol: `x = ${total} metros` };
   },
 
   // Edad con fracciones
@@ -3398,13 +3406,13 @@ const SP_LVL3 = [
     const nom1 = spItem(SP_NOMBRES), nom2 = spItem(SP_NOMBRES.filter(n=>n!==nom1));
     const edad2 = x/4;
     const dif = x - edad2;
-    return { enunciado: `${nom1} tiene ${dif} años más que un cuarto de su propia edad. ¿Cuántos años tiene ${nom1}?`, ec: `x − x/4 = ${dif}`, sol: `x = ${x} años` };
+    return { enunciado: `${nom1} tiene ${dif} años más que un cuarto de su propia edad. ¿Cuántos años tiene ${nom1}?`, ec: '<em>x</em> − ' + FX4 + ' = ' + dif, sol: `x = ${x} años` };
   },
   () => {
     const nom1 = spItem(SP_NOMBRES), nom2 = spItem(SP_NOMBRES.filter(n=>n!==nom1));
     const x = spRnd(3,10)*2;
     const mitad = x/2, suma = x + mitad;
-    return { enunciado: `${nom1} tiene el doble de edad que ${nom2}. La suma de sus edades es ${suma}. ¿Cuántos años tiene cada uno?`, ec: `x + x/2 = ${suma}`, sol: `${nom2}: x = ${mitad}, ${nom1}: ${x}` };
+    return { enunciado: `${nom1} tiene el doble de edad que ${nom2}. La suma de sus edades es ${suma}. ¿Cuántos años tiene cada uno?`, ec: '<em>x</em> + ' + FX2 + ' = ' + suma, sol: `${nom2}: x = ${mitad}, ${nom1}: ${x}` };
   },
 
   // Dinero con fracciones
@@ -3412,7 +3420,7 @@ const SP_LVL3 = [
     const total = spRnd(4,12)*6*1000; // múltiplo de 6000
     const gasto1 = total/2, gasto2 = total/3, sobra = total - gasto1 - gasto2;
     const nom = spItem(SP_NOMBRES);
-    return { enunciado: `${nom} cobra su sueldo. Destina la mitad al alquiler, un tercio a gastos del hogar y le quedan ${spGs(sobra)} guaraníes. ¿Cuánto cobra?`, ec: `x/2 + x/3 + ${sobra} = x`, sol: `x = ${spGs(total)}` };
+    return { enunciado: `${nom} cobra su sueldo. Destina la mitad al alquiler, un tercio a gastos del hogar y le quedan ${spGs(sobra)} guaraníes. ¿Cuánto cobra?`, ec: FX2 + ' + ' + FX3 + ' + ' + sobra + ' = <em>x</em>', sol: `x = ${spGs(total)}` };
   },
   () => {
     const cant = spRnd(3,8)*4, precio = spRnd(2,8)*1000;
@@ -3420,26 +3428,26 @@ const SP_LVL3 = [
     const nom = spItem(SP_NOMBRES), prod = spItem(SP_PRODUCTOS);
     const frac_comprada = '1/4';
     const cant_frac = cant/4;
-    return { enunciado: `${nom} compra la cuarta parte de un lote de ${prod}. Si pagó ${spGs(cant_frac * precio)} guaraníes y cada uno cuesta ${spGs(precio)}, ¿cuántos ${prod} tenía el lote completo?`, ec: `(1/4)·${precio}·x = ${cant_frac * precio}`, sol: `x = ${cant}` };
+    return { enunciado: `${nom} compra la cuarta parte de un lote de ${prod}. Si pagó ${spGs(cant_frac * precio)} guaraníes y cada uno cuesta ${spGs(precio)}, ¿cuántos ${prod} tenía el lote completo?`, ec: '(' + F14 + ')·' + precio + '·<em>x</em> = ' + (cant_frac * precio), sol: `x = ${cant}` };
   },
 
   // Mezcla de fracciones y contexto
   () => {
     const total = spRnd(3,8)*10; // múltiplo de 10
     const a = total/2, b = total/5, c = total - a - b;
-    return { enunciado: `En un torneo participan varios equipos. La mitad son de fútbol, un quinto de básquet y los otros ${c} de vóley. ¿Cuántos equipos participan en total?`, ec: `x/2 + x/5 + ${c} = x`, sol: `x = ${total} equipos` };
+    return { enunciado: `En un torneo participan varios equipos. La mitad son de fútbol, un quinto de básquet y los otros ${c} de vóley. ¿Cuántos equipos participan en total?`, ec: FX2 + ' + ' + FX5 + ' + ' + c + ' = <em>x</em>', sol: `x = ${total} equipos` };
   },
   () => {
     const x = spRnd(2,8)*6; // múltiplo de 6
     const a = x/2, b = x/3;
     const total = a + b;
-    return { enunciado: `La mitad de un número más su tercio es ${total}. ¿Cuál es el número?`, ec: `x/2 + x/3 = ${total}`, sol: `x = ${x}` };
+    return { enunciado: `La mitad de un número más su tercio es ${total}. ¿Cuál es el número?`, ec: FX2 + ' + ' + FX3 + ' = ' + total, sol: `x = ${x}` };
   },
   () => {
     const x = spRnd(3,10)*4;
     const nom = spItem(SP_NOMBRES), ciudad = spItem(SP_CIUDADES);
     const gastado = x - x/4;
-    return { enunciado: `${nom} fue al mercado en ${ciudad} con cierta cantidad de guaraníes. Después de gastar tres cuartos de lo que llevaba, le sobran ${spGs(x/4)}. ¿Cuánto llevaba?`, ec: `x − (3/4)x = ${x/4}`, sol: `x = ${spGs(x)}` };
+    return { enunciado: `${nom} fue al mercado en ${ciudad} con cierta cantidad de guaraníes. Después de gastar tres cuartos de lo que llevaba, le sobran ${spGs(x/4)}. ¿Cuánto llevaba?`, ec: '<em>x</em> − ' + F34 + '<em>x</em> = ' + (x/4), sol: `x = ${spGs(x)}` };
   },
 ];
 
@@ -4299,7 +4307,7 @@ function renderAct6(items, startIdx) {
 const LANG_ALG_A = [
   { oracion: 'El doble de un número.',                         expr: '2x' },
   { oracion: 'El triple de un número más cinco.',              expr: '3x + 5' },
-  { oracion: 'La mitad de un número menos tres.',              expr: 'x/2 − 3' },
+  { oracion: 'La mitad de un número menos tres.',              expr: '<span class="frac"><span class="num"><em>x</em></span><span class="den">2</span></span> − 3' },
   { oracion: 'La suma de dos números.',                        expr: 'x + y' },
   { oracion: 'El cuadrado de un número.',                      expr: 'x²' },
   { oracion: 'El cubo de un número más el doble de otro.',     expr: 'x³ + 2y' },
@@ -4307,15 +4315,15 @@ const LANG_ALG_A = [
   { oracion: 'El cuadrado de un número más el doble de otro.', expr: 'x² + 2y' },
   { oracion: 'El triple del cuadrado de un número.',           expr: '3x²' },
   { oracion: 'Cinco veces un número menos el cuadrado de otro.', expr: '5x − y²' },
-  { oracion: 'La cuarta parte de un número más seis.',         expr: 'x/4 + 6' },
-  { oracion: 'El cubo de un número dividido entre dos.',       expr: 'x³ / 2' },
+  { oracion: 'La cuarta parte de un número más seis.',         expr: '<span class="frac"><span class="num"><em>x</em></span><span class="den">4</span></span> + 6' },
+  { oracion: 'El cubo de un número dividido entre dos.',       expr: '<span class="frac"><span class="num"><em>x</em>³</span><span class="den">2</span></span>' },
   { oracion: 'La suma del cuadrado de dos números.',           expr: 'x² + y²' },
   { oracion: 'El doble de la suma de dos números.',            expr: '2(x + y)' },
   { oracion: 'El cuadrado de la diferencia de dos números.',   expr: '(x − y)²' },
   { oracion: 'El producto de dos números consecutivos.',       expr: 'x(x + 1)' },
   { oracion: 'Un número aumentado en el triple de otro.',      expr: 'x + 3y' },
   { oracion: 'El opuesto del cubo de un número.',              expr: '−x³' },
-  { oracion: 'La décima parte de un número elevado al cubo.',  expr: 'x³ / 10' },
+  { oracion: 'La décima parte de un número elevado al cubo.',  expr: '<span class="frac"><span class="num"><em>x</em>³</span><span class="den">10</span></span>' },
   { oracion: 'El doble del cubo de un número menos nueve.',    expr: '2x³ − 9' },
 ];
 
@@ -4328,19 +4336,19 @@ const LANG_ALG_B = [
   { expr: 'x + y',      oracion: 'La suma de dos números.' },
   { expr: '2(a + b)',   oracion: 'El doble de la suma de dos números.' },
   { expr: 'm³',         oracion: 'El cubo de un número.' },
-  { expr: 'x/2',        oracion: 'La mitad de un número.' },
+  { expr: '<span class="frac"><span class="num"><em>x</em></span><span class="den">2</span></span>',        oracion: 'La mitad de un número.' },
   { expr: 'x² + y²',   oracion: 'La suma de los cuadrados de dos números.' },
   { expr: '(x − y)²',  oracion: 'El cuadrado de la diferencia de dos números.' },
   { expr: '5x + 3',     oracion: 'Cinco veces un número más tres.' },
   { expr: 'a³ − 2b',   oracion: 'El cubo de un número menos el doble de otro.' },
   { expr: 'n(n + 1)',   oracion: 'El producto de dos números consecutivos.' },
-  { expr: 'x/4 − 1',   oracion: 'La cuarta parte de un número menos uno.' },
+  { expr: '<span class="frac"><span class="num"><em>x</em></span><span class="den">4</span></span> − 1',   oracion: 'La cuarta parte de un número menos uno.' },
   { expr: '3x²',        oracion: 'El triple del cuadrado de un número.' },
   { expr: '2a + 5b',   oracion: 'El doble de un número más el quíntuple de otro.' },
   { expr: '−n²',        oracion: 'El opuesto del cuadrado de un número.' },
   { expr: 'x² − 9',    oracion: 'El cuadrado de un número menos nueve.' },
   { expr: '4(x + 3)',   oracion: 'El cuádruple de la suma de un número y tres.' },
-  { expr: 'm/3 + n',   oracion: 'El tercio de un número más otro número.' },
+  { expr: '<span class="frac"><span class="num"><em>m</em></span><span class="den">3</span></span> + <em>n</em>',   oracion: 'El tercio de un número más otro número.' },
 ];
 
 function genAct7(n) {
@@ -4357,7 +4365,7 @@ function renderAct7(items, startIdx) {
     html += `<div class="intro-order-item">
       <div class="intro-order-num">${id}.</div>
       <div class="intro-order-poly" style="font-weight:400;font-size:0.97rem;">${it.oracion}</div>
-      <input class="intro-order-answer" type="text" placeholder="Escribí la expresión algebraica..." autocomplete="off">
+      <div class="intro-order-answer" style="min-height:1.6rem;"></div>
     </div>`;
     sols.push({ id, sol: it.expr });
   });
@@ -4379,7 +4387,7 @@ function renderAct8(items, startIdx) {
     html += `<div class="intro-order-item">
       <div class="intro-order-num">${id}.</div>
       <div class="intro-order-poly">${it.expr}</div>
-      <input class="intro-order-answer" type="text" placeholder="Describí con palabras..." autocomplete="off">
+      <div class="intro-order-answer" style="min-height:1.6rem;"></div>
     </div>`;
     sols.push({ id, sol: it.oracion });
   });

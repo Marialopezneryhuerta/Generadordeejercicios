@@ -139,6 +139,39 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .sol-num { color: #aaa; }
 .sol-val { font-weight: 700; }
 
+/* ── IDENTIDADES TRIGONOMÉTRICAS ── */
+.ident-item { align-items: flex-start; }
+.ident-content { width: 100%; }
+.ident-expr {
+  font-size: 1.05rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.5rem 0;
+  line-height: 2.2;
+}
+.doc-ej-block { display: flex; flex-direction: column; margin-bottom: 1rem; }
+.ident-expr .frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 0.88em;
+  line-height: 1.1;
+  margin: 0 0.1rem;
+}
+.ident-expr .frac-num {
+  border-bottom: 1.5px solid currentColor;
+  padding: 0 0.15rem;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+.ident-expr .frac-den { padding: 0 0.15rem; width: 100%; text-align: center; display: block; }
+
 @media print {
   .site-footer { display: none !important; }
   /* Ocultar toda la interfaz */
@@ -316,8 +349,8 @@ body { padding-bottom: 2.5rem; }
     <button class="topic-btn active" id="topic-trigonometrica" onclick="switchTopic('trigonometrica')">
       📐 Ec. Trigonométricas
     </button>
-    <button class="topic-btn" style="opacity:0.45;cursor:default;pointer-events:none">
-      🔁 Identidades <span class="soon">pronto</span>
+    <button class="topic-btn" id="topic-identidades" onclick="switchTopic('identidades')">
+      🔁 Identidades Trig.
     </button>
     <button class="topic-btn" id="topic-triangulos" onclick="switchTopic('triangulos')">
       📏 Triángulos Oblicuángulos
@@ -384,6 +417,50 @@ body { padding-bottom: 2.5rem; }
 <div class="ejercitario" id="trig-ejercitario"></div>
 <button class="btn-download" id="trig-btnDownload" onclick="downloadEjercitario('trig-ejercitario', 'ecuaciones-trigonometricas')">⬇️ Descargar PDF</button>
       <button class="btn-download-sol" id="trig-btnSolAparte" onclick="downloadSolucionesAparte('trig-ejercitario', 'ecuaciones-trigonometricas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+
+  </div>
+
+  <!-- PANEL: IDENTIDADES TRIGONOMÉTRICAS -->
+  <div class="section-panel" id="panel-identidades">
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fdf2f8">🔁</span> Niveles y cantidad</div>
+      <div class="levels">
+        <div class="level-item" data-level="1" id="id-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="idToggleLevel(1)">Nivel 1 — Aplicación directa de fórmulas (máx. 3 pasos)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="idChangeLevelQty(1,-1)">−</button>
+            <span class="lq-val" id="id-lqv-1">0</span>
+            <button class="lq-btn" onclick="idChangeLevelQty(1,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="2" id="id-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="idToggleLevel(2)">Nivel 2 — Fracciones, ángulo doble, múltiples técnicas</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="idChangeLevelQty(2,-1)">−</button>
+            <span class="lq-val" id="id-lqv-2">0</span>
+            <button class="lq-btn" onclick="idChangeLevelQty(2,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="3" id="id-lvl-3">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="idToggleLevel(3)">Nivel 3 — Amplificación, raíces, estrategia no obvia</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="idChangeLevelQty(3,-1)">−</button>
+            <span class="lq-val" id="id-lqv-3">0</span>
+            <button class="lq-btn" onclick="idChangeLevelQty(3,+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="total-badge" id="id-totalBadge">Total: <span>0</span> identidades</div>
+    </div>
+
+    <button class="btn-generate" onclick="generateIdentidades()">⚡ Generar ejercitario</button>
+    <div class="ejercitario" id="id-ejercitario"></div>
+    <button class="btn-download" id="id-btnDownload" onclick="downloadEjercitario('id-ejercitario', 'identidades-trigonometricas')">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="id-btnSolAparte" onclick="downloadSolucionesAparte('id-ejercitario', 'identidades-trigonometricas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
 
   </div>
 
@@ -955,8 +1032,12 @@ function getEjercitarioPDFCss() {
     '.sol-num,.intro-sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
     '.sol-val,.intro-sol-val{font-weight:600}',
     '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}',
-    '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}',
-    '.frac .den{padding:1px 3px 0;text-align:center}',
+    '.frac .num,.frac-num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center;display:block;width:100%}',
+    '.frac .den,.frac-den{padding:1px 3px 0;text-align:center;display:block;width:100%}',
+    '.ident-expr{font-size:1rem;line-height:2.2;font-weight:700;display:flex;align-items:center;flex-wrap:wrap;gap:.3rem;padding:.4rem 0}',
+    '.doc-ej-block{display:flex;flex-direction:column;margin-bottom:1rem}',
+    '.ident-item{align-items:flex-start}',
+    '.ident-content{width:100%}',
     '.mult-table{border-collapse:collapse;margin:8px 0 6px 0;font-size:.92rem}',
     '.mult-table td{border:1.5px solid #94a3b8;min-width:48px;height:38px;text-align:center;padding:3px 7px}',
     '.mult-table .mult-header{background:#f1f5f9;font-weight:700;color:#334155}',
@@ -2877,6 +2958,257 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+// ═══════════════════════════════════════════════════════════════════
+// IDENTIDADES TRIGONOMÉTRICAS
+// ═══════════════════════════════════════════════════════════════════
+
+function fr(num, den) {
+  return '<span class="frac"><span class="frac-num">' + num + '</span><span class="frac-den">' + den + '</span></span>';
+}
+function pw(base, exp) {
+  if (!exp) return base;
+  // Si la base es una función trig, agregar espacio cero entre base y exp para que el sup quede arriba del último carácter
+  return '<span style="white-space:nowrap">' + base + '<sup>' + exp + '</sup></span>';
+}
+
+const idLevelQtys = { 1: 0, 2: 0, 3: 0 };
+
+function idToggleLevel(k) {
+  const el = document.getElementById('id-lvl-' + k);
+  const isActive = el.classList.contains('active');
+  el.classList.toggle('active', !isActive);
+  idLevelQtys[k] = isActive ? 0 : 1;
+  document.getElementById('id-lqv-' + k).textContent = idLevelQtys[k];
+  idUpdateTotal();
+}
+function idChangeLevelQty(k, delta) {
+  idLevelQtys[k] = Math.max(0, Math.min(20, (idLevelQtys[k] || 0) + delta));
+  document.getElementById('id-lqv-' + k).textContent = idLevelQtys[k];
+  const el = document.getElementById('id-lvl-' + k);
+  if (idLevelQtys[k] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  idUpdateTotal();
+}
+function idUpdateTotal() {
+  const t = (idLevelQtys[1]||0) + (idLevelQtys[2]||0) + (idLevelQtys[3]||0);
+  document.getElementById('id-totalBadge').innerHTML = 'Total: <span>' + t + '</span> identidades';
+}
+
+function idBank1() {
+  return [
+    { lhs: fr('1',pw('tg','2')+'x') + ' + ' + fr('1','sen x &middot; cosec x'), rhs: pw('cosec','2')+'x' },
+    { lhs: 'tg x + cotg x', rhs: fr('cosec x','cos x') },
+    { lhs: 'sec x &minus; sen x &middot; tg x', rhs: fr('1','sec x') },
+    { lhs: fr('1',pw('cos','2')+'x') + ' &minus; ' + pw('tg','2')+'x', rhs: '1' },
+    { lhs: pw('sen','2')+'x + ' + pw('sen','2')+'x &middot; ' + pw('cotg','2')+'x', rhs: '1' },
+    { lhs: '1 &minus; 2' + pw('cos','2')+'x', rhs: pw('sen','2')+'x &minus; ' + pw('cos','2')+'x' },
+    { lhs: '1 + ' + pw('tg','2')+'x', rhs: fr('1',pw('cos','2')+'x') },
+    { lhs: fr(pw('cos','3')+'x + 2 sen x','cos x'), rhs: 'cos x + 2 tg x' },
+    { lhs: pw('cos','2')+'A &minus; ' + pw('sen','2')+'A', rhs: '2&thinsp;' + pw('cos','2')+'A &minus; 1' },
+    { lhs: '(sen A + cos A)' + pw('','2'), rhs: '2 sen A cos A + 1' },
+    { lhs: fr('1 + cosec A','cosec A &minus; 1'), rhs: fr('1 + sen A','1 &minus; sen A') },
+    { lhs: fr(pw('cos','2')+'A','sen A') + ' + ' + fr('sen 2A','cos A'), rhs: 'cosec A' },
+    { lhs: fr('2 tg &alpha;','1 + ' + pw('tg','2')+'&alpha;'), rhs: 'sen 2&alpha;' },
+    { lhs: pw('sen','2')+'x (1 + ' + pw('tg','2')+'x)', rhs: pw('tg','2')+'x' },
+    { lhs: fr('sen x &minus; cos x','sen x'), rhs: '1 &minus; ' + fr('1','tg x') },
+    { lhs: fr('cos x','cotg x'), rhs: 'sen x' },
+    { lhs: fr('sen x','cosec x') + ' + ' + fr('cos x','sec x'), rhs: '1' },
+    { lhs: fr('tg x','sen x'), rhs: 'sec x' },
+    { lhs: fr('sec x','tg x + cotg x'), rhs: 'sen x' },
+    { lhs: fr('cosec x','cotg x'), rhs: 'sec x' },
+    { lhs: pw('sen','4')+'x', rhs: fr('1 &minus; ' + pw('cos','2')+'x', pw('cosec','2')+'x') },
+    { lhs: 'sec x (1 &minus; ' + pw('sen','2')+'x)', rhs: 'cos x' },
+    { lhs: 'tg x &middot; cos x &middot; cosec x', rhs: '1' },
+    { lhs: 'sen x &middot; sec x', rhs: 'tg x' },
+    { lhs: 'tg x + cotg x', rhs: fr('1','sen x &middot; cos x') },
+    { lhs: pw('cos','2')+'x', rhs: '(1 + sen x)(1 &minus; sen x)' },
+    { lhs: 'tg x + tg y', rhs: 'tg x &middot; tg y &middot; (cotg x + cotg y)' },
+    { lhs: '(1 &minus; ' + pw('sen','2')+'x)(1 + ' + pw('tg','2')+'x)', rhs: '1' },
+    { lhs: '2&thinsp;' + pw('sen','2')+'x + ' + pw('cos','2')+'x', rhs: '1 + ' + pw('sen','2')+'x' },
+    { lhs: 'tg y + cotg y', rhs: 'sec y &middot; cosec y' },
+    { lhs: '1 + ' + pw('tg','2')+'x', rhs: pw('sec','3')+'x &middot; cos x' },
+    { lhs: pw('tg','2')+'x &middot; ' + pw('cotg','2')+'x', rhs: pw('sen','2')+'x + ' + pw('cos','2')+'x' },
+    { lhs: '2 tg x + 1', rhs: fr('cos x + 2 sen x','cos x') },
+    { lhs: '3 sen x &middot; cos x', rhs: '3&thinsp;' + pw('sen','2')+'x &middot; cotg x' },
+    { lhs: 'sen x + cos x', rhs: 'cos x (1 + tg x)' },
+    { lhs: '2 tg x + cos x', rhs: fr(pw('cos','3')+'x + 2 sen x','cos x') },
+    { lhs: fr('1',pw('tg','2')+'x') + ' &minus; ' + pw('cos','2')+'x', rhs: pw('cos','2')+'x &middot; ' + pw('cotg','2')+'x' },
+    { lhs: 'sen x &middot; sec x &middot; cotg x', rhs: '1' },
+    { lhs: pw('tg','2')+'x &middot; ' + pw('cosec','2')+'x &middot; ' + pw('cotg','2')+'x &middot; ' + pw('sen','2')+'x', rhs: '1' },
+  ];
+}
+
+function idBank2() {
+  return [
+    { lhs: pw('sec','2')+'x &middot; cotg x', rhs: 'tg x &middot; ' + pw('cosec','2')+'x' },
+    { lhs: fr('1',pw('tg','2')+'x') + ' + ' + fr('1','tg x &middot; cotg x'), rhs: fr('1',pw('sen','2')+'x') },
+    { lhs: 'sen 2x &middot; cotg x', rhs: 'cos 2x + 1' },
+    { lhs: fr(pw('sec','2')+'x &minus; 1', pw('tg','2')+'x + 1'), rhs: fr('1',pw('cosec','2')+'x') },
+    { lhs: fr('1 &minus; tg x','1 + tg x'), rhs: fr('cos x &minus; sen x','cos x + sen x') },
+    { lhs: fr('cotg x + cosec x','sen x'), rhs: fr('1 + cos x','1 &minus; ' + pw('cos','2')+'x') },
+    { lhs: 'tg x + cotg x', rhs: pw('cosec','2')+'x &middot; tg x' },
+    { lhs: pw('sen','2')+'x &middot; sec x', rhs: 'sec x &minus; cos x' },
+    { lhs: '(1 &minus; ' + pw('cos','2')+'x)(1 + ' + pw('tg','2')+'x)', rhs: fr('1',pw('cotg','2')+'x') },
+    { lhs: '1 + ' + pw('tg','2')+'x', rhs: fr(pw('cosec','2')+'x', pw('cotg','2')+'x') },
+    { lhs: fr('sen &alpha; &minus; sen &beta;','cos &alpha; &minus; cos &beta;') + ' + ' + fr('cos &alpha; + cos &beta;','sen &alpha; + sen &beta;'), rhs: '0' },
+    { lhs: fr('1 &minus; sen x','cos x'), rhs: fr('cos x','1 + sen x') },
+    { lhs: 'sec x &minus; cos x', rhs: fr('sen x','cotg x') },
+    { lhs: fr('sen x + cotg x','tg x + cosec x'), rhs: 'cotg x &middot; sen x' },
+    { lhs: pw('cos','4')+'x', rhs: fr('1 &minus; ' + pw('cos','2')+'x', pw('tg','2')+'x') },
+    { lhs: fr('sen A','1 &minus; cos A'), rhs: fr('1 + cos A','sen A') },
+    { lhs: pw('sec','2')+'A + ' + pw('tg','2')+'A', rhs: '2&thinsp;' + pw('tg','2')+'A + 1' },
+    { lhs: fr('cos 4A &minus; ' + pw('sen','4')+'A','1 &minus; tg 4A'), rhs: 'cos 4A' },
+    { lhs: 'cos 3A', rhs: '4&thinsp;' + pw('cos','3')+'A &minus; 3 cos A' },
+    { lhs: 'sen(A+B) &minus; sen(A&minus;B)', rhs: '2 sen B &middot; cos A' },
+    { lhs: 'cos(A+B) &middot; cos(A&minus;B)', rhs: pw('cos','2')+'A &minus; ' + pw('sen','2')+'B' },
+    { lhs: 'cos 4A', rhs: '1 &minus; 8&thinsp;' + pw('sen','2')+'A &middot; ' + pw('cos','2')+'A' },
+    { lhs: '(1 + tg x)(1 &minus; tg x) + ' + pw('sec','2')+'x', rhs: '2' },
+    { lhs: fr('1 &minus; sen x','(sec x &minus; tg x)' + pw('','2')), rhs: '1 + sen x' },
+    { lhs: fr('sen x + cos x','sen x &minus; cos x'), rhs: fr('sec x + cosec x','sec x &minus; cosec x') },
+    { lhs: pw('sen','2')+'x &middot; ' + pw('cos','2')+'x + ' + pw('cos','4')+'x', rhs: '1 &minus; ' + fr('1',pw('cosec','2')+'x') },
+    { lhs: fr('sen x + tg x','cotg x + cosec x'), rhs: 'sen x &middot; tg x' },
+    { lhs: '1 &minus; 2&thinsp;' + pw('sen','2')+'x', rhs: fr('cotg x &minus; tg x','tg x + cotg x') },
+    { lhs: fr('1','1 + sen y') + ' + ' + fr('1','1 &minus; sen y'), rhs: '2&thinsp;' + pw('sec','2')+'y' },
+    { lhs: '1 + 2 sen x &middot; cos x', rhs: 'sen x &middot; cos x &middot; (1 + cotg x)(1 + tg x)' },
+    { lhs: pw('cotg','2')+'x (1 + ' + pw('tg','2')+'x)', rhs: pw('cosec','2')+'x' },
+    { lhs: fr('1','sec x &minus; 1') + ' + ' + fr('1','sec x + 1'), rhs: '2 cosec x &middot; cotg x' },
+    { lhs: fr('1','1 + ' + pw('tg','2')+'y') + ' &minus; ' + fr('1','1 + ' + pw('tg','2')+'x'), rhs: pw('sen','2')+'x &minus; ' + pw('sen','2')+'y' },
+    { lhs: 'sec x + tg x', rhs: fr('cos x','1 &minus; sen x') },
+    { lhs: '2&thinsp;' + pw('sen','2')+'x &minus; 1', rhs: pw('sen','4')+'x &minus; ' + pw('cos','4')+'x' },
+  ];
+}
+
+function idBank3() {
+  return [
+    { lhs: 'tg x &middot; sec x', rhs: fr('tg x + sec x','cotg x + cos x') },
+    { lhs: fr('sec x','cotg x'), rhs: fr('sec x + tg x','cos x + cotg x') },
+    { lhs: 'tg ' + fr('x','2'), rhs: 'cosec x &minus; cotg x' },
+    { lhs: fr('cos x','1 &minus; sen x') + ' &minus; ' + fr('1 &minus; sen x','cos x'), rhs: fr('2 sen x','cos x') },
+    { lhs: sqrtH(fr('1 + cos A','1 &minus; cos A')), rhs: 'cosec A + cotg A' },
+    { lhs: '(tg A &minus; sen A)' + pw('','2') + ' + (1 &minus; cos A)' + pw('','2'), rhs: '(1 &minus; sec A)' + pw('','2') },
+    { lhs: pw('sen','3')+'A + ' + pw('cos','3')+'A', rhs: '(1 &minus; sen A cos A)(sen A + cos A)' },
+    { lhs: '(1 + cotg A + tg A)(sen A &minus; cos A)', rhs: fr('sec A',pw('cosec','2')+'A') + ' &minus; ' + fr('cosec A',pw('sec','2')+'A') },
+    { lhs: fr('tg x + cotg x','tg x &minus; cotg x'), rhs: fr(pw('sec','2')+'x', pw('tg','2')+'x &minus; 1') },
+    { lhs: fr('cos 2x','1 &minus; sen 2x'), rhs: fr('1 + tg x','1 &minus; tg x') },
+    { lhs: pw('tg','4')+'x &minus; ' + pw('sec','4')+'x', rhs: '1 &minus; 2&thinsp;' + pw('sec','2')+'x' },
+    { lhs: '(1 &minus; ' + pw('sen','2')+'x)(1 + ' + pw('tg','2')+'x)', rhs: 'sen x &middot; sec x &middot; cotg x' },
+    { lhs: '(sen x + cos x)' + pw('','2') + ' + (sen x &minus; cos x)' + pw('','2'), rhs: '2(' + pw('tg','2')+'x &middot; ' + pw('cos','2')+'x + ' + pw('cotg','2')+'x &middot; ' + pw('sen','2')+'x)' },
+  ];
+}
+
+// Variables para cambio de ángulo
+const ID_ANGLE_VARS = ['&alpha;', '&theta;', 'A', '&beta;', '&phi;'];
+
+function idApplyVariation(identity) {
+  let lhs = identity.lhs;
+  let rhs = identity.rhs;
+  const choice = rnd(0, 3);
+  if (choice === 1) {
+    // Cambio de variable: solo en identidades con 'x' como variable base
+    const hasX = / x|>x<|&middot;x|x&|x\(|x\)|x$/.test(lhs);
+    if (hasX) {
+      const newVar = ID_ANGLE_VARS[rnd(0, ID_ANGLE_VARS.length - 1)];
+      // Reemplaza 'x' solo cuando es variable de ángulo (precedido o seguido por espacio, operador o cierre)
+      const rep = (s) => s.replace(/(?<=[\s(&middot;;>])x(?=[\s)<&;]|$)/g, newVar);
+      lhs = rep(lhs);
+      rhs = rep(rhs);
+    }
+  } else if (choice === 3) {
+    // Reordenar lados
+    [lhs, rhs] = [rhs, lhs];
+  }
+  // choice 0 o 2: sin variación (la sustitución compleja se reserva para no anidar fracciones)
+  return { lhs, rhs };
+}
+
+function idGenFromBank(bank) {
+  const base = bank[rnd(0, bank.length - 1)];
+  const varied = idApplyVariation(base);
+  return {
+    expr: varied.lhs + ' <span style="color:#888;margin:0 0.4rem;font-weight:400">=</span> ' + varied.rhs,
+    sol: base.lhs + ' <span style="color:#888;font-weight:400">=</span> ' + base.rhs,
+    tema: 'Identidades Trigonométricas'
+  };
+}
+
+function idGen1() { return idGenFromBank(idBank1()); }
+function idGen2() { return idGenFromBank(idBank2()); }
+function idGen3() { return idGenFromBank(idBank3()); }
+
+function generateIdentidades() {
+  const gens = { 1: idGen1, 2: idGen2, 3: idGen3 };
+  const levelNames = ['', 'Aplicación directa', 'Fracciones y ángulo doble', 'Amplificación y estrategia'];
+  const total = (idLevelQtys[1]||0) + (idLevelQtys[2]||0) + (idLevelQtys[3]||0);
+  if (total === 0) { alert('Agregá al menos una identidad en algún nivel.'); return; }
+  const ejercicios = [], seen = new Set();
+  for (let lvl = 1; lvl <= 3; lvl++) {
+    const qty = idLevelQtys[lvl] || 0; if (!qty) continue;
+    let count = 0, att = 0;
+    while (count < qty && att < qty * 50) {
+      att++;
+      try {
+        const e = gens[lvl]();
+        if (!e || seen.has(e.expr)) continue;
+        seen.add(e.expr);
+        ejercicios.push({ level: lvl, levelName: levelNames[lvl], ...e });
+        count++;
+      } catch(err) {}
+    }
+  }
+  ejercicios.forEach((e, i) => e.id = i + 1);
+  renderIdentidades(ejercicios, 'id-ejercitario', 'Identidades Trigon\u00e9tricas');
+  document.getElementById('id-btnDownload').style.display = 'block';
+}
+
+function renderIdentidades(ejercicios, containerId, titulo) {
+  const levelNames = ['', 'Aplicaci\u00f3n directa', 'Fracciones y \u00e1ngulo doble', 'Amplificaci\u00f3n y estrategia'];
+  const usedLevels = [...new Set(ejercicios.map(e => e.level))];
+  const metaLevels = usedLevels.length === 1
+    ? 'Nivel ' + usedLevels[0] + ': ' + levelNames[usedLevels[0]]
+    : 'Niveles ' + usedLevels.join(', ');
+  let currentLevel = null;
+  const exprHTML = ejercicios.map(e => {
+    let header = '';
+    if (e.level !== currentLevel && usedLevels.length > 1) {
+      currentLevel = e.level;
+      header = '<div style="font-size:0.68rem;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;padding-top:0.6rem;border-top:1px dashed #ddd;margin-top:0.4rem;margin-bottom:0.4rem">Nivel ' + e.level + ' \u2014 ' + levelNames[e.level] + '</div>';
+    }
+    return header +
+      '<div class="doc-ej-block">' +
+        '<div class="ejercicio-item ident-item">' +
+          '<span class="ej-num">(' + e.id + ')</span>' +
+          '<div class="ej-content ident-content">' +
+            '<div class="ident-expr">' + e.expr + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="work-space work-space-xl"></div>' +
+      '</div>';
+  }).join('');
+  const solHTML = ejercicios.map(e =>
+    '<div class="sol-item"><span class="sol-num">' + e.id + '.</span><span class="sol-val" style="font-size:0.82rem">' + e.sol + '</span></div>'
+  ).join('');
+  const el = document.getElementById(containerId);
+  el.innerHTML =
+    '<div class="ej-header">' +
+      '<div class="ej-title">' + titulo + '</div>' +
+      '<div class="ej-meta"><span>' + metaLevels + '</span></div>' +
+      '<div class="ej-data-row">' +
+        '<span>Nombre: ____________________________</span>' +
+        '<span>Curso: ____________</span>' +
+        '<span>Fecha: ____________</span>' +
+      '</div>' +
+      indGetTablaHTML('ind-filas') +
+    '</div>' +
+    '<div class="ejercicios-grid" style="grid-template-columns:1fr">' + exprHTML + '</div>' +
+    '<div class="soluciones-section">' +
+      '<div class="sol-title">Soluciones (forma original)</div>' +
+      '<div class="soluciones-grid">' + solHTML + '</div>' +
+    '</div>' +
+    '<div class="ej-copyright">\u00a9 2026 Maria Lopez Nery Huerta</div>';
+  el.classList.add('visible');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 // ── Mostrar btn-download-sol cuando aparezca btn-download ────────────────────
 (function() {
