@@ -190,8 +190,10 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 }
 .work-space-xs  { height: 32px;  }   /* 1 renglón  */
 .work-space-sm  { height: 84px;  }   /* 3 renglones */
+.work-space-4   { height: 112px; }   /* 4 renglones */
 .work-space-md  { height: 140px; }   /* 5 renglones */
 .work-space-lg  { height: 196px; }   /* 7 renglones */
+.work-space-8   { height: 224px; }   /* 8 renglones */
 .work-space-xl  { height: 280px; }   /* 10 renglones */
 .work-space-xxl { height: 392px; }   /* 14 renglones */
 .ej-copyright {
@@ -637,6 +639,30 @@ body { padding-bottom: 2.5rem; }
     </div>
   </div>
 
+  <!-- ══ CÁLCULO ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('calc')">
+      <div class="tema-title">📊 Cálculo</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="calc-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="calc-body">
+      <div class="subtema">
+        <div class="subtema-title">Inecuaciones Lineales</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Forma básica</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('calc_ineqL1',-1)">−</button><span class="qty-val" id="q-calc_ineqL1">0</span><button class="qty-btn" onclick="chgQty('calc_ineqL1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con paréntesis</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('calc_ineqL2',-1)">−</button><span class="qty-val" id="q-calc_ineqL2">0</span><button class="qty-btn" onclick="chgQty('calc_ineqL2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Con fracciones</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('calc_ineqL3',-1)">−</button><span class="qty-val" id="q-calc_ineqL3">0</span><button class="qty-btn" onclick="chgQty('calc_ineqL3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Inecuaciones Cuadráticas</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Factorizada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('calc_ineqC1',-1)">−</button><span class="qty-val" id="q-calc_ineqC1">0</span><button class="qty-btn" onclick="chgQty('calc_ineqC1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Forma estándar</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('calc_ineqC2',-1)">−</button><span class="qty-val" id="q-calc_ineqC2">0</span><button class="qty-btn" onclick="chgQty('calc_ineqC2',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOTAL + GENERAR -->
   <div class="total-bar">
     <div class="total-text">Total: <span id="grand-total">0</span> ejercicios</div>
@@ -760,8 +786,12 @@ const TEMA_KEYS = {
        'parhk_1','parhk_2','parhk_3','parhk_4','parhk_6',
        'circ00_1','circ00_2','circ00_3',
        'circhk_1','circhk_2','circhk_3','circhk_4','circhk_5'],
+  calc: ['calc_ineqL1','calc_ineqL2','calc_ineqL3',
+         'calc_ineqC1','calc_ineqC2'],
 };
-const ALL_KEYS = [...TEMA_KEYS.alg, ...TEMA_KEYS.trig, ...TEMA_KEYS.ga];
+const ALL_KEYS = [...TEMA_KEYS.alg, ...TEMA_KEYS.trig, ...TEMA_KEYS.ga,
+                  ...TEMA_KEYS.ent, ...TEMA_KEYS.rac, ...TEMA_KEYS.mono,
+                  ...TEMA_KEYS.poly, ...TEMA_KEYS.rad, ...TEMA_KEYS.calc];
 ALL_KEYS.forEach(k => qtys[k] = 0);
 
 function chgQty(key, delta) {
@@ -2754,7 +2784,7 @@ function generateRadicales(){
     var cons=e.consigna?'<div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">'+e.consigna+'</div>':'';
     ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span>'+
       '<div class="ej-content">'+cons+'<div class="ej-question">'+e.expr+'</div>'+
-      '<div class="work-space work-space-lg"></div></div></div>';
+      '<div class="work-space work-space-8"></div></div></div>';
   });
   ejHTML+='</div>';
   var solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
@@ -2776,6 +2806,210 @@ function generateRadicales(){
     if(btnD) btnD.style.display='block';
     el.scrollIntoView({behavior:'smooth',block:'start'});
   }
+}
+
+// ══════════════════════════════════════════
+// INECUACIONES HELPERS (copiados de calculo/examen-builder)
+// ══════════════════════════════════════════
+function mixIneqOpHtml(op) { return op === '>=' ? '≥' : op === '<=' ? '≤' : op; }
+function mixIneqOpInv(op) { return op === '>' ? '<' : op === '>=' ? '<=' : op === '<' ? '>' : '>='; }
+function mixIneqGcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+function mixIneqFracTxt(n, d) {
+  if (d === 1) return String(n);
+  const g = mixIneqGcd(Math.abs(n), Math.abs(d));
+  let sn = n / g, sd = d / g;
+  if (sd < 0) { sn = -sn; sd = -sd; }
+  return sn + '/' + sd;
+}
+function mixIneqFracHtml(n, d) {
+  const g = mixIneqGcd(Math.abs(n), Math.abs(d));
+  const sn = n / g, sd = d / g;
+  return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.9em;line-height:1.1;margin:0 0.1em"><span style="border-bottom:1px solid currentColor;padding:0 2px">' + sn + '</span><span style="padding:0 2px">' + sd + '</span></span>';
+}
+function mixIneqResolver(a, b, op) {
+  let opFinal = a < 0 ? mixIneqOpInv(op) : op;
+  let numVal = -b, denVal = a;
+  const g = mixIneqGcd(Math.abs(numVal), Math.abs(denVal));
+  numVal = numVal / g; denVal = denVal / g;
+  if (denVal < 0) { numVal = -numVal; denVal = -denVal; }
+  const valStr = mixIneqFracTxt(numVal, denVal);
+  let intervalo;
+  if      (opFinal === '<')  intervalo = '(−∞, '  + valStr + ')';
+  else if (opFinal === '<=') intervalo = '(−∞, '  + valStr + ']';
+  else if (opFinal === '>')  intervalo = '(' + valStr + ', +∞)';
+  else                       intervalo = '[' + valStr + ', +∞)';
+  return { intervalo };
+}
+function mixIneqLadoHtml(cx, k, isPrimero) {
+  let parts = [];
+  if (cx !== 0) {
+    let s;
+    if      (cx ===  1) s = (isPrimero ? '' : '+ ') + 'x';
+    else if (cx === -1) s = (isPrimero ? '−' : '− ') + 'x';
+    else if (cx  >  0)  s = (isPrimero ? '' : '+ ') + cx + 'x';
+    else                s = (isPrimero ? '−' : '− ') + Math.abs(cx) + 'x';
+    parts.push(s);
+    isPrimero = false;
+  }
+  if (k !== 0) {
+    let s;
+    if (k > 0) s = (isPrimero ? '' : '+ ') + k;
+    else       s = (isPrimero ? '−' : '− ') + Math.abs(k);
+    parts.push(s);
+  }
+  return parts.length === 0 ? '0' : parts.join(' ');
+}
+function mixIneqRndNoMult(q, maxFactor) {
+  let p;
+  do { p = rnd(1, q * maxFactor); } while (p % q === 0);
+  return p;
+}
+function mixIneqcResolver(r1, r2, op) {
+  const s1 = String(r1), s2 = String(r2);
+  if (op === '>') {
+    if (r1 === r2) return '∅';
+    return '(−∞, ' + s1 + ') ∪ (' + s2 + ', +∞)';
+  } else if (op === '>=') {
+    if (r1 === r2) return '{' + s1 + '}';
+    return '(−∞, ' + s1 + '] ∪ [' + s2 + ', +∞)';
+  } else if (op === '<') {
+    if (r1 === r2) return '∅';
+    return '(' + s1 + ', ' + s2 + ')';
+  } else {
+    if (r1 === r2) return '{' + s1 + '}';
+    return '[' + s1 + ', ' + s2 + ']';
+  }
+}
+// Generadores individuales — Inecuaciones Lineales
+function mixIneqGenN1() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = mixIneqOpHtml(op);
+  let c1, c2, a;
+  do { c1 = rndNZ(-5, 5); c2 = rnd(-4, 4); a = c1 - c2; } while (a === 0);
+  const k1 = rnd(-9, 9), k2 = rnd(-9, 9), b = k1 - k2;
+  const expr = mixIneqLadoHtml(c1, k1, true) + ' ' + opH + ' ' + mixIneqLadoHtml(c2, k2, true);
+  const { intervalo } = mixIneqResolver(a, b, op);
+  return { expr, sol: intervalo, tema: 'Inecuaciones Lineales Niv.1' };
+}
+function mixIneqGenN2() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = mixIneqOpHtml(op);
+  const tipo = rnd(0, 2);
+  let expr, a, b;
+  if (tipo === 0) {
+    const aCoef = rndNZ(-4, 4), p = rndNZ(-6, 6);
+    let cCoef;
+    do { cCoef = rnd(-4, 4); a = aCoef - cCoef; } while (a === 0);
+    const k = rnd(-8, 8);
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const lhs = (aCoef === 1 ? '' : aCoef === -1 ? '−' : String(aCoef)) + '(x' + pSign + ')';
+    expr = lhs + ' ' + opH + ' ' + mixIneqLadoHtml(cCoef, k, true);
+    b = aCoef * p - k;
+  } else if (tipo === 1) {
+    let aCoef, bCoef;
+    do { aCoef = rndNZ(-4, 4); bCoef = rnd(-4, 4); a = aCoef - bCoef; } while (a === 0);
+    const p = rndNZ(-5, 5), q2 = rnd(-7, 7), r = rndNZ(-5, 5);
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const rSign = r > 0 ? ' + ' + r : ' − ' + Math.abs(r);
+    const lhs = (aCoef === 1 ? '' : aCoef === -1 ? '−' : String(aCoef)) + '(x' + pSign + ')' +
+                (q2 === 0 ? '' : q2 > 0 ? ' + ' + q2 : ' − ' + Math.abs(q2));
+    const rhsParen = (bCoef === 1 ? '' : bCoef === -1 ? '−' : String(bCoef)) + '(x' + rSign + ')';
+    expr = lhs + ' ' + opH + ' ' + rhsParen;
+    b = (aCoef * p + q2) - bCoef * r;
+  } else {
+    const aCoef = rndNZ(2, 4), bCoef = rndNZ(-3, 3), p = rndNZ(-6, 6), cCoef = rndNZ(1, 4);
+    let dCoef;
+    do { dCoef = rnd(-4, 4); a = aCoef * bCoef - cCoef - dCoef; } while (a === 0);
+    const k = rnd(-8, 8);
+    const innerX = bCoef === 1 ? 'x' : bCoef === -1 ? '−x' : bCoef > 0 ? bCoef + 'x' : '−' + Math.abs(bCoef) + 'x';
+    const innerK = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    expr = aCoef + '(' + innerX + innerK + ') − ' + (cCoef === 1 ? 'x' : cCoef + 'x') + ' ' + opH + ' ' + mixIneqLadoHtml(dCoef, k, true);
+    b = aCoef * p - k;
+  }
+  const { intervalo } = mixIneqResolver(a, b, op);
+  return { expr, sol: intervalo, tema: 'Inecuaciones Lineales Niv.2' };
+}
+function mixIneqGenN3() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = mixIneqOpHtml(op);
+  const tipo = rnd(0, 3);
+  let expr, a_int, b_int;
+  if (tipo === 0) {
+    const q = rnd(2, 5), p = mixIneqRndNoMult(q, 4);
+    let c;
+    do { c = rnd(-3, 4); a_int = p - c * q; } while (a_int === 0);
+    const k1 = rnd(-7, 7), k2 = rnd(-7, 7);
+    b_int = (k1 - k2) * q;
+    const k1sign = k1 === 0 ? '' : (k1 > 0 ? ' + ' + k1 : ' − ' + Math.abs(k1));
+    expr = mixIneqFracHtml(p, q) + 'x' + k1sign + ' ' + opH + ' ' + mixIneqLadoHtml(c, k2, true);
+  } else if (tipo === 1) {
+    const s = rnd(2, 5), r = mixIneqRndNoMult(s, 3);
+    let aCoef, cCoef;
+    do { aCoef = rndNZ(-4, 4); cCoef = rnd(-3, 3); a_int = (aCoef - cCoef) * s; } while (a_int === 0);
+    const p = rndNZ(-5, 5), k = rnd(-7, 7);
+    b_int = (aCoef * p - k) * s + r;
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const lhsParen = (aCoef === 1 ? '' : aCoef === -1 ? '−' : String(aCoef)) + '(x' + pSign + ')';
+    expr = lhsParen + ' + ' + mixIneqFracHtml(r, s) + ' ' + opH + ' ' + mixIneqLadoHtml(cCoef, k, true);
+  } else if (tipo === 2) {
+    const q = rnd(2, 5), p = mixIneqRndNoMult(q, 3);
+    let c;
+    do { c = rnd(-3, 4); a_int = p - c * q; } while (a_int === 0);
+    const r = rndNZ(-5, 5), k = rnd(-7, 7);
+    b_int = p * r - k * q;
+    const rSign = r > 0 ? ' + ' + r : ' − ' + Math.abs(r);
+    expr = mixIneqFracHtml(p, q) + '(x' + rSign + ') ' + opH + ' ' + mixIneqLadoHtml(c, k, true);
+  } else {
+    const s = rnd(2, 5), r = mixIneqRndNoMult(s, 3);
+    let aCoef, cCoef;
+    do { aCoef = rndNZ(1, 4); cCoef = rnd(-3, 4); a_int = aCoef * s + r - cCoef * s; } while (a_int === 0);
+    const p = rndNZ(-5, 5), k = rnd(-7, 7);
+    b_int = (aCoef * p - k) * s;
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const lhsParen = (aCoef === 1 ? '' : String(aCoef)) + '(x' + pSign + ')';
+    expr = lhsParen + ' + ' + mixIneqFracHtml(r, s) + 'x ' + opH + ' ' + mixIneqLadoHtml(cCoef, k, true);
+  }
+  const { intervalo } = mixIneqResolver(a_int, b_int, op);
+  return { expr, sol: intervalo, tema: 'Inecuaciones Lineales Niv.3' };
+}
+// Generadores individuales — Inecuaciones Cuadráticas
+function mixIneqcGenN1() {
+  const ops = ['<', '<=', '>', '>='];
+  const op = ops[rnd(0, 3)];
+  const opH = mixIneqOpHtml(op);
+  let r1, r2;
+  do { r1 = rnd(-9, 9); r2 = rnd(-9, 9); } while (r1 === r2);
+  const lo = Math.min(r1, r2), hi = Math.max(r1, r2);
+  function factorStr(r) {
+    if (r === 0) return 'x';
+    const sign = r < 0 ? ' + ' : ' − ';
+    return '(x' + sign + Math.abs(r) + ')';
+  }
+  const expr = factorStr(r1) + factorStr(r2) + ' ' + opH + ' 0';
+  const sol = mixIneqcResolver(lo, hi, op);
+  return { expr, sol, tema: 'Inecuaciones Cuadráticas Niv.1' };
+}
+function mixIneqcGenN2() {
+  const ops = ['<', '<=', '>', '>='];
+  const op = ops[rnd(0, 3)];
+  const opH = mixIneqOpHtml(op);
+  let r1, r2;
+  do { r1 = rnd(-9, 9); r2 = rnd(-9, 9); } while (r1 === r2);
+  const lo = Math.min(r1, r2), hi = Math.max(r1, r2);
+  const b = -(r1 + r2), c = r1 * r2;
+  let expr = 'x²';
+  if (b !== 0) {
+    if (b === 1)       expr += ' + x';
+    else if (b === -1) expr += ' − x';
+    else               expr += (b > 0 ? ' + ' : ' − ') + Math.abs(b) + 'x';
+  }
+  if (c !== 0) expr += (c > 0 ? ' + ' : ' − ') + Math.abs(c);
+  expr += ' ' + opH + ' 0';
+  const sol = mixIneqcResolver(lo, hi, op);
+  return { expr, sol, tema: 'Inecuaciones Cuadráticas Niv.2' };
 }
 
 const GENERATORS = {
@@ -2892,6 +3126,13 @@ const GENERATORS = {
   rad_racIII1: ()=>({...RAD_GENS.racIII(1), tema:'Radicales: Rac. III'}),
   rad_racIV1: ()=>({...RAD_GENS.racIV(1), tema:'Radicales: Rac. IV'}),
 
+  // ── CÁLCULO — INECUACIONES ──
+  calc_ineqL1: ()=>mixIneqGenN1(),
+  calc_ineqL2: ()=>mixIneqGenN2(),
+  calc_ineqL3: ()=>mixIneqGenN3(),
+  calc_ineqC1: ()=>mixIneqcGenN1(),
+  calc_ineqC2: ()=>mixIneqcGenN2(),
+
 };
 
 // ══════════════════════════════════════════
@@ -2908,6 +3149,8 @@ const LEVEL1_FALLBACK = {
   parhk_1:   'parhk_2',
   circ00_1:  'circ00_2',
   circhk_1:  'circhk_2',
+  calc_ineqL1: 'calc_ineqL2',
+  calc_ineqC1: 'calc_ineqC2',
 };
 
 function updateSkipBadge() {
@@ -2949,16 +3192,32 @@ function generateMixto() {
 function renderMixto(ejercicios) {
   const fecha = new Date().toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
 
+  // Cuadrícula por tema según reglas de aritmetica.html
+  function mixWS(tema) {
+    const t = tema || '';
+    // Enteros y Racionales: sr/mu/dv/po/ra → sin cuadrícula; cs/cc → xl
+    if (/^(Enteros|Racionales):/.test(t)) {
+      if (/Combinadas (s\/|c\/)Agrup/.test(t)) return 'work-space-xl';
+      return null; // sr, mu, dv, po, ra → sin espacio
+    }
+    // Radicales (algebra mixto): work-space-8
+    if (/^Radicales/.test(t)) return 'work-space-8';
+    // Default para el resto
+    return 'work-space-lg';
+  }
+
   let ejHTML = '<div class="ejercicios-list">';
   ejercicios.forEach(e => {
     const graphInQ = e.showGraphInQ && e.graph ? `<div class="ej-graph">${e.graph}</div>` : '';
+    const ws = mixWS(e.tema);
+    const wsDiv = ws ? `<div class="work-space ${ws}"></div>` : '';
     ejHTML += `<div class="ejercicio-item">
       <span class="ej-num">(${e.id})</span>
       <div class="ej-content">
         <span class="ej-tema-tag">${e.tema}</span>
         <div class="ej-question">${e.expr||e.question||''}</div>
         ${graphInQ}
-        <div class="work-space work-space-lg"></div>
+        ${wsDiv}
       </div>
     </div>`;
   });
@@ -3175,7 +3434,7 @@ function getEjercitarioPDFCss() {
     '.mult-table .mult-header{background:#f1f5f9;font-weight:700;color:#334155}',
     '.mult-table .mult-cell{background:#fff}',
     '.work-space{display:block;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'28\'%3E%3Crect width=\'28\' height=\'28\' fill=\'white\'/%3E%3Cpath d=\'M 28 0 L 0 0 0 28\' fill=\'none\' stroke=\'%23cccccc\' stroke-width=\'0.6\'/%3E%3C%2Fsvg%3E");background-size:28px 28px;background-color:white;border:1px solid #e8eaf0;border-radius:4px;margin-top:7px;margin-bottom:7px;width:100%;box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
-    '.work-space-xs{height:32px}.work-space-sm{height:84px}.work-space-md{height:140px}.work-space-lg{height:196px}.work-space-xl{height:280px}.work-space-xxl{height:392px}',
+    '.work-space-xs{height:32px}.work-space-sm{height:84px}.work-space-4{height:112px}.work-space-md{height:140px}.work-space-lg{height:196px}.work-space-8{height:224px}.work-space-xl{height:280px}.work-space-xxl{height:392px}',
     '.sp-problem-list,.sp-list{display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem}',
     '.sp-problem-item,.sp-item{display:flex;gap:.7rem;align-items:flex-start;padding:.7rem;border:1px solid #dde2f0;border-radius:8px;background:#fafbff;page-break-inside:avoid}',
     '.sp-body{flex:1;display:flex;flex-direction:column;gap:.4rem}',

@@ -247,6 +247,8 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 .doc-ej-expr em { font-style: italic; }
 .doc-ej-expr sup { font-size: 0.7em; vertical-align: super; }
 .work-space-md { height: 120px; width: 100%; display: block; border-radius: 4px; }
+.work-space-xl-svg { height: 280px; width: 100%; display: block; border-radius: 4px; }
+.work-space-8-svg  { height: 224px; width: 100%; display: block; border-radius: 4px; }
 
 /* SOLUCIONES DOC */
 .sol-doc { page-break-before: always; }
@@ -1077,6 +1079,30 @@ const CATALOG = {
       { id:'mon-mult', label:'Monomios — Multiplicación', niveles:[1,2], gen:(lvl)=>omMult(lvl) },
       { id:'mon-div', label:'Monomios — División', niveles:[1,2], gen:(lvl)=>omDiv(lvl) },
       { id:'mon-pot', label:'Monomios — Potenciación', niveles:[1,2], gen:(lvl)=>omPot2(lvl) },
+      { id:'mon-rad', label:'Monomios — Radicación', niveles:[1,2], gen:(lvl)=>eb_omRad(lvl) },
+      { id:'poly-suma', label:'Polinomios — Suma', niveles:[1,2], gen:(lvl)=>eb_polyGen('suma',lvl) },
+      { id:'poly-resta', label:'Polinomios — Resta', niveles:[1,2], gen:(lvl)=>eb_polyGen('resta',lvl) },
+      { id:'poly-multmp', label:'Polinomios — Mon×Pol', niveles:[1,2], gen:(lvl)=>eb_polyGen('multmp',lvl) },
+      { id:'poly-multpp', label:'Polinomios — Pol×Pol', niveles:[1,2], gen:(lvl)=>eb_polyGen('multpp',lvl) },
+      { id:'poly-divpm', label:'Polinomios — Pol÷Mon', niveles:[1,2], gen:(lvl)=>eb_polyGen('divpm',lvl) },
+      { id:'poly-divpp', label:'Polinomios — Pol÷Pol', niveles:[1,2], gen:(lvl)=>eb_polyGen('divpp',lvl) },
+      { id:'poly-resto', label:'Polinomios — Teo. del Resto', niveles:[1], gen:(lvl)=>eb_polyGen('resto',lvl) },
+      { id:'poly-ruffini', label:'Polinomios — Ruffini', niveles:[1], gen:(lvl)=>eb_polyGen('ruffini',lvl) },
+      { id:'rad-exactas', label:'Radicales — Raíces exactas', niveles:[1], gen:(lvl)=>eb_radGen('exactas',lvl) },
+      { id:'rad-extraccion', label:'Radicales — Extracción', niveles:[1,2], gen:(lvl)=>eb_radGen('extraccion',lvl) },
+      { id:'rad-sumaresta', label:'Radicales — Suma y Resta', niveles:[1,2,3], gen:(lvl)=>eb_radGen('sumaresta',lvl) },
+      { id:'rad-multI', label:'Radicales — Mult. I (mon×mon)', niveles:[1], gen:(lvl)=>eb_radGen('multI',lvl) },
+      { id:'rad-multII', label:'Radicales — Mult. II (mon×pol)', niveles:[1], gen:(lvl)=>eb_radGen('multII',lvl) },
+      { id:'rad-multIII', label:'Radicales — Mult. III (pol×pol)', niveles:[1], gen:(lvl)=>eb_radGen('multIII',lvl) },
+      { id:'rad-divI', label:'Radicales — División (mon÷mon)', niveles:[1], gen:(lvl)=>eb_radGen('divI',lvl) },
+      { id:'rad-multIndices', label:'Radicales — Mult. distintos índices', niveles:[1], gen:(lvl)=>eb_radGen('multIndices',lvl) },
+      { id:'rad-divIndices', label:'Radicales — Div. distintos índices', niveles:[1], gen:(lvl)=>eb_radGen('divIndices',lvl) },
+      { id:'rad-potI', label:'Radicales — Potenciación I', niveles:[1], gen:(lvl)=>eb_radGen('potI',lvl) },
+      { id:'rad-potII', label:'Radicales — Potenciación II', niveles:[1], gen:(lvl)=>eb_radGen('potII',lvl) },
+      { id:'rad-racI', label:'Radicales — Racionalización I', niveles:[1], gen:(lvl)=>eb_radGen('racI',lvl) },
+      { id:'rad-racII', label:'Radicales — Racionalización II', niveles:[1], gen:(lvl)=>eb_radGen('racII',lvl) },
+      { id:'rad-racIII', label:'Radicales — Racionalización III', niveles:[1], gen:(lvl)=>eb_radGen('racIII',lvl) },
+      { id:'rad-racIV', label:'Radicales — Racionalización IV', niveles:[1], gen:(lvl)=>eb_radGen('racIV',lvl) },
     ]
   },
   aritmetica: {
@@ -1464,13 +1490,22 @@ function buildDocHTML(){
       </div>
       ${indTableHTML}
       <div class="doc-ejs-grid">
-        ${tema.ejercicios.map(ej=>{const n=ejNum++;return`
+        ${tema.ejercicios.map(ej=>{const n=ejNum++;
+          // Cuadrícula según tema (reglas de aritmetica.html)
+          let wsCls='work-space-md';
+          const tm=ej.tema||'';
+          if(/^(Enteros|Racionales):/.test(tm)){
+            if(/Combinadas (s\/|c\/)Agrup/.test(tm)) wsCls='work-space-xl-svg';
+            else wsCls=null; // sr/mu/dv/po/ra → sin espacio
+          } else if(/^Radicales/.test(tm)){ wsCls='work-space-8-svg'; }
+          const svgGrid=wsCls?`<svg class="${wsCls}" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="pg${n}" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M 14 0 L 0 0 0 14" fill="none" stroke="#d0d5ea" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#pg${n})"/></svg>`:'';
+          return`
           <div class="doc-ej-block">
             <div class="doc-ej">
               <span class="doc-ej-num">(${n})</span>
               <span class="doc-ej-expr">${ej.expr}${ej.graphHtml||''}</span>
             </div>
-            <svg class="work-space-md" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="pg${n}" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M 14 0 L 0 0 0 14" fill="none" stroke="#d0d5ea" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#pg${n})"/></svg>
+            ${svgGrid}
           </div>
         `;}).join('')}
       </div>
@@ -4011,6 +4046,818 @@ function cir_gen(type,lvl){
     return{expr, sol, graphHtml, steps:['Ver resolución']};
   }catch(e){return null;}
 }
+
+// ══════════════════════════════════════════════════════════════
+// GENERADORES COPIADOS DE MIXTO.HTML
+// Monomios Radicación + Polinomios + Radicales
+// ══════════════════════════════════════════════════════════════
+
+// ── Helpers para monomios (OM_FRACS_POS, omMonomioStr, omGenRad) ──
+const OM_FRACS_POS = [
+  [1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6]
+];
+// Pool de fracciones (pos y neg)
+const OM_FRACS_ALL = [
+  [1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],
+  [-1,2],[-1,3],[-2,3],[-1,4],[-3,4],[-2,5],[-3,5]
+];
+// Pool de decimales
+const OM_DECS = [
+  [1,2,'0.5'],[1,4,'0.25'],[3,4,'0.75'],[1,5,'0.2'],[2,5,'0.4'],
+  [3,5,'0.6'],[4,5,'0.8'],[3,2,'1.5'],[5,4,'1.25'],
+  [-1,2,'-0.5'],[-3,4,'-0.75'],[-1,5,'-0.2'],[-3,2,'-1.5']
+];
+
+// Devuelve {n, d, dispStr} para coef de nivel 1 o 2
+function omRandCoef(lvl, positivo=false, noUno=false) {
+  if (lvl === 1) {
+    let v;
+    do { v = positivo ? rnd(1,9) : rndNZ(-9,9); } while(noUno && Math.abs(v)===1);
+    // Coeficiente 1 es tácito: no se escribe (solo el signo si es -1)
+    const disp = v === 1 ? '' : v === -1 ? '−' : String(v);
+    return { n:v, d:1, disp };
+  }
+  // Nivel 2: 50% fracción, 50% decimal
+  const useDec = rnd(0,1);
+  if (useDec) {
+    const pool = positivo ? OM_DECS.filter(x=>x[0]>0) : OM_DECS;
+    const [n,d,s] = pool[rnd(0,pool.length-1)];
+    return { n, d, disp: s };
+  } else {
+    const pool = positivo ? OM_FRACS_POS : OM_FRACS_ALL;
+    const [n,d] = pool[rnd(0,pool.length-1)];
+    return { n, d, disp: omFracHTML(n,d) };
+  }
+}
+
+// Parte literal: ej. "x²y"
+function omRandLit(nVars, maxExp=4) {
+  const vs = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
+  return vs.map(v => { const e=rnd(1,maxExp); return {v,e}; });
+}
+function omLitStr(parts) {
+  return parts.map(({v,e}) => e===1 ? v : `${v}${toSup(e)}`).join('');
+}
+
+// String del monomio para el ENUNCIADO (con coef display)
+function omMonomioStr(coef, lit, wrapNeg=false) {
+  const c = coef.disp;
+  const s = c + lit;
+  return (wrapNeg && coef.n < 0) ? `(${s})` : s;
+}
+
+
+// ── RADICACIÓN ───────────────────────────────────────────────
+// Estrategia: construir resultado primero, luego elevar al índice
+function omGenRad(lvl) {
+  const idx = [2,2,3][rnd(0,2)]; // índice 2 o 3
+
+  const nv = rnd(1,2);
+  const allVars = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nv);
+
+  // Resultado: coeficiente entero positivo pequeño
+  let resN, resD;
+  if (lvl===1) {
+    resN = rnd(1,5); resD = 1;
+  } else {
+    const pool = OM_FRACS_POS.filter(([n])=>n>0);
+    [resN, resD] = pool[rnd(0,pool.length-1)];
+  }
+
+  // Radicando coeficiente = resultado^idx
+  const [radN, radD] = omPow(resN, resD, idx);
+
+  // Exponentes resultado para cada variable
+  const resExps = allVars.map(() => rnd(1,3));
+  // Exponentes radicando = resultado * idx
+  const radExps = resExps.map(e => e*idx);
+
+  const litRad = allVars.map((v,i)=>radExps[i]===1?v:`${v}${toSup(radExps[i])}`).join('');
+  const litRes = allVars.map((v,i)=>resExps[i]===1?v:`${v}${toSup(resExps[i])}`).join('');
+
+  const radCoefStr = omFracHTML(radN, radD);
+  const rootSym = idx===2 ? '√' : '∛';
+  const expr = `${rootSym}<span style="text-decoration:overline">${radCoefStr}${litRad}</span> =`;
+  const sol = omResSol(resN, resD, litRes);
+  return { expr, sol, lvl };
+}
+
+// ── GENERADOR PRINCIPAL ──────────────────────────────────────
+const OM_GENS = { suma:omGenSuma, resta:omGenResta, mult:omGenMult, div:omGenDiv, pot:omGenPot, rad:omGenRad };
+
+
+// ── Helpers y generadores de polinomios (opMkPoly, opGenSuma..opGenRuffini, OP_GENS) ──
+function opMkPoly(maxDeg, nTerms, lvl, positivo=false) {
+  const must = new Set([maxDeg, 0]);
+  const avail = [];
+  for(let g=maxDeg-1; g>=1; g--) avail.push(g);
+  const shuffle = [...avail].sort(()=>Math.random()-0.5);
+  const extras = shuffle.slice(0, Math.max(0, nTerms-2));
+  const degrees = [...new Set([...must,...extras])].sort((a,b)=>b-a);
+  return degrees.map(exp => {
+    const c = opRndCoef(lvl, positivo);
+    return{n:c.n, d:c.d, exp};
+  });
+}
+
+// Suma de dos polinomios
+function opAddPoly(A, B) {
+  const map = {};
+  [...A,...B].forEach(({n,d,exp}) => {
+    if(!map[exp]) map[exp]={n:0,d:1,exp};
+    const[rn,rd]=opAddF(map[exp].n,map[exp].d,n,d);
+    map[exp]={n:rn,d:rd,exp};
+  });
+  return Object.values(map).filter(t=>t.n!==0).sort((a,b)=>b.exp-a.exp);
+}
+
+// Resta B de A
+function opSubPoly(A,B) {
+  return opAddPoly(A, B.map(t=>({...t,n:-t.n})));
+}
+
+// Multiplica polinomio por monomio {n,d,exp}
+function opMulPolyMono(P, mono) {
+  return P.map(t => {
+    const[rn,rd]=opMulF(t.n,t.d,mono.n,mono.d);
+    return{n:rn,d:rd,exp:t.exp+mono.exp};
+  }).filter(t=>t.n!==0);
+}
+
+// Multiplica dos polinomios
+function opMulPoly(A,B) {
+  const all=[];
+  A.forEach(ta=>B.forEach(tb=>{
+    const[rn,rd]=opMulF(ta.n,ta.d,tb.n,tb.d);
+    all.push({n:rn,d:rd,exp:ta.exp+tb.exp});
+  }));
+  return opAddPoly(all,[]);
+}
+
+// División de polinomios: devuelve {cociente, resto}
+function opDivPoly(dividendo, divisor) {
+  let rem = [...dividendo].sort((a,b)=>b.exp-a.exp);
+  const divDeg = Math.max(...divisor.map(t=>t.exp));
+  const divLead = divisor.find(t=>t.exp===divDeg);
+  const cociente = [];
+  while(true) {
+    const remF = rem.filter(t=>t.n!==0).sort((a,b)=>b.exp-a.exp);
+    if(remF.length===0 || remF[0].exp<divDeg) break;
+    const[cn,cd]=opDivF(remF[0].n,remF[0].d,divLead.n,divLead.d);
+    const cExp=remF[0].exp-divDeg;
+    cociente.push({n:cn,d:cd,exp:cExp});
+    const sub=opMulPolyMono(divisor,{n:cn,d:cd,exp:cExp});
+    rem=opSubPoly(rem,sub);
+  }
+  const restoFinal = rem.filter(t=>t.n!==0);
+  return{
+    cociente: cociente.length>0 ? cociente : [{n:0,d:1,exp:0}],
+    resto:    restoFinal.length>0 ? restoFinal : [{n:0,d:1,exp:0}]
+  };
+}
+
+// ── Generadores ──────────────────────────────────────────────
+
+function opGenSuma(lvl) {
+  const deg=rnd(2,4);
+  const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const sol=opAddPoly(A,B);
+  if(lvl===1 && !opIsInteger(sol)) return opGenSuma(lvl);
+  return{
+    expr:`(${opPolyStr(A)}) + (${opPolyStr(B)}) =`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenResta(lvl) {
+  const deg=rnd(2,4);
+  const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const sol=opSubPoly(A,B);
+  if(lvl===1 && !opIsInteger(sol)) return opGenResta(lvl);
+  const fmt=rnd(0,1);
+  const sA=`(${opPolyStr(A)})`, sB=`(${opPolyStr(B)})`;
+  return{
+    expr: fmt===0 ? `De ${sA} restar ${sB}` : `Restar ${sB} de ${sA}`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenMultMP(lvl) {
+  // Monomio × Polinomio
+  const monoCoef=opRndCoef(lvl);
+  const monoExp=rnd(0,3);
+  const mono={n:monoCoef.n,d:monoCoef.d,exp:monoExp};
+  const deg=rnd(2,4);
+  const P=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const sol=opMulPolyMono(P,mono);
+  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
+  return{
+    expr:`${monoStr} · (${opPolyStr(P)}) =`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenMultPP(lvl) {
+  const degA=rnd(2,3), degB=rnd(2,3);
+  const A=opMkPoly(degA, rnd(2,degA+1), lvl);
+  const B=opMkPoly(degB, rnd(2,degB+1), lvl);
+  const sol=opMulPoly(A,B);
+  if(lvl===1 && !opIsInteger(sol)) return opGenMultPP(lvl);
+  return{
+    expr:`(${opPolyStr(A)}) · (${opPolyStr(B)}) =`,
+    sol: opPolyStr(sol)||'0', lvl
+  };
+}
+
+function opGenDivPM(lvl) {
+  // Construir desde el cociente → dividendo = cociente × monomio (resultado exacto garantizado)
+  const monoCoef=opRndCoef(lvl,true);
+  const monoExp=rnd(0,2);
+  const mono={n:monoCoef.n,d:monoCoef.d,exp:monoExp};
+  const deg=rnd(2,4);
+  const Q=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
+  const dividendo=opMulPolyMono(Q,mono);
+  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
+  return{
+    expr:`<span class="frac" style="font-size:1em"><span class="num">${opPolyStr(dividendo)}</span><span class="den">${monoStr}</span></span> =`,
+    sol: opPolyStr(Q)||'0', lvl
+  };
+}
+
+function opGenDivPP(lvl) {
+  // Siempre enteros — Construir desde cociente+resto → dividendo exacto
+  const degDiv=rnd(1,2), degQ=rnd(1,2);
+  const divisor=opMkPoly(degDiv, rnd(2,degDiv+1), 1);
+  const cociente=opMkPoly(degQ, rnd(2,degQ+1), 1);
+  // Resto de grado < degDiv
+  const restoCoef = rnd(0,2)===0 ? 0 : rndNZ(-5,5);
+  const restoExp  = degDiv>0 ? rnd(0,degDiv-1) : 0;
+  const resto     = restoCoef===0 ? [] : [{n:restoCoef,d:1,exp:restoExp}];
+  const dividendo = opAddPoly(opMulPoly(divisor,cociente), restoCoef===0?[{n:0,d:1,exp:0}]:resto);
+  const cocStr    = opPolyStr(cociente);
+  const solStr    = restoCoef!==0
+    ? `Cociente: ${cocStr} — Resto: ${opPolyStr(resto)}`
+    : `Cociente: ${cocStr}`;
+  return{
+    expr:`(${opPolyStr(dividendo)}) ÷ (${opPolyStr(divisor)}) =`,
+    sol: solStr, lvl
+  };
+}
+
+function opGenResto(lvl) {
+  // Teorema del resto: P(a) = resto de P(x)÷(x−a)
+  const deg=rnd(2,4);
+  // Polinomio completo (todos los grados) con coefs enteros
+  const P=[];
+  for(let g=deg;g>=0;g--) P.push({n:rndNZ(-6,6),d:1,exp:g});
+  const a=rndNZ(-4,4);
+  // Evaluar P(a)
+  let[rn,rd]=[0,1];
+  P.forEach(({n,d,exp})=>{
+    const aE=Math.pow(a,exp);
+    const[tn,td]=opMulF(n,d,aE,1);
+    [rn,rd]=opAddF(rn,rd,tn,td);
+  });
+  const aStr=a<0?`(${a})`:String(a);
+  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
+  return{
+    expr:`Hallá el resto de dividir <strong>${opPolyStr(P)}</strong> por <strong>(${divStr})</strong>`,
+    sol:`P${aStr} = ${opFracH(rn,rd)}`, lvl
+  };
+}
+
+function opGenRuffini(lvl) {
+  // División P(x)÷(x−a) con tabla de Ruffini
+  const deg=rnd(2,4);
+  const a=rndNZ(-4,4);
+  // Polinomio COMPLETO (todos los grados) con enteros
+  const coeffArr=Array.from({length:deg+1},()=>rndNZ(-6,6));
+  const P=coeffArr.map((c,i)=>({n:c,d:1,exp:deg-i}));
+
+  // Aplicar algoritmo de Ruffini
+  const row=[coeffArr[0]];
+  for(let i=1;i<=deg;i++) row.push(row[row.length-1]*a + coeffArr[i]);
+  const restoVal=row[deg];
+  const qCoeffs=row.slice(0,deg);
+  const cociente=qCoeffs.map((c,i)=>({n:c,d:1,exp:deg-1-i})).filter(t=>t.n!==0);
+
+  // Calcular los productos intermedios (a×cada valor del cociente)
+  const productos=qCoeffs.map(c=>c*a);
+
+  // Tabla de Ruffini — CSS grid con deg+2 columnas
+  const cols=deg+2;
+  const tabla=`<div class="ruffini-table" style="grid-template-columns:auto${' auto'.repeat(deg+1)}">
+    <div class="ruffini-header" style="display:contents">
+      <span class="ruffini-a">${a}</span>
+      ${coeffArr.map(c=>`<span>${c}</span>`).join('')}
+    </div>
+    <div class="ruffini-mid" style="display:contents">
+      <span class="ruffini-a"></span>
+      <span></span>
+      ${productos.map(p=>`<span>${p}</span>`).join('')}
+    </div>
+    <div class="ruffini-result" style="display:contents">
+      <span class="ruffini-a"></span>
+      ${row.map((v,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${v}</span>`).join('')}
+    </div>
+  </div>`;
+
+  const aStr=a<0?`(${a})`:String(a);
+  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
+  const cocStr=opPolyStr(cociente)||'0';
+  const sol=restoVal===0
+    ?`Cociente: ${cocStr}`
+    :`Cociente: ${cocStr} — Resto: ${restoVal}`;
+  return{
+    expr:`Dividí usando Ruffini: <strong>${opPolyStr(P)}</strong> ÷ <strong>(${divStr})</strong>`,
+    tabla, sol, lvl
+  };
+}
+
+// ── Generador principal ──────────────────────────────────────
+const OP_GENS={
+  suma:opGenSuma, resta:opGenResta,
+  multmp:opGenMultMP, multpp:opGenMultPP,
+  divpm:opGenDivPM, divpp:opGenDivPP,
+  resto:opGenResto, ruffini:opGenRuffini
+};
+const OP_TITLES={
+  suma:'Suma de polinomios', resta:'Resta de polinomios',
+  multmp:'Monomial × Polinomio', multpp:'Polinomio × Polinomio',
+  divpm:'Polinomio ÷ Monomio', divpp:'Polinomio ÷ Polinomio',
+  resto:'Teorema del Resto', ruffini:'División de Ruffini'
+};
+
+// ── Radicales: generadores y RAD_GENS ──
+// (RAD_NIVELES, RAD_TITLES ya declarados más arriba)
+// ── Radicales: generadores ──
+var _RAD_NIVELES_DUMMY = {
+  exactas:     ['Nivel único — Enteros'],
+  extraccion:  ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios'],
+  intro:       ['Nivel único — Introducción al signo radical'],
+  sumaresta:   ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios', 'Nivel 3 — Con extracción previa'],
+  multI:       ['Nivel único — Enteros'],
+  multII:      ['Nivel único — Enteros'],
+  multIII:     ['Nivel único — Enteros'],
+  divI:        ['Nivel único — Enteros'],
+  multIndices: ['Nivel único — Mínimo común índice'],
+  divIndices:  ['Nivel único — Mínimo común índice'],
+  potI:        ['Nivel único — Enteros'],
+  potII:       ['Nivel único — Enteros'],
+  radrad:      ['Nivel único — Enteros'],
+  racI:        ['Nivel único — Enteros'],
+  racII:       ['Nivel único — Enteros'],
+  racIII:      ['Nivel único — Enteros'],
+  racIV:       ['Nivel único — Enteros'],
+};
+
+const RAD_TITLES = {
+  exactas:     'Raíces exactas',
+  extraccion:  'Extracción de factores del radical',
+  intro:       'Introducción al signo radical',
+  sumaresta:   'Suma y resta de radicales',
+  multI:       'Multiplicación de radicales I — monomio × monomio',
+  multII:      'Multiplicación de radicales II — monomio × polinomio',
+  multIII:     'Multiplicación de radicales III — polinomio × polinomio',
+  divI:        'División de radicales — monomio ÷ monomio',
+  multIndices: 'Multiplicación con distintos índices',
+  divIndices:  'División con distintos índices',
+  potI:        'Potenciación de radicales I — monomio con potencia',
+  potII:       'Potenciación de radicales II — polinomio al cuadrado',
+  radrad:      'Radicación de radicales',
+  racI:        'Racionalización I — denominador monomio, índice 2',
+  racII:       'Racionalización II — denominador monomio, índice > 2',
+  racIII:      'Racionalización III — denominador binomio (conjugado)',
+  racIV:       'Racionalización IV — denominador trinomio',
+};
+
+let radCurrentOp = 'exactas';
+const radQtys = {};
+
+function radSetOp(op) {
+  radCurrentOp = op;
+  document.querySelectorAll('[id^="rad-op-"]').forEach(b =>
+    b.classList.toggle('active', b.id === 'rad-op-'+op));
+  radBuildLevels(op);
+  radUpdateBadge();
+}
+
+function radBuildLevels(op) {
+  const container = document.getElementById('rad-levels-container');
+  const niveles = RAD_NIVELES[op];
+  container.innerHTML = niveles.map((label, i) => {
+    const key = op+'_'+(i+1);
+    if (radQtys[key] === undefined) radQtys[key] = 0;
+    return '<div class="level-item '+(radQtys[key]>0?'active':'')+'" id="rad-lvl-'+key+'">'+
+      '<span class="level-dot"></span>'+
+      '<span class="level-name" onclick="radToggle(\''+key+'\')">'+label+'</span>'+
+      '<div class="level-qty">'+
+        '<button class="lq-btn" onclick="radQty(\''+key+'\',-1)">−</button>'+
+        '<span class="lq-val" id="rad-lqv-'+key+'">'+radQtys[key]+'</span>'+
+        '<button class="lq-btn" onclick="radQty(\''+key+'\',+1)">+</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+function radToggle(key) {
+  const el = document.getElementById('rad-lvl-'+key);
+  const active = el.classList.contains('active');
+  radQtys[key] = active ? 0 : 1;
+  document.getElementById('rad-lqv-'+key).textContent = radQtys[key];
+  el.classList.toggle('active', !active);
+  radUpdateBadge();
+}
+function radQty(key, delta) {
+  radQtys[key] = Math.max(0, Math.min(20, (radQtys[key]||0)+delta));
+  document.getElementById('rad-lqv-'+key).textContent = radQtys[key];
+  document.getElementById('rad-lvl-'+key).classList.toggle('active', radQtys[key]>0);
+  radUpdateBadge();
+}
+function radUpdateBadge() {
+  const t = Object.entries(radQtys)
+    .filter(function(e){ return e[0].startsWith(radCurrentOp+'_'); })
+    .reduce(function(s,e){ return s+e[1]; }, 0);
+  document.getElementById('rad-totalBadge').innerHTML = 'Total: <span>'+t+'</span> ejercicios';
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function radGcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a||1;}
+function radLcm(a,b){return a*b/radGcd(a,b);}
+function radSimp(n,d){if(!d)return[n,1];var g=radGcd(Math.abs(n),Math.abs(d));var sn=n/g,sd=d/g;if(sd<0){sn=-sn;sd=-sd;}return[sn,sd];}
+function radSym(idx){return idx===2?'√':idx===3?'∛':idx===4?'∜':toSup(idx)+'√';}
+function radStr(idx,inner){return radSym(idx)+'<span style="text-decoration:overline">'+inner+'</span>';}
+function radFrac(n,d){var s=radSimp(n,d);var sn=s[0],sd=s[1];if(sd===1)return String(sn);var neg=sn<0;return(neg?'−':'')+'<span class="frac"><span class="num">'+Math.abs(sn)+'</span><span class="den">'+sd+'</span></span>';}
+function radLit(v,e){return e===0?'':e===1?v:v+toSup(e);}
+// coef 1 TACITO: si hasLit y |n|=1 → '' o '−'
+function radC(n,hasLit){if(Math.abs(n)===1&&hasLit)return n<0?'−':'';return String(n);}
+function radFactor(n,idx){var best=1;for(var k=2;Math.pow(k,idx)<=Math.abs(n);k++){if(Math.abs(n)%Math.pow(k,idx)===0)best=k;}return{factor:best,resto:Math.abs(n)/Math.pow(best,idx)};}
+const RAD_FRACS=[[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5]];
+
+// ── 1. RAÍCES EXACTAS ────────────────────────────────────────
+function radGenExactas(){
+  var idx=[2,2,3,3,4][rnd(0,4)];
+  var nVars=rnd(1,2);
+  var vars=[].concat(INTRO_VARS).sort(function(){return Math.random()-0.5;}).slice(0,nVars);
+  var a=rnd(2,idx===2?12:idx===3?5:4);
+  var aRad=Math.pow(a,idx);
+  var varExps=vars.map(function(){return rnd(1,3)*idx;});
+  var litRad=vars.map(function(v,i){return radLit(v,varExps[i]);}).join('');
+  var litRes=vars.map(function(v,i){return radLit(v,varExps[i]/idx);}).join('');
+  var expr=radStr(idx,aRad+litRad)+' =';
+  var sol=radC(a,litRes!=='')+litRes;
+  return{expr:expr,sol:sol};
+}
+
+// ── 2. EXTRACCIÓN DE FACTORES ─────────────────────────────────
+function radGenExtraccion(lvl){
+  var idx=[2,2,3][rnd(0,2)];
+  var nVars=rnd(1,2);
+  var vars=[].concat(INTRO_VARS).sort(function(){return Math.random()-0.5;}).slice(0,nVars);
+  var coefRad;
+  if(lvl===1){
+    var factor=rnd(2,6);
+    var restos=[2,3,5,6,7,10,11,13];
+    coefRad=Math.pow(factor,idx)*restos[rnd(0,restos.length-1)];
+  } else {
+    var f2=rnd(2,4);
+    var restos2=[2,3,5,6];
+    coefRad=Math.pow(f2,idx)*restos2[rnd(0,3)];
+  }
+  var varExps=vars.map(function(){var e;do{e=rnd(1,5);}while(e%idx===0);return e+Math.floor(rnd(0,2))*idx;});
+  var litRad=vars.map(function(v,i){return radLit(v,varExps[i]);}).join('');
+  var expr=radStr(idx,coefRad+litRad)+' =';
+  var fObj=radFactor(coefRad,idx);
+  var fc=fObj.factor,rc=fObj.resto;
+  var vFuera=vars.map(function(v,i){return Math.floor(varExps[i]/idx);});
+  var vDentro=vars.map(function(v,i){return varExps[i]%idx;});
+  var litFuera=vars.map(function(v,i){return radLit(v,vFuera[i]);}).join('');
+  var litDentro=vars.map(function(v,i){return radLit(v,vDentro[i]);}).join('');
+  var fDisp=radC(fc,litFuera!=='');
+  var rDentro=(rc===1&&litDentro!=='')?litDentro:(rc===1&&litDentro===''?'1':rc+litDentro);
+  var sol=fDisp+litFuera+radStr(idx,rDentro);
+  return{expr:expr,sol:sol};
+}
+
+// ── 3. INTRODUCCIÓN — introducir factores dentro del radical ──
+function radGenIntro(){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var coefFuera=rnd(2,6);
+  var expFuera=rnd(1,3);
+  var coefDentro=rnd(2,10);
+  var expDentro=rnd(0,3);
+  var litFuera=radLit(v,expFuera);
+  var litDentro=radLit(v,expDentro);
+  var fDisp=radC(coefFuera,litFuera!=='');
+  var radDentro=radStr(idx,(coefDentro===1&&litDentro!==''?litDentro:coefDentro+litDentro));
+  var expr=fDisp+litFuera+' · '+radDentro+' =';
+  var newCoef=Math.pow(coefFuera,idx)*coefDentro;
+  var newExp=expFuera*idx+expDentro;
+  var litNew=radLit(v,newExp);
+  var sol=radStr(idx,(newCoef===1&&litNew!==''?litNew:newCoef+litNew));
+  return{expr:expr,sol:sol,consigna:'Introducí los factores exteriores dentro del radical'};
+}
+
+// ── 4. SUMA Y RESTA ───────────────────────────────────────────
+function radGenSumaResta(lvl){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var m=rnd(1,3);
+  var baseRad=radLit(v,m)||String(rnd(2,10));
+  var nTerms=rnd(2,4);
+
+  if(lvl===3){
+    var baseCoef=[2,3,5,6,7][rnd(0,4)];
+    var factor1=rnd(2,4),factor2=rnd(2,4);
+    var expBase=rnd(1,2)*idx;
+    var expResto=rnd(0,1);
+    var rad1Coef=Math.pow(factor1,idx)*baseCoef;
+    var rad2Coef=Math.pow(factor2,idx)*baseCoef;
+    var e1=expBase+expResto;
+    var c1=rndNZ(-5,5),c2=rndNZ(-5,5);
+    var c1D=Math.abs(c1)===1?'':String(Math.abs(c1));
+    var c2D=Math.abs(c2)===1?'':String(Math.abs(c2));
+    var s1=c1<0?'−':'';
+    var s2=c2<0?' − ':' + ';
+    var expr=s1+c1D+radStr(idx,rad1Coef+radLit(v,e1))+s2+c2D+radStr(idx,rad2Coef+radLit(v,e1))+' =';
+    var vFuera=Math.floor(e1/idx),vResto=e1%idx;
+    var baseLit=radLit(v,vResto);
+    var baseRadStr=(baseCoef===1&&baseLit!=='')?baseLit:(baseCoef===1?'1':baseCoef+baseLit);
+    var termBase=radStr(idx,baseRadStr);
+    var cf1=c1*factor1,cf2=c2*factor2,cfSum=cf1+cf2;
+    var vFueraLit=radLit(v,vFuera);
+    var cfD=Math.abs(cfSum)===1&&vFueraLit?'':String(Math.abs(cfSum));
+    var sol=cfSum===0?'0':(cfSum<0?'−':'')+cfD+vFueraLit+termBase;
+    return{expr:expr,sol:sol,consigna:'Extraé factores y reducí radicales semejantes'};
+  }
+
+  var cNorm=[];
+  if(lvl===1){
+    for(var i=0;i<nTerms;i++) cNorm.push({n:rndNZ(-8,8),d:1});
+  } else {
+    for(var i=0;i<nTerms;i++){
+      if(rnd(0,1)){var fr=RAD_FRACS[rnd(0,RAD_FRACS.length-1)];cNorm.push({n:rnd(0,1)?fr[0]:-fr[0],d:fr[1]});}
+      else cNorm.push({n:rndNZ(-5,5),d:1});
+    }
+  }
+  var rn=0,rd=1;
+  cNorm.forEach(function(c){var lcd=rd*c.d/radGcd(rd,c.d);rn=rn*(lcd/rd)+c.n*(lcd/c.d);rd=lcd;var g=radGcd(Math.abs(rn),rd);rn=rn/g;rd=rd/g;});
+  var radical=radStr(idx,baseRad);
+  var expr='';
+  cNorm.forEach(function(c,i){
+    var s=radSimp(c.n,c.d);var sn=s[0],sd=s[1];
+    var cD=Math.abs(sn)===1&&sd===1?'':radFrac(Math.abs(sn),sd);
+    if(i===0)expr+=(sn<0?'−':'')+cD+radical;
+    else expr+=(sn<0?' − ':' + ')+cD+radical;
+  });
+  expr+=' =';
+  var rs=radSimp(rn,rd);var rsn=rs[0],rsd=rs[1];
+  var rD=Math.abs(rsn)===1&&rsd===1?'':radFrac(Math.abs(rsn),rsd);
+  var sol=rsn===0?'0':(rsn<0?'−':'')+rD+radical;
+  return{expr:expr,sol:sol};
+}
+
+// ── 5. MULTIPLICACIÓN I ───────────────────────────────────────
+function radGenMultI(){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var v2=INTRO_VARS.find(function(x){return x!==v;})||'y';
+  var useSame=rnd(0,1);
+  var a1=rnd(2,8),e1=rnd(1,4),a2=rnd(2,8),e2=rnd(1,4);
+  var vB=useSame?v:v2;
+  var expr=radStr(idx,a1+radLit(v,e1))+' · '+radStr(idx,a2+radLit(vB,e2))+' =';
+  var prod=a1*a2;
+  var totE=useSame?e1+e2:0;
+  var litP=useSame?radLit(v,totE):(radLit(v,e1)+radLit(v2,e2));
+  var fObj=radFactor(prod,idx);var fc=fObj.factor,rc=fObj.resto;
+  var vf=useSame?Math.floor(totE/idx):0,vr=useSame?totE%idx:0;
+  var fLit=useSame?radLit(v,vf):'';
+  var inLit=useSame?radLit(v,vr):litP;
+  var ins=(rc===1&&inLit==='')?'1':((rc===1?'':rc)+inLit);
+  var sol;
+  if(fc===1&&vf===0)sol=radStr(idx,prod+litP);
+  else sol=radC(fc,fLit!=='')+fLit+radStr(idx,ins);
+  return{expr:expr,sol:sol};
+}
+
+// ── 6. MULTIPLICACIÓN II ──────────────────────────────────────
+function radGenMultII(){
+  var idx=2,v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,8),ea=rnd(0,2),b=rnd(2,8),eb=rnd(0,3),c=rnd(2,8),ec=rnd(0,3);
+  var sign=rnd(0,1)===0?'+':'−';
+  var rA=radStr(idx,a+radLit(v,ea));
+  var rB=radStr(idx,b+radLit(v,eb));
+  var rC=radStr(idx,c+radLit(v,ec));
+  var expr=rA+' · ('+rB+' '+sign+' '+rC+') =';
+  function mR(a1,e1,a2,e2){
+    var p=a1*a2,es=e1+e2;
+    var fO=radFactor(p,idx);var fc=fO.factor,rc=fO.resto;
+    var vf=Math.floor(es/idx),vr=es%idx;
+    var fLit=radLit(v,vf),inLit=radLit(v,vr);
+    var ins=(rc===1&&inLit==='')?'1':((rc===1?'':rc)+inLit);
+    if(fc===1&&vf===0)return radStr(idx,p+radLit(v,es));
+    return radC(fc,fLit!=='')+fLit+radStr(idx,ins);
+  }
+  return{expr:expr,sol:mR(a,ea,b,eb)+' '+sign+' '+mR(a,ea,c,ec)};
+}
+
+// ── 7. MULTIPLICACIÓN III ─────────────────────────────────────
+function radGenMultIII(){
+  var idx=2;
+  var a=rnd(2,8),b=rnd(2,8),c=rnd(2,8),d=rnd(2,8);
+  var s1=rnd(0,1)===0?'+':'−',s2=rnd(0,1)===0?'+':'−';
+  var s1n=s1==='+'?1:-1,s2n=s2==='+'?1:-1;
+  var rA=radStr(idx,String(a)),rB=radStr(idx,String(b));
+  var rC=radStr(idx,String(c)),rD=radStr(idx,String(d));
+  var expr='('+rA+' '+s1+' '+rB+')('+rC+' '+s2+' '+rD+') =';
+  function sr(x){var fO=radFactor(x,2);var f=fO.factor,r=fO.resto;if(f===1)return radStr(2,String(x));return radC(f,r!==1)+radStr(2,String(r));}
+  var terms=[{v:a*c,s:1},{v:a*d,s:s2n},{v:b*c,s:s1n},{v:b*d,s:s1n*s2n}];
+  var sol='';
+  terms.forEach(function(t,i){var st=sr(t.v);if(i===0)sol=t.s<0?'−'+st:st;else sol+=t.s<0?' − '+st:' + '+st;});
+  return{expr:expr,sol:sol};
+}
+
+// ── 8. DIVISIÓN I ─────────────────────────────────────────────
+function radGenDivI(){
+  var idx=[2,2,3][rnd(0,2)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var solCoef=rnd(2,8),solExp=rnd(0,3);
+  var denCoef=rnd(2,6),denExp=rnd(0,2);
+  var numRad=Math.pow(solCoef,idx)*denCoef;
+  var litNum=radLit(v,solExp*idx+denExp);
+  var litDen=radLit(v,denExp);
+  var rNum=radStr(idx,numRad+litNum);
+  var rDen=radStr(idx,denCoef+litDen);
+  var expr='<span class="frac"><span class="num">'+rNum+'</span><span class="den">'+rDen+'</span></span> =';
+  var solLit=radLit(v,solExp);
+  return{expr:expr,sol:radC(solCoef,solLit!=='')+solLit};
+}
+
+// ── 9. MULTIPLICACIÓN DISTINTOS ÍNDICES ───────────────────────
+function radGenMultIndices(){
+  var pairs=[[2,3],[2,4],[3,4]];
+  var p=pairs[rnd(0,2)];var idx1=p[0],idx2=p[1];
+  var mcm=radLcm(idx1,idx2);
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,6),ea=rnd(1,3),b=rnd(2,6),eb=rnd(1,3);
+  var rA=radStr(idx1,a+radLit(v,ea));
+  var rB=radStr(idx2,b+radLit(v,eb));
+  var expr=rA+' · '+rB+' =';
+  var p1=mcm/idx1,p2=mcm/idx2;
+  var nA=Math.pow(a,p1),eA=ea*p1,nB=Math.pow(b,p2),eB=eb*p2;
+  var prod=nA*nB,totE=eA+eB;
+  var fO=radFactor(prod,mcm);var fc=fO.factor,rc=fO.resto;
+  var vf=Math.floor(totE/mcm),vr=totE%mcm;
+  var fLit=radLit(v,vf),inLit=radLit(v,vr);
+  var paso=toSup(mcm)+'√<span style="text-decoration:overline">'+prod+radLit(v,totE)+'</span>';
+  var ins=(rc===1&&inLit==='')?'1':((rc===1?'':rc)+inLit);
+  var sol=(fc===1&&vf===0)?paso:paso+' = '+radC(fc,fLit!=='')+fLit+radStr(mcm,ins);
+  return{expr:expr,sol:sol,consigna:'mcm('+idx1+','+idx2+') = '+mcm+' — Convertí ambos radicales al mismo índice'};
+}
+
+// ── 10. DIVISIÓN DISTINTOS ÍNDICES ────────────────────────────
+function radGenDivIndices(){
+  var pairs=[[2,3],[2,4],[3,4]];
+  var p=pairs[rnd(0,2)];var idx1=p[0],idx2=p[1];
+  var mcm=radLcm(idx1,idx2);
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,6),ea=rnd(1,3),b=rnd(2,6),eb=rnd(0,2);
+  var rA=radStr(idx1,a+radLit(v,ea));
+  var rB=radStr(idx2,b+radLit(v,eb));
+  var expr='<span class="frac"><span class="num">'+rA+'</span><span class="den">'+rB+'</span></span> =';
+  var p1=mcm/idx1,p2=mcm/idx2;
+  var nA=Math.pow(a,p1),eA=ea*p1,nB=Math.pow(b,p2),eB=eb*p2;
+  var rs=radSimp(nA,nB);var rn=rs[0],rd=rs[1];
+  var expDif=eA-eB;
+  var rNum=(rn===1?'':rn)+radLit(v,Math.max(expDif,0));
+  var rDen=(rd===1?'':rd)+radLit(v,Math.max(-expDif,0));
+  var paso=rd===1&&expDif>=0?radStr(mcm,rNum||'1'):
+    '<span class="frac"><span class="num">'+radStr(mcm,rNum||'1')+'</span><span class="den">'+radStr(mcm,rDen||'1')+'</span></span>';
+  var fullPaso=toSup(mcm)+'√<span style="text-decoration:overline">'+nA+radLit(v,eA)+'</span> / '+toSup(mcm)+'√<span style="text-decoration:overline">'+nB+radLit(v,eB)+'</span> = '+paso;
+  return{expr:expr,sol:fullPaso,consigna:'mcm('+idx1+','+idx2+') = '+mcm+' — Convertí al mismo índice y dividí'};
+}
+
+// ── 11. POTENCIACIÓN I ───────────────────────────────────────
+function radGenPotI(){
+  var idx=[2,3][rnd(0,1)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,5),m=rnd(1,3),p=rnd(2,4);
+  var litM=radLit(v,m);
+  var inner=radC(a,litM!=='')+radStr(idx,litM);
+  var expr='('+inner+')'+toSup(p)+' =';
+  var ap=Math.pow(a,p),totE=m*p;
+  var rs=radSimp(totE,idx);var rN=rs[0],rD=rs[1];
+  var apD=radC(ap,rN>0||rD>1);
+  var sol;
+  if(rD===1){sol=apD+radLit(v,rN);}
+  else{var vOut=Math.floor(totE/idx),vIn=totE%idx;sol=radC(ap,vOut>0||vIn>0)+radLit(v,vOut)+(vIn>0?radStr(idx,radLit(v,vIn)||'1'):'');}
+  return{expr:expr,sol:sol};
+}
+
+// ── 12. POTENCIACIÓN II ──────────────────────────────────────
+function radGenPotII(){
+  var idx=2;
+  var a=rnd(2,8),b=rnd(2,8);
+  var sign=rnd(0,1)===0?'+':'−';
+  var rA=radStr(idx,String(a)),rB=radStr(idx,String(b));
+  var expr='('+rA+' '+sign+' '+rB+')'+toSup(2)+' =';
+  var fO=radFactor(a*b,2);var f=fO.factor,r=fO.resto;
+  var fD=radC(f*2,r!==1);
+  var sol=(a+b)+' '+sign+' '+fD+radStr(2,String(r));
+  return{expr:expr,sol:sol};
+}
+
+// ── 13. RADICACIÓN DE RADICALES ──────────────────────────────
+function radGenRadRad(){
+  var idx1=[2,3][rnd(0,1)],idx2=[2,3][rnd(0,1)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var a=rnd(2,8),m=rnd(1,3);
+  var litM=radLit(v,m);
+  var inner=radStr(idx1,(a===1?litM:a+litM));
+  var expr=radStr(idx2,inner)+' =';
+  var newIdx=idx1*idx2;
+  var sol=toSup(newIdx)+'√<span style="text-decoration:overline">'+a+litM+'</span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 14. RACIONALIZACIÓN I ────────────────────────────────────
+function radGenRacI(){
+  var v=INTRO_VARS[rnd(0,3)];
+  var hasVar=rnd(0,1);
+  var num=rnd(2,8),denCoef=rnd(2,8),denExp=hasVar?rnd(1,3):0;
+  var litDen=radLit(v,denExp);
+  var radDen=denCoef+litDen;
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+radStr(2,radDen)+'</span></span> =';
+  var g=radGcd(num,denCoef);
+  var nR=num/g,dR=denCoef/g;
+  var nStr=(nR===1?'':nR)+radStr(2,radDen);
+  var dStr=(dR===1?'':dR)+litDen;
+  var sol='<span class="frac"><span class="num">'+nStr+'</span><span class="den">'+dStr+'</span></span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 15. RACIONALIZACIÓN II ───────────────────────────────────
+function radGenRacII(){
+  var idx=[3,4][rnd(0,1)];
+  var v=INTRO_VARS[rnd(0,3)];
+  var num=rnd(2,6),denCoef=rnd(2,6),denExp=rnd(1,idx-1);
+  var litDen=radLit(v,denExp);
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+radStr(idx,denCoef+litDen)+'</span></span> =';
+  var mC=Math.pow(denCoef,idx-1),mE=idx-denExp;
+  var mLit=radLit(v,mE);
+  var nStr=num+radStr(idx,mC+mLit);
+  var dStr=denCoef+radLit(v,1);
+  var sol='<span class="frac"><span class="num">'+nStr+'</span><span class="den">'+dStr+'</span></span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 16. RACIONALIZACIÓN III ──────────────────────────────────
+function radGenRacIII(){
+  var num=rnd(2,6);
+  var b,c;do{b=rnd(2,8);c=rnd(2,8);}while(b===c);
+  var sign=rnd(0,1)===0?'+':'−';
+  var signN=sign==='+'?1:-1;
+  var rB=radStr(2,String(b)),rC=radStr(2,String(c));
+  var conj=sign==='+'?'−':'+';
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+rB+' '+sign+' '+rC+'</span></span> =';
+  var dv=b-signN*c;
+  var g=radGcd(Math.abs(num),Math.abs(dv));
+  var nR=num/g,dR=dv/g;
+  var nStr=(nR===1?'':nR)+'('+rB+' '+conj+' '+rC+')';
+  var sol=Math.abs(dR)===1?(dR<0?'−':'')+nStr:'<span class="frac"><span class="num">'+nStr+'</span><span class="den">'+dR+'</span></span>';
+  return{expr:expr,sol:sol};
+}
+
+// ── 17. RACIONALIZACIÓN IV ───────────────────────────────────
+function radGenRacIV(){
+  var num=rnd(2,4);
+  var a,b,c;do{a=rnd(2,6);b=rnd(2,6);c=rnd(2,6);}while(a===b||b===c||a===c);
+  var s1=rnd(0,1)===0?'+':'−';
+  var rA=radStr(2,String(a)),rB=radStr(2,String(b)),rC=radStr(2,String(c));
+  var expr='<span class="frac"><span class="num">'+num+'</span><span class="den">'+rA+' '+s1+' '+rB+' + '+rC+'</span></span> =';
+  var conj1=rA+' '+s1+' '+rB+' − '+rC;
+  var sol='1° conjugado: ('+conj1+'), luego aplicar conjugado al resultado';
+  return{expr:expr,sol:sol};
+}
+
+const RAD_GENS={
+  exactas:radGenExactas,extraccion:radGenExtraccion,intro:radGenIntro,
+  sumaresta:radGenSumaResta,multI:radGenMultI,multII:radGenMultII,
+  multIII:radGenMultIII,divI:radGenDivI,multIndices:radGenMultIndices,
+  divIndices:radGenDivIndices,potI:radGenPotI,potII:radGenPotII,
+  radrad:radGenRadRad,racI:radGenRacI,racII:radGenRacII,
+  racIII:radGenRacIII,racIV:radGenRacIV
+};
+
+
+// ── Adaptadores para CATALOG (devuelven {expr, sol}) ──
+function eb_omRad(lvl) { try { return omGenRad(lvl); } catch(e) { return null; } }
+function eb_polyGen(op, lvl) { try { const g = OP_GENS[op]; return g ? g(lvl) : null; } catch(e) { return null; } }
+function eb_radGen(op, lvl) { try { const g = RAD_GENS[op]; return g ? g(lvl) : null; } catch(e) { return null; } }
 
 // ── Cálculo — Inecuaciones ──
 function ineqFracHtml(n, d) {
