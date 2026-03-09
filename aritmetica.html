@@ -221,8 +221,10 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 }
 .work-space-xs  { height: 32px;  }   /* 1 renglón  */
 .work-space-sm  { height: 84px;  }   /* 3 renglones */
+.work-space-4   { height: 112px; }   /* 4 renglones */
 .work-space-md  { height: 140px; }   /* 5 renglones */
 .work-space-lg  { height: 196px; }   /* 7 renglones */
+.work-space-8   { height: 224px; }   /* 8 renglones */
 .work-space-xl  { height: 280px; }   /* 10 renglones */
 .work-space-xxl { height: 392px; }   /* 14 renglones */
 .mult-table {
@@ -1113,8 +1115,9 @@ function generateMix(){
   let ejHTML='<div class="ejercicios-list">';
   ejercicios.forEach(e=>{
     if(e._pfx!==lastPfx){lastPfx=e._pfx;ejHTML+='<div class="level-header">'+MIX_TOPIC_LABELS[e._pfx]+' — '+LEVEL_NAMES[e._pfx][e.lvl]+'</div>';}
-    const wsMix={sr:'work-space-sm',mu:'work-space-sm',dv:'work-space-md',po:'work-space-sm',ra:'work-space-sm',cs:'work-space-md',cc:'work-space-lg'}[e._pfx]||'work-space-md';
-    ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div><div class="work-space '+wsMix+'"></div></div></div>';
+    const wsMixMap={sr:null,mu:null,dv:null,po:null,ra:null,cs:'work-space-xl',cc:'work-space-xl'};
+    const wsMix=wsMixMap[e._pfx]!==undefined?wsMixMap[e._pfx]:'work-space-md';
+    if(wsMix){ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div><div class="work-space '+wsMix+'"></div></div></div>';}else{ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div></div></div>';}
   });
   ejHTML+='</div>';
   let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
@@ -1269,12 +1272,14 @@ function generateEnteros() {
       lastPfx = e.lvl;
       ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
     }
-    const wsSize = { sr:'work-space-sm', mu:'work-space-sm', dv:'work-space-md', po:'work-space-sm', ra:'work-space-sm', cs:'work-space-md', cc:'work-space-lg' }[e._pfx] || 'work-space-md';
-    const wsFinal = (e._pfx === 'mu' && e.lvl >= 4) ? 'work-space-md' : wsSize;
+    const wsMapEnt = { sr:null, mu:null, dv:null, po:null, ra:null, cs:'work-space-xl', cc:'work-space-xl' };
+    const wsFinal = (e._pfx in wsMapEnt) ? wsMapEnt[e._pfx] : 'work-space-md';
     if (e.isTable) {
       ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span><div class="ej-content"><div class="ej-question">Completá el cuadro de productos:<\/div>' + e.expr + '<\/div><\/div>';
-    } else {
+    } else if (wsFinal) {
       ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span><div class="ej-content"><div class="ej-question">' + e.expr + '<\/div><div class="work-space ' + wsFinal + '"><\/div><\/div><\/div>';
+    } else {
+      ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span><div class="ej-content"><div class="ej-question">' + e.expr + '<\/div><\/div><\/div>';
     }
   });
   ejHTML += '<\/div>';
@@ -1860,7 +1865,7 @@ function generatePropMU() {
     } else {
       ejHTML += `<div class="ejercicio-item">
         <span class="ej-num">(${e.id})</span>
-        <div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space work-space-md"></div></div>
+        <div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space work-space-4"></div></div>
       </div>`;
     }
   });
@@ -2223,18 +2228,22 @@ function generateTopic(pfx) {
       currentLvl = e.lvl;
       ejHTML += `<div class="level-header">${LEVEL_NAMES[pfx][e.lvl]}</div>`;
     }
-    const wsSize = {sr:'work-space-sm',dv:'work-space-md',
-      po:'work-space-sm',ra:'work-space-sm',cs:'work-space-md',cc:'work-space-lg'}[pfx]
-      || (pfx==='mu' ? (e.lvl >= 4 ? 'work-space-md' : 'work-space-sm') : 'work-space-md');
+    const wsMapTopic = { sr:null, mu:null, dv:null, po:null, ra:null, cs:'work-space-xl', cc:'work-space-xl' };
+    const wsSize = (pfx in wsMapTopic) ? wsMapTopic[pfx] : 'work-space-md';
     if (e.isTable) {
       ejHTML += `<div class="ejercicio-item">
         <span class="ej-num">(${e.id})</span>
         <div class="ej-content"><div class="ej-question">Completá el cuadro de productos:</div>${e.expr}</div>
       </div>`;
-    } else {
+    } else if (wsSize) {
       ejHTML += `<div class="ejercicio-item">
         <span class="ej-num">(${e.id})</span>
         <div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsSize}"></div></div>
+      </div>`;
+    } else {
+      ejHTML += `<div class="ejercicio-item">
+        <span class="ej-num">(${e.id})</span>
+        <div class="ej-content"><div class="ej-question">${e.expr}</div></div>
       </div>`;
     }
   });
@@ -2620,7 +2629,7 @@ function generateRC() {
         seen.add(e.expr);
         ejHTML += '<div class="ejercicio-item"><span class="ej-num">(' + ejNum + ')</span>' +
           '<div class="ej-content"><div class="ej-question">' + e.expr + '</div>' +
-          '<div class="work-space work-space-sm"></div></div></div>';
+          '<div class="work-space work-space-8"></div></div></div>';
         solHTML += '<div class="sol-item"><span class="ej-num">(' + ejNum + ')</span> ' + e.sol + '</div>';
         ejNum++;
         count++;
@@ -2649,7 +2658,7 @@ function generateRC() {
         ejHTML += '<div class="ejercicio-item"><span class="ej-num">(' + ejNum + ')</span>' +
           '<div class="ej-content"><div class="ej-question">' + ei.expr +
           ' &nbsp; ___ &lt; √ &lt; ___</div>' +
-          '<div class="work-space work-space-sm"></div></div></div>';
+          '<div class="work-space work-space-8"></div></div></div>';
         solHTML += '<div class="sol-item"><span class="ej-num">(' + ejNum + ')</span> ' + ei.sol + '</div>';
         ejNum++;
         count2++;
@@ -3047,7 +3056,7 @@ function generateSP() {
     }
     ejHTML += `<div class="sp-item">
       <span class="ej-num">${p.id}.</span>
-      <div class="sp-enunciado">${p.enunciado}</div><div class="work-space work-space-xl"></div>
+      <div class="sp-enunciado">${p.enunciado}</div><div class="work-space work-space-4"></div>
     </div>`;
   });
   ejHTML += '</div>';
@@ -3251,7 +3260,12 @@ function generateRacUnif() {
   let lastPfx = null, lastLvl = null;
   let ejHTML = '<div class="ejercicios-list">';
   ejercicios.forEach(function(e) {
-    const wsSize = { sr:'work-space-md', mu:'work-space-md', dv:'work-space-md', po:'work-space-sm', ra:'work-space-md', cs:'work-space-lg', cc:'work-space-lg' }[e._pfx] || 'work-space-md';
+    const wsMapRac = {
+      frac: { sr:'work-space-md', mu:'work-space-md', dv:'work-space-md', po:null,              ra:null,            cs:'work-space-xl', cc:'work-space-xl' },
+      dec:  { sr:'work-space-4',  mu:'work-space-md', dv:'work-space-md', po:'work-space-8',    ra:null,            cs:'work-space-xl', cc:'work-space-xl' },
+      both: { sr:'work-space-md', mu:'work-space-md', dv:'work-space-md', po:'work-space-md',   ra:'work-space-md', cs:'work-space-xl', cc:'work-space-xl' }
+    };
+    const wsSize = (wsMapRac[currentMode] || wsMapRac['frac'])[e._pfx];
     if (multiOp && e._pfx !== lastPfx) {
       lastPfx = e._pfx; lastLvl = null;
       ejHTML += '<div class="level-header">' + RAC_TOPIC_NAMES[e._pfx] + ' — ' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
@@ -3259,9 +3273,14 @@ function generateRacUnif() {
       lastLvl = e.lvl;
       ejHTML += '<div class="level-header">' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
     }
-    ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span>' +
-      '<div class="ej-content"><div class="ej-question">' + e.expr + '<\/div>' +
-      '<div class="work-space ' + wsSize + '"><\/div><\/div><\/div>';
+    if (wsSize) {
+      ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span>' +
+        '<div class="ej-content"><div class="ej-question">' + e.expr + '<\/div>' +
+        '<div class="work-space ' + wsSize + '"><\/div><\/div><\/div>';
+    } else {
+      ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span>' +
+        '<div class="ej-content"><div class="ej-question">' + e.expr + '<\/div><\/div><\/div>';
+    }
   });
   ejHTML += '<\/div>';
 
@@ -3527,7 +3546,8 @@ function racGenerateTopic(pfx){
   const fecha=new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
   let currentLvl=null;
   let ejHTML='<div class="ejercicios-list">';
-  ejercicios.forEach(e=>{if(e.lvl!==currentLvl){currentLvl=e.lvl;ejHTML+=`<div class="level-header">${racGetLabel(pfx,e.lvl)}</div>`;}ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:'work-space-sm',ra:'work-space-md',cs:'work-space-lg',cc:'work-space-lg'}[pfx]||'work-space-md'}"></div></div></div>`;});
+  const wsMapRT={frac:{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:null,ra:null,cs:'work-space-xl',cc:'work-space-xl'},dec:{sr:'work-space-4',mu:'work-space-md',dv:'work-space-md',po:'work-space-8',ra:null,cs:'work-space-xl',cc:'work-space-xl'},both:{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:'work-space-md',ra:'work-space-md',cs:'work-space-xl',cc:'work-space-xl'}};
+  ejercicios.forEach(e=>{if(e.lvl!==currentLvl){currentLvl=e.lvl;ejHTML+=`<div class="level-header">${racGetLabel(pfx,e.lvl)}</div>`;}const wsRT=(wsMapRT[currentMode]||wsMapRT['frac'])[pfx];if(wsRT){ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsRT}"></div></div></div>`;}else{ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div></div></div>`;}});
   ejHTML+='</div>';
   let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
   ejercicios.forEach(e=>{solHTML+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}</div></div>`;});
