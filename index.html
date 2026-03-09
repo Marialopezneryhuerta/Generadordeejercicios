@@ -253,7 +253,7 @@ footer {
   color: var(--muted, #8b92b1);
   padding: 0.4rem 1rem;
   z-index: 5;
-  pointer-events: none;
+  pointer-events: auto;
   letter-spacing: 0.01em;
 }
 .nav-copyright {
@@ -550,11 +550,11 @@ body { padding-bottom: 2.5rem; }
   </div>
 </main>
 
-<footer>
-  © 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta · <a class="btn-feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener">💬 feedback y aportes</a>
-</footer>
+<div style="text-align:center; padding: 2rem 1rem 3.5rem;">
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener" style="display:inline-block; background:#4361ee; color:white; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.95rem; padding:0.7rem 1.8rem; border-radius:24px; text-decoration:none; letter-spacing:0.02em;">💬 ENVIANOS TU FEEDBACK</a>
+</div>
 
-<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
+<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta · <a class="btn-feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener">💬 feedback y aportes</a></div>
 <script>
 document.getElementById('modal-suscripcion').addEventListener('click', function(e){
   if(e.target === this) this.classList.remove('abierto');
