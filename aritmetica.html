@@ -1456,19 +1456,14 @@ function rootHTML(radicand, idx) {
     ? idxMap[String(idx)]
     : `<sup style="font-size:0.7em;vertical-align:super;margin-right:1px">${idx}</sup>`;
   const sign = idxStr === '' ? '√' : (idx <= 4 ? idxStr : `${idxStr}√`.replace('√',''));
-  // For idx > 4, use superscript + √
+  const wrap = (sym, content) =>
+    `${sym}<span style="display:inline-block;border-top:1.2px solid currentColor;padding:0 1px;vertical-align:middle;line-height:1.1">${content}</span>`;
   if (idx > 4) {
-    return `<sup style="font-size:0.68em;vertical-align:0.5em;margin-right:1px">${idx}</sup>√<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
+    return `<sup style="font-size:0.68em;vertical-align:0.5em;margin-right:1px">${idx}</sup>` + wrap('√', radicand);
   }
-  if (idx === 2) {
-    return `√<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
-  }
-  if (idx === 3) {
-    return `∛<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
-  }
-  if (idx === 4) {
-    return `∜<span style="text-decoration:overline;letter-spacing:0.02em">${radicand}</span>`;
-  }
+  if (idx === 2) return wrap('√', radicand);
+  if (idx === 3) return wrap('∛', radicand);
+  if (idx === 4) return wrap('∜', radicand);
 }
 function sqrtHTML(n) { return rootHTML(n, 2); }
 function cbrtHTML(n) { return rootHTML(n, 3); }
@@ -3343,7 +3338,13 @@ function fracStr(f){return frac(f.n,f.d);}
 function solFrac(f){const[n,d]=simplify(f.n,f.d);return frac(n,d);}
 function randPosFrac(maxDen=8){const d=rnd(2,maxDen);const n=rndNZ(1,d*3);return mkF(n,d);}
 function randFrac(maxDen=8,allowNeg=true){const d=rnd(2,maxDen);const maxN=d*4;const n=allowNeg?rndNZ(-maxN,maxN):rnd(1,maxN);return mkF(n,d);}
-function rootHTML(radicand,idx){if(idx===2)return`√<span style="text-decoration:overline">${radicand}</span>`;if(idx===3)return`∛<span style="text-decoration:overline">${radicand}</span>`;if(idx===4)return`∜<span style="text-decoration:overline">${radicand}</span>`;return`<sup style="font-size:.68em;vertical-align:.5em">${idx}</sup>√<span style="text-decoration:overline">${radicand}</span>`;}
+function rootHTML(radicand,idx){
+  const wrap=(sym,c)=>`${sym}<span style="display:inline-block;border-top:1.2px solid currentColor;padding:0 1px;vertical-align:middle;line-height:1.1">${c}</span>`;
+  if(idx===2)return wrap('√',radicand);
+  if(idx===3)return wrap('∛',radicand);
+  if(idx===4)return wrap('∜',radicand);
+  return`<sup style="font-size:.68em;vertical-align:.5em">${idx}</sup>`+wrap('√',radicand);
+}
 
 const PERIODIC=[
   {f:mkF(1,3),disp:`0.<span class="per">3</span>`,val:1/3},{f:mkF(2,3),disp:`0.<span class="per">6</span>`,val:2/3},

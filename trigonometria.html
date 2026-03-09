@@ -1096,10 +1096,32 @@ function trigNum(v) {
   return TRIG_VALS[v] ?? parseFloat(v);
 }
 
-// Formatea valor trig para mostrar en ecuación
+// Genera √ con vinculum (raya horizontal) sobre el radicando
+// Usa border-top para que funcione correctamente también sobre fracciones visuales
+function sqrtH(radicando) {
+  return '\u221a<span style="display:inline-block;border-top:1.2px solid currentColor;padding:0 1px;vertical-align:middle;line-height:1.1">' + radicando + '<\/span>';
+}
+
+// sqhAM: raíz de ángulo mitad √((1 ± arg)/2) con vinculum completo
+function sqhAM(pm, arg) {
+  const op = pm === '-' ? ' \u2212 ' : ' + ';
+  return '\u221a<span style="display:inline-block;border-top:1.2px solid currentColor;padding:0 1px;vertical-align:middle;line-height:1.1">(1' + op + arg + ')/2<\/span>';
+}
+
+// Formatea valor trig para mostrar en ecuación con vinculum correcto
 function trigFmt(v) {
   if (v === null) return null;
   if (typeof v === 'number') return String(v);
+  // Valores con raíz: convertir √X/Y → √<overline>X</overline>/Y
+  // y −√X/Y → −√<overline>X</overline>/Y
+  const neg = v.startsWith('-');
+  const sign = neg ? '\u2212' : '';
+  const abs = neg ? v.slice(1) : v;
+  if (abs === '\u221a2')   return sign + sqrtH('2');
+  if (abs === '\u221a3')   return sign + sqrtH('3');
+  if (abs === '\u221a2/2') return sign + sqrtH('2') + '/2';
+  if (abs === '\u221a3/2') return sign + sqrtH('3') + '/2';
+  if (abs === '\u221a3/3') return sign + sqrtH('3') + '/3';
   return v;
 }
 
@@ -1187,7 +1209,7 @@ function trigGen1() {
     if (angles.length === 0) return trigGen1();
     const bStr = bVal > 0 ? ` + ${bVal}` : ` − ${Math.abs(bVal)}`;
     return {
-      expr: `${p.coef}·${func}(<em>x</em>)${bStr} = 0`,
+      expr: `${trigFmt(p.coef)}·${func}(<em>x</em>)${bStr} = 0`,
       sol: solAngles(angles)
     };
   }
@@ -1437,7 +1459,7 @@ function trigGen3() {
       // buscar en tabla
       const found = Object.entries(TRIG_VALS).find(([k,v]) => Math.abs(v-rhsVal)<0.001);
       if (!found) return trigGen3();
-      rhsStr = found[0].startsWith('-') ? found[0].replace('-','−') : found[0];
+      rhsStr = trigFmt(found[0]);
     }
     // ángulos 2x base donde cos(2x) = cv2xN (tabla cubre 0-360)
     const angs2x_base = TRIG_TABLE.filter(e => Math.abs(trigNum(e.cos) - cv2xN) < 0.001).map(e => e.ang);
@@ -1470,7 +1492,7 @@ function trigGen3() {
     else if (Number.isInteger(bNum)) bStr = String(bNum);
     else {
       const found = Object.entries(TRIG_VALS).find(([k,v]) => Math.abs(v-bNum)<0.001);
-      bStr = found ? found[0] : bNum.toFixed(2);
+      bStr = found ? trigFmt(found[0]) : bNum.toFixed(2);
     }
     return {
       expr: `${a}·sen(<em>x</em>)·cos(<em>x</em>) = ${bStr}`,
@@ -1785,23 +1807,31 @@ function triGenTorre() {
     solVal = `Ley del Coseno: AB² = PA² + PB² − 2·PA·PB·cos(${angleP}°) → PB ≈ ${PB} km`;
   }
 
-  // SVG: P at bottom-center, A top-left, B top-right
-  const W = 280, H = 200;
-  const Px = 140, Py = 165;
-  const angle_PA = (90 + angleP/2) * Math.PI/180; // spread around vertical
-  const angle_PB = (90 - angleP/2) * Math.PI/180;
-  const scaleF = 100 / Math.max(PA, PB);
-  const Ax = Math.round(Px - PA * scaleF * Math.cos(angle_PA));
-  const Ay = Math.round(Py - PA * scaleF * Math.sin(angle_PA));
-  const Bx = Math.round(Px + PB * scaleF * Math.cos(angle_PB));
-  const By = Math.round(Py - PB * scaleF * Math.sin(angle_PB));
+  // SVG: P at bottom-left, A goes up-right at fixed angle, B opens angleP degrees to the right
+  // This guarantees the triangle is always visually clear regardless of angleP value
+  const W = 300, H = 210;
+  const Px = 55, Py = 175;
+  // PA goes up-right at 55° from horizontal (fixed base direction)
+  const baseAngleDeg = 55;
+  const baseAngleRad = baseAngleDeg * Math.PI / 180;
+  // PB is rotated clockwise by angleP from PA direction (opens to the right)
+  const dirB_rad = (baseAngleDeg - angleP) * Math.PI / 180;
+  const scaleF = Math.min(110 / Math.max(PA, PB), 3.5);
+  const Ax = Math.round(Px + PA * scaleF * Math.cos(baseAngleRad));
+  const Ay = Math.round(Py - PA * scaleF * Math.sin(baseAngleRad));
+  const Bx = Math.round(Px + PB * scaleF * Math.cos(dirB_rad));
+  const By = Math.round(Py - PB * scaleF * Math.sin(dirB_rad));
+  // Label offsets: A is upper area, B depends on angle
+  const Alabel_dx = Ax > Px + 60 ? -10 : -30;
+  const Blabel_dx = angleP < 50 ? 5 : Bx > Px + 30 ? 5 : -35;
+  const Blabel_dy = By < Py - 20 ? -8 : 14;
 
   const graph = triSVG(W, H,
     [{x:Px,y:Py,color:'#4f6ef7',r:6},{x:Ax,y:Ay,color:'#e74c3c',r:5},{x:Bx,y:By,color:'#e74c3c',r:5}],
     [
       {x:Px-8,y:Py+14,text:'P (puerto)',bold:true,color:'#4f6ef7',size:9},
-      {x:Ax-24,y:Ay-6,text:'Barco A',bold:true,color:'#e74c3c',size:9},
-      {x:Bx+5,y:By-6,text:'Barco B',bold:true,color:'#e74c3c',size:9},
+      {x:Ax+Alabel_dx,y:Ay-7,text:'Barco A',bold:true,color:'#e74c3c',size:9},
+      {x:Bx+Blabel_dx,y:By+Blabel_dy,text:'Barco B',bold:true,color:'#e74c3c',size:9},
     ],
     [
       {x1:Px,y1:Py,x2:Ax,y2:Ay,color:'#4f6ef7'},
@@ -1810,9 +1840,9 @@ function triGenTorre() {
     ],
     () =>
       midLabel(Px,Py,Ax,Ay, `${PA} km`, [-18, 0], '#4f6ef7') +
-      midLabel(Px,Py,Bx,By, `${PB} km`, [16, 0], '#4f6ef7') +
+      midLabel(Px,Py,Bx,By, `${PB} km`, [10, 0], '#4f6ef7') +
       (pide===0 ? '' : midLabel(Ax,Ay,Bx,By, `${AB} km`, [0,-12], '#aaa')) +
-      angleMark(Px,Py, Ax,Ay, Bx,By, 28, `${angleP}°`, '#f97316')
+      angleMark(Px,Py, Ax,Ay, Bx,By, 30, `${angleP}°`, '#f97316')
   );
 
   return {
@@ -2391,14 +2421,14 @@ function fmGenAM1() {
     const result = knownMid ? knownMid.s : '—';
     return {
       expr: `Calculá <strong>sen(${mid}°)</strong> usando la fórmula del arco mitad.`,
-      sol: `sen(${alfa}°/2) = √((1 − cos(${alfa}°))/2) = √((1 − (${cosAlfa}))/2) = ${result}`
+      sol: `sen(${alfa}°/2) = ` + sqhAM('-', 'cos('+alfa+'°)') + ` = ` + sqhAM('-', '('+cosAlfa+')') + ` = ${result}`
     };
   } else {
     const result = knownMid ? knownMid.c : '—';
     const signNote = mid <= 90 ? '(+, ya que ${mid}° está en 1er cuadrante)' : '';
     return {
       expr: `Calculá <strong>cos(${mid}°)</strong> usando la fórmula del arco mitad.`,
-      sol: `cos(${alfa}°/2) = √((1 + cos(${alfa}°))/2) = √((1 + (${cosAlfa}))/2) = ${result}`
+      sol: `cos(${alfa}°/2) = ` + sqhAM('+', 'cos('+alfa+'°)') + ` = ` + sqhAM('+', '('+cosAlfa+')') + ` = ${result}`
     };
   }
 }
@@ -2410,26 +2440,26 @@ function fmGenAM2() {
 
   if (tipo === 0) {
     return {
-      expr: `Simplificá: <strong>√((1 − cos(<em>x</em>))/2)</strong>`,
-      sol: `√((1 − cos(<em>x</em>))/2) = |sen(<em>x</em>/2)|`
+      expr: `Simplificá: <strong>` + sqhAM('-', 'cos(<em>x</em>)') + `</strong>`,
+      sol: sqhAM('-', 'cos(<em>x</em>)') + ` = |sen(<em>x</em>/2)|`
     };
   }
   if (tipo === 1) {
     return {
-      expr: `Simplificá: <strong>√((1 + cos(<em>x</em>))/2)</strong>`,
-      sol: `√((1 + cos(<em>x</em>))/2) = |cos(<em>x</em>/2)|`
+      expr: `Simplificá: <strong>` + sqhAM('+', 'cos(<em>x</em>)') + `</strong>`,
+      sol: sqhAM('+', 'cos(<em>x</em>)') + ` = |cos(<em>x</em>/2)|`
     };
   }
   if (tipo === 2) {
     return {
       expr: `Expandí: <strong>sen(<em>x</em>/2)</strong> usando la fórmula del arco mitad.`,
-      sol: `sen(<em>x</em>/2) = ±√((1 − cos(<em>x</em>))/2)   (el signo depende del cuadrante de <em>x</em>/2)`
+      sol: `sen(<em>x</em>/2) = ±` + sqhAM('-', 'cos(<em>x</em>)') + `   (el signo depende del cuadrante de <em>x</em>/2)`
     };
   }
   if (tipo === 3) {
     return {
       expr: `Expandí: <strong>cos(<em>x</em>/2)</strong> usando la fórmula del arco mitad.`,
-      sol: `cos(<em>x</em>/2) = ±√((1 + cos(<em>x</em>))/2)   (el signo depende del cuadrante de <em>x</em>/2)`
+      sol: `cos(<em>x</em>/2) = ±` + sqhAM('+', 'cos(<em>x</em>)') + `   (el signo depende del cuadrante de <em>x</em>/2)`
     };
   }
   if (tipo === 4) {
@@ -2710,13 +2740,13 @@ function fmrGenAM1() {
     const res = nMid ? nMid.s : '—';
     return {
       expr: `Calculá <strong>sen(${midRad})</strong> usando la fórmula del arco mitad.`,
-      sol:  `sen(${midRad}) = sen((${alfaRad})/2) = √((1 − cos(${alfaRad}))/2) = √((1 − (${cosAlfa}))/2) = ${res}`
+      sol:  `sen(${midRad}) = sen((${alfaRad})/2) = ` + sqhAM('-', 'cos('+alfaRad+')') + ` = ` + sqhAM('-', '('+cosAlfa+')') + ` = ${res}`
     };
   } else {
     const res = nMid ? nMid.c : '—';
     return {
       expr: `Calculá <strong>cos(${midRad})</strong> usando la fórmula del arco mitad.`,
-      sol:  `cos(${midRad}) = cos((${alfaRad})/2) = √((1 + cos(${alfaRad}))/2) = √((1 + (${cosAlfa}))/2) = ${res}`
+      sol:  `cos(${midRad}) = cos((${alfaRad})/2) = ` + sqhAM('+', 'cos('+alfaRad+')') + ` = ` + sqhAM('+', '('+cosAlfa+')') + ` = ${res}`
     };
   }
 }
@@ -2724,10 +2754,10 @@ function fmrGenAM1() {
 // ── ARCO MITAD NIVEL 2 (radianes) ──
 function fmrGenAM2() {
   const tipo = rnd(0, 5);
-  if (tipo === 0) return { expr: `Simplificá: <strong>√((1 − cos(<em>x</em>))/2)</strong>`, sol: `√((1 − cos(<em>x</em>))/2) = |sen(<em>x</em>/2)|` };
-  if (tipo === 1) return { expr: `Simplificá: <strong>√((1 + cos(<em>x</em>))/2)</strong>`, sol: `√((1 + cos(<em>x</em>))/2) = |cos(<em>x</em>/2)|` };
-  if (tipo === 2) return { expr: `Expandí: <strong>sen(<em>x</em>/2)</strong> usando la fórmula del arco mitad.`, sol: `sen(<em>x</em>/2) = ±√((1 − cos(<em>x</em>))/2)   (el signo depende del cuadrante de <em>x</em>/2)` };
-  if (tipo === 3) return { expr: `Expandí: <strong>cos(<em>x</em>/2)</strong> usando la fórmula del arco mitad.`, sol: `cos(<em>x</em>/2) = ±√((1 + cos(<em>x</em>))/2)   (el signo depende del cuadrante de <em>x</em>/2)` };
+  if (tipo === 0) return { expr: `Simplificá: <strong>` + sqhAM('-', 'cos(<em>x</em>)') + `</strong>`, sol: sqhAM('-', 'cos(<em>x</em>)') + ` = |sen(<em>x</em>/2)|` };
+  if (tipo === 1) return { expr: `Simplificá: <strong>` + sqhAM('+', 'cos(<em>x</em>)') + `</strong>`, sol: sqhAM('+', 'cos(<em>x</em>)') + ` = |cos(<em>x</em>/2)|` };
+  if (tipo === 2) return { expr: `Expandí: <strong>sen(<em>x</em>/2)</strong> usando la fórmula del arco mitad.`, sol: `sen(<em>x</em>/2) = ±` + sqhAM('-', 'cos(<em>x</em>)') + `   (el signo depende del cuadrante de <em>x</em>/2)` };
+  if (tipo === 3) return { expr: `Expandí: <strong>cos(<em>x</em>/2)</strong> usando la fórmula del arco mitad.`, sol: `cos(<em>x</em>/2) = ±` + sqhAM('+', 'cos(<em>x</em>)') + `   (el signo depende del cuadrante de <em>x</em>/2)` };
   if (tipo === 4) return { expr: `Simplificá: <strong>2·sen²(<em>x</em>/2)</strong>`, sol: `2·sen²(<em>x</em>/2) = 2·(1 − cos(<em>x</em>))/2 = 1 − cos(<em>x</em>)` };
   return { expr: `Simplificá: <strong>2·cos²(<em>x</em>/2)</strong>`, sol: `2·cos²(<em>x</em>/2) = 2·(1 + cos(<em>x</em>))/2 = 1 + cos(<em>x</em>)` };
 }
