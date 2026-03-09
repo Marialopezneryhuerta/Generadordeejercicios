@@ -278,6 +278,22 @@ footer {
 }
 .btn-suscribite:hover { background: #3a58e0; transform: translateY(-1px); }
 
+.btn-feedback {
+  margin-left: 0.5rem;
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  padding: 0.38rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+.btn-feedback:hover { background: var(--accent); color: white; transform: translateY(-1px); }
+
 /* MODAL SUSCRIPCIÓN */
 #modal-suscripcion {
   display: none;
@@ -338,6 +354,7 @@ body { padding-bottom: 2.5rem; }
   <p>Generador de ejercitarios de matemáticas</p>
   <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
   <button class="btn-suscribite" onclick="document.getElementById('modal-suscripcion').classList.add('abierto')">✉️ Suscribite gratis</button>
+  <button class="btn-feedback" onclick="document.getElementById('modal-feedback').classList.add('abierto')">💬 Feedback</button>
 </nav>
 
 <!-- MODAL SUSCRIPCIÓN -->
@@ -348,6 +365,17 @@ body { padding-bottom: 2.5rem; }
       <button class="modal-sus-cerrar" onclick="document.getElementById('modal-suscripcion').classList.remove('abierto')">✕</button>
     </div>
     <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScKKIrWOi_KDPvqM5GzuJWc7_9vLla2v6KrKVPiudQxkXAIUQ/viewform?embedded=true" loading="lazy">Cargando…</iframe>
+  </div>
+</div>
+
+<!-- MODAL FEEDBACK -->
+<div id="modal-feedback">
+  <div class="modal-sus-box">
+    <div class="modal-sus-header">
+      <h2>💬 Feedback y aportes</h2>
+      <button class="modal-sus-cerrar" onclick="document.getElementById('modal-feedback').classList.remove('abierto')">✕</button>
+    </div>
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform?embedded=true" loading="lazy">Cargando…</iframe>
   </div>
 </div>
 
@@ -548,6 +576,9 @@ body { padding-bottom: 2.5rem; }
 <div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 <script>
 document.getElementById('modal-suscripcion').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('abierto');
+});
+document.getElementById('modal-feedback').addEventListener('click', function(e){
   if(e.target === this) this.classList.remove('abierto');
 });
 </script>
