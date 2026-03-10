@@ -247,6 +247,16 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 .doc-ej-expr em { font-style: italic; }
 .doc-ej-expr sup { font-size: 0.7em; vertical-align: super; }
 .work-space-md { height: 120px; width: 100%; display: block; border-radius: 4px; }
+/* Tabla Ruffini */
+.ruffini-table { display: inline-grid; margin-top: 0.7rem; border-left: 3px solid var(--ink); font-size: 0.95rem; }
+.ruffini-table > div { display: grid; }
+.ruffini-header, .ruffini-mid, .ruffini-result { display: contents; }
+.ruffini-table span { padding: 1.4rem 0.8rem; text-align: center; min-width: 2.8rem; }
+.ruffini-a { font-weight: 800; color: var(--accent); border-right: 1px solid var(--border); }
+.ruffini-mid span { color: var(--muted); font-size: 0.88rem; }
+.ruffini-result span { border-top: 2px solid var(--ink); font-weight: 700; }
+.ruffini-resto { color: #e03; }
+
 .work-space-xl-svg { height: 280px; width: 100%; display: block; border-radius: 4px; }
 .work-space-8-svg  { height: 224px; width: 100%; display: block; border-radius: 4px; }
 
@@ -1087,7 +1097,8 @@ const CATALOG = {
       { id:'poly-divpm', label:'Polinomios — Pol÷Mon', niveles:[1,2], gen:(lvl)=>eb_polyGen('divpm',lvl) },
       { id:'poly-divpp', label:'Polinomios — Pol÷Pol', niveles:[1,2], gen:(lvl)=>eb_polyGen('divpp',lvl) },
       { id:'poly-resto', label:'Polinomios — Teo. del Resto', niveles:[1], gen:(lvl)=>eb_polyGen('resto',lvl) },
-      { id:'poly-ruffini', label:'Polinomios — Ruffini', niveles:[1], gen:(lvl)=>eb_polyGen('ruffini',lvl) },
+      { id:'poly-ruffini', label:'Polinomios — Ruffini Niv.1 (x−a)', niveles:[1], gen:(lvl)=>eb_polyGen('ruffini',lvl) },
+      { id:'poly-ruffini2', label:'Polinomios — Ruffini Niv.2 (bx−c)', niveles:[2], gen:(lvl)=>eb_polyGen('ruffini',lvl) },
       { id:'rad-exactas', label:'Radicales — Raíces exactas', niveles:[1], gen:(lvl)=>eb_radGen('exactas',lvl) },
       { id:'rad-extraccion', label:'Radicales — Extracción', niveles:[1,2], gen:(lvl)=>eb_radGen('extraccion',lvl) },
       { id:'rad-sumaresta', label:'Radicales — Suma y Resta', niveles:[1,2,3], gen:(lvl)=>eb_radGen('sumaresta',lvl) },
@@ -1498,6 +1509,7 @@ function buildDocHTML(){
             if(/Combinadas (s\/|c\/)Agrup/.test(tm)) wsCls='work-space-xl-svg';
             else wsCls=null; // sr/mu/dv/po/ra → sin espacio
           } else if(/^Radicales/.test(tm)){ wsCls='work-space-8-svg'; }
+          else if(/Ruffini/.test(tm)){ wsCls=null; } // tabla ya es el espacio de trabajo
           const svgGrid=wsCls?`<svg class="${wsCls}" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="pg${n}" width="14" height="14" patternUnits="userSpaceOnUse"><path d="M 14 0 L 0 0 0 14" fill="none" stroke="#d0d5ea" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#pg${n})"/></svg>`:'';
           return`
           <div class="doc-ej-block">
@@ -1505,6 +1517,7 @@ function buildDocHTML(){
               <span class="doc-ej-num">(${n})</span>
               <span class="doc-ej-expr">${ej.expr}${ej.graphHtml||''}</span>
             </div>
+            ${ej.tabla||''}
             ${svgGrid}
           </div>
         `;}).join('')}
@@ -1522,6 +1535,7 @@ function buildDocHTML(){
         <div class="sol-item">
           <div class="sol-item-num">Ejercicio (${ejNum++})</div>
           <div class="sol-item-expr">${ej.expr}${ej.graphHtml||''}</div>
+          ${ej.tablaKey||''}
           ${(ej.steps||[]).map((s,i)=>`<div class="sol-step"><span class="sol-sn">${i+1}.</span><span>${s}</span></div>`).join('')}
           <div class="sol-final">✓ ${ej.sol}</div>
         </div>`).join('')}
@@ -4336,50 +4350,100 @@ function opGenResto(lvl) {
 }
 
 function opGenRuffini(lvl) {
-  // División P(x)÷(x−a) con tabla de Ruffini
   const deg=rnd(2,4);
-  const a=rndNZ(-4,4);
-  // Polinomio COMPLETO (todos los grados) con enteros
   const coeffArr=Array.from({length:deg+1},()=>rndNZ(-6,6));
   const P=coeffArr.map((c,i)=>({n:c,d:1,exp:deg-i}));
 
-  // Aplicar algoritmo de Ruffini
-  const row=[coeffArr[0]];
-  for(let i=1;i<=deg;i++) row.push(row[row.length-1]*a + coeffArr[i]);
-  const restoVal=row[deg];
-  const qCoeffs=row.slice(0,deg);
-  const cociente=qCoeffs.map((c,i)=>({n:c,d:1,exp:deg-1-i})).filter(t=>t.n!==0);
+  let a, aN, aD, divStr, aDisplay;
+  if(lvl===2){
+    const b=rnd(2,4);
+    const c=rndNZ(-5,5);
+    aN=c; aD=b; a=c/b;
+    divStr=c<0?`${b}x + ${Math.abs(c)}`:`${b}x − ${c}`;
+    const sign=c<0?'-':'';
+    const absN=Math.abs(c);
+    aDisplay=`<span class="ruffini-a" style="font-size:0.78rem;line-height:1.1">`
+      +`${sign}<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle">`
+      +`<span style="border-bottom:1px solid currentColor;padding:0 2px">${absN}</span>`
+      +`<span style="padding:0 2px">${b}</span>`
+      +`</span></span>`;
+  } else {
+    const aInt=rndNZ(-4,4);
+    aN=aInt; aD=1; a=aInt;
+    divStr=aInt<0?`x + ${Math.abs(aInt)}`:`x − ${aInt}`;
+    aDisplay=`<span class="ruffini-a">${aInt}</span>`;
+  }
 
-  // Calcular los productos intermedios (a×cada valor del cociente)
-  const productos=qCoeffs.map(c=>c*a);
+  function gcd(x,y){x=Math.abs(x);y=Math.abs(y);while(y){[x,y]=[y,x%y];}return x||1;}
+  function fr(n,d){const g=gcd(Math.abs(n),Math.abs(d));const s=d<0?-1:1;return{n:s*n/g,d:s*d/g};}
+  function fadd(a,b){return fr(a.n*b.d+b.n*a.d,a.d*b.d);}
+  function fmul(a,b){return fr(a.n*b.n,a.d*b.d);}
+  function fstr(f){
+    if(f.d===1) return String(f.n);
+    const sign=f.n<0?'-':'';
+    return sign+'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.82rem">'
+      +'<span style="border-bottom:1px solid currentColor;padding:0 1px">'+Math.abs(f.n)+'</span>'
+      +'<span style="padding:0 1px">'+f.d+'</span>'
+      +'</span>';
+  }
+  const aFrac={n:aN,d:aD};
+  const rowF=[{n:coeffArr[0],d:1}];
+  for(let i=1;i<=deg;i++) rowF.push(fadd(fmul(rowF[rowF.length-1],aFrac),{n:coeffArr[i],d:1}));
+  const restoFrac=rowF[deg];
+  const qFracs=rowF.slice(0,deg);
+  const productosF=qFracs.map(f=>fmul(f,aFrac));
 
-  // Tabla de Ruffini — CSS grid con deg+2 columnas
-  const cols=deg+2;
-  const tabla=`<div class="ruffini-table" style="grid-template-columns:auto${' auto'.repeat(deg+1)}">
+  const cociente=qFracs.map((f,i)=>({n:f.n,d:f.d,exp:deg-1-i})).filter(t=>t.n!==0);
+  function cocStr(){
+    return cociente.map((t,i)=>{
+      const coef=t.d===1?Math.abs(t.n):(Math.abs(t.n)+'/'+t.d);
+      const sign=i===0?(t.n<0?'−':''):(t.n<0?' − ':' + ');
+      const expPart=t.exp===0?'':(t.exp===1?'x':('x<sup>'+t.exp+'</sup>'));
+      const needMul=t.exp>0&&t.d!==1;
+      return sign+coef+(needMul?'·':'')+expPart;
+    }).join('')||'0';
+  }
+
+  const gridStyle=`grid-template-columns:auto${' auto'.repeat(deg+1)}`;
+  const tabla=`<div class="ruffini-table" style="${gridStyle}">
     <div class="ruffini-header" style="display:contents">
-      <span class="ruffini-a">${a}</span>
+      <span class="ruffini-a"></span>
+      ${coeffArr.map(()=>`<span></span>`).join('')}
+    </div>
+    <div class="ruffini-mid" style="display:contents">
+      <span class="ruffini-a"></span>
+      <span></span>
+      ${productosF.map(()=>`<span></span>`).join('')}
+    </div>
+    <div class="ruffini-result" style="display:contents">
+      <span class="ruffini-a"></span>
+      ${rowF.map((_,i)=>`<span${i===deg?' class="ruffini-resto"':''}></span>`).join('')}
+    </div>
+  </div>`;
+
+  const tablaKey=`<div class="ruffini-table" style="${gridStyle}">
+    <div class="ruffini-header" style="display:contents">
+      ${aDisplay}
       ${coeffArr.map(c=>`<span>${c}</span>`).join('')}
     </div>
     <div class="ruffini-mid" style="display:contents">
       <span class="ruffini-a"></span>
       <span></span>
-      ${productos.map(p=>`<span>${p}</span>`).join('')}
+      ${productosF.map(f=>`<span>${fstr(f)}</span>`).join('')}
     </div>
     <div class="ruffini-result" style="display:contents">
       <span class="ruffini-a"></span>
-      ${row.map((v,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${v}</span>`).join('')}
+      ${rowF.map((f,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${fstr(f)}</span>`).join('')}
     </div>
   </div>`;
 
-  const aStr=a<0?`(${a})`:String(a);
-  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
-  const cocStr=opPolyStr(cociente)||'0';
-  const sol=restoVal===0
-    ?`Cociente: ${cocStr}`
-    :`Cociente: ${cocStr} — Resto: ${restoVal}`;
+  const restoStr=fstr(restoFrac);
+  const sol=restoFrac.n===0
+    ?`Cociente: ${cocStr()}`
+    :`Cociente: ${cocStr()} — Resto: ${restoStr}`;
   return{
     expr:`Dividí usando Ruffini: <strong>${opPolyStr(P)}</strong> ÷ <strong>(${divStr})</strong>`,
-    tabla, sol, lvl
+    tabla, tablaKey, sol, lvl
   };
 }
 

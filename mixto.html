@@ -192,6 +192,16 @@ main { max-width: 860px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .work-space-sm  { height: 84px;  }   /* 3 renglones */
 .work-space-4   { height: 112px; }   /* 4 renglones */
 .work-space-md  { height: 140px; }   /* 5 renglones */
+/* Tabla Ruffini */
+.ruffini-table { display: inline-grid; margin-top: 0.7rem; border-left: 3px solid var(--ink); font-size: 0.95rem; }
+.ruffini-table > div { display: grid; }
+.ruffini-header, .ruffini-mid, .ruffini-result { display: contents; }
+.ruffini-table span { padding: 1.4rem 0.8rem; text-align: center; min-width: 2.8rem; }
+.ruffini-a { font-weight: 800; color: var(--accent); border-right: 1px solid var(--border); }
+.ruffini-mid span { color: var(--muted); font-size: 0.88rem; }
+.ruffini-result span { border-top: 2px solid var(--ink); font-weight: 700; }
+.ruffini-resto { color: #e03; }
+
 .work-space-lg  { height: 196px; }   /* 7 renglones */
 .work-space-8   { height: 224px; }   /* 8 renglones */
 .work-space-xl  { height: 280px; }   /* 10 renglones */
@@ -1945,11 +1955,12 @@ function generateOpPolyMix() {
     });
   });
   if(ejercicios.length===0){alert('Agregá al menos un ejercicio con +');return;}
+  const OP_LVL_LABELS={1:'Nivel 1 — Divisor x − a',2:'Nivel 2 — Divisor bx − c'};
   const fecha = new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
   let lastOp=null;
   let ejHTML='<div class="ejercicios-list">';
   ejercicios.forEach(e=>{
-    if(e._op!==lastOp){lastOp=e._op;ejHTML+='<div class="level-header">'+OP_OP_NAMES[e._op]+' — '+OP_LVL_LABELS[e.lvl]+'</div>';}
+    if(e._op!==lastOp){lastOp=e._op;ejHTML+='<div class="level-header">'+OP_OP_NAMES[e._op]+' — '+(e._op==='ruffini'?OP_LVL_LABELS[e.lvl]:e.lvl===1?'Enteros':'Fraccionarios')+'</div>';}
     ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span><div class="ej-content"><div class="ej-question">'+e.expr+'</div><div class="work-space work-space-md"></div></div></div>';
   });
   ejHTML+='</div>';
@@ -2235,50 +2246,100 @@ function opGenResto(lvl) {
 }
 
 function opGenRuffini(lvl) {
-  // División P(x)÷(x−a) con tabla de Ruffini
   const deg=rnd(2,4);
-  const a=rndNZ(-4,4);
-  // Polinomio COMPLETO (todos los grados) con enteros
   const coeffArr=Array.from({length:deg+1},()=>rndNZ(-6,6));
   const P=coeffArr.map((c,i)=>({n:c,d:1,exp:deg-i}));
 
-  // Aplicar algoritmo de Ruffini
-  const row=[coeffArr[0]];
-  for(let i=1;i<=deg;i++) row.push(row[row.length-1]*a + coeffArr[i]);
-  const restoVal=row[deg];
-  const qCoeffs=row.slice(0,deg);
-  const cociente=qCoeffs.map((c,i)=>({n:c,d:1,exp:deg-1-i})).filter(t=>t.n!==0);
+  let a, aN, aD, divStr, aDisplay;
+  if(lvl===2){
+    const b=rnd(2,4);
+    const c=rndNZ(-5,5);
+    aN=c; aD=b; a=c/b;
+    divStr=c<0?`${b}x + ${Math.abs(c)}`:`${b}x − ${c}`;
+    const sign=c<0?'-':'';
+    const absN=Math.abs(c);
+    aDisplay=`<span class="ruffini-a" style="font-size:0.78rem;line-height:1.1">`
+      +`${sign}<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle">`
+      +`<span style="border-bottom:1px solid currentColor;padding:0 2px">${absN}</span>`
+      +`<span style="padding:0 2px">${b}</span>`
+      +`</span></span>`;
+  } else {
+    const aInt=rndNZ(-4,4);
+    aN=aInt; aD=1; a=aInt;
+    divStr=aInt<0?`x + ${Math.abs(aInt)}`:`x − ${aInt}`;
+    aDisplay=`<span class="ruffini-a">${aInt}</span>`;
+  }
 
-  // Calcular los productos intermedios (a×cada valor del cociente)
-  const productos=qCoeffs.map(c=>c*a);
+  function gcd(x,y){x=Math.abs(x);y=Math.abs(y);while(y){[x,y]=[y,x%y];}return x||1;}
+  function fr(n,d){const g=gcd(Math.abs(n),Math.abs(d));const s=d<0?-1:1;return{n:s*n/g,d:s*d/g};}
+  function fadd(a,b){return fr(a.n*b.d+b.n*a.d,a.d*b.d);}
+  function fmul(a,b){return fr(a.n*b.n,a.d*b.d);}
+  function fstr(f){
+    if(f.d===1) return String(f.n);
+    const sign=f.n<0?'-':'';
+    return sign+'<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.82rem">'
+      +'<span style="border-bottom:1px solid currentColor;padding:0 1px">'+Math.abs(f.n)+'</span>'
+      +'<span style="padding:0 1px">'+f.d+'</span>'
+      +'</span>';
+  }
+  const aFrac={n:aN,d:aD};
+  const rowF=[{n:coeffArr[0],d:1}];
+  for(let i=1;i<=deg;i++) rowF.push(fadd(fmul(rowF[rowF.length-1],aFrac),{n:coeffArr[i],d:1}));
+  const restoFrac=rowF[deg];
+  const qFracs=rowF.slice(0,deg);
+  const productosF=qFracs.map(f=>fmul(f,aFrac));
 
-  // Tabla de Ruffini — CSS grid con deg+2 columnas
-  const cols=deg+2;
-  const tabla=`<div class="ruffini-table" style="grid-template-columns:auto${' auto'.repeat(deg+1)}">
+  const cociente=qFracs.map((f,i)=>({n:f.n,d:f.d,exp:deg-1-i})).filter(t=>t.n!==0);
+  function cocStr(){
+    return cociente.map((t,i)=>{
+      const coef=t.d===1?Math.abs(t.n):(Math.abs(t.n)+'/'+t.d);
+      const sign=i===0?(t.n<0?'−':''):(t.n<0?' − ':' + ');
+      const expPart=t.exp===0?'':(t.exp===1?'x':('x<sup>'+t.exp+'</sup>'));
+      const needMul=t.exp>0&&t.d!==1;
+      return sign+coef+(needMul?'·':'')+expPart;
+    }).join('')||'0';
+  }
+
+  const gridStyle=`grid-template-columns:auto${' auto'.repeat(deg+1)}`;
+  const tabla=`<div class="ruffini-table" style="${gridStyle}">
     <div class="ruffini-header" style="display:contents">
-      <span class="ruffini-a">${a}</span>
+      <span class="ruffini-a"></span>
+      ${coeffArr.map(()=>`<span></span>`).join('')}
+    </div>
+    <div class="ruffini-mid" style="display:contents">
+      <span class="ruffini-a"></span>
+      <span></span>
+      ${productosF.map(()=>`<span></span>`).join('')}
+    </div>
+    <div class="ruffini-result" style="display:contents">
+      <span class="ruffini-a"></span>
+      ${rowF.map((_,i)=>`<span${i===deg?' class="ruffini-resto"':''}></span>`).join('')}
+    </div>
+  </div>`;
+
+  const tablaKey=`<div class="ruffini-table" style="${gridStyle}">
+    <div class="ruffini-header" style="display:contents">
+      ${aDisplay}
       ${coeffArr.map(c=>`<span>${c}</span>`).join('')}
     </div>
     <div class="ruffini-mid" style="display:contents">
       <span class="ruffini-a"></span>
       <span></span>
-      ${productos.map(p=>`<span>${p}</span>`).join('')}
+      ${productosF.map(f=>`<span>${fstr(f)}</span>`).join('')}
     </div>
     <div class="ruffini-result" style="display:contents">
       <span class="ruffini-a"></span>
-      ${row.map((v,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${v}</span>`).join('')}
+      ${rowF.map((f,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${fstr(f)}</span>`).join('')}
     </div>
   </div>`;
 
-  const aStr=a<0?`(${a})`:String(a);
-  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
-  const cocStr=opPolyStr(cociente)||'0';
-  const sol=restoVal===0
-    ?`Cociente: ${cocStr}`
-    :`Cociente: ${cocStr} — Resto: ${restoVal}`;
+  const restoStr=fstr(restoFrac);
+  const sol=restoFrac.n===0
+    ?`Cociente: ${cocStr()}`
+    :`Cociente: ${cocStr()} — Resto: ${restoStr}`;
   return{
     expr:`Dividí usando Ruffini: <strong>${opPolyStr(P)}</strong> ÷ <strong>(${divStr})</strong>`,
-    tabla, sol, lvl
+    tabla, tablaKey, sol, lvl
   };
 }
 
@@ -3200,6 +3261,8 @@ function renderMixto(ejercicios) {
       if (/Combinadas (s\/|c\/)Agrup/.test(t)) return 'work-space-xl';
       return null; // sr, mu, dv, po, ra → sin espacio
     }
+    // Ruffini: sin cuadrícula, la tabla ya es el espacio de trabajo
+    if (/Ruffini/.test(t)) return null;
     // Radicales (algebra mixto): work-space-8
     if (/^Radicales/.test(t)) return 'work-space-8';
     // Default para el resto
@@ -3211,12 +3274,14 @@ function renderMixto(ejercicios) {
     const graphInQ = e.showGraphInQ && e.graph ? `<div class="ej-graph">${e.graph}</div>` : '';
     const ws = mixWS(e.tema);
     const wsDiv = ws ? `<div class="work-space ${ws}"></div>` : '';
+    const tablaDiv = e.tabla ? e.tabla : '';
     ejHTML += `<div class="ejercicio-item">
       <span class="ej-num">(${e.id})</span>
       <div class="ej-content">
         <span class="ej-tema-tag">${e.tema}</span>
         <div class="ej-question">${e.expr||e.question||''}</div>
         ${graphInQ}
+        ${tablaDiv}
         ${wsDiv}
       </div>
     </div>`;
@@ -3226,9 +3291,10 @@ function renderMixto(ejercicios) {
   let solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
   ejercicios.forEach(e => {
     const graphInSol = (!e.showGraphInQ && e.graph) ? `<div class="ej-graph" style="margin-top:0.3rem">${e.graph}</div>` : '';
+    const tablaKeySol = e.tablaKey ? e.tablaKey : '';
     solHTML += `<div class="sol-item">
       <span class="sol-num">${e.id}.</span>
-      <div class="sol-val">${e.sol||''}${graphInSol}</div>
+      <div class="sol-val">${tablaKeySol}${e.sol||''}${graphInSol}</div>
     </div>`;
   });
   solHTML += '</div>';
