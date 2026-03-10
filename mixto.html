@@ -2728,23 +2728,32 @@ function radGenMultIndices(){
 
 // ── 10. DIVISIÓN DISTINTOS ÍNDICES ────────────────────────────
 function radGenDivIndices(){
-  var pairs=[[2,3],[2,4],[3,4]];
-  var p=pairs[rnd(0,2)];var idx1=p[0],idx2=p[1];
+  var TDISP=[
+    [2,4, 8,4,2],[2,4,12,9,2],[2,4,32,4,4],[2,4,50,4,5],
+    [2,4,18,4,3],[2,4,27,9,3],[2,4,48,9,4],[2,4,75,9,5],
+    [2,3,16,8,2],[2,3,36,8,3],[2,3,64,8,4],[2,3,100,8,5],
+    [2,4, 8,4,2],[2,4,18,4,3],[2,4,32,4,4],
+  ];
+  var row=TDISP[rnd(0,TDISP.length-1)];
+  var idx1=row[0],idx2=row[1],aC=row[2],bC=row[3],solC=row[4];
   var mcm=radLcm(idx1,idx2);
-  var v=INTRO_VARS[rnd(0,3)];
-  var a=rnd(2,6),ea=rnd(1,3),b=rnd(2,6),eb=rnd(0,2);
-  var rA=radStr(idx1,a+radLit(v,ea));
-  var rB=radStr(idx2,b+radLit(v,eb));
-  var expr='<span class="frac"><span class="num">'+rA+'</span><span class="den">'+rB+'</span></span> =';
   var p1=mcm/idx1,p2=mcm/idx2;
-  var nA=Math.pow(a,p1),eA=ea*p1,nB=Math.pow(b,p2),eB=eb*p2;
+  var v=INTRO_VARS[rnd(0,3)];
+  var ea=0,eb=0,solE=0;
+  if(rnd(0,2)===0){solE=1;eb=0;ea=mcm/p1;}
+  var rA=radStr(idx1,aC+radLit(v,ea));
+  var rB=radStr(idx2,bC+radLit(v,eb));
+  var expr='<span class="frac"><span class="num">'+rA+'</span><span class="den">'+rB+'</span></span> =';
+  var nA=Math.pow(aC,p1),eA=ea*p1,nB=Math.pow(bC,p2),eB=eb*p2;
   var rs=radSimp(nA,nB);var rn=rs[0],rd=rs[1];
   var expDif=eA-eB;
   var rNum=(rn===1?'':rn)+radLit(v,Math.max(expDif,0));
   var rDen=(rd===1?'':rd)+radLit(v,Math.max(-expDif,0));
   var paso=rd===1&&expDif>=0?radStr(mcm,rNum||'1'):
     '<span class="frac"><span class="num">'+radStr(mcm,rNum||'1')+'</span><span class="den">'+radStr(mcm,rDen||'1')+'</span></span>';
-  var fullPaso=toSup(mcm)+'√<span style="text-decoration:overline">'+nA+radLit(v,eA)+'</span> / '+toSup(mcm)+'√<span style="text-decoration:overline">'+nB+radLit(v,eB)+'</span> = '+paso;
+  var solLit=radLit(v,solE);
+  var solStr=(solC===1?'':String(solC))+solLit;
+  var fullPaso=toSup(mcm)+'√<span style="text-decoration:overline">'+nA+radLit(v,eA)+'</span> / '+toSup(mcm)+'√<span style="text-decoration:overline">'+nB+radLit(v,eB)+'</span> = '+paso+' = '+solStr;
   return{expr:expr,sol:fullPaso,consigna:'mcm('+idx1+','+idx2+') = '+mcm+' — Convertí al mismo índice y dividí'};
 }
 
