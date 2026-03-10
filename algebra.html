@@ -5659,7 +5659,7 @@ function pnGenCB2(tipo){
   const bCoef=pnRandCoef(tipo,true);
   let bLit='', bExpVal=0;
   if(bHasVar){const v2=INTRO_VARS.find(v=>v!==v1)||'y';bExpVal=rnd(1,2);bLit=bExpVal===1?v2:`${v2}${toSup(bExpVal)}`;}
-  const bDisp=pnCoefLit(bCoef.n,bCoef.d)+bLit;
+  const bDisp=bLit===''?pnF(bCoef.n,bCoef.d):pnCoefLit(bCoef.n,bCoef.d)+bLit;
 
   const expr=`(${aDisp} ${signStr} ${bDisp})${toSup(2)} =`;
 
@@ -5724,7 +5724,7 @@ function pnGenSD(tipo){
   const bHasVar=rnd(0,1)===1;
   let bLit='', bExpVal=0;
   if(bHasVar){const v2=INTRO_VARS.find(v=>v!==v1)||'y';bExpVal=rnd(1,2);bLit=bExpVal===1?v2:`${v2}${toSup(bExpVal)}`;}
-  const bDisp=pnCoefLit(bCoef.n,bCoef.d)+bLit;
+  const bDisp=bLit===''?pnF(bCoef.n,bCoef.d):pnCoefLit(bCoef.n,bCoef.d)+bLit;
   const expr=`(${aDisp} + ${bDisp})(${aDisp} − ${bDisp}) =`;
 
   const[a2n,a2d]=pnMul(aCoef.n,aCoef.d,aCoef.n,aCoef.d);
