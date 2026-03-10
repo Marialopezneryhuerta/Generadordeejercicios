@@ -2454,6 +2454,7 @@ function radSimp(n,d){if(!d)return[n,1];var g=radGcd(Math.abs(n),Math.abs(d));va
 function radSym(idx){return idx===2?'√':idx===3?'∛':idx===4?'∜':toSup(idx)+'√';}
 function radStr(idx,inner){return radSym(idx)+'<span style="text-decoration:overline">'+inner+'</span>';}
 function radFrac(n,d){var s=radSimp(n,d);var sn=s[0],sd=s[1];if(sd===1)return String(sn);var neg=sn<0;return(neg?'−':'')+'<span class="frac"><span class="num">'+Math.abs(sn)+'</span><span class="den">'+sd+'</span></span>';}
+function radFracRaw(n,d){var neg=n<0;return(neg?'−':'')+'<span class="frac"><span class="num">'+Math.abs(n)+'</span><span class="den">'+d+'</span></span>';}
 function radLit(v,e){return e===0?'':e===1?v:v+toSup(e);}
 // coef 1 TACITO: si hasLit y |n|=1 → '' o '−'
 function radC(n,hasLit){if(Math.abs(n)===1&&hasLit)return n<0?'−':'';return String(n);}
@@ -2492,7 +2493,6 @@ function radGenExtraccion(lvl){
   }
   var varExps=vars.map(function(){var e;do{e=rnd(1,5);}while(e%idx===0);return e+Math.floor(rnd(0,2))*idx;});
   var litRad=vars.map(function(v,i){return radLit(v,varExps[i]);}).join('');
-  var expr=radStr(idx,coefRad+litRad)+' =';
   var fObj=radFactor(coefRad,idx);
   var fc=fObj.factor,rc=fObj.resto;
   var vFuera=vars.map(function(v,i){return Math.floor(varExps[i]/idx);});
@@ -2501,8 +2501,44 @@ function radGenExtraccion(lvl){
   var litDentro=vars.map(function(v,i){return radLit(v,vDentro[i]);}).join('');
   var fDisp=radC(fc,litFuera!=='');
   var rDentro=(rc===1&&litDentro!=='')?litDentro:(rc===1&&litDentro===''?'1':rc+litDentro);
-  var sol=fDisp+litFuera+radStr(idx,rDentro);
-  return{expr:expr,sol:sol};
+  if(lvl===1){
+    var expr=radStr(idx,coefRad+litRad)+' =';
+    var sol=fDisp+litFuera+radStr(idx,rDentro);
+    return{expr:expr,sol:sol};
+  } else {
+    // Nivel 2: fracción IRREDUCIBLE delante del radical, simplificable SOLO al extraer fc
+    // Estrategia: elegir den q, buscar un factor primo p_fc de fc que divide a q,
+    // luego construir num = k tal que gcd(k, q) = 1 (fracción ya irreducible sola)
+    // pero fc * k / q sí simplifica porque gcd(fc, q) > 1
+    var denOpts=[2,3,4,6];
+    var denFrac,numFrac,attempts=0;
+    do {
+      denFrac=denOpts[rnd(0,denOpts.length-1)];
+      var gFcDen=radGcd(fc,denFrac);
+      if(gFcDen===1){attempts++;continue;}
+      var kCandidates=[];
+      for(var ki=1;ki<=12;ki++){
+        if(radGcd(ki,denFrac)===1 && ki%denFrac!==0) kCandidates.push(ki);
+      }
+      if(kCandidates.length===0){attempts++;continue;}
+      numFrac=kCandidates[rnd(0,kCandidates.length-1)];
+      break;
+    } while(attempts<20);
+    if(attempts>=20){numFrac=1;denFrac=2;}
+    var solNum=numFrac*fc,solDen=denFrac;
+    var solS=radSimp(solNum,solDen);
+    var sn=solS[0],sd=solS[1];
+    var fracDisp=radFrac(numFrac,denFrac);
+    var expr=fracDisp+' · '+radStr(idx,coefRad+litRad)+' =';
+    var sol;
+    if(rDentro==='1'&&litFuera===''){
+      sol=(sd===1?String(sn):radFrac(sn,sd));
+    } else {
+      sol=(sd===1?(sn===1&&(litFuera!==''||rDentro!=='1')?'':String(sn)):radFrac(sn,sd))
+          +litFuera+(rDentro!=='1'||litFuera===''?radStr(idx,rDentro):'');
+    }
+    return{expr:expr,sol:sol,consigna:'Extraé factores del radical y simplificá la fracción'};
+  }
 }
 
 // ── 3. INTRODUCCIÓN — introducir factores dentro del radical ──

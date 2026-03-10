@@ -5919,6 +5919,7 @@ function radSimp(n,d){if(!d)return[n,1];var g=radGcd(Math.abs(n),Math.abs(d));va
 function radSym(idx){return idx===2?'√':idx===3?'∛':idx===4?'∜':toSup(idx)+'√';}
 function radStr(idx,inner){return radSym(idx)+'<span style="text-decoration:overline">'+inner+'</span>';}
 function radFrac(n,d){var s=radSimp(n,d);var sn=s[0],sd=s[1];if(sd===1)return String(sn);var neg=sn<0;return(neg?'−':'')+'<span class="frac"><span class="num">'+Math.abs(sn)+'</span><span class="den">'+sd+'</span></span>';}
+function radFracRaw(n,d){var neg=n<0;return(neg?'−':'')+'<span class="frac"><span class="num">'+Math.abs(n)+'</span><span class="den">'+d+'</span></span>';}
 function radLit(v,e){return e===0?'':e===1?v:v+toSup(e);}
 // coef 1 TACITO: si hasLit y |n|=1 → '' o '−'
 function radC(n,hasLit){if(Math.abs(n)===1&&hasLit)return n<0?'−':'';return String(n);}
@@ -5974,26 +5975,36 @@ function radGenExtraccion(lvl){
     var sol=fDisp+litFuera+radStr(idx,rDentro);
     return{expr:expr,sol:sol};
   } else {
-    // Nivel 2: se pone fracción delante del radical
-    // Elegir fracción p/q tal que p y fc tengan factor común → se simplifica
-    // fc es el coeficiente que sale del radical
-    // Elegir denominador q ∈ {2,3,4} y numerador p múltiplo de algún factor de fc
-    var denFrac=[2,3,4][rnd(0,2)];
-    // p debe ser múltiplo de gcd con fc para que haya simplificación visible
-    var g=radGcd(fc,denFrac); // buscamos que fc y q tengan factor común
-    // Si no hay factor común, elegimos p tal que p/q · fc → fracción simplificable
-    // Construir: numerador = k * (denFrac/g) para algún k, resultado = k*(fc/g)·√...
-    var kNum=rnd(1,3);
-    var numFrac=kNum*(denFrac/radGcd(fc,denFrac));
-    // simplificar la fracción numFrac/denFrac
-    var fracS=radSimp(numFrac,denFrac);
-    var fn=fracS[0],fd=fracS[1];
-    // coeficiente resultado: fn/fd * fc → (fn*fc)/fd, simplificar
-    var solNum=fn*fc,solDen=fd;
+    // Nivel 2: fracción IRREDUCIBLE delante del radical, simplificable SOLO al extraer fc
+    // Estrategia: elegir den q, buscar un factor primo p_fc de fc que divide a q,
+    // luego construir num = k tal que gcd(k, q) = 1 (fracción ya irreducible sola)
+    // pero fc * k / q sí simplifica porque gcd(fc, q) > 1
+    var denOpts=[2,3,4,6];
+    var denFrac,numFrac,attempts=0;
+    do {
+      denFrac=denOpts[rnd(0,denOpts.length-1)];
+      // Para que fc/denFrac simplifique, necesitamos gcd(fc, denFrac) > 1
+      var gFcDen=radGcd(fc,denFrac);
+      if(gFcDen===1){attempts++;continue;} // este den no sirve, probar otro
+      // Construir numerador k tal que gcd(k, denFrac) = 1 (fracción irreducible por si sola)
+      var kCandidates=[];
+      for(var ki=1;ki<=12;ki++){
+        if(radGcd(ki,denFrac)===1 && ki%denFrac!==0) kCandidates.push(ki);
+      }
+      if(kCandidates.length===0){attempts++;continue;}
+      numFrac=kCandidates[rnd(0,kCandidates.length-1)];
+      break;
+    } while(attempts<20);
+    // Fallback seguro si no se encontró combinación
+    if(attempts>=20){numFrac=1;denFrac=2;}
+    // La fracción numFrac/denFrac es irreducible (gcd=1) por sí sola
+    // pero numFrac*fc/denFrac sí simplifica porque gcd(fc,denFrac)>1
+    // Calcular solución: (numFrac/denFrac) * fc → simplificar
+    var solNum=numFrac*fc,solDen=denFrac;
     var solS=radSimp(solNum,solDen);
     var sn=solS[0],sd=solS[1];
-    // Construir expresión: fracción · radical
-    var fracDisp=fd===1?String(fn):radFrac(fn,fd);
+    // Construir expresión: fracción irreducible visible (no se puede simplificar antes)
+    var fracDisp=radFrac(numFrac,denFrac);
     var expr=fracDisp+' · '+radStr(idx,coefRad+litRad)+' =';
     // Solución: fracción simplificada · coef · litFuera · √(resto)
     var solCoef=sd===1?(sn===1&&litFuera!==''?'':String(sn)):radFrac(sn,sd);
