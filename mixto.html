@@ -1810,13 +1810,8 @@ function omGenDiv(lvl) {
 
   const [rn,rd] = omDiv(cA.n, cA.d, cB.n, cB.d);
   let expr;
-  if (lvl === 1) {
-    // Nivel 1: formato con símbolo ÷
-    expr = `${cA.disp}${litA} ÷ ${cB.disp}${litB} =`;
-  } else {
-    // Nivel 2: formato fracción
-    expr = `<span class="frac" style="font-size:1em"><span class="num">${cA.disp}${litA}</span><span class="den">${cB.disp}${litB}</span></span> =`;
-  }
+  // Ambos niveles: símbolo ÷
+  expr = `${cA.disp}${litA} ÷ ${cB.disp}${litB} =`;
   return { expr, sol: omResSol(rn,rd,litR), lvl };
 }
 
