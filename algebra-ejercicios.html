@@ -14,15 +14,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- SEO PRIMARY -->
-  <title>Ejercicios de Funciones Matemáticas para Secundaria | Generador Gratis</title>
-  <meta name="description" content="Generá ejercicios de funciones para tus clases: dominio, imagen, representación analítica, gráficas, características, inecuaciones lineales y cuadráticas. Ejercitarios listos para imprimir con soluciones. Gratis para profesores.">
-  <meta name="keywords" content="ejercicios funciones matemáticas secundaria, ejercitarios funciones Paraguay, generador ejercicios funciones, dominio imagen función, inecuaciones lineales ejercicios, fichas funciones imprimir">
-  <link rel="canonical" href="https://generadordeejercitarios.com/funciones">
+  <title>Ejercicios de Álgebra para Secundaria | Generador Gratis</title>
+  <meta name="description" content="Generá ejercicios de álgebra para tus clases: ecuaciones lineales, exponenciales, logarítmicas, expresiones algebraicas, monomios, polinomios, productos notables, radicales, sucesiones y más. Con soluciones. Gratis para profesores.">
+  <meta name="keywords" content="ejercicios álgebra secundaria, ejercitarios algebra Paraguay, generador ejercicios algebra, ecuaciones lineales ejercicios, productos notables ejercicios, fichas álgebra imprimir profesores">
+  <link rel="canonical" href="https://generadordeejercitarios.com/algebra">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Ejercicios de Funciones Matemáticas — Generador Gratis para Profesores">
-  <meta property="og:description" content="Creá fichas de funciones en segundos: dominio, imagen, gráficas, características, inecuaciones y más. Con soluciones incluidas.">
-  <meta property="og:url" content="https://generadordeejercitarios.com/funciones">
+  <meta property="og:title" content="Ejercicios de Álgebra para Secundaria — Generador Gratis para Profesores">
+  <meta property="og:description" content="Creá fichas de álgebra en segundos: ecuaciones, expresiones algebraicas, polinomios, productos notables, radicales y más. Con soluciones incluidas.">
+  <meta property="og:url" content="https://generadordeejercitarios.com/algebra">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_PY">
   <meta property="og:site_name" content="Generador de Ejercitarios">
@@ -32,9 +32,9 @@
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": "Generador de Ejercicios de Funciones Matemáticas",
-    "url": "https://generadordeejercitarios.com/funciones",
-    "description": "Herramienta gratuita para profesores de matemática. Genera ejercitarios de funciones con soluciones incluidas, listos para imprimir.",
+    "name": "Generador de Ejercicios de Álgebra",
+    "url": "https://generadordeejercitarios.com/algebra",
+    "description": "Herramienta gratuita para profesores de matemática. Genera ejercitarios de álgebra con soluciones incluidas, listos para imprimir.",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Web",
     "audience": {
@@ -61,7 +61,7 @@
       --muted: #8b92b1;
       --border: #dde2f0;
       --accent: #4f6ef7;
-      --purple: #7c3aed;
+      --blue: #4f6ef7;
     }
 
     body {
@@ -122,7 +122,7 @@
     .btn-suscribite:hover { background: #3a58e0; transform: translateY(-1px); }
 
     .hero {
-      background: linear-gradient(135deg, #7c3aed 0%, #4f6ef7 100%);
+      background: linear-gradient(135deg, #4f6ef7 0%, #3451c7 100%);
       color: white;
       padding: 3rem 2rem 2.5rem;
       text-align: center;
@@ -226,9 +226,9 @@
       margin-top: 1rem;
     }
     .intro-feat {
-      background: #f5f3ff;
-      border: 1px solid #ddd6fe;
-      color: #6d28d9;
+      background: #eef1ff;
+      border: 1px solid #c7d2fe;
+      color: #3451c7;
       font-size: 0.78rem;
       font-weight: 700;
       font-family: 'Nunito', sans-serif;
@@ -237,8 +237,8 @@
     }
 
     .cta-card {
-      background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-      border: 2px solid #ddd6fe;
+      background: linear-gradient(135deg, #eef1ff 0%, #e0e7ff 100%);
+      border: 2px solid #c7d2fe;
       border-radius: 20px;
       padding: 2rem;
       text-align: center;
@@ -258,7 +258,7 @@
     }
     .btn-cta {
       display: inline-block;
-      background: var(--purple);
+      background: var(--blue);
       color: white;
       text-decoration: none;
       font-family: 'Nunito', sans-serif;
@@ -266,13 +266,13 @@
       font-size: 1.05rem;
       padding: 0.9rem 2.2rem;
       border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(124,58,237,0.35);
+      box-shadow: 0 6px 20px rgba(79,110,247,0.35);
       transition: transform 0.15s, box-shadow 0.15s;
       letter-spacing: -0.01em;
     }
     .btn-cta:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 28px rgba(124,58,237,0.45);
+      box-shadow: 0 10px 28px rgba(79,110,247,0.45);
     }
     .cta-note {
       margin-top: 0.9rem;
@@ -307,9 +307,19 @@
       gap: 0.5rem;
     }
     .topic-tag {
-      background: #f5f3ff;
-      border: 1px solid #ddd6fe;
-      color: #6d28d9;
+      background: #eef1ff;
+      border: 1px solid #c7d2fe;
+      color: #3451c7;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
+      padding: 0.3rem 0.8rem;
+      border-radius: 10px;
+    }
+    .topic-tag-soon {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: var(--muted);
       font-size: 0.78rem;
       font-weight: 700;
       font-family: 'Nunito', sans-serif;
@@ -444,35 +454,35 @@
 
 <div class="hero">
   <div class="hero-breadcrumb">
-    <a href="index.html">Inicio</a> › Cálculo › Funciones
+    <a href="index.html">Inicio</a> › Álgebra
   </div>
-  <h1>📉 Ejercicios de Funciones</h1>
-  <p class="hero-sub">Generá fichas de funciones matemáticas para tus alumnos de secundaria. Dominio, imagen, gráficas, características, inecuaciones y más — todo configurable y listo para imprimir.</p>
+  <h1>✏️ Ejercicios de Álgebra</h1>
+  <p class="hero-sub">Generá fichas completas de álgebra para tus alumnos de secundaria. Ecuaciones, expresiones algebraicas, polinomios, radicales, sucesiones y más — todo en un solo generador.</p>
   <div class="hero-tags">
-    <span class="hero-tag">Dominio e Imagen</span>
-    <span class="hero-tag">Representación Analítica</span>
-    <span class="hero-tag">Gráficas</span>
-    <span class="hero-tag">Características</span>
-    <span class="hero-tag">Inecuaciones Lineales</span>
-    <span class="hero-tag">Inecuaciones Cuadráticas</span>
-    <span class="hero-tag">Intervalos</span>
-    <span class="hero-tag">Notación de Conjuntos</span>
+    <span class="hero-tag">Ec. Lineales</span>
+    <span class="hero-tag">Ec. Exponenciales</span>
+    <span class="hero-tag">Ec. Logarítmicas</span>
+    <span class="hero-tag">Monomios y Polinomios</span>
+    <span class="hero-tag">Productos Notables</span>
+    <span class="hero-tag">Radicales</span>
+    <span class="hero-tag">Sucesiones</span>
+    <span class="hero-tag">Progresión Aritmética</span>
   </div>
 </div>
 
 <div class="main-wrap">
 
   <div class="intro-card">
-    <h2>Ejercitarios de Funciones para el aula</h2>
+    <h2>El generador de Álgebra más completo para el aula</h2>
     <p>
-      Las funciones son el eje central del pensamiento matemático en secundaria. Trabajar dominio, imagen, representación analítica y gráfica, junto con el análisis de características, prepara a los estudiantes para el cálculo y la matemática superior.
+      El módulo de Álgebra cubre todos los ejes del programa de secundaria: desde las primeras nociones de lenguaje algebraico hasta ecuaciones exponenciales y logarítmicas, pasando por operaciones con monomios y polinomios, productos notables, radicales algebraicos y sucesiones.
     </p>
     <p>
-      Este generador cubre el módulo completo de funciones: desde conceptos básicos hasta inecuaciones lineales y cuadráticas, intervalos en la recta numérica y notación de conjuntos. Todos los ejercicios se generan con valores aleatorios y las soluciones se incluyen automáticamente.
+      Cada ejercitario se genera con valores aleatorios para que ninguna ficha sea igual a la anterior. Las soluciones se calculan automáticamente y podés descargarlas en hoja aparte para usar como clave de corrección.
     </p>
     <div class="intro-features">
-      <span class="intro-feat">✓ 8 tipos de ejercicios</span>
-      <span class="intro-feat">✓ Inecuaciones en 3 niveles</span>
+      <span class="intro-feat">✓ 13 temas disponibles</span>
+      <span class="intro-feat">✓ Múltiples niveles de dificultad</span>
       <span class="intro-feat">✓ Soluciones automáticas</span>
       <span class="intro-feat">✓ PDF listo para imprimir</span>
       <span class="intro-feat">✓ 100% gratuito</span>
@@ -481,9 +491,9 @@
 
   <div class="cta-card">
     <h2>⚡ Generá tu ejercitario ahora</h2>
-    <p>Hacé clic para abrir el generador completo de Funciones</p>
-    <a class="btn-cta" href="calculo.html">
-      Abrir generador de Funciones →
+    <p>Hacé clic para abrir el generador completo de Álgebra</p>
+    <a class="btn-cta" href="algebra.html">
+      Abrir generador de Álgebra →
     </a>
     <p class="cta-note">Sin registrarse · Sin instalar nada · Gratis para siempre</p>
   </div>
@@ -492,58 +502,52 @@
     <h2>📚 Temas incluidos en el generador</h2>
 
     <div class="topic-group">
-      <div class="topic-group-title">📐 Funciones — Concepto y dominio</div>
+      <div class="topic-group-title">📏 Ecuaciones</div>
       <div class="topic-group-list">
-        <span class="topic-tag">Dominio e imagen</span>
-        <span class="topic-tag">Evaluación de funciones</span>
-        <span class="topic-tag">Función definida a trozos</span>
+        <span class="topic-tag">Ecuaciones Lineales</span>
+        <span class="topic-tag">Ecuaciones Exponenciales</span>
+        <span class="topic-tag">Ecuaciones Logarítmicas</span>
+        <span class="topic-tag-soon">Sistemas (próximamente)</span>
       </div>
     </div>
 
     <div class="topic-group">
-      <div class="topic-group-title">📊 Representación Analítica</div>
+      <div class="topic-group-title">🌱 Expresiones Algebraicas</div>
       <div class="topic-group-list">
-        <span class="topic-tag">Expresión analítica a partir de datos</span>
-        <span class="topic-tag">Funciones lineales y cuadráticas</span>
-        <span class="topic-tag">Funciones racionales</span>
+        <span class="topic-tag">Introducción al lenguaje algebraico</span>
+        <span class="topic-tag">Valor numérico</span>
+        <span class="topic-tag">Fracciones algebraicas</span>
       </div>
     </div>
 
     <div class="topic-group">
-      <div class="topic-group-title">📉 Gráficas de Funciones</div>
+      <div class="topic-group-title">⚙️ Operaciones con Monomios y Polinomios</div>
       <div class="topic-group-list">
-        <span class="topic-tag">Función lineal</span>
-        <span class="topic-tag">Función cuadrática</span>
-        <span class="topic-tag">Lectura e interpretación de gráficas</span>
+        <span class="topic-tag">Suma y resta de monomios</span>
+        <span class="topic-tag">Multiplicación y división</span>
+        <span class="topic-tag">Operaciones con polinomios</span>
+        <span class="topic-tag">Productos notables</span>
+        <span class="topic-tag-soon">Factorización (próximamente)</span>
       </div>
     </div>
 
     <div class="topic-group">
-      <div class="topic-group-title">🔍 Características de Funciones</div>
+      <div class="topic-group-title">√ Radicales Algebraicos</div>
       <div class="topic-group-list">
-        <span class="topic-tag">Crecimiento y decrecimiento</span>
-        <span class="topic-tag">Máximos y mínimos</span>
-        <span class="topic-tag">Paridad — función par e impar</span>
+        <span class="topic-tag">Raíces exactas y extracción</span>
+        <span class="topic-tag">Suma, resta y multiplicación</span>
+        <span class="topic-tag">Racionalización (4 tipos)</span>
+        <span class="topic-tag">Raíz de polinomio</span>
+        <span class="topic-tag">Aplicación de propiedades</span>
       </div>
     </div>
 
     <div class="topic-group">
-      <div class="topic-group-title">📏 Intervalos y Notación</div>
+      <div class="topic-group-title">🔢 Sucesiones y Progresiones</div>
       <div class="topic-group-list">
-        <span class="topic-tag">Intervalos en la recta numérica</span>
-        <span class="topic-tag">Notación de conjuntos</span>
-        <span class="topic-tag">Unión e intersección de intervalos</span>
-      </div>
-    </div>
-
-    <div class="topic-group">
-      <div class="topic-group-title">📐 Inecuaciones</div>
-      <div class="topic-group-list">
-        <span class="topic-tag">Lineales — Nivel 1 (sin paréntesis)</span>
-        <span class="topic-tag">Lineales — Nivel 2 (con paréntesis)</span>
-        <span class="topic-tag">Lineales — Nivel 3 (con fracciones)</span>
-        <span class="topic-tag">Cuadráticas — Nivel 1 (ya factorizada)</span>
-        <span class="topic-tag">Cuadráticas — Nivel 2 (el alumno factoriza)</span>
+        <span class="topic-tag">Sucesiones numéricas</span>
+        <span class="topic-tag">Progresión Aritmética</span>
+        <span class="topic-tag">Término general</span>
       </div>
     </div>
   </div>
@@ -551,12 +555,12 @@
   <div class="related-section">
     <h2>🔗 Otros módulos disponibles</h2>
     <div class="related-links">
-      <a class="related-link" href="numeros-enteros.html">Números Enteros</a>
-      <a class="related-link" href="expresiones-algebraicas.html">Expresiones Algebraicas</a>
-      <a class="related-link" href="radicales.html">Radicales</a>
+      <a class="related-link" href="aritmetica-ejercicios.html">Aritmética</a>
       <a class="related-link" href="trigonometria-ejercicios.html">Trigonometría</a>
-      <a class="related-link" href="aritmetica.html">Números Racionales</a>
-      <a class="related-link" href="geometria-analitica.html">Geometría Analítica</a>
+      <a class="related-link" href="geometria-analitica-ejercicios.html">Geometría Analítica</a>
+      <a class="related-link" href="funciones.html">Funciones</a>
+      <a class="related-link" href="numeros-enteros.html">Números Enteros</a>
+      <a class="related-link" href="radicales.html">Radicales</a>
       <a class="related-link" href="mixto.html">Ejercitario Mixto</a>
       <a class="related-link" href="examen-builder.html">Constructor de Exámenes</a>
     </div>
