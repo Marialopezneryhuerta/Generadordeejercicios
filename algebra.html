@@ -1150,6 +1150,15 @@ body { padding-bottom: 2.5rem; }
       <div class="total-badge" id="op-mix-badge">Total: <span>0</span> ejercicios</div>
     </div>
 
+    <div class="card" id="op-var-card">
+      <div class="card-title"><span class="icon" style="background:#eef1ff">🔤</span> Variable</div>
+      <div class="chips">
+        <button class="chip selected" id="op-modeX" onclick="opSetMode('x')">Solo x</button>
+        <button class="chip" id="op-modeAny" onclick="opSetMode('any')">Cualquier letra</button>
+      </div>
+      <div class="letter-grid" id="op-letterGrid" style="display:none"></div>
+    </div>
+
     <button class="btn-generate" id="op-btn-generate" onclick="generateOpPoly()">⚡ Generar ejercitario</button>
 <div class="ejercitario" id="op-ejercitario"></div>
 <button class="btn-download" id="op-btnDownload" onclick="downloadEjercitario('op-ejercitario','operaciones-polinomios')">⬇️ Descargar PDF</button>
@@ -1940,8 +1949,35 @@ function ejGenerarPDF(wrapper, filename) { /* no longer used */ }
 
 
 // ═══════════════════════════════════════════
-// ECUACIONES LINEALES
+// OPERACIONES CON POLINOMIOS — selector de variable
 // ═══════════════════════════════════════════
+let opLetterMode = 'x';
+let opSelectedLetters = ['x'];
+
+const opGrid = document.getElementById('op-letterGrid');
+LETTERS.forEach(l => {
+  const b = document.createElement('button');
+  b.className = 'letter-chip' + (l === 'x' ? ' selected' : '');
+  b.textContent = l;
+  b.onclick = () => opToggleLetter(b, l);
+  opGrid.appendChild(b);
+});
+
+function opSetMode(m) {
+  opLetterMode = m;
+  document.getElementById('op-modeX').classList.toggle('selected', m === 'x');
+  document.getElementById('op-modeAny').classList.toggle('selected', m === 'any');
+  document.getElementById('op-letterGrid').style.display = m === 'any' ? 'flex' : 'none';
+  if (m === 'x') opSelectedLetters = ['x'];
+}
+function opToggleLetter(btn, l) {
+  if (btn.classList.contains('selected') && opSelectedLetters.length === 1) return;
+  btn.classList.toggle('selected');
+  opSelectedLetters = opSelectedLetters.includes(l) ? opSelectedLetters.filter(x => x !== l) : [...opSelectedLetters, l];
+}
+function opPickLetter() { return opSelectedLetters[Math.floor(Math.random() * opSelectedLetters.length)]; }
+
+
 let linLevelQtys = { 1:0, 2:0, 3:0, 4:0, 5:0 };
 let linLetterMode = 'x';
 let linSelectedLetters = ['x'];
@@ -5188,32 +5224,35 @@ function opDivPoly(dividendo, divisor) {
 // ── Generadores ──────────────────────────────────────────────
 
 function opGenSuma(lvl) {
+  const v=opPickLetter();
   const deg=rnd(2,4);
   const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const sol=opAddPoly(A,B);
   if(lvl===1 && !opIsInteger(sol)) return opGenSuma(lvl);
   return{
-    expr:`(${opPolyStr(A)}) + (${opPolyStr(B)}) =`,
-    sol: opPolyStr(sol)||'0', lvl
+    expr:`(${opPolyStr(A,v)}) + (${opPolyStr(B,v)}) =`,
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenResta(lvl) {
+  const v=opPickLetter();
   const deg=rnd(2,4);
   const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const sol=opSubPoly(A,B);
   if(lvl===1 && !opIsInteger(sol)) return opGenResta(lvl);
   const fmt=rnd(0,1);
-  const sA=`(${opPolyStr(A)})`, sB=`(${opPolyStr(B)})`;
+  const sA=`(${opPolyStr(A,v)})`, sB=`(${opPolyStr(B,v)})`;
   return{
     expr: fmt===0 ? `De ${sA} restar ${sB}` : `Restar ${sB} de ${sA}`,
-    sol: opPolyStr(sol)||'0', lvl
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenMultMP(lvl) {
+  const v=opPickLetter();
   // Monomio × Polinomio
   const monoCoef=opRndCoef(lvl);
   const monoExp=rnd(0,3);
@@ -5221,27 +5260,29 @@ function opGenMultMP(lvl) {
   const deg=rnd(2,4);
   const P=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const sol=opMulPolyMono(P,mono);
-  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoLit=monoExp===0?'':monoExp===1?v:`${v}${toSup(monoExp)}`;
   const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
   return{
-    expr:`${monoStr} · (${opPolyStr(P)}) =`,
-    sol: opPolyStr(sol)||'0', lvl
+    expr:`${monoStr} · (${opPolyStr(P,v)}) =`,
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenMultPP(lvl) {
+  const v=opPickLetter();
   const degA=rnd(2,3), degB=rnd(2,3);
   const A=opMkPoly(degA, rnd(2,degA+1), lvl);
   const B=opMkPoly(degB, rnd(2,degB+1), lvl);
   const sol=opMulPoly(A,B);
   if(lvl===1 && !opIsInteger(sol)) return opGenMultPP(lvl);
   return{
-    expr:`(${opPolyStr(A)}) · (${opPolyStr(B)}) =`,
-    sol: opPolyStr(sol)||'0', lvl
+    expr:`(${opPolyStr(A,v)}) · (${opPolyStr(B,v)}) =`,
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenDivPM(lvl) {
+  const v=opPickLetter();
   // Construir desde el cociente → dividendo = cociente × monomio (resultado exacto garantizado)
   const monoCoef=opRndCoef(lvl,true);
   const monoExp=rnd(0,2);
@@ -5249,15 +5290,16 @@ function opGenDivPM(lvl) {
   const deg=rnd(2,4);
   const Q=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const dividendo=opMulPolyMono(Q,mono);
-  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoLit=monoExp===0?'':monoExp===1?v:`${v}${toSup(monoExp)}`;
   const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
   return{
-    expr:`<span class="frac" style="font-size:1em"><span class="num">${opPolyStr(dividendo)}</span><span class="den">${monoStr}</span></span> =`,
-    sol: opPolyStr(Q)||'0', lvl
+    expr:`(${opPolyStr(dividendo,v)}) ÷ (${monoStr}) =`,
+    sol: opPolyStr(Q,v)||'0', lvl
   };
 }
 
 function opGenDivPP(lvl) {
+  const v=opPickLetter();
   // Siempre enteros — Construir desde cociente+resto → dividendo exacto
   const degDiv=rnd(1,2), degQ=rnd(1,2);
   const divisor=opMkPoly(degDiv, rnd(2,degDiv+1), 1);
@@ -5267,17 +5309,18 @@ function opGenDivPP(lvl) {
   const restoExp  = degDiv>0 ? rnd(0,degDiv-1) : 0;
   const resto     = restoCoef===0 ? [] : [{n:restoCoef,d:1,exp:restoExp}];
   const dividendo = opAddPoly(opMulPoly(divisor,cociente), restoCoef===0?[{n:0,d:1,exp:0}]:resto);
-  const cocStr    = opPolyStr(cociente);
+  const cocStr    = opPolyStr(cociente,v);
   const solStr    = restoCoef!==0
-    ? `Cociente: ${cocStr} — Resto: ${opPolyStr(resto)}`
+    ? `Cociente: ${cocStr} — Resto: ${opPolyStr(resto,v)}`
     : `Cociente: ${cocStr}`;
   return{
-    expr:`(${opPolyStr(dividendo)}) ÷ (${opPolyStr(divisor)}) =`,
+    expr:`(${opPolyStr(dividendo,v)}) ÷ (${opPolyStr(divisor,v)}) =`,
     sol: solStr, lvl
   };
 }
 
 function opGenResto(lvl) {
+  const v=opPickLetter();
   // Teorema del resto: P(a) = resto de P(x)÷(x−a)
   const deg=rnd(2,4);
   // Polinomio completo (todos los grados) con coefs enteros
@@ -5292,14 +5335,15 @@ function opGenResto(lvl) {
     [rn,rd]=opAddF(rn,rd,tn,td);
   });
   const aStr=a<0?`(${a})`:String(a);
-  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
+  const divStr=a<0?`${v} + ${Math.abs(a)}`:`${v} − ${a}`;
   return{
-    expr:`Hallá el resto de dividir <strong>${opPolyStr(P)}</strong> por <strong>(${divStr})</strong>`,
+    expr:`Hallá el resto de dividir <strong>${opPolyStr(P,v)}</strong> por <strong>(${divStr})</strong>`,
     sol:`P${aStr} = ${opFracH(rn,rd)}`, lvl
   };
 }
 
 function opGenRuffini(lvl) {
+  const v=opPickLetter();
   // División P(x)÷(x−a) con tabla de Ruffini
   const deg=rnd(2,4);
   const a=rndNZ(-4,4);
@@ -5331,18 +5375,18 @@ function opGenRuffini(lvl) {
     </div>
     <div class="ruffini-result" style="display:contents">
       <span class="ruffini-a"></span>
-      ${row.map((v,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${v}</span>`).join('')}
+      ${row.map((rv,i)=>`<span${i===deg?' class="ruffini-resto"':''}>${rv}</span>`).join('')}
     </div>
   </div>`;
 
   const aStr=a<0?`(${a})`:String(a);
-  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
-  const cocStr=opPolyStr(cociente)||'0';
+  const divStr=a<0?`${v} + ${Math.abs(a)}`:`${v} − ${a}`;
+  const cocStr=opPolyStr(cociente,v)||'0';
   const sol=restoVal===0
     ?`Cociente: ${cocStr}`
     :`Cociente: ${cocStr} — Resto: ${restoVal}`;
   return{
-    expr:`Dividí usando Ruffini: <strong>${opPolyStr(P)}</strong> ÷ <strong>(${divStr})</strong>`,
+    expr:`Dividí usando Ruffini: <strong>${opPolyStr(P,v)}</strong> ÷ <strong>(${divStr})</strong>`,
     tabla, sol, lvl
   };
 }
