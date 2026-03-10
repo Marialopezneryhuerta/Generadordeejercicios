@@ -620,9 +620,9 @@ body { padding-bottom: 2.5rem; }
       </div>
       <div class="subtema">
         <div class="subtema-title">Suma y Resta</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta1',-1)">−</button><span class="qty-val" id="q-rad_sumaresta1">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta2',-1)">−</button><span class="qty-val" id="q-rad_sumaresta2">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Con extracción previa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta3',-1)">−</button><span class="qty-val" id="q-rad_sumaresta3">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Radicales semejantes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta1',-1)">−</button><span class="qty-val" id="q-rad_sumaresta1">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con extracción previa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta2',-1)">−</button><span class="qty-val" id="q-rad_sumaresta2">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta2',1)">+</button></div></div>
+        <div class="tipo-row">
       </div>
       <div class="subtema">
         <div class="subtema-title">Multiplicación</div>
@@ -783,7 +783,7 @@ const TEMA_KEYS = {
          'poly_divpm1','poly_divpm2','poly_divpp1','poly_divpp2',
          'poly_resto1','poly_ruffini1'],
   rad: ['rad_exactas1','rad_extraccion1','rad_extraccion2',
-        'rad_intro1','rad_sumaresta1','rad_sumaresta2','rad_sumaresta3',
+        'rad_intro1','rad_sumaresta1','rad_sumaresta2',
         'rad_multI1','rad_multII1','rad_multIII1','rad_divI1',
         'rad_multIndices1','rad_divIndices1',
         'rad_potI1','rad_potII1','rad_radrad1',
@@ -2362,7 +2362,7 @@ const RAD_NIVELES = {
   exactas:     ['Nivel único — Enteros'],
   extraccion:  ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios'],
   intro:       ['Nivel único — Introducción al signo radical'],
-  sumaresta:   ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios', 'Nivel 3 — Con extracción previa'],
+  sumaresta:   ['Nivel 1 — Radicales semejantes', 'Nivel 2 — Con extracción previa'],
   multI:       ['Nivel único — Enteros'],
   multII:      ['Nivel único — Enteros'],
   multIII:     ['Nivel único — Enteros'],
@@ -2564,63 +2564,71 @@ function radGenIntro(){
 // ── 4. SUMA Y RESTA ───────────────────────────────────────────
 function radGenSumaResta(lvl){
   var idx=[2,2,3][rnd(0,2)];
-  var v=INTRO_VARS[rnd(0,3)];
-  var m=rnd(1,3);
-  var baseRad=radLit(v,m)||String(rnd(2,10));
-  var nTerms=rnd(2,4);
 
-  if(lvl===3){
-    var baseCoef=[2,3,5,6,7][rnd(0,4)];
-    var factor1=rnd(2,4),factor2=rnd(2,4);
-    var expBase=rnd(1,2)*idx;
-    var expResto=rnd(0,1);
-    var rad1Coef=Math.pow(factor1,idx)*baseCoef;
-    var rad2Coef=Math.pow(factor2,idx)*baseCoef;
-    var e1=expBase+expResto;
-    var c1=rndNZ(-5,5),c2=rndNZ(-5,5);
+  // NIVEL 1: Radicales ya semejantes — 4 términos, 2 pares, solo sumar/restar coeficientes
+  if(lvl===1){
+    var bases2sr=[2,3,5,6,7,10,11,13];
+    var bases3sr=[2,3,5,6,7,10];
+    var pool=(idx===2)?bases2sr:bases3sr;
+    var poolCopy=pool.slice();
+    for(var si=poolCopy.length-1;si>0;si--){var sj=rnd(0,si);var st=poolCopy[si];poolCopy[si]=poolCopy[sj];poolCopy[sj]=st;}
+    var base1=poolCopy[0], base2=poolCopy[1];
+    var c1=rndNZ(-7,7), c2=rndNZ(-7,7);
+    var c3=rndNZ(-7,7), c4=rndNZ(-7,7);
+    var att=0;
+    while((c1+c3===0||c2+c4===0)&&att<20){c1=rndNZ(-7,7);c2=rndNZ(-7,7);c3=rndNZ(-7,7);c4=rndNZ(-7,7);att++;}
+    var rad1=radStr(idx,String(base1));
+    var rad2=radStr(idx,String(base2));
     var c1D=Math.abs(c1)===1?'':String(Math.abs(c1));
     var c2D=Math.abs(c2)===1?'':String(Math.abs(c2));
-    var s1=c1<0?'−':'';
-    var s2=c2<0?' − ':' + ';
-    var expr=s1+c1D+radStr(idx,rad1Coef+radLit(v,e1))+s2+c2D+radStr(idx,rad2Coef+radLit(v,e1))+' =';
-    var vFuera=Math.floor(e1/idx),vResto=e1%idx;
-    var baseLit=radLit(v,vResto);
-    var baseRadStr=(baseCoef===1&&baseLit!=='')?baseLit:(baseCoef===1?'1':baseCoef+baseLit);
-    var termBase=radStr(idx,baseRadStr);
-    var cf1=c1*factor1,cf2=c2*factor2,cfSum=cf1+cf2;
-    var vFueraLit=radLit(v,vFuera);
-    var cfD=Math.abs(cfSum)===1&&vFueraLit?'':String(Math.abs(cfSum));
-    var sol=cfSum===0?'0':(cfSum<0?'−':'')+cfD+vFueraLit+termBase;
-    return{expr:expr,sol:sol,consigna:'Extraé factores y reducí radicales semejantes'};
+    var c3D=Math.abs(c3)===1?'':String(Math.abs(c3));
+    var c4D=Math.abs(c4)===1?'':String(Math.abs(c4));
+    var t1=(c1<0?'−':'')+c1D+rad1;
+    var t2=(c2<0?' − ':' + ')+c2D+rad2;
+    var t3=(c3<0?' − ':' + ')+c3D+rad1;
+    var t4=(c4<0?' − ':' + ')+c4D+rad2;
+    var expr=t1+t2+t3+t4+' =';
+    var sum1=c1+c3, sum2=c2+c4;
+    var s1D=Math.abs(sum1)===1?'':String(Math.abs(sum1));
+    var s2D=Math.abs(sum2)===1?'':String(Math.abs(sum2));
+    var sol='';
+    if(sum1!==0) sol+=(sum1<0?'−':'')+s1D+rad1;
+    if(sum2!==0){
+      if(sol==='') sol+=(sum2<0?'−':'')+s2D+rad2;
+      else sol+=(sum2<0?' − ':' + ')+s2D+rad2;
+    }
+    if(sol==='') sol='0';
+    return{expr:expr, sol:sol, consigna:'Sumá y restá los radicales semejantes'};
   }
 
-  var cNorm=[];
-  if(lvl===1){
-    for(var i=0;i<nTerms;i++) cNorm.push({n:rndNZ(-8,8),d:1});
-  } else {
-    for(var i=0;i<nTerms;i++){
-      if(rnd(0,1)){var fr=RAD_FRACS[rnd(0,RAD_FRACS.length-1)];cNorm.push({n:rnd(0,1)?fr[0]:-fr[0],d:fr[1]});}
-      else cNorm.push({n:rndNZ(-5,5),d:1});
-    }
-  }
-  var rn=0,rd=1;
-  cNorm.forEach(function(c){var lcd=rd*c.d/radGcd(rd,c.d);rn=rn*(lcd/rd)+c.n*(lcd/c.d);rd=lcd;var g=radGcd(Math.abs(rn),rd);rn=rn/g;rd=rd/g;});
-  var radical=radStr(idx,baseRad);
-  var expr='';
-  cNorm.forEach(function(c,i){
-    var s=radSimp(c.n,c.d);var sn=s[0],sd=s[1];
-    var cD=Math.abs(sn)===1&&sd===1?'':radFrac(Math.abs(sn),sd);
-    if(i===0)expr+=(sn<0?'−':'')+cD+radical;
-    else expr+=(sn<0?' − ':' + ')+cD+radical;
-  });
-  expr+=' =';
-  var rs=radSimp(rn,rd);var rsn=rs[0],rsd=rs[1];
-  var rD=Math.abs(rsn)===1&&rsd===1?'':radFrac(Math.abs(rsn),rsd);
-  var sol=rsn===0?'0':(rsn<0?'−':'')+rD+radical;
-  return{expr:expr,sol:sol};
+  // NIVEL 2: Extracción de factores previa a la suma/resta
+  var v2=INTRO_VARS[rnd(0,3)];
+  var useVar=rnd(0,1);
+  var baseCoef=[2,3,5,6,7][rnd(0,4)];
+  var factor1=rnd(2,4), factor2=rnd(2,4);
+  var expBase=rnd(1,2)*idx;
+  var expResto=rnd(0,1);
+  var rad1Coef=Math.pow(factor1,idx)*baseCoef;
+  var rad2Coef=Math.pow(factor2,idx)*baseCoef;
+  var e1=expBase+expResto;
+  var c1=rndNZ(-5,5), c2=rndNZ(-5,5);
+  var c1D=Math.abs(c1)===1?'':String(Math.abs(c1));
+  var c2D=Math.abs(c2)===1?'':String(Math.abs(c2));
+  var s1=c1<0?'−':'';
+  var s2=c2<0?' − ':' + ';
+  var litInside=useVar?radLit(v2,e1):'';
+  var expr2=s1+c1D+radStr(idx,rad1Coef+(litInside||''))+s2+c2D+radStr(idx,rad2Coef+(litInside||''))+' =';
+  var vFuera=Math.floor(e1/idx), vResto=e1%idx;
+  var baseLit=useVar?radLit(v2,vResto):'';
+  var baseRadStr2=(baseCoef===1&&baseLit!=='')?baseLit:(baseCoef===1?'1':baseCoef+(baseLit||''));
+  var termBase=radStr(idx,baseRadStr2);
+  var cf1=c1*factor1, cf2=c2*factor2, cfSum=cf1+cf2;
+  var vFueraLit=useVar?radLit(v2,vFuera):'';
+  var cfD=Math.abs(cfSum)===1&&(vFueraLit||'')?'':String(Math.abs(cfSum));
+  var sol2=cfSum===0?'0':(cfSum<0?'−':'')+cfD+(vFueraLit||'')+termBase;
+  return{expr:expr2, sol:sol2, consigna:'Extraé factores y sumá los radicales semejantes'};
 }
 
-// ── 5. MULTIPLICACIÓN I ───────────────────────────────────────
 function radGenMultI(){
   var idx=[2,2,3][rnd(0,2)];
   var v=INTRO_VARS[rnd(0,3)];
@@ -3208,7 +3216,7 @@ const GENERATORS = {
   rad_intro1: ()=>({...RAD_GENS.intro(1), tema:'Radicales: Intro'}),
   rad_sumaresta1: ()=>({...RAD_GENS.sumaresta(1), tema:'Radicales: Suma y Resta Niv.1'}),
   rad_sumaresta2: ()=>({...RAD_GENS.sumaresta(2), tema:'Radicales: Suma y Resta Niv.2'}),
-  rad_sumaresta3: ()=>({...RAD_GENS.sumaresta(3), tema:'Radicales: Suma y Resta Niv.3'}),
+
   rad_multI1: ()=>({...RAD_GENS.multI(1), tema:'Radicales: Mult. I'}),
   rad_multII1: ()=>({...RAD_GENS.multII(1), tema:'Radicales: Mult. II'}),
   rad_multIII1: ()=>({...RAD_GENS.multIII(1), tema:'Radicales: Mult. III'}),

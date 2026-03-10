@@ -5823,7 +5823,7 @@ const RAD_NIVELES = {
   exactas:     ['Nivel único — Enteros'],
   extraccion:  ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios'],
   intro:       ['Nivel único — Introducción al signo radical'],
-  sumaresta:   ['Nivel 1 — Coeficientes enteros', 'Nivel 2 — Coeficientes fraccionarios', 'Nivel 3 — Con extracción previa'],
+  sumaresta:   ['Nivel 1 — Radicales semejantes', 'Nivel 2 — Con extracción previa'],
   multI:       ['Nivel único — Enteros'],
   multII:      ['Nivel único — Enteros'],
   multIII:     ['Nivel único — Enteros'],
@@ -6044,142 +6044,75 @@ function radGenIntro(){
 function radGenSumaResta(lvl){
   var idx=[2,2,3][rnd(0,2)];
 
-  // Nivel 3: con extracción + variables — sin cambios (funciona bien)
-  if(lvl===3){
-    var v3=INTRO_VARS[rnd(0,3)];
-    var baseCoef=[2,3,5,6,7][rnd(0,4)];
-    var factor1=rnd(2,4),factor2=rnd(2,4);
-    var expBase=rnd(1,2)*idx;
-    var expResto=rnd(0,1);
-    var rad1Coef=Math.pow(factor1,idx)*baseCoef;
-    var rad2Coef=Math.pow(factor2,idx)*baseCoef;
-    var e1=expBase+expResto;
-    var c1=rndNZ(-5,5),c2=rndNZ(-5,5);
+  // ── NIVEL 1: Radicales ya semejantes — solo sumar/restar coeficientes ──
+  // 4 términos: 2 pares de radicales semejantes (mismo radicando, distintos coeficientes)
+  // No hay factores que extraer, los radicandos ya son irreducibles
+  if(lvl===1){
+    var bases2sr=[2,3,5,6,7,10,11,13];
+    var bases3sr=[2,3,5,6,7,10];
+    var pool=(idx===2)?bases2sr:bases3sr;
+    // Elegir 2 bases distintas para los 2 pares
+    var poolCopy=pool.slice();
+    for(var si=poolCopy.length-1;si>0;si--){var sj=rnd(0,si);var st=poolCopy[si];poolCopy[si]=poolCopy[sj];poolCopy[sj]=st;}
+    var base1=poolCopy[0], base2=poolCopy[1];
+    // Coeficientes enteros no nulos para los 4 términos
+    var c1=rndNZ(-7,7), c2=rndNZ(-7,7);
+    var c3=rndNZ(-7,7), c4=rndNZ(-7,7);
+    // Asegurar que los pares no sumen 0
+    var att=0;
+    while((c1+c3===0||c2+c4===0)&&att<20){c1=rndNZ(-7,7);c2=rndNZ(-7,7);c3=rndNZ(-7,7);c4=rndNZ(-7,7);att++;}
+    var rad1=radStr(idx,String(base1));
+    var rad2=radStr(idx,String(base2));
     var c1D=Math.abs(c1)===1?'':String(Math.abs(c1));
     var c2D=Math.abs(c2)===1?'':String(Math.abs(c2));
-    var s1=c1<0?'−':'';
-    var s2=c2<0?' − ':' + ';
-    var expr3=s1+c1D+radStr(idx,rad1Coef+radLit(v3,e1))+s2+c2D+radStr(idx,rad2Coef+radLit(v3,e1))+' =';
-    var vFuera3=Math.floor(e1/idx),vResto3=e1%idx;
-    var baseLit3=radLit(v3,vResto3);
-    var baseRadStr3=(baseCoef===1&&baseLit3!=='')?baseLit3:(baseCoef===1?'1':baseCoef+baseLit3);
-    var termBase3=radStr(idx,baseRadStr3);
-    var cf1=c1*factor1,cf2=c2*factor2,cfSum=cf1+cf2;
-    var vFueraLit3=radLit(v3,vFuera3);
-    var cfD=Math.abs(cfSum)===1&&vFueraLit3?'':String(Math.abs(cfSum));
-    var sol3=cfSum===0?'0':(cfSum<0?'−':'')+cfD+vFueraLit3+termBase3;
-    return{expr:expr3,sol:sol3,consigna:'Extraé factores y reducí radicales semejantes'};
-  }
-
-  // Niveles 1 y 2: ejercicios con simplificación previa (como en foto del libro)
-  // Estrategia: cada término tiene un coef externo y un radical que debe simplificarse,
-  // todos los radicales reducen al mismo radicando base.
-
-  // Elegir base (radicando irreducible)
-  var bases2=[2,3,5,6,7,10,11];
-  var bases3=[2,3,5,6,7];
-  var baseSimple=(idx===2)?bases2[rnd(0,bases2.length-1)]:bases3[rnd(0,bases3.length-1)];
-
-  // Elegir variable aleatoria (50% sin variable en nivel 1, siempre posible en nivel 2)
-  var useVar=(lvl===2)?rnd(0,1):(rnd(0,2)>0?0:1);
-  var v=INTRO_VARS[rnd(0,3)];
-  var varExp=useVar?rnd(1,2):0; // exponente de la variable dentro del radical simplificado
-
-  // Cada término: coefExterno · √(k^idx · base · v^(vOut*idx + varExp))
-  // donde vOut es el exponente de v que sale
-  var nTerms=rnd(3,4);
-  var terms=[];
-  for(var i=0;i<nTerms;i++){
-    var k=rnd(2,5); // factor que entra dentro del radical como k^idx
-    var vOut=useVar?rnd(1,2):0; // exponente de v que saldrá del radical
-    var coefDentro=Math.pow(k,idx)*baseSimple;
-    var expDentro=vOut*idx+varExp;
-    // coeficiente externo delante del radical
-    var coefExt;
-    if(lvl===1){
-      coefExt={n:rndNZ(-6,6),d:1};
-    } else {
-      if(rnd(0,1)){
-        var fr=RAD_FRACS[rnd(0,RAD_FRACS.length-1)];
-        coefExt={n:(rnd(0,1)?1:-1)*fr[0],d:fr[1]};
-      } else {
-        coefExt={n:rndNZ(-4,4),d:1};
-      }
-    }
-    terms.push({coefExt:coefExt, coefDentro:coefDentro, expDentro:expDentro, k:k, vOut:vOut});
-  }
-
-  // Construir expresión
-  var varStr=useVar?radLit(v,0):''; // placeholder
-  var expr='';
-  terms.forEach(function(t,i){
-    var s=radSimp(t.coefExt.n,t.coefExt.d);
-    var sn=s[0],sd=s[1];
-    var cD=Math.abs(sn)===1&&sd===1?'':radFrac(Math.abs(sn),sd);
-    var litInside=useVar?radLit(v,t.expDentro):'';
-    var rad=radStr(idx,t.coefDentro+(litInside||''));
-    if(i===0) expr+=(sn<0?'−':'')+cD+rad;
-    else expr+=(sn<0?' − ':' + ')+cD+rad;
-  });
-  expr+=' =';
-
-  // Calcular solución: cada término → coefExt * k * vOut_lit * √(baseSimple*v^varExp)
-  // suma de (coefExt.n/coefExt.d) * k, con vOut como factor literal
-  // Si hay variable que sale, agrupar por vOut
-  // Para simplificar: asumimos mismo vOut en todos los términos del mismo grupo
-  // En nivel 1 y 2 base todos simplifican al mismo √base (sin variable o con misma variable)
-  var baseRadStr;
-  if(useVar&&varExp>0) baseRadStr=baseSimple+radLit(v,varExp);
-  else if(useVar&&varExp===0) baseRadStr=String(baseSimple);
-  else baseRadStr=String(baseSimple);
-  var termRad=radStr(idx,baseRadStr);
-
-  // Sumar coeficientes: coefExt.n/coefExt.d * k * v^vOut
-  // Agrupar: si todos tienen mismo vOut o no hay variable
-  // Simplificación: suma ponderada de (coefExt * k) por grupo de vOut
-  if(!useVar){
-    var rn=0,rd=1;
-    terms.forEach(function(t){
-      var num=t.coefExt.n*t.k, den=t.coefExt.d;
-      var lcd=rd*den/radGcd(rd,den);
-      rn=rn*(lcd/rd)+num*(lcd/den);
-      rd=lcd;
-      var g=radGcd(Math.abs(rn),rd); rn=rn/g; rd=rd/g;
-    });
-    var rs=radSimp(rn,rd);
-    var rsn=rs[0],rsd=rs[1];
-    var rD=Math.abs(rsn)===1&&rsd===1?'':radFrac(Math.abs(rsn),rsd);
-    var sol=rsn===0?'0':(rsn<0?'−':'')+rD+termRad;
-    return{expr:expr,sol:sol,consigna:'Simplificá cada radical y sumá los semejantes'};
-  } else {
-    // Con variable: agrupar términos por vOut
-    var groups={};
-    terms.forEach(function(t){
-      var key=t.vOut;
-      if(!groups[key]) groups[key]={rn:0,rd:1,vOut:t.vOut};
-      var g=groups[key];
-      var num=t.coefExt.n*t.k, den=t.coefExt.d;
-      var lcd=g.rd*den/radGcd(g.rd,den);
-      g.rn=g.rn*(lcd/g.rd)+num*(lcd/den);
-      g.rd=lcd;
-      var gc=radGcd(Math.abs(g.rn),g.rd); g.rn=g.rn/gc; g.rd=g.rd/gc;
-    });
+    var c3D=Math.abs(c3)===1?'':String(Math.abs(c3));
+    var c4D=Math.abs(c4)===1?'':String(Math.abs(c4));
+    // Orden mezclado: t1·√b1 ± t2·√b2 ± t3·√b1 ± t4·√b2
+    var t1=(c1<0?'−':'')+c1D+rad1;
+    var t2=(c2<0?' − ':' + ')+c2D+rad2;
+    var t3=(c3<0?' − ':' + ')+c3D+rad1;
+    var t4=(c4<0?' − ':' + ')+c4D+rad2;
+    var expr=t1+t2+t3+t4+' =';
+    // Solución
+    var sum1=c1+c3, sum2=c2+c4;
+    var s1D=Math.abs(sum1)===1?'':String(Math.abs(sum1));
+    var s2D=Math.abs(sum2)===1?'':String(Math.abs(sum2));
     var sol='';
-    var firstTerm=true;
-    Object.keys(groups).sort(function(a,b){return b-a;}).forEach(function(key){
-      var g=groups[key];
-      var rs=radSimp(g.rn,g.rd);
-      var rsn=rs[0],rsd=rs[1];
-      if(rsn===0) return;
-      var litV=radLit(v,g.vOut);
-      var rD=Math.abs(rsn)===1&&rsd===1?'':radFrac(Math.abs(rsn),rsd);
-      var term=(rsn<0?'−':'')+rD+litV+termRad;
-      if(firstTerm){sol=term;firstTerm=false;}
-      else sol+=rsn<0?' − '+rD+litV+termRad:' + '+rD+litV+termRad;
-    });
-    if(!sol) sol='0';
-    return{expr:expr,sol:sol,consigna:'Simplificá cada radical y sumá los semejantes'};
+    if(sum1!==0) sol+=(sum1<0?'−':'')+s1D+rad1;
+    if(sum2!==0){
+      if(sol==='') sol+=(sum2<0?'−':'')+s2D+rad2;
+      else sol+=(sum2<0?' − ':' + ')+s2D+rad2;
+    }
+    if(sol==='') sol='0';
+    return{expr:expr, sol:sol, consigna:'Sumá y restá los radicales semejantes'};
   }
+
+  // ── NIVEL 2: Extracción de factores previa a la suma/resta ──
+  var v2=INTRO_VARS[rnd(0,3)];
+  var useVar=rnd(0,1);
+  var baseCoef=[2,3,5,6,7][rnd(0,4)];
+  var factor1=rnd(2,4), factor2=rnd(2,4);
+  var expBase=rnd(1,2)*idx;
+  var expResto=rnd(0,1);
+  var rad1Coef=Math.pow(factor1,idx)*baseCoef;
+  var rad2Coef=Math.pow(factor2,idx)*baseCoef;
+  var e1=expBase+expResto;
+  var c1=rndNZ(-5,5), c2=rndNZ(-5,5);
+  var c1D=Math.abs(c1)===1?'':String(Math.abs(c1));
+  var c2D=Math.abs(c2)===1?'':String(Math.abs(c2));
+  var s1=c1<0?'−':'';
+  var s2=c2<0?' − ':' + ';
+  var litInside=useVar?radLit(v2,e1):'';
+  var expr2=s1+c1D+radStr(idx,rad1Coef+(litInside||''))+s2+c2D+radStr(idx,rad2Coef+(litInside||''))+' =';
+  var vFuera=Math.floor(e1/idx), vResto=e1%idx;
+  var baseLit=useVar?radLit(v2,vResto):'';
+  var baseRadStr2=(baseCoef===1&&baseLit!=='')?baseLit:(baseCoef===1?'1':baseCoef+(baseLit||''));
+  var termBase=radStr(idx,baseRadStr2);
+  var cf1=c1*factor1, cf2=c2*factor2, cfSum=cf1+cf2;
+  var vFueraLit=useVar?radLit(v2,vFuera):'';
+  var cfD=Math.abs(cfSum)===1&&(vFueraLit||'')?'':String(Math.abs(cfSum));
+  var sol2=cfSum===0?'0':(cfSum<0?'−':'')+cfD+(vFueraLit||'')+termBase;
+  return{expr:expr2, sol:sol2, consigna:'Extraé factores y sumá los radicales semejantes'};
 }
 
 // ── 5. MULTIPLICACIÓN I ───────────────────────────────────────
