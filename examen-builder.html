@@ -4108,6 +4108,12 @@ function omMonomioStr(coef, lit, wrapNeg=false) {
 
 
 // ── RADICACIÓN ───────────────────────────────────────────────
+// Helper: dibuja √ con línea real (border-top) sobre el contenido
+function omSqrtHTML(idx, inner) {
+  const idxPre = idx === 2 ? '' : '<sup style="font-size:.7em;vertical-align:0.5em;margin-right:1px">' + idx + '<\/sup>';
+  return idxPre + '\u221a<span style="display:inline-block;border-top:1.5px solid currentColor;padding:0 2px;vertical-align:middle;line-height:1.2">' + inner + '<\/span>';
+}
+
 // Estrategia: construir resultado primero, luego elevar al índice
 function omGenRad(lvl) {
   const idx = [2,2,3][rnd(0,2)]; // índice 2 o 3
@@ -4136,8 +4142,7 @@ function omGenRad(lvl) {
   const litRes = allVars.map((v,i)=>resExps[i]===1?v:`${v}${toSup(resExps[i])}`).join('');
 
   const radCoefStr = omFracHTML(radN, radD);
-  const rootSym = idx===2 ? '√' : '∛';
-  const expr = `${rootSym}<span style="text-decoration:overline">${radCoefStr}${litRad}</span> =`;
+  const expr = omSqrtHTML(idx, radCoefStr + litRad) + ' =';
   const sol = omResSol(resN, resD, litRes);
   return { expr, sol, lvl };
 }
