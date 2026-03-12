@@ -1311,110 +1311,170 @@ body { padding-bottom: 2.5rem; }
     <!-- CARACTERÍSTICAS -->
     <div id="suc-section-caracteristicas">
       <div class="card">
-        <div class="card-title">Niveles</div>
-        <div class="levels-list" id="suc-car-levels">
-          <div class="level-item active" id="suc-car-lvl1">
-            <div class="level-info"><div class="level-name">Nivel 1 — Finita / Infinita</div><div class="level-desc">Determinar si la sucesión es finita o infinita</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucCarChangeLvl(1,-1)">−</button><span id="suc-car-q1">3</span><button class="lq-btn" onclick="sucCarChangeLvl(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Características</div>
+        <div class="levels">
+          <div class="level-item" id="suc-car-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 1 — Finita / Infinita</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucCarChangeLvl(1,-1)">−</button>
+              <span class="lq-val" id="suc-car-q1">0</span>
+              <button class="lq-btn" onclick="sucCarChangeLvl(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="suc-car-lvl2">
-            <div class="level-info"><div class="level-name">Nivel 2 — Creciente / Decreciente / Constante</div><div class="level-desc">Clasificar la sucesión; incluye estricta y no estricta</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucCarChangeLvl(2,-1)">−</button><span id="suc-car-q2">3</span><button class="lq-btn" onclick="sucCarChangeLvl(2,+1)">+</button></div>
+          <div class="level-item" id="suc-car-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 2 — Creciente / Decreciente / Constante</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucCarChangeLvl(2,-1)">−</button>
+              <span class="lq-val" id="suc-car-q2">0</span>
+              <button class="lq-btn" onclick="sucCarChangeLvl(2,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="suc-car-lvl3">
-            <div class="level-info"><div class="level-name">Nivel 3 — Combinado</div><div class="level-desc">Finita/infinita + clasificación + justificación</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucCarChangeLvl(3,-1)">−</button><span id="suc-car-q3">2</span><button class="lq-btn" onclick="sucCarChangeLvl(3,+1)">+</button></div>
+          <div class="level-item" id="suc-car-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 3 — Combinado (finita/infinita + clasificación + justificación)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucCarChangeLvl(3,-1)">−</button>
+              <span class="lq-val" id="suc-car-q3">0</span>
+              <button class="lq-btn" onclick="sucCarChangeLvl(3,+1)">+</button>
+            </div>
           </div>
         </div>
-        <button class="btn-generate" onclick="generateSucCaracteristicas()">⚡ Generar ejercitario</button>
-<div class="ejercitario" id="suc-car-ejercitario"></div>
-<button class="btn-download" id="suc-car-btnDownload" onclick="downloadEjercitario('suc-car-ejercitario','sucesiones-caracteristicas')">⬇️ Descargar PDF</button>
-      <button class="btn-download-sol" id="suc-car-btnSolAparte" onclick="downloadSolucionesAparte('suc-car-ejercitario', 'sucesiones-caracteristicas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+        <div class="total-badge" id="suc-car-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generateSucCaracteristicas()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="suc-car-ejercitario"></div>
+      <button class="btn-download" id="suc-car-btnDownload" onclick="downloadEjercitario('suc-car-ejercitario','sucesiones-caracteristicas')">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="suc-car-btnSolAparte" onclick="downloadSolucionesAparte('suc-car-ejercitario', 'sucesiones-caracteristicas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- REPRESENTACIÓN -->
     <div id="suc-section-representacion" style="display:none">
       <div class="card">
-        <div class="card-title">Niveles</div>
-        <div class="levels-list" id="suc-rep-levels">
-          <div class="level-item active" id="suc-rep-lvl1">
-            <div class="level-info"><div class="level-name">Nivel 1 — Completar términos</div><div class="level-desc">Dada la sucesión, identificar y completar los términos a₁, a₂, a₃…</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucRepChangeLvl(1,-1)">−</button><span id="suc-rep-q1">3</span><button class="lq-btn" onclick="sucRepChangeLvl(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Representación</div>
+        <div class="levels">
+          <div class="level-item" id="suc-rep-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 1 — Completar términos (a₁, a₂, a₃…)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucRepChangeLvl(1,-1)">−</button>
+              <span class="lq-val" id="suc-rep-q1">0</span>
+              <button class="lq-btn" onclick="sucRepChangeLvl(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="suc-rep-lvl2">
-            <div class="level-info"><div class="level-name">Nivel 2 — Notación e identificación</div><div class="level-desc">Subíndice, término general, aₙ₋₁; calcular operaciones entre términos</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucRepChangeLvl(2,-1)">−</button><span id="suc-rep-q2">3</span><button class="lq-btn" onclick="sucRepChangeLvl(2,+1)">+</button></div>
+          <div class="level-item" id="suc-rep-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 2 — Notación e identificación (subíndice, aₙ₋₁, operaciones)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucRepChangeLvl(2,-1)">−</button>
+              <span class="lq-val" id="suc-rep-q2">0</span>
+              <button class="lq-btn" onclick="sucRepChangeLvl(2,+1)">+</button>
+            </div>
           </div>
         </div>
-        <button class="btn-generate" onclick="generateSucRepresentacion()">⚡ Generar ejercitario</button>
-<div class="ejercitario" id="suc-rep-ejercitario"></div>
-<button class="btn-download" id="suc-rep-btnDownload" onclick="downloadEjercitario('suc-rep-ejercitario','sucesiones-representacion')">⬇️ Descargar PDF</button>
-      <button class="btn-download-sol" id="suc-rep-btnSolAparte" onclick="downloadSolucionesAparte('suc-rep-ejercitario', 'sucesiones-representacion')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+        <div class="total-badge" id="suc-rep-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generateSucRepresentacion()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="suc-rep-ejercitario"></div>
+      <button class="btn-download" id="suc-rep-btnDownload" onclick="downloadEjercitario('suc-rep-ejercitario','sucesiones-representacion')">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="suc-rep-btnSolAparte" onclick="downloadSolucionesAparte('suc-rep-ejercitario', 'sucesiones-representacion')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- TÉRMINO GENERAL -->
     <div id="suc-section-tgeneral" style="display:none">
       <div class="card">
-        <div class="card-title">Niveles</div>
-        <div class="levels-list" id="suc-tg-levels">
-          <div class="level-item active" id="suc-tg-lvl1">
-            <div class="level-info"><div class="level-name">Nivel 1 — Calcular términos dado aₙ</div><div class="level-desc">Dada la fórmula del término general, hallar términos específicos</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucTgChangeLvl(1,-1)">−</button><span id="suc-tg-q1">3</span><button class="lq-btn" onclick="sucTgChangeLvl(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Término general</div>
+        <div class="levels">
+          <div class="level-item" id="suc-tg-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 1 — Calcular términos dado aₙ</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucTgChangeLvl(1,-1)">−</button>
+              <span class="lq-val" id="suc-tg-q1">0</span>
+              <button class="lq-btn" onclick="sucTgChangeLvl(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="suc-tg-lvl2">
-            <div class="level-info"><div class="level-name">Nivel 2 — Encontrar aₙ a partir de la sucesión</div><div class="level-desc">Dada la sucesión numérica, descubrir su término general</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucTgChangeLvl(2,-1)">−</button><span id="suc-tg-q2">3</span><button class="lq-btn" onclick="sucTgChangeLvl(2,+1)">+</button></div>
+          <div class="level-item" id="suc-tg-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 2 — Encontrar aₙ a partir de la sucesión</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucTgChangeLvl(2,-1)">−</button>
+              <span class="lq-val" id="suc-tg-q2">0</span>
+              <button class="lq-btn" onclick="sucTgChangeLvl(2,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="suc-tg-lvl3">
-            <div class="level-info"><div class="level-name">Nivel 3 — Completar espacios en sucesiones</div><div class="level-desc">Sucesiones con términos faltantes; hallar el patrón y completar</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucTgChangeLvl(3,-1)">−</button><span id="suc-tg-q3">2</span><button class="lq-btn" onclick="sucTgChangeLvl(3,+1)">+</button></div>
+          <div class="level-item" id="suc-tg-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 3 — Completar espacios en sucesiones</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucTgChangeLvl(3,-1)">−</button>
+              <span class="lq-val" id="suc-tg-q3">0</span>
+              <button class="lq-btn" onclick="sucTgChangeLvl(3,+1)">+</button>
+            </div>
           </div>
         </div>
-        <button class="btn-generate" onclick="generateSucTerminoGeneral()">⚡ Generar ejercitario</button>
-<div class="ejercitario" id="suc-tg-ejercitario"></div>
-<button class="btn-download" id="suc-tg-btnDownload" onclick="downloadEjercitario('suc-tg-ejercitario','sucesiones-termino-general')">⬇️ Descargar PDF</button>
-      <button class="btn-download-sol" id="suc-tg-btnSolAparte" onclick="downloadSolucionesAparte('suc-tg-ejercitario', 'sucesiones-termino-general')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+        <div class="total-badge" id="suc-tg-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generateSucTerminoGeneral()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="suc-tg-ejercitario"></div>
+      <button class="btn-download" id="suc-tg-btnDownload" onclick="downloadEjercitario('suc-tg-ejercitario','sucesiones-termino-general')">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="suc-tg-btnSolAparte" onclick="downloadSolucionesAparte('suc-tg-ejercitario', 'sucesiones-termino-general')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- SITUACIONES PROBLEMÁTICAS -->
     <div id="suc-section-problemas" style="display:none">
       <div class="card">
-        <div class="card-title">Niveles</div>
-        <div class="levels-list" id="suc-prob-levels">
-          <div class="level-item active" id="suc-prob-lvl1">
-            <div class="level-info"><div class="level-name">Nivel 1 — Contexto simple</div><div class="level-desc">Problemas con patrones aritméticos en contexto paraguayo</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucProbChangeLvl(1,-1)">−</button><span id="suc-prob-q1">2</span><button class="lq-btn" onclick="sucProbChangeLvl(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Situaciones problemáticas</div>
+        <div class="levels">
+          <div class="level-item" id="suc-prob-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 1 — Contexto simple (patrones aritméticos, contexto paraguayo)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucProbChangeLvl(1,-1)">−</button>
+              <span class="lq-val" id="suc-prob-q1">0</span>
+              <button class="lq-btn" onclick="sucProbChangeLvl(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="suc-prob-lvl2">
-            <div class="level-info"><div class="level-name">Nivel 2 — Problemas completos</div><div class="level-desc">Hallar ley de formación, término pedido y responder preguntas</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucProbChangeLvl(2,-1)">−</button><span id="suc-prob-q2">2</span><button class="lq-btn" onclick="sucProbChangeLvl(2,+1)">+</button></div>
+          <div class="level-item" id="suc-prob-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 2 — Problemas completos (ley de formación + término pedido)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucProbChangeLvl(2,-1)">−</button>
+              <span class="lq-val" id="suc-prob-q2">0</span>
+              <button class="lq-btn" onclick="sucProbChangeLvl(2,+1)">+</button>
+            </div>
           </div>
         </div>
-        <button class="btn-generate" onclick="generateSucProblemas()">⚡ Generar ejercitario</button>
-<div class="ejercitario" id="suc-prob-ejercitario"></div>
-<button class="btn-download" id="suc-prob-btnDownload" onclick="downloadEjercitario('suc-prob-ejercitario','sucesiones-problemas')">⬇️ Descargar PDF</button>
-      <button class="btn-download-sol" id="suc-prob-btnSolAparte" onclick="downloadSolucionesAparte('suc-prob-ejercitario', 'sucesiones-problemas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+        <div class="total-badge" id="suc-prob-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generateSucProblemas()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="suc-prob-ejercitario"></div>
+      <button class="btn-download" id="suc-prob-btnDownload" onclick="downloadEjercitario('suc-prob-ejercitario','sucesiones-problemas')">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="suc-prob-btnSolAparte" onclick="downloadSolucionesAparte('suc-prob-ejercitario', 'sucesiones-problemas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- VERDADERO Y FALSO -->
     <div id="suc-section-vf" style="display:none">
       <div class="card">
-        <div class="card-title">Cantidad de afirmaciones</div>
-        <div class="levels-list" id="suc-vf-levels">
-          <div class="level-item active" id="suc-vf-lvl1">
-            <div class="level-info"><div class="level-name">Afirmaciones por ejercitario</div><div class="level-desc">Cada set contiene afirmaciones variadas de todo el tema</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="sucVfChangeLvl(1,-1)">−</button><span id="suc-vf-q1">8</span><button class="lq-btn" onclick="sucVfChangeLvl(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Cantidad de afirmaciones</div>
+        <div class="levels">
+          <div class="level-item" id="suc-vf-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Afirmaciones por ejercitario (set variado de todo el tema)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="sucVfChangeLvl(1,-1)">−</button>
+              <span class="lq-val" id="suc-vf-q1">0</span>
+              <button class="lq-btn" onclick="sucVfChangeLvl(1,+1)">+</button>
+            </div>
           </div>
         </div>
-        <button class="btn-generate" onclick="generateSucVF()">⚡ Generar ejercitario</button>
-<div class="ejercitario" id="suc-vf-ejercitario"></div>
-<button class="btn-download" id="suc-vf-btnDownload" onclick="downloadEjercitario('suc-vf-ejercitario','sucesiones-verdadero-falso')">⬇️ Descargar PDF</button>
-      <button class="btn-download-sol" id="suc-vf-btnSolAparte" onclick="downloadSolucionesAparte('suc-vf-ejercitario', 'sucesiones-verdadero-falso')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+        <div class="total-badge" id="suc-vf-totalBadge">Total: <span>0</span> afirmaciones</div>
       </div>
+      <button class="btn-generate" onclick="generateSucVF()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="suc-vf-ejercitario"></div>
+      <button class="btn-download" id="suc-vf-btnDownload" onclick="downloadEjercitario('suc-vf-ejercitario','sucesiones-verdadero-falso')">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="suc-vf-btnSolAparte" onclick="downloadSolucionesAparte('suc-vf-ejercitario', 'sucesiones-verdadero-falso')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
   </div><!-- fin panel-sucesiones -->
@@ -1426,115 +1486,204 @@ body { padding-bottom: 2.5rem; }
 
     <div class="card">
       <div class="card-title"><span class="icon" style="background:#f0f4ff">📈</span> Tipo de ejercicio</div>
-      <div class="chips" id="pa-chips">
-        <button class="chip selected" data-sec="conceptos" onclick="paToggleChip(this)">📚 Conceptos</button>
-        <button class="chip selected" data-sec="tgeneral"  onclick="paToggleChip(this)">🔢 Término general</button>
-        <button class="chip selected" data-sec="suma"      onclick="paToggleChip(this)">∑ Suma</button>
-        <button class="chip selected" data-sec="problemas" onclick="paToggleChip(this)">📝 Sit. problemáticas</button>
+      <div class="subtype-selector" style="flex-wrap:wrap;gap:0.4rem">
+        <button class="subtype-btn active" id="pa-sub-conceptos"  onclick="paSetSubtype('conceptos')">📚 Conceptos</button>
+        <button class="subtype-btn" id="pa-sub-tgeneral"  onclick="paSetSubtype('tgeneral')">🔢 Término general</button>
+        <button class="subtype-btn" id="pa-sub-suma"      onclick="paSetSubtype('suma')">∑ Suma</button>
+        <button class="subtype-btn" id="pa-sub-problemas" onclick="paSetSubtype('problemas')">📝 Sit. problemáticas</button>
       </div>
     </div>
 
     <!-- CONCEPTOS -->
     <div id="pa-section-conceptos">
       <div class="card">
-        <div class="card-title">📚 Conceptos</div>
-        <div class="levels-list" id="pa-con-levels">
-          <div class="level-item active" id="pa-con-lvl1">
-            <div class="level-info"><div class="level-name">Tipo 1 — Identificar si es PA</div><div class="level-desc">Dada una sucesión, determinar si es o no una progresión aritmética</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paConChg(1,-1)">−</button><span id="pa-con-q1">4</span><button class="lq-btn" onclick="paConChg(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Conceptos</div>
+        <div class="levels">
+          <div class="level-item" id="pa-con-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 1 — Identificar si es PA</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paConChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-con-q1">0</span>
+              <button class="lq-btn" onclick="paConChg(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-con-lvl2">
-            <div class="level-info"><div class="level-name">Tipo 2 — Hallar la razón</div><div class="level-desc">Dada una PA, calcular la razón r</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paConChg(2,-1)">−</button><span id="pa-con-q2">4</span><button class="lq-btn" onclick="paConChg(2,+1)">+</button></div>
+          <div class="level-item" id="pa-con-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 2 — Hallar la razón</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paConChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-con-q2">0</span>
+              <button class="lq-btn" onclick="paConChg(2,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-con-lvl3">
-            <div class="level-info"><div class="level-name">Tipo 3 — Clasificar la PA</div><div class="level-desc">Indicar si la PA es creciente, decreciente o constante</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paConChg(3,-1)">−</button><span id="pa-con-q3">3</span><button class="lq-btn" onclick="paConChg(3,+1)">+</button></div>
+          <div class="level-item" id="pa-con-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 3 — Clasificar la PA (creciente / decreciente / constante)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paConChg(3,-1)">−</button>
+              <span class="lq-val" id="pa-con-q3">0</span>
+              <button class="lq-btn" onclick="paConChg(3,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-con-lvl4">
-            <div class="level-info"><div class="level-name">Tipo 4 — Escribir la PA dado a₁ y r</div><div class="level-desc">Dado el primer término y la razón, escribir entre 4 y 8 términos</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paConChg(4,-1)">−</button><span id="pa-con-q4">3</span><button class="lq-btn" onclick="paConChg(4,+1)">+</button></div>
+          <div class="level-item" id="pa-con-lvl4">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 4 — Escribir la PA dado a₁ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paConChg(4,-1)">−</button>
+              <span class="lq-val" id="pa-con-q4">0</span>
+              <button class="lq-btn" onclick="paConChg(4,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-con-lvl5">
-            <div class="level-info"><div class="level-name">Tipo 5 — Escribir la PA dado aₙ y r</div><div class="level-desc">Dado un término cualquiera y la razón, escribir entre 4 y 8 términos</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paConChg(5,-1)">−</button><span id="pa-con-q5">3</span><button class="lq-btn" onclick="paConChg(5,+1)">+</button></div>
+          <div class="level-item" id="pa-con-lvl5">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 5 — Escribir la PA dado aₙ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paConChg(5,-1)">−</button>
+              <span class="lq-val" id="pa-con-q5">0</span>
+              <button class="lq-btn" onclick="paConChg(5,+1)">+</button>
+            </div>
           </div>
         </div>
+        <div class="total-badge" id="pa-con-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generatePA()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="pa-ejercitario"></div>
+      <button class="btn-download" id="pa-btnDownload" onclick="downloadEjercitario('pa-ejercitario','pa-progresion-aritmetica')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="pa-btnSolAparte" onclick="downloadSolucionesAparte('pa-ejercitario','pa-progresion-aritmetica')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- TÉRMINO GENERAL -->
-    <div id="pa-section-tgeneral">
+    <div id="pa-section-tgeneral" style="display:none">
       <div class="card">
-        <div class="card-title">🔢 Término general</div>
-        <div class="levels-list" id="pa-tg-levels">
-          <div class="level-item active" id="pa-tg-lvl1">
-            <div class="level-info"><div class="level-name">Tipo 1 — Escribir la PA dado aₙ</div><div class="level-desc">Dada la fórmula del término general, escribir los primeros términos</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paTgChg(1,-1)">−</button><span id="pa-tg-q1">3</span><button class="lq-btn" onclick="paTgChg(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Término general</div>
+        <div class="levels">
+          <div class="level-item" id="pa-tg-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 1 — Escribir la PA dado aₙ</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTgChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-tg-q1">0</span>
+              <button class="lq-btn" onclick="paTgChg(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-tg-lvl2">
-            <div class="level-info"><div class="level-name">Tipo 2 — Escribir la ecuación de aₙ</div><div class="level-desc">Dado a₁ y r, escribir la fórmula del término general</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paTgChg(2,-1)">−</button><span id="pa-tg-q2">3</span><button class="lq-btn" onclick="paTgChg(2,+1)">+</button></div>
+          <div class="level-item" id="pa-tg-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 2 — Escribir la ecuación de aₙ dado a₁ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTgChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-tg-q2">0</span>
+              <button class="lq-btn" onclick="paTgChg(2,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-tg-lvl3">
-            <div class="level-info"><div class="level-name">Tipo 3 — Hallar un término específico</div><div class="level-desc">Dados a₁ y r, calcular el valor de un término pedido (ej. a₂₅, a₅₀)</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paTgChg(3,-1)">−</button><span id="pa-tg-q3">3</span><button class="lq-btn" onclick="paTgChg(3,+1)">+</button></div>
+          <div class="level-item" id="pa-tg-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 3 — Hallar un término específico (a₂₅, a₅₀…)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTgChg(3,-1)">−</button>
+              <span class="lq-val" id="pa-tg-q3">0</span>
+              <button class="lq-btn" onclick="paTgChg(3,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-tg-lvl4">
-            <div class="level-info"><div class="level-name">Tipo 4 — Ecuación dado aₙ y r</div><div class="level-desc">Dado un término cualquiera (ej. a₄) y la razón, hallar el término general</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paTgChg(4,-1)">−</button><span id="pa-tg-q4">3</span><button class="lq-btn" onclick="paTgChg(4,+1)">+</button></div>
+          <div class="level-item" id="pa-tg-lvl4">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 4 — Ecuación dado aₙ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTgChg(4,-1)">−</button>
+              <span class="lq-val" id="pa-tg-q4">0</span>
+              <button class="lq-btn" onclick="paTgChg(4,+1)">+</button>
+            </div>
           </div>
         </div>
+        <div class="total-badge" id="pa-tg-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generatePA()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="pa-tg-ejercitario"></div>
+      <button class="btn-download" id="pa-tg-btnDownload" onclick="downloadEjercitario('pa-tg-ejercitario','pa-termino-general')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="pa-tg-btnSolAparte" onclick="downloadSolucionesAparte('pa-tg-ejercitario','pa-termino-general')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- SUMA -->
-    <div id="pa-section-suma">
+    <div id="pa-section-suma" style="display:none">
       <div class="card">
-        <div class="card-title">∑ Suma de términos</div>
-        <div class="levels-list" id="pa-sum-levels">
-          <div class="level-item active" id="pa-sum-lvl1">
-            <div class="level-info"><div class="level-name">Tipo 1 — Suma de primeros n términos</div><div class="level-desc">Dada la PA (por ej. 5, 8...), calcular la suma de sus primeros n términos</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paSumChg(1,-1)">−</button><span id="pa-sum-q1">3</span><button class="lq-btn" onclick="paSumChg(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Suma de términos</div>
+        <div class="levels">
+          <div class="level-item" id="pa-sum-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 1 — Suma de primeros n términos</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paSumChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-sum-q1">0</span>
+              <button class="lq-btn" onclick="paSumChg(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-sum-lvl2">
-            <div class="level-info"><div class="level-name">Tipo 2 — Suma de múltiplos</div><div class="level-desc">Calcular la suma de los primeros n múltiplos positivos de un número</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paSumChg(2,-1)">−</button><span id="pa-sum-q2">3</span><button class="lq-btn" onclick="paSumChg(2,+1)">+</button></div>
+          <div class="level-item" id="pa-sum-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 2 — Suma de múltiplos</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paSumChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-sum-q2">0</span>
+              <button class="lq-btn" onclick="paSumChg(2,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-sum-lvl3">
-            <div class="level-info"><div class="level-name">Tipo 3 — Hallar la razón dada la suma</div><div class="level-desc">Dado Sₙ y a₁, calcular la razón r</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paSumChg(3,-1)">−</button><span id="pa-sum-q3">3</span><button class="lq-btn" onclick="paSumChg(3,+1)">+</button></div>
+          <div class="level-item" id="pa-sum-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 3 — Hallar la razón dada la suma</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paSumChg(3,-1)">−</button>
+              <span class="lq-val" id="pa-sum-q3">0</span>
+              <button class="lq-btn" onclick="paSumChg(3,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-sum-lvl4">
-            <div class="level-info"><div class="level-name">Tipo 4 — Resolver ecuación de suma</div><div class="level-desc">Dada la serie (ej. 100+95+…+x = S), hallar el último término y n</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paSumChg(4,-1)">−</button><span id="pa-sum-q4">3</span><button class="lq-btn" onclick="paSumChg(4,+1)">+</button></div>
+          <div class="level-item" id="pa-sum-lvl4">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 4 — Resolver ecuación de suma</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paSumChg(4,-1)">−</button>
+              <span class="lq-val" id="pa-sum-q4">0</span>
+              <button class="lq-btn" onclick="paSumChg(4,+1)">+</button>
+            </div>
           </div>
         </div>
+        <div class="total-badge" id="pa-sum-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generatePA()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="pa-sum-ejercitario"></div>
+      <button class="btn-download" id="pa-sum-btnDownload" onclick="downloadEjercitario('pa-sum-ejercitario','pa-suma')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="pa-sum-btnSolAparte" onclick="downloadSolucionesAparte('pa-sum-ejercitario','pa-suma')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
     <!-- SITUACIONES PROBLEMÁTICAS -->
-    <div id="pa-section-problemas">
+    <div id="pa-section-problemas" style="display:none">
       <div class="card">
-        <div class="card-title">📝 Situaciones problemáticas</div>
-        <div class="levels-list" id="pa-prob-levels">
-          <div class="level-item active" id="pa-prob-lvl1">
-            <div class="level-info"><div class="level-name">Nivel 1 — Contexto directo</div><div class="level-desc">Aplicar la PA en situaciones cotidianas sencillas</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paProbChg(1,-1)">−</button><span id="pa-prob-q1">2</span><button class="lq-btn" onclick="paProbChg(1,+1)">+</button></div>
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Situaciones problemáticas</div>
+        <div class="levels">
+          <div class="level-item" id="pa-prob-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 1 — Contexto directo (PA en situaciones cotidianas)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paProbChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-prob-q1">0</span>
+              <button class="lq-btn" onclick="paProbChg(1,+1)">+</button>
+            </div>
           </div>
-          <div class="level-item active" id="pa-prob-lvl2">
-            <div class="level-info"><div class="level-name">Nivel 2 — Problemas completos</div><div class="level-desc">Hallar datos desconocidos usando suma y término general de la PA</div></div>
-            <div class="level-qty"><button class="lq-btn" onclick="paProbChg(2,-1)">−</button><span id="pa-prob-q2">2</span><button class="lq-btn" onclick="paProbChg(2,+1)">+</button></div>
+          <div class="level-item" id="pa-prob-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 2 — Problemas completos (suma + término general)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paProbChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-prob-q2">0</span>
+              <button class="lq-btn" onclick="paProbChg(2,+1)">+</button>
+            </div>
           </div>
         </div>
+        <div class="total-badge" id="pa-prob-totalBadge">Total: <span>0</span> ejercicios</div>
       </div>
+      <button class="btn-generate" onclick="generatePA()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="pa-prob-ejercitario"></div>
+      <button class="btn-download" id="pa-prob-btnDownload" onclick="downloadEjercitario('pa-prob-ejercitario','pa-problemas')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="pa-prob-btnSolAparte" onclick="downloadSolucionesAparte('pa-prob-ejercitario','pa-problemas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
-
-    <!-- BOTÓN GENERAR ÚNICO + RESULTADO -->
-    <button class="btn-generate" onclick="generatePA()">⚡ Generar ejercitario</button>
-<div class="ejercitario" id="pa-ejercitario"></div>
-<button class="btn-download" id="pa-btnDownload" onclick="downloadEjercitario('pa-ejercitario','pa-progresion-aritmetica')" style="display:none">⬇️ Descargar PDF</button>
-    <button class="btn-download-sol" id="pa-btnSolAparte" onclick="downloadSolucionesAparte('pa-ejercitario','pa-progresion-aritmetica')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
 
   </div><!-- fin panel-pa -->
 
@@ -6806,8 +6955,15 @@ function sucSetSubtype(sub) {
 }
 
 // ── Contadores de cantidad (qty) ──
-var sucVfQtys = {1:8};
-function sucVfChangeLvl(n, d) { sucChangeQty(sucVfQtys, 'suc-vf-q', n, d, 'suc-vf-lvl'); }
+var sucVfQtys = {1:0};
+function sucVfChangeLvl(n, d) {
+  sucVfQtys[n] = Math.max(0, Math.min(24, (sucVfQtys[n]||0) + d));
+  document.getElementById('suc-vf-q'+n).textContent = sucVfQtys[n];
+  var lvlEl = document.getElementById('suc-vf-lvl'+n);
+  if (lvlEl) lvlEl.classList.toggle('active', sucVfQtys[n] > 0);
+  var badge = document.getElementById('suc-vf-totalBadge');
+  if (badge) badge.querySelector('span').textContent = sucVfQtys[n];
+}
 
 // ════════════════════════════════════════════
 // GENERADOR 5 — VERDADERO Y FALSO
@@ -6881,21 +7037,26 @@ function generateSucVF() {
 }
 
 
-var sucCarQtys  = {1:3, 2:3, 3:2};
-var sucRepQtys  = {1:3, 2:3};
-var sucTgQtys   = {1:3, 2:3, 3:2};
-var sucProbQtys = {1:2, 2:2};
+var sucCarQtys  = {1:0, 2:0, 3:0};
+var sucRepQtys  = {1:0, 2:0};
+var sucTgQtys   = {1:0, 2:0, 3:0};
+var sucProbQtys = {1:0, 2:0};
 
-function sucCarChangeLvl(n, d)  { sucChangeQty(sucCarQtys,  'suc-car-q',  n, d, 'suc-car-lvl'); }
-function sucRepChangeLvl(n, d)  { sucChangeQty(sucRepQtys,  'suc-rep-q',  n, d, 'suc-rep-lvl'); }
-function sucTgChangeLvl(n, d)   { sucChangeQty(sucTgQtys,   'suc-tg-q',   n, d, 'suc-tg-lvl'); }
-function sucProbChangeLvl(n, d) { sucChangeQty(sucProbQtys, 'suc-prob-q', n, d, 'suc-prob-lvl'); }
+function sucCarChangeLvl(n, d)  { sucChangeQty(sucCarQtys,  'suc-car-q',  n, d, 'suc-car-lvl', 'suc-car-totalBadge'); }
+function sucRepChangeLvl(n, d)  { sucChangeQty(sucRepQtys,  'suc-rep-q',  n, d, 'suc-rep-lvl', 'suc-rep-totalBadge'); }
+function sucTgChangeLvl(n, d)   { sucChangeQty(sucTgQtys,   'suc-tg-q',   n, d, 'suc-tg-lvl',  'suc-tg-totalBadge'); }
+function sucProbChangeLvl(n, d) { sucChangeQty(sucProbQtys, 'suc-prob-q', n, d, 'suc-prob-lvl','suc-prob-totalBadge'); }
 
-function sucChangeQty(qtys, prefix, n, d, lvlPrefix) {
+function sucChangeQty(qtys, prefix, n, d, lvlPrefix, badgeId) {
   qtys[n] = Math.max(0, Math.min(8, (qtys[n]||0) + d));
   document.getElementById(prefix+n).textContent = qtys[n];
   var lvlEl = document.getElementById(lvlPrefix+n);
   if (lvlEl) lvlEl.classList.toggle('active', qtys[n] > 0);
+  if (badgeId) {
+    var total = Object.values(qtys).reduce(function(s,v){return s+v;},0);
+    var badge = document.getElementById(badgeId);
+    if (badge) badge.querySelector('span').textContent = total;
+  }
 }
 
 // ── Helpers de fecha y encabezado ──
@@ -7329,48 +7490,55 @@ function generateSucProblemas() {
 // ════════════════════════════════════════════
 
 // ── Navegación de subtipos ──
-function paToggleChip(btn) {
-  btn.classList.toggle('selected');
-  var sec = btn.dataset.sec;
-  var el = document.getElementById('pa-section-' + sec);
-  if (el) el.style.display = btn.classList.contains('selected') ? '' : 'none';
+function paSetSubtype(sub) {
+  ['conceptos','tgeneral','suma','problemas'].forEach(function(s) {
+    document.getElementById('pa-section-'+s).style.display = s===sub ? '' : 'none';
+    document.getElementById('pa-sub-'+s).classList.toggle('active', s===sub);
+  });
 }
 
-// Inicializar visibilidad de secciones según chips al cargar
-(function() {
-  ['conceptos','tgeneral','suma','problemas'].forEach(function(s) {
-    var chip = document.querySelector('#pa-chips [data-sec="'+s+'"]');
-    var sec  = document.getElementById('pa-section-'+s);
-    if (chip && sec) sec.style.display = chip.classList.contains('selected') ? '' : 'none';
-  });
-})();
-
 // ── Qtys (Conceptos) ──
-var paConQtys = {1:4, 2:4, 3:3, 4:3, 5:3};
+var paConQtys = {1:0, 2:0, 3:0, 4:0, 5:0};
 function paConChg(n, d) {
-  paConQtys[n] = Math.max(0, paConQtys[n] + d);
+  paConQtys[n] = Math.max(0, (paConQtys[n]||0) + d);
   document.getElementById('pa-con-q'+n).textContent = paConQtys[n];
+  var lvl = document.getElementById('pa-con-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paConQtys[n] > 0);
+  var t = Object.values(paConQtys).reduce(function(s,v){return s+v;},0);
+  document.getElementById('pa-con-totalBadge').querySelector('span').textContent = t;
 }
 
 // ── Qtys (Término general) ──
-var paTgQtys = {1:3, 2:3, 3:3, 4:3};
+var paTgQtys = {1:0, 2:0, 3:0, 4:0};
 function paTgChg(n, d) {
-  paTgQtys[n] = Math.max(0, paTgQtys[n] + d);
+  paTgQtys[n] = Math.max(0, (paTgQtys[n]||0) + d);
   document.getElementById('pa-tg-q'+n).textContent = paTgQtys[n];
+  var lvl = document.getElementById('pa-tg-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paTgQtys[n] > 0);
+  var t = Object.values(paTgQtys).reduce(function(s,v){return s+v;},0);
+  document.getElementById('pa-tg-totalBadge').querySelector('span').textContent = t;
 }
 
 // ── Qtys (Suma) ──
-var paSumQtys = {1:3, 2:3, 3:3, 4:3};
+var paSumQtys = {1:0, 2:0, 3:0, 4:0};
 function paSumChg(n, d) {
-  paSumQtys[n] = Math.max(0, paSumQtys[n] + d);
+  paSumQtys[n] = Math.max(0, (paSumQtys[n]||0) + d);
   document.getElementById('pa-sum-q'+n).textContent = paSumQtys[n];
+  var lvl = document.getElementById('pa-sum-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paSumQtys[n] > 0);
+  var t = Object.values(paSumQtys).reduce(function(s,v){return s+v;},0);
+  document.getElementById('pa-sum-totalBadge').querySelector('span').textContent = t;
 }
 
 // ── Qtys (Problemas) ──
-var paProbQtys = {1:2, 2:2};
+var paProbQtys = {1:0, 2:0};
 function paProbChg(n, d) {
-  paProbQtys[n] = Math.max(0, paProbQtys[n] + d);
+  paProbQtys[n] = Math.max(0, (paProbQtys[n]||0) + d);
   document.getElementById('pa-prob-q'+n).textContent = paProbQtys[n];
+  var lvl = document.getElementById('pa-prob-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paProbQtys[n] > 0);
+  var t = Object.values(paProbQtys).reduce(function(s,v){return s+v;},0);
+  document.getElementById('pa-prob-totalBadge').querySelector('span').textContent = t;
 }
 
 // ── Render helper ──
@@ -7854,8 +8022,9 @@ function generatePaProblemas(returnOnly, startId) {
 // GENERADOR PA — COMBINADO (chips multi-selección)
 // ════════════════════════════════════════════
 function generatePA() {
-  var activeChips = document.querySelectorAll('#pa-chips .chip.selected');
-  if (activeChips.length === 0) { alert('Seleccioná al menos un tipo de ejercicio.'); return; }
+  // Detectar qué subtype está activo
+  var activeSubBtn = document.querySelector('#panel-pa .subtype-btn.active');
+  var sub = activeSubBtn ? activeSubBtn.id.replace('pa-sub-','') : 'conceptos';
 
   var secFns = {
     conceptos: generatePaConceptos,
@@ -7864,52 +8033,24 @@ function generatePA() {
     problemas: generatePaProblemas
   };
 
-  var allEjHTML = '';
-  var allSolHTML = '';
-  var cursor = 1;
-  var hasAny = false;
+  var fn = secFns[sub];
+  if (!fn) return;
+  var result = fn(true, 1);
+  if (!result) { alert('Agregá al menos un ejercicio usando los botones +'); return; }
 
-  activeChips.forEach(function(chip) {
-    var sec = chip.dataset.sec;
-    var fn = secFns[sec];
-    if (!fn) return;
-    var result = fn(true, cursor);
-    if (!result) return;
-    allEjHTML += result.ejHTML;
-    allSolHTML += result.solHTML;
-    cursor += result.count;
-    hasAny = true;
-  });
+  var containerId = sub === 'conceptos' ? 'pa-ejercitario' :
+                    sub === 'tgeneral'  ? 'pa-tg-ejercitario' :
+                    sub === 'suma'      ? 'pa-sum-ejercitario' : 'pa-prob-ejercitario';
+  var dlBtnId     = sub === 'conceptos' ? 'pa-btnDownload' :
+                    sub === 'tgeneral'  ? 'pa-tg-btnDownload' :
+                    sub === 'suma'      ? 'pa-sum-btnDownload' : 'pa-prob-btnDownload';
 
-  if (!hasAny) { alert('Agregá al menos un ejercicio usando los botones +'); return; }
-
-  var secNames = Array.from(activeChips).map(function(c) {
-    var labels = {conceptos:'Conceptos', tgeneral:'Término general', suma:'Suma', problemas:'Sit. problemáticas'};
-    return labels[c.dataset.sec] || c.dataset.sec;
-  });
-  var titulo = 'Progresión Aritmética';
-
-  var solHTML = '<div class="solutions-title">✓ Soluciones</div>' + allSolHTML;
-
-  paRender('pa-ejercitario', 'pa-btnDownload', titulo, allEjHTML, solHTML);
+  var solHTML = '<div class="solutions-title">✓ Soluciones</div>' + result.solHTML;
+  paRender(containerId, dlBtnId, 'Progresión Aritmética', result.ejHTML, solHTML);
 }
 
 
-(function() {
-  document.addEventListener('DOMContentLoaded', function() {
-    var paBtns = ['pa-con-btnDownload','pa-tg-btnDownload','pa-sum-btnDownload','pa-prob-btnDownload'];
-    paBtns.forEach(function(btnId) {
-      var btn = document.getElementById(btnId);
-      if (!btn) return;
-      var solBtn = document.getElementById(btnId.replace('-btnDownload','-btnSolAparte'));
-      if (!solBtn) return;
-      var obs = new MutationObserver(function() {
-        if (btn.style.display === 'block') solBtn.style.display = 'block';
-      });
-      obs.observe(btn, {attributes:true, attributeFilter:['style']});
-    });
-  });
-})();
+
 
 
 (function() {
