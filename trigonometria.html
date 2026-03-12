@@ -133,6 +133,13 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .ej-expr em { font-style: italic; }
 .ej-expr sup { font-size: 0.7em; vertical-align: super; }
 .soluciones-section { border-top: 2px solid #111; padding-top: 1.2rem; }
+.ej-item { padding: 0.8rem 0; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 0.3rem; }
+.ej-enun { font-size: 0.95rem; line-height: 1.6; }
+.sol-block { margin-top: 0.3rem; padding: 0.4rem 0.7rem; background: #f0f4ff; border-left: 3px solid #4f6ef7; border-radius: 4px; font-size: 0.88rem; line-height: 1.7; }
+.sol-label { font-weight: 800; color: #4f6ef7; margin-right: 0.4rem; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.88em; }
+.frac .num { border-bottom: 1px solid currentColor; padding: 0 2px; line-height: 1.3; }
+.frac .den { padding: 0 2px; line-height: 1.3; }
 .sol-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 0.8rem; }
 .soluciones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.4rem 1rem; }
 .sol-item { font-size: 0.8rem; display: flex; gap: 0.4rem; }
@@ -361,6 +368,9 @@ body { padding-bottom: 2.5rem; }
     <button class="topic-btn" id="topic-formulas-rad" onclick="switchTopic('formulas-rad')">
       🔄 Suma, Arco Doble y Mitad <span style="font-size:0.7rem;opacity:0.7">(radianes)</span>
     </button>
+    <button class="topic-btn" id="topic-trigrect" onclick="switchTopic('trigrect')">
+      📐 Func. Trig. en el Triángulo Rectángulo
+    </button>
   </div>
 
   <!-- ══════════════════════════════════════ -->
@@ -506,6 +516,24 @@ body { padding-bottom: 2.5rem; }
               <button class="lq-btn" onclick="triChangeQty('ambas',-1)">−</button>
               <span class="lq-val" id="tri-lqv-ambas">0</span>
               <button class="lq-btn" onclick="triChangeQty('ambas',+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="tri-lvl-earea" data-level="4">
+            <span class="level-dot"></span>
+            <span class="level-name" onclick="triToggleLevel('earea')">Área</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="triChangeQty('earea',-1)">−</button>
+              <span class="lq-val" id="tri-lqv-earea">0</span>
+              <button class="lq-btn" onclick="triChangeQty('earea',+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="tri-lvl-eperim" data-level="5">
+            <span class="level-dot"></span>
+            <span class="level-name" onclick="triToggleLevel('eperim')">Perímetro</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="triChangeQty('eperim',-1)">−</button>
+              <span class="lq-val" id="tri-lqv-eperim">0</span>
+              <button class="lq-btn" onclick="triChangeQty('eperim',+1)">+</button>
             </div>
           </div>
         </div>
@@ -726,6 +754,104 @@ body { padding-bottom: 2.5rem; }
 <div class="ejercitario" id="fmr-ejercitario"></div>
 <button class="btn-download" id="fmr-btnDownload" onclick="downloadEjercitario('fmr-ejercitario','formulas-trig-radianes')">⬇️ Descargar PDF</button>
       <button class="btn-download-sol" id="fmr-btnSolAparte" onclick="downloadSolucionesAparte('fmr-ejercitario', 'formulas-trig-radianes')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+
+  </div>
+
+  <!-- PANEL: FUNCIONES TRIG. EN EL TRIÁNGULO RECTÁNGULO -->
+  <div class="section-panel" id="panel-trigrect">
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4">📐</span> Niveles y cantidad</div>
+      <div class="levels">
+        <div class="level-item" data-level="1" id="tr-lvl-1">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(1)">Nivel 1 — Hallar las 6 funciones trig. dados los 3 lados</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(1,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-1">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(1,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="2" id="tr-lvl-2">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(2)">Nivel 2 — Hallar las 6 funciones trig. dados 2 lados (calcular el tercero)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(2,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-2">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(2,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="3" id="tr-lvl-3">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(3)">Nivel 3 — Hallar lados y ángulo faltante dado 1 lado y 1 ángulo agudo</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(3,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-3">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(3,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="4" id="tr-lvl-4">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(4)">Nivel 4 — Aplicación en rectángulo (diagonal)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(4,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-4">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(4,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="5" id="tr-lvl-5">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(5)">Nivel 5 — Aplicación en cuadrado (diagonal)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(5,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-5">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(5,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="6" id="tr-lvl-6">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(6)">Nivel 6 — Aplicación en rombo (diagonales)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(6,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-6">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(6,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="7" id="tr-lvl-7">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(7)">Nivel 7 — Calcular área y perímetro dado un ángulo agudo y un lado</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(7,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-7">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(7,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="8" id="tr-lvl-8">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(8)">Nivel 8 — Problemas de la vida real (aplicación mixta)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(8,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-8">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(8,+1)">+</button>
+          </div>
+        </div>
+        <div class="level-item" data-level="9" id="tr-lvl-9">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="trToggleLevel(9)">Nivel 9 — Dos triángulos que comparten la altura (edificio/árbol)</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="trChangeLevelQty(9,-1)">−</button>
+            <span class="lq-val" id="tr-lqv-9">0</span>
+            <button class="lq-btn" onclick="trChangeLevelQty(9,+1)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="total-badge" id="tr-totalBadge">Total: <span>0</span> ejercicios</div>
+    </div>
+
+    <button class="btn-generate" onclick="generateTrigrect()">⚡ Generar ejercitario</button>
+    <div class="ejercitario" id="tr-ejercitario"></div>
+    <button class="btn-download" id="tr-btnDownload" onclick="downloadEjercitario('tr-ejercitario','trigrect')">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="tr-btnSolAparte" onclick="downloadSolucionesAparte('tr-ejercitario','trigrect')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
 
   </div>
 
@@ -1093,6 +1219,10 @@ function getEjercitarioPDFCss() {
     '.ej-equation{font-family:Georgia,serif;font-size:1.05rem;font-weight:bold;margin:.4rem 0}',
     '.ej-steps{font-size:.88rem;color:#555;margin-top:.3rem;line-height:1.7}',
     '.tri-item{margin-bottom:1.5rem;page-break-inside:avoid}',
+    '.ej-item{padding:.7rem 0;border-bottom:1px solid #eee;display:flex;flex-direction:column;gap:.3rem;page-break-inside:avoid}',
+    '.ej-enun{font-size:.93rem;line-height:1.65;color:#1a1d2e}',
+    '.sol-block{margin-top:.3rem;padding:.35rem .7rem;background:#f0f4ff;border-left:3px solid #4f6ef7;border-radius:4px;font-size:.85rem;line-height:1.7}',
+    '.sol-label{font-weight:800;color:#4f6ef7;margin-right:.4rem}',
     IND_PRINT_CSS
   ].join('');
 }
@@ -1653,7 +1783,7 @@ function generateTrigonometrica() {
 // ═══════════════════════════════════════════
 
 let triSector = 'ejercicios';
-let triQtys = { seno:0, coseno:0, ambas:0, pseno:0, pcoseno:0, pambas:0, parea:0, pperim:0 };
+let triQtys = { seno:0, coseno:0, ambas:0, earea:0, eperim:0, pseno:0, pcoseno:0, pambas:0, parea:0, pperim:0 };
 
 function triSwitchSector(s) {
   triSector = s;
@@ -1684,7 +1814,7 @@ function triChangeQty(k, delta) {
   triUpdateTotals();
 }
 function triUpdateTotals() {
-  const ejTotal = (triQtys.seno||0) + (triQtys.coseno||0) + (triQtys.ambas||0);
+  const ejTotal = (triQtys.seno||0) + (triQtys.coseno||0) + (triQtys.ambas||0) + (triQtys.earea||0) + (triQtys.eperim||0);
   document.getElementById('tri-ej-totalBadge').innerHTML = `Total: <span>${ejTotal}</span> ejercicios`;
   const probTotal = (triQtys.pseno||0) + (triQtys.pcoseno||0) + (triQtys.pambas||0) + (triQtys.parea||0) + (triQtys.pperim||0);
   document.getElementById('tri-prob-totalBadge').innerHTML = `Total: <span>${probTotal}</span> problemas`;
@@ -1784,24 +1914,47 @@ function triGenCoseno() {
   }
 }
 
-// AMBAS LEYES: AAS + find remaining with cosine check, or give partial data
+// AMBAS LEYES: alterna aleatoriamente entre variantes que requieren seno o coseno
+// para garantizar mezcla real cuando el docente elige este nivel
 function triGenAmbas() {
-  // Give two sides and a non-included angle (SSA — ambiguous case resolved)
-  // Then need seno to find another angle, coseno or seno for the third side
-  let t = null, att = 0;
-  while (!t && att++ < 50) {
-    const A = rnd(30, 70), B = rnd(30, 70);
-    if (A + B >= 160) continue;
-    const a = rnd(6, 18);
-    t = makeTriangle(A, B, a);
+  const variant = rnd(0, 2); // 0,1 = requiere seno primero; 2 = requiere coseno + seno
+  if (variant <= 1) {
+    // AAS: dado A, B, a → seno para b y c; luego ángulo con seno
+    let t = null, att = 0;
+    while (!t && att++ < 50) {
+      const A = rnd(30, 75), B = rnd(25, 70);
+      if (A + B >= 160) continue;
+      const a = rnd(6, 18);
+      t = makeTriangle(A, B, a);
+    }
+    if (!t) return null;
+    const sol = `b ≈ ${t.b} | c ≈ ${t.c} | Ĉ = ${t.C}° | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
+    return {
+      expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá los lados y el ángulo desconocidos, el perímetro y el área.`,
+      sol, hint: '(Ley del Seno)', tema: 'Triángulo — Ley del Seno'
+    };
+  } else {
+    // SAS: dado b, c, A → coseno para hallar a; luego seno para ángulos restantes
+    let t = null, att = 0;
+    while (!t && att++ < 50) {
+      const b = rnd(5, 18), c = rnd(5, 18), A = rnd(20, 130);
+      const a2 = b*b + c*c - 2*b*c*Math.cos(A * DEG);
+      if (a2 <= 0) continue;
+      const a = Math.sqrt(a2);
+      const B = Math.asin(b * Math.sin(A * DEG) / a) / DEG;
+      const C = 180 - A - B;
+      if (C <= 0 || B <= 0) continue;
+      const area = 0.5 * b * c * Math.sin(A * DEG);
+      const perim = a + b + c;
+      t = { A, B: fmt(B), C: fmt(C), a: fmt(a), b, c, area: fmt(area), perim: fmt(perim) };
+    }
+    if (!t) return null;
+    const sol = `a ≈ ${t.a} | B̂ ≈ ${t.B}° | Ĉ ≈ ${t.C}° | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el lado y los ángulos desconocidos, el perímetro y el área.`,
+      sol, hint: '(Ley del Coseno)', tema: 'Triángulo — Ley del Coseno'
+    };
   }
-  if (!t) return null;
-  // Give a, b, A — student needs seno to get B, then can use either for c
-  const sol = `B̂ ≈ ${t.B}° | Ĉ ≈ ${t.C}° | c ≈ ${t.c} | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
-  return {
-    expr: `En el triángulo ABC: a = ${t.a}, b = ${t.b}, Â = ${t.A}°.<br>Hallá los elementos desconocidos, el perímetro y el área.`,
-    sol, hint: '(Ley del Seno y del Coseno)', tema: 'Triángulo — Ambas leyes'
-  };
 }
 
 // ─── PROBLEMAS GENERATORS ───────────────────
@@ -2172,6 +2325,104 @@ function triGenParalelogramo(forcePide) {
 }
 
 
+// ─── EJERCICIO: ÁREA (dato puro, sin contexto real) ──────────────────────────
+// Variantes: SAS → Área = ½·b·c·sin(A) | SSS → Herón | AAS → Área vía seno
+function triEjArea() {
+  const variant = rnd(0, 2);
+  let t = null, att = 0;
+  if (variant === 0) {
+    // SAS: dados b, c, A → pedir solo área
+    while (!t && att++ < 50) {
+      const b = rnd(4, 20), c = rnd(4, 20), A = rnd(20, 140);
+      const area = 0.5 * b * c * Math.sin(A * DEG);
+      if (area < 1) continue;
+      t = { b, c, A, area: fmt(area) };
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el <strong>área</strong> del triángulo.`,
+      sol: `Área = ½ · ${t.b} · ${t.c} · sin(${t.A}°) ≈ ${t.area} u²`,
+      hint: '(½·b·c·sin A)',
+      tema: 'Triángulo — Área'
+    };
+  } else if (variant === 1) {
+    // SSS: dados a, b, c → Herón → pedir área
+    while (!t && att++ < 50) {
+      const a = rnd(5, 15), b = rnd(5, 15), c = rnd(5, 15);
+      if (a + b <= c || a + c <= b || b + c <= a) continue;
+      const s = (a + b + c) / 2;
+      const area2 = s * (s-a) * (s-b) * (s-c);
+      if (area2 <= 0) continue;
+      t = { a, b, c, s: fmt(s), area: fmt(Math.sqrt(area2)) };
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: a = ${t.a}, b = ${t.b}, c = ${t.c}.<br>Hallá el <strong>área</strong> usando la fórmula de Herón.`,
+      sol: `s = (${t.a}+${t.b}+${t.c})/2 = ${t.s} | Área = √(s(s−a)(s−b)(s−c)) ≈ ${t.area} u²`,
+      hint: '(Herón)',
+      tema: 'Triángulo — Área'
+    };
+  } else {
+    // AAS: dados A, B, a → hallar área con seno
+    while (!t && att++ < 50) {
+      const A = rnd(30, 80), B = rnd(25, 75);
+      if (A + B >= 160) continue;
+      const a = rnd(5, 18);
+      t = makeTriangle(A, B, a);
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá el <strong>área</strong> del triángulo.`,
+      sol: `b ≈ ${t.b} (Ley del Seno) | c ≈ ${t.c} | Área = ½·b·c·sin(${t.C}°) ≈ ${t.area} u²`,
+      hint: '(Ley del Seno + ½·b·c·sin C)',
+      tema: 'Triángulo — Área'
+    };
+  }
+}
+
+// ─── EJERCICIO: PERÍMETRO (dato puro, sin contexto real) ─────────────────────
+// Variantes: AAS → Ley del Seno → sumar lados | SAS → Coseno → sumar lados
+function triEjPerim() {
+  const variant = rnd(0, 1);
+  let t = null, att = 0;
+  if (variant === 0) {
+    // AAS: dados A, B, a → hallar b, c con seno → perímetro
+    while (!t && att++ < 50) {
+      const A = rnd(30, 80), B = rnd(25, 75);
+      if (A + B >= 160) continue;
+      const a = rnd(5, 18);
+      t = makeTriangle(A, B, a);
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá el <strong>perímetro</strong> del triángulo.`,
+      sol: `Ĉ = ${t.C}° | b ≈ ${t.b} (Ley del Seno) | c ≈ ${t.c} | Perímetro ≈ ${t.perim}`,
+      hint: '(Ley del Seno)',
+      tema: 'Triángulo — Perímetro'
+    };
+  } else {
+    // SAS: dados b, c, A → hallar a con coseno → perímetro
+    while (!t && att++ < 50) {
+      const b = rnd(5, 18), c = rnd(5, 18), A = rnd(20, 130);
+      const a2 = b*b + c*c - 2*b*c*Math.cos(A * DEG);
+      if (a2 <= 0) continue;
+      const a = Math.sqrt(a2);
+      const B = Math.asin(b * Math.sin(A * DEG) / a) / DEG;
+      const C = 180 - A - B;
+      if (C <= 0 || B <= 0) continue;
+      const perim = fmt(a + b + c);
+      t = { A, b, c, a: fmt(a), perim };
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el <strong>perímetro</strong> del triángulo.`,
+      sol: `a² = b² + c² − 2bc·cos(A) → a ≈ ${t.a} | Perímetro ≈ ${t.perim}`,
+      hint: '(Ley del Coseno)',
+      tema: 'Triángulo — Perímetro'
+    };
+  }
+}
+
 // ─── PROBLEM DISPATCHERS ─────────────────
 // Pick context randomly; the required law determines which generators are valid
 
@@ -2204,7 +2455,7 @@ function triProbPerim() {
 function generateTriangulos() {
   const isEj = triSector === 'ejercicios';
   const keys = isEj
-    ? [['seno', triGenSeno], ['coseno', triGenCoseno], ['ambas', triGenAmbas]]
+    ? [['seno', triGenSeno], ['coseno', triGenCoseno], ['ambas', triGenAmbas], ['earea', triEjArea], ['eperim', triEjPerim]]
     : [['pseno',  triProbSeno],  ['pcoseno', triProbCoseno],
        ['pambas', triProbAmbas], ['parea',   triProbArea],
        ['pperim', triProbPerim]];
@@ -2212,20 +2463,34 @@ function generateTriangulos() {
   const total = keys.reduce((s, [k]) => s + (triQtys[k]||0), 0);
   if (total === 0) { alert('Agregá al menos un ejercicio.'); return; }
 
+  // Construir pool intercalado: round-robin entre tipos activos para distribución pareja
+  const activePairs = keys.filter(([k]) => (triQtys[k]||0) > 0);
+  const counts = Object.fromEntries(activePairs.map(([k]) => [k, triQtys[k]||0]));
+  const remaining = Object.fromEntries(activePairs.map(([k]) => [k, triQtys[k]||0]));
+  const genMap = Object.fromEntries(activePairs);
   const ejercicios = [], seen = new Set();
-  for (const [k, gen] of keys) {
-    const qty = triQtys[k] || 0; if (!qty) continue;
-    let count = 0, att = 0;
-    while (count < qty && att < qty * 40) {
-      att++;
-      try {
-        const e = gen();
-        if (!e || seen.has(e.expr)) continue;
-        seen.add(e.expr);
-        ejercicios.push(e);
-        count++;
-      } catch(err) {}
-    }
+
+  // Generar en rondas para intercalar tipos, luego shuffle
+  const totalEj = activePairs.reduce((s,[k]) => s + counts[k], 0);
+  let globalAtt = 0;
+  while (ejercicios.length < totalEj && globalAtt++ < totalEj * 60) {
+    // Elegir tipo aleatoriamente entre los que aún faltan
+    const disponibles = activePairs.filter(([k]) => remaining[k] > 0);
+    if (!disponibles.length) break;
+    const [k, gen] = disponibles[Math.floor(Math.random() * disponibles.length)];
+    try {
+      const e = gen();
+      if (!e || seen.has(e.expr)) continue;
+      seen.add(e.expr);
+      ejercicios.push(e);
+      remaining[k]--;
+    } catch(err) {}
+  }
+
+  // Shuffle Fisher-Yates para romper cualquier patrón residual
+  for (let i = ejercicios.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ejercicios[i], ejercicios[j]] = [ejercicios[j], ejercicios[i]];
   }
   ejercicios.forEach((e, i) => e.id = i + 1);
 
@@ -2422,14 +2687,14 @@ function fmGenAD1() {
     // cos(2α) = cos²(α) − sen²(α)
     const resultC = knownDbl ? knownDbl.c : '—';
     return {
-      expr: `Calculá <strong>cos(${dbl}°)</strong> usando la fórmula del arco doble (cos²α − sen²α).`,
+      expr: `Calculá <strong>cos(${dbl}°)</strong> usando la fórmula del arco doble.`,
       sol: `cos(2·${a}°) = cos²(${a}°) − sen²(${a}°) = (${cA})² − (${sA})² = ${resultC}`
     };
   } else {
     // cos(2α) = 1 − 2sen²(α)
     const resultC = knownDbl ? knownDbl.c : '—';
     return {
-      expr: `Calculá <strong>cos(${dbl}°)</strong> usando la fórmula del arco doble (1 − 2sen²α).`,
+      expr: `Calculá <strong>cos(${dbl}°)</strong> usando la fórmula del arco doble.`,
       sol: `cos(2·${a}°) = 1 − 2·sen²(${a}°) = 1 − 2·(${sA})² = ${resultC}`
     };
   }
@@ -2780,13 +3045,13 @@ function fmrGenAD1() {
   } else if (func === 1) {
     const res = nDbl ? nDbl.c : '—';
     return {
-      expr: `Calculá <strong>cos(${dblRad})</strong> usando la fórmula del arco doble (cos²α − sen²α).`,
+      expr: `Calculá <strong>cos(${dblRad})</strong> usando la fórmula del arco doble.`,
       sol:  `cos(2·${nA.rad}) = cos²(${nA.rad}) − sen²(${nA.rad}) = (${nA.c})² − (${nA.s})² = ${res}`
     };
   } else {
     const res = nDbl ? nDbl.c : '—';
     return {
-      expr: `Calculá <strong>cos(${dblRad})</strong> usando la fórmula del arco doble (1 − 2sen²α).`,
+      expr: `Calculá <strong>cos(${dblRad})</strong> usando la fórmula del arco doble.`,
       sol:  `cos(2·${nA.rad}) = 1 − 2·sen²(${nA.rad}) = 1 − 2·(${nA.s})² = ${res}`
     };
   }
@@ -3208,6 +3473,590 @@ function renderIdentidades(ejercicios, containerId, titulo) {
     '<div class="ej-copyright">\u00a9 2026 Maria Lopez Nery Huerta</div>';
   el.classList.add('visible');
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FUNCIONES TRIG. EN EL TRIÁNGULO RECTÁNGULO
+// ═══════════════════════════════════════════════════════════════
+
+const trLevelQtys = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0 };
+
+function trToggleLevel(k) {
+  const el = document.getElementById('tr-lvl-' + k);
+  const isActive = el.classList.contains('active');
+  el.classList.toggle('active', !isActive);
+  trLevelQtys[k] = isActive ? 0 : 1;
+  document.getElementById('tr-lqv-' + k).textContent = trLevelQtys[k];
+  trUpdateTotal();
+}
+function trChangeLevelQty(k, delta) {
+  trLevelQtys[k] = Math.max(0, Math.min(20, (trLevelQtys[k] || 0) + delta));
+  document.getElementById('tr-lqv-' + k).textContent = trLevelQtys[k];
+  const el = document.getElementById('tr-lvl-' + k);
+  if (trLevelQtys[k] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  trUpdateTotal();
+}
+function trUpdateTotal() {
+  let t = 0;
+  for (let k = 1; k <= 9; k++) t += (trLevelQtys[k] || 0);
+  document.getElementById('tr-totalBadge').innerHTML = 'Total: <span>' + t + '</span> ejercicios';
+}
+
+// ─── SVG DEL TRIÁNGULO RECTÁNGULO (ángulo recto en C, α en A, β en B) ───────
+// A = vértice izquierdo (ángulo α), B = vértice derecho (ángulo β), C = vértice del ángulo recto (abajo-derecha)
+// Lados: a = BC (cateto opuesto a α), b = AC (cateto opuesto a β), c = AB (hipotenusa)
+function trRectSVG(a, b, c, showSides, showAngles) {
+  // Coordenadas SVG: C abajo-derecha, A abajo-izquierda, B arriba-izquierda
+  // Usamos triángulo con ángulo recto en vértice C abajo-derecha
+  const W = 220, H = 160;
+  const Ax = 20, Ay = H - 20;      // A: abajo-izquierda
+  const Cx = W - 30, Cy = H - 20;  // C: abajo-derecha (ángulo recto)
+  const Bx = W - 30, By = 20;      // B: arriba-derecha
+  // Cuadradito en C (ángulo recto)
+  const sq = 10;
+  const squarePath = 'M ' + (Cx - sq) + ' ' + Cy + ' L ' + (Cx - sq) + ' ' + (Cy - sq) + ' L ' + Cx + ' ' + (Cy - sq) + ' L ' + Cx + ' ' + Cy;
+
+  // Etiquetas de lados
+  let sideLabels = '';
+  if (showSides) {
+    // Hipotenusa AB: etiqueta a la izquierda del segmento
+    const hLabel = (c !== null) ? (typeof c === 'string' ? c : String(c)) : 'c';
+    sideLabels += '<text x="' + ((Ax+Bx)/2 - 18) + '" y="' + ((Ay+By)/2) + '" font-size="11" fill="#4f6ef7" font-family="Nunito,sans-serif" font-weight="700">' + hLabel + '</text>';
+    // Cateto BC (vertical): etiqueta a la derecha
+    const aLabel = (a !== null) ? (typeof a === 'string' ? a : String(a)) : 'a';
+    sideLabels += '<text x="' + (Cx + 4) + '" y="' + ((By+Cy)/2) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + aLabel + '</text>';
+    // Cateto AC (horizontal): etiqueta abajo
+    const bLabel = (b !== null) ? (typeof b === 'string' ? b : String(b)) : 'b';
+    sideLabels += '<text x="' + ((Ax+Cx)/2) + '" y="' + (Ay + 14) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + bLabel + '</text>';
+  }
+
+  // Marcas de ángulos
+  let angleMarks = '';
+  if (showAngles) {
+    // α en A (abajo-izquierda): arco entre hipotenusa y cateto horizontal
+    angleMarks += angleMark(Ax, Ay, Bx, By, Cx, Cy, 22, '&alpha;', '#f97316');
+    // β en B (arriba-derecha): arco entre hipotenusa y cateto vertical
+    angleMarks += angleMark(Bx, By, Ax, Ay, Cx, Cy, 22, '&beta;', '#a855f7');
+  }
+
+  return '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<line x1="' + Ax + '" y1="' + Ay + '" x2="' + Bx + '" y2="' + By + '" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Bx + '" y1="' + By + '" x2="' + Cx + '" y2="' + Cy + '" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Cx + '" y1="' + Cy + '" x2="' + Ax + '" y2="' + Ay + '" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<path d="' + squarePath + '" fill="none" stroke="#555" stroke-width="1.5"/>' +
+    angleMarks + sideLabels +
+    '<text x="' + (Ax - 14) + '" y="' + (Ay + 4) + '" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (Bx + 4) + '" y="' + (By - 4) + '" font-size="12" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (Cx + 4) + '" y="' + (Cy + 4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '</svg>';
+}
+
+// ─── HELPER: gcd y simplificar decimales a enteros pitagóricos ───────────────
+function trGcd(a, b) { return b === 0 ? a : trGcd(b, a % b); }
+
+// Ternas pitagóricas primitivas escaladas
+const TR_PYTHAGOREAN = [
+  [3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15],[12,16,20],
+  [5,12,13],[8,6,10],[15,20,25],[9,40,41],[20,21,29],[11,60,61]
+];
+
+function trPickTriangle() {
+  const base = TR_PYTHAGOREAN[Math.floor(Math.random() * 8)];
+  const scale = [1,2,3][Math.floor(Math.random()*3)];
+  return { a: base[0]*scale, b: base[1]*scale, c: base[2]*scale };
+}
+
+// ─── Funciones trigonométricas formateadas ───────────────────────────────────
+function trFracHTML(num, den) {
+  if (den === 1) return String(num);
+  const g = trGcd(Math.abs(num), Math.abs(den));
+  const n = num/g, d = den/g;
+  return '<span class="frac"><span class="num">' + n + '</span><span class="den">' + d + '</span></span>';
+}
+
+function trSixFunctions(opp, adj, hyp, angleLabel) {
+  // sen, cos, tg, cosec, sec, cotg
+  return '<div style="margin:0.4rem 0;line-height:2">' +
+    'sen ' + angleLabel + ' = ' + trFracHTML(opp, hyp) + '&nbsp;&nbsp;&nbsp;' +
+    'cos ' + angleLabel + ' = ' + trFracHTML(adj, hyp) + '&nbsp;&nbsp;&nbsp;' +
+    'tg ' + angleLabel + ' = ' + trFracHTML(opp, adj) + '<br>' +
+    'cosec ' + angleLabel + ' = ' + trFracHTML(hyp, opp) + '&nbsp;&nbsp;&nbsp;' +
+    'sec ' + angleLabel + ' = ' + trFracHTML(hyp, adj) + '&nbsp;&nbsp;&nbsp;' +
+    'cotg ' + angleLabel + ' = ' + trFracHTML(adj, opp) +
+    '</div>';
+}
+
+// ─── NIVEL 1: Los 3 lados dados ──────────────────────────────────────────────
+function trGenLvl1() {
+  const t = trPickTriangle();
+  // a = BC (cateto frente a α), b = AC (cateto frente a β), c = AB (hipotenusa)
+  const svg = trRectSVG(t.a, t.b, t.c, true, true);
+  const enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C) de la figura, con ' +
+    'AB = ' + t.c + ', BC = ' + t.a + ' y AC = ' + t.b + ', hallá las seis funciones trigonométricas de α y de β.';
+  // Solución: para α (en A): opuesto = a = BC, adyacente = b = AC, hipotenusa = c
+  // para β (en B): opuesto = b = AC, adyacente = a = BC, hipotenusa = c
+  const sol = '<strong>Para &alpha; (vértice A):</strong>' + trSixFunctions(t.a, t.b, t.c, '&alpha;') +
+    '<strong>Para &beta; (vértice B):</strong>' + trSixFunctions(t.b, t.a, t.c, '&beta;');
+  return { svg, enunciado, sol };
+}
+
+// ─── NIVEL 2: 2 lados dados, calcular el tercero ─────────────────────────────
+function trGenLvl2() {
+  const t = trPickTriangle();
+  // Elegir qué lado ocultar: 0=cateto a, 1=cateto b, 2=hipotenusa
+  const hide = Math.floor(Math.random() * 3);
+  let svgA, svgB, enunciado, sol;
+  if (hide === 0) {
+    // Ocultar BC (a): dados AC=b e hipotenusa c → a = sqrt(c²-b²)
+    svgA = trRectSVG('?', t.b, t.c, true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), con AB = ' + t.c + ' y AC = ' + t.b + '. Calculá el lado faltante y luego las seis funciones trigonométricas de α y β.';
+    sol = 'Por Pitágoras: BC = √(AB² − AC²) = √(' + t.c*t.c + ' − ' + t.b*t.b + ') = ' + t.a +
+      '<br><strong>Para &alpha;:</strong>' + trSixFunctions(t.a, t.b, t.c, '&alpha;') +
+      '<strong>Para &beta;:</strong>' + trSixFunctions(t.b, t.a, t.c, '&beta;');
+  } else if (hide === 1) {
+    // Ocultar AC (b): dados BC=a e hipotenusa c → b = sqrt(c²-a²)
+    svgA = trRectSVG(t.a, '?', t.c, true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), con AB = ' + t.c + ' y BC = ' + t.a + '. Calculá el lado faltante y luego las seis funciones trigonométricas de α y β.';
+    sol = 'Por Pitágoras: AC = √(AB² − BC²) = √(' + t.c*t.c + ' − ' + t.a*t.a + ') = ' + t.b +
+      '<br><strong>Para &alpha;:</strong>' + trSixFunctions(t.a, t.b, t.c, '&alpha;') +
+      '<strong>Para &beta;:</strong>' + trSixFunctions(t.b, t.a, t.c, '&beta;');
+  } else {
+    // Ocultar hipotenusa c: dados BC=a y AC=b → c = sqrt(a²+b²)
+    svgA = trRectSVG(t.a, t.b, '?', true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), con BC = ' + t.a + ' y AC = ' + t.b + '. Calculá la hipotenusa y luego las seis funciones trigonométricas de α y β.';
+    sol = 'Por Pitágoras: AB = √(BC² + AC²) = √(' + t.a*t.a + ' + ' + t.b*t.b + ') = ' + t.c +
+      '<br><strong>Para &alpha;:</strong>' + trSixFunctions(t.a, t.b, t.c, '&alpha;') +
+      '<strong>Para &beta;:</strong>' + trSixFunctions(t.b, t.a, t.c, '&beta;');
+  }
+  return { svg: svgA, enunciado, sol };
+}
+
+// ─── NIVEL 3: 1 lado + 1 ángulo agudo → hallar lados y ángulo faltante ───────
+function trGenLvl3() {
+  const angles = [30, 37, 45, 53, 60];
+  const ang = angles[Math.floor(Math.random() * angles.length)];
+  const beta = 90 - ang;
+  // Valores de sen/cos/tg para ángulos notables y aproximados
+  const trigVals = {
+    30: { sin: '1/2', cos: '√3/2', tan: '1/√3' },
+    37: { sin: '0,60', cos: '0,80', tan: '0,75' },
+    45: { sin: '√2/2', cos: '√2/2', tan: '1' },
+    53: { sin: '0,80', cos: '0,60', tan: '4/3' },
+    60: { sin: '√3/2', cos: '1/2', tan: '√3' }
+  };
+  const tv = trigVals[ang];
+  // Elegir qué lado dar: hipotenusa, cateto adyacente a α, o cateto opuesto a α
+  const sideGiven = ['hip', 'adj', 'opp'][Math.floor(Math.random() * 3)];
+  const baseLen = [5,6,8,10,12,15][Math.floor(Math.random()*6)];
+  let enunciado, sol, svgHtml;
+
+  if (sideGiven === 'hip') {
+    const c = baseLen;
+    svgHtml = trRectSVG('x', 'y', c, true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + ang + '°. La hipotenusa AB = ' + c + '. Hallá los catetos x = BC e y = AC y el ángulo β.';
+    sol = '&beta; = 90° − ' + ang + '° = ' + beta + '°<br>' +
+      'x = BC = AB · sen(&alpha;) = ' + c + ' · sen(' + ang + '°) = ' + c + ' · ' + tv.sin + '<br>' +
+      'y = AC = AB · cos(&alpha;) = ' + c + ' · cos(' + ang + '°) = ' + c + ' · ' + tv.cos;
+  } else if (sideGiven === 'adj') {
+    const b = baseLen;
+    svgHtml = trRectSVG('x', b, 'y', true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + ang + '°. El cateto adyacente AC = ' + b + '. Hallá el cateto opuesto x = BC, la hipotenusa y = AB y el ángulo β.';
+    sol = '&beta; = 90° − ' + ang + '° = ' + beta + '°<br>' +
+      'x = BC = AC · tg(&alpha;) = ' + b + ' · ' + tv.tan + '<br>' +
+      'y = AB = AC / cos(&alpha;) = ' + b + ' / ' + tv.cos;
+  } else {
+    const a = baseLen;
+    svgHtml = trRectSVG(a, 'y', 'x', true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + ang + '°. El cateto opuesto BC = ' + a + '. Hallá el cateto adyacente y = AC, la hipotenusa x = AB y el ángulo β.';
+    sol = '&beta; = 90° − ' + ang + '° = ' + beta + '°<br>' +
+      'y = AC = BC / tg(&alpha;) = ' + a + ' / ' + tv.tan + '<br>' +
+      'x = AB = BC / sen(&alpha;) = ' + a + ' / ' + tv.sin;
+  }
+  return { svg: svgHtml, enunciado, sol };
+}
+
+// ─── NIVEL 4: Rectángulo con diagonal ────────────────────────────────────────
+function trGenLvl4() {
+  const t = trPickTriangle();
+  // Rectángulo: base = b, altura = a, diagonal = c (hipotenusa)
+  const W = 240, H = 160;
+  const x0 = 20, y0 = 20, rw = W-40, rh = H-50;
+  const Ax = x0, Ay = y0+rh;      // abajo-izq
+  const Bx = x0+rw, By = y0+rh;   // abajo-der
+  const Cx = x0+rw, Cy = y0;      // arriba-der
+  const Dx = x0, Dy = y0;         // arriba-izq
+  const svgRect = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<rect x="' + x0 + '" y="' + y0 + '" width="' + rw + '" height="' + rh + '" fill="none" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Ax + '" y1="' + Ay + '" x2="' + Cx + '" y2="' + Cy + '" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>' +
+    angleMark(Ax, Ay, Bx, By, Cx, Cy, 24, '&alpha;', '#f97316') +
+    '<text x="' + (Ax-14) + '" y="' + (Ay+4) + '" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (Bx+4) + '" y="' + (By+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (Cx+4) + '" y="' + (Cy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '<text x="' + (Dx-14) + '" y="' + (Dy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>' +
+    '<text x="' + ((Ax+Bx)/2) + '" y="' + (Ay+14) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + t.b + '</text>' +
+    '<text x="' + (Bx+4) + '" y="' + ((By+Cy)/2) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + t.a + '</text>' +
+    '<text x="' + ((Ax+Cx)/2) + '" y="' + ((Ay+Cy)/2 - 6) + '" font-size="11" fill="#f97316" font-family="Nunito,sans-serif" font-weight="700">' + t.c + '</text>' +
+    '</svg>';
+  const enunciado = 'El rectángulo ABCD tiene base AB = ' + t.b + ' y altura BC = ' + t.a + '. La diagonal AC = ' + t.c + '. Hallá el ángulo α que forma la diagonal con la base y las funciones trigonométricas de α.';
+  const sol = 'El triángulo ABC es rectángulo en B.<br>' +
+    'tg(&alpha;) = BC/AB = ' + trFracHTML(t.a, t.b) + '<br>' +
+    trSixFunctions(t.a, t.b, t.c, '&alpha;');
+  return { svg: svgRect, enunciado, sol };
+}
+
+// ─── NIVEL 5: Cuadrado con diagonal ──────────────────────────────────────────
+function trGenLvl5() {
+  const sides = [5,6,7,8,10,12,14,15];
+  const s = sides[Math.floor(Math.random()*sides.length)];
+  const diagRaw = s * Math.SQRT2;
+  const diag = Math.round(diagRaw * 100)/100;
+  const W = 200, H = 180;
+  const x0=30,y0=20,sw=140,sh=140;
+  const svgSq = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<rect x="' + x0 + '" y="' + y0 + '" width="' + sw + '" height="' + sh + '" fill="none" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + x0 + '" y1="' + (y0+sh) + '" x2="' + (x0+sw) + '" y2="' + y0 + '" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>' +
+    '<text x="' + (x0-14) + '" y="' + (y0+sh+4) + '" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (x0+sw+4) + '" y="' + (y0+sh+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (x0+sw+4) + '" y="' + (y0+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '<text x="' + (x0-14) + '" y="' + (y0+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>' +
+    '<text x="' + (x0 + sw/2) + '" y="' + (y0+sh+14) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + s + '</text>' +
+    '<text x="' + (x0 + sw/2 + 6) + '" y="' + (y0 + sh/2 - 4) + '" font-size="11" fill="#f97316" font-family="Nunito,sans-serif" font-weight="700">' + diag + '</text>' +
+    angleMark(x0, y0+sh, x0+sw, y0+sh, x0+sw, y0, 26, '&alpha;', '#f97316') +
+    '</svg>';
+  const enunciado = 'El cuadrado ABCD tiene lado ' + s + '. La diagonal AC = ' + diag + ' (≈ ' + s + '√2). Hallá el ángulo α que forma la diagonal con la base y las funciones trigonométricas de α.';
+  const sol = 'La diagonal divide al cuadrado en dos triángulos rectángulos isóceles.<br>' +
+    'α = 45° → sen(45°) = cos(45°) = √2/2 &nbsp;&nbsp; tg(45°) = 1<br>' +
+    'sen(&alpha;) = ' + s + ' / ' + diag + ' = √2/2 &nbsp;&nbsp; cos(&alpha;) = √2/2 &nbsp;&nbsp; tg(&alpha;) = 1<br>' +
+    'cosec(&alpha;) = √2 &nbsp;&nbsp; sec(&alpha;) = √2 &nbsp;&nbsp; cotg(&alpha;) = 1';
+  return { svg: svgSq, enunciado, sol };
+}
+
+// ─── NIVEL 6: Rombo con diagonales ───────────────────────────────────────────
+function trGenLvl6() {
+  // Usar mitades de diagonales como catetos de triángulo rectángulo
+  const bases = [[3,4,5],[5,12,13],[8,15,17],[6,8,10]];
+  const b = bases[Math.floor(Math.random()*bases.length)];
+  const d1 = b[0]*2, d2 = b[1]*2, lado = b[2]; // lado del rombo = hipotenusa
+  const W = 240, H = 170;
+  // Rombo: vértices arriba/abajo/izq/der
+  const cx=120, cy=85;
+  const Tx={x:cx,y:20}, Bx2={x:cx,y:H-20}, Lx={x:20,y:cy}, Rx={x:W-20,y:cy};
+  const svgRhomb = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<polygon points="' + cx + ',' + Tx.y + ' ' + Rx.x + ',' + cy + ' ' + cx + ',' + Bx2.y + ' ' + Lx.x + ',' + cy + '" fill="none" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Lx.x + '" y1="' + cy + '" x2="' + Rx.x + '" y2="' + cy + '" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5,3"/>' +
+    '<line x1="' + cx + '" y1="' + Tx.y + '" x2="' + cx + '" y2="' + Bx2.y + '" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3"/>' +
+    // cuadradito en centro
+    '<rect x="' + cx + '" y="' + (cy-8) + '" width="8" height="8" fill="none" stroke="#555" stroke-width="1.2"/>' +
+    '<text x="' + (Lx.x-14) + '" y="' + (cy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (Rx.x+4) + '" y="' + (cy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '<text x="' + (cx+4) + '" y="' + (Tx.y-4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (cx+4) + '" y="' + (Bx2.y+14) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>' +
+    '<text x="' + (Lx.x + (cx-Lx.x)/2 - 4) + '" y="' + (cy+14) + '" font-size="11" fill="#f97316" font-family="Nunito,sans-serif" font-weight="700">d₁/2=' + b[0] + '</text>' +
+    '<text x="' + (cx+4) + '" y="' + (Tx.y + (cy-Tx.y)/2) + '" font-size="11" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="700">d₂/2=' + b[1] + '</text>' +
+    angleMark(Lx.x, cy, cx, Tx.y, cx+100, cy, 26, '&alpha;', '#f97316') +
+    '</svg>';
+  const enunciado = 'El rombo ABCD tiene diagonales AC = ' + d1 + ' y BD = ' + d2 + '. Las diagonales se cortan perpendicularmente. Hallá el lado del rombo y las funciones trigonométricas del ángulo α.';
+  const sol = 'Las diagonales se bisectan. En el triángulo rectángulo formado:<br>' +
+    'cateto₁ = d₁/2 = ' + b[0] + ' &nbsp; cateto₂ = d₂/2 = ' + b[1] + '<br>' +
+    'Lado = √(' + b[0] + '² + ' + b[1] + '²) = ' + lado + '<br>' +
+    trSixFunctions(b[1], b[0], lado, '&alpha;');
+  return { svg: svgRhomb, enunciado, sol };
+}
+
+// ─── NIVEL 7: Área y perímetro dado ángulo agudo y un lado ───────────────────
+function trGenLvl7() {
+  const configs = [
+    { ang: 30, sideType: 'hip', sideVal: 10, note: 'sen(30°)=1/2, cos(30°)=√3/2' },
+    { ang: 45, sideType: 'hip', sideVal: 8,  note: 'sen(45°)=cos(45°)=√2/2' },
+    { ang: 60, sideType: 'adj', sideVal: 6,  note: 'tg(60°)=√3' },
+    { ang: 37, sideType: 'hip', sideVal: 10, note: 'sen(37°)≈0,60, cos(37°)≈0,80' },
+    { ang: 53, sideType: 'adj', sideVal: 9,  note: 'tg(53°)≈4/3' },
+    { ang: 30, sideType: 'opp', sideVal: 5,  note: 'sen(30°)=1/2' },
+  ];
+  const cfg = configs[Math.floor(Math.random() * configs.length)];
+  const svg = trRectSVG(null, null, null, false, true);
+  let enunciado, sol;
+  if (cfg.sideType === 'hip') {
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + cfg.ang + '° e hipotenusa AB = ' + cfg.sideVal + '. Calculá el área y el perímetro. (' + cfg.note + ')';
+    sol = 'BC = AB · sen(&alpha;) = ' + cfg.sideVal + ' · sen(' + cfg.ang + '°)<br>' +
+      'AC = AB · cos(&alpha;) = ' + cfg.sideVal + ' · cos(' + cfg.ang + '°)<br>' +
+      'Área = (BC · AC) / 2<br>' +
+      'Perímetro = AB + BC + AC';
+  } else if (cfg.sideType === 'adj') {
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + cfg.ang + '° y el cateto adyacente AC = ' + cfg.sideVal + '. Calculá el área y el perímetro. (' + cfg.note + ')';
+    sol = 'BC = AC · tg(&alpha;) = ' + cfg.sideVal + ' · tg(' + cfg.ang + '°)<br>' +
+      'AB = AC / cos(&alpha;) = ' + cfg.sideVal + ' / cos(' + cfg.ang + '°)<br>' +
+      'Área = (BC · AC) / 2<br>' +
+      'Perímetro = AB + BC + AC';
+  } else {
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + cfg.ang + '° y el cateto opuesto BC = ' + cfg.sideVal + '. Calculá el área y el perímetro. (' + cfg.note + ')';
+    sol = 'AC = BC / tg(&alpha;) = ' + cfg.sideVal + ' / tg(' + cfg.ang + '°)<br>' +
+      'AB = BC / sen(&alpha;) = ' + cfg.sideVal + ' / sen(' + cfg.ang + '°)<br>' +
+      'Área = (BC · AC) / 2<br>' +
+      'Perímetro = AB + BC + AC';
+  }
+  return { svg, enunciado, sol };
+}
+
+// ─── NIVEL 8: Problemas de la vida real ──────────────────────────────────────
+function trGenLvl8() {
+  const probs = [
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const dist = [50,80,100,120,150][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20, Bx=W-30,By=H-20;
+      const Hx=W-30,Hy=20;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Bx+'" y1="'+By+'" x2="'+Hx+'" y2="'+Hy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Hx+'" y2="'+Hy+'" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Bx-sq)+' '+By+' L '+(Bx-sq)+' '+(By-sq)+' L '+Bx+' '+(By-sq)+' L '+Bx+' '+By+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Ax,Ay,Bx,By,Hx,Hy,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-6)+'" y="'+(Ay+14)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">A</text>'+
+        '<text x="'+(Bx+4)+'" y="'+(By+14)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">B</text>'+
+        '<text x="'+(Hx+4)+'" y="'+(Hy+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">C</text>'+
+        '<text x="'+((Ax+Bx)/2)+'" y="'+(Ay+14)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+dist+' m</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Una pandorga está atada con una cuerda de '+dist+' m que forma un ángulo de '+ang+'° con el suelo (punto A). El punto B es la base de la vertical. Hallá la altura BC a la que vuela la pandorga.',
+        sol: 'BC = AB · sen('+ang+'°) = '+dist+' · sen('+ang+'°)'
+      };
+    },
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const shadow = [8,10,12,15,20][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20,Bx=W-30,By=H-20,Cx=W-30,Cy=20;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Bx+'" y1="'+By+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#f97316" stroke-width="1.6" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Bx-sq)+' '+By+' L '+(Bx-sq)+' '+(By-sq)+' L '+Bx+' '+(By-sq)+' L '+Bx+' '+By+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Ax,Ay,Bx,By,Cx,Cy,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-6)+'" y="'+(Ay+14)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">Sol</text>'+
+        '<text x="'+((Ax+Bx)/2)+'" y="'+(Ay+14)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+shadow+' m (sombra)</text>'+
+        '<text x="'+(Cx+4)+'" y="'+(Cy+10)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">Árbol</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Los rayos del sol forman un ángulo de '+ang+'° con el suelo. Un árbol proyecta una sombra de '+shadow+' m. Calculá la altura del árbol.',
+        sol: 'Altura = sombra · tg('+ang+'°) = '+shadow+' · tg('+ang+'°)'
+      };
+    },
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const h = [8,10,12,15,20][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20,Bx=20,By=30,Cx=W-20,Cy=H-20;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Bx+'" y1="'+By+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#f97316" stroke-width="1.6" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Cx,Cy,Ax,Ay,Bx,By,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-14)+'" y="'+(Ay+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">A</text>'+
+        '<text x="'+(Bx-14)+'" y="'+(By+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">B</text>'+
+        '<text x="'+(Cx+4)+'" y="'+(Cy+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">C</text>'+
+        '<text x="'+(Ax+4)+'" y="'+(Ay-h/2)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+h+' m</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Un poste de '+h+' m está sostenido por un cable tirante que forma un ángulo de '+ang+'° con la horizontal (punto C). ¿Qué longitud tiene el tirante BC?',
+        sol: 'BC = AB / sen('+ang+'°) = '+h+' / sen('+ang+'°)'
+      };
+    },
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const base = [50,80,100,120,150][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20,Bx=W-20,By=H-20,Hx=20,Hy=30;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Hx+'" y1="'+Hy+'" x2="'+Ax+'" y2="'+Ay+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Hx+'" y1="'+Hy+'" x2="'+Bx+'" y2="'+By+'" stroke="#f97316" stroke-width="1.6" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Bx,By,Ax,Ay,Hx,Hy,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-14)+'" y="'+(Ay+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">A</text>'+
+        '<text x="'+(Bx+4)+'" y="'+(By+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">B</text>'+
+        '<text x="'+(Hx-14)+'" y="'+(Hy+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">C</text>'+
+        '<text x="'+((Ax+Bx)/2)+'" y="'+(Ay+14)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+base+' m</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Desde un punto B en el suelo, distante '+base+' m de la base A de un edificio, se observa la cima C bajo un ángulo de '+ang+'° con la horizontal. Calculá la altura del edificio.',
+        sol: 'Altura CA = AB · tg('+ang+'°) = '+base+' · tg('+ang+'°)'
+      };
+    }
+  ];
+  const fn = probs[Math.floor(Math.random()*probs.length)];
+  return fn();
+}
+
+// ─── NIVEL 9: Dos triángulos que comparten la altura ─────────────────────────
+// Configuraciones: observadores ambos del mismo lado (edificio al extremo)
+// o edificio entre los observadores
+function trGenLvl9() {
+  const configs = [
+    // Edificio al extremo, observadores ambos del mismo lado
+    {
+      tipo: 'mismo_lado',
+      ang1: 60, ang2: 30,
+      base: 50,
+      // D = cima, A = base edificio, B = punto cercano, C = punto lejano
+      // h = AB·tg(60°), h = (AB+BC)·tg(30°) → resuelvo para h y AB
+      label: 'edificio'
+    },
+    {
+      tipo: 'mismo_lado',
+      ang1: 45, ang2: 30,
+      base: 40,
+      label: 'torre'
+    },
+    {
+      tipo: 'mismo_lado',
+      ang1: 53, ang2: 37,
+      base: 30,
+      label: 'árbol'
+    },
+    // Edificio entre dos observadores (observadores a ambos lados)
+    {
+      tipo: 'ambos_lados',
+      ang1: 60, ang2: 45,
+      base: 100,
+      label: 'edificio'
+    },
+    {
+      tipo: 'ambos_lados',
+      ang1: 37, ang2: 53,
+      base: 80,
+      label: 'torre'
+    },
+  ];
+  const cfg = configs[Math.floor(Math.random()*configs.length)];
+
+  if (cfg.tipo === 'mismo_lado') {
+    // D (cima) arriba, A (base) abajo-izq, B y C a la derecha en la base
+    // Triángulo DAB: ángulo en B = ang1, cateto horizontal = AB
+    // Triángulo DAC: ángulo en C = ang2, cateto horizontal = AC = AB + x
+    const ang1 = cfg.ang1, ang2 = cfg.ang2, x = cfg.base;
+    const W=280, H=160;
+    const Dx=50, Dy=20;
+    const Ax=50, Ay=H-20;
+    const Bx=130, By=H-20;
+    const Cx=W-20, Cy=H-20;
+    const sq=8;
+    const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+      '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="1.5"/>'+
+      '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+      '<line x1="'+Bx+'" y1="'+By+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#f97316" stroke-width="1.8"/>'+
+      '<line x1="'+Cx+'" y1="'+Cy+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#a855f7" stroke-width="1.8"/>'+
+      '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+      angleMark(Bx,By,Ax,Ay,Dx,Dy,26,''+ang1+'°','#f97316')+
+      angleMark(Cx,Cy,Bx,By,Dx,Dy,28,''+ang2+'°','#a855f7')+
+      '<text x="'+(Ax-14)+'" y="'+(Ay+4)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">A</text>'+
+      '<text x="'+(Dx-14)+'" y="'+(Dy+4)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>'+
+      '<text x="'+(Bx-6)+'" y="'+(By+14)+'" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">B</text>'+
+      '<text x="'+(Cx+4)+'" y="'+(Cy+14)+'" font-size="12" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="800">C</text>'+
+      '<text x="'+((Bx+Cx)/2)+'" y="'+(Cy+14)+'" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">x = '+x+' m</text>'+
+      '<text x="'+((Ax+Bx)/2 - 6)+'" y="'+(Ay+14)+'" font-size="11" fill="#888" font-family="Nunito,sans-serif" font-weight="700">AB</text>'+
+      '</svg>';
+    const enunciado = 'D es la cima de un ' + cfg.label + ' (vertical AD). Desde el punto B se ve la cima bajo un ángulo de '+ang1+'° con la horizontal, y desde C (más alejado) bajo un ángulo de '+ang2+'°. La distancia BC = '+x+' m. Hallá la altura h = AD y la distancia AB.';
+    const sol = 'Llamemos h = AD y d = AB.<br>'+
+      'En △DAB: tg('+ang1+'°) = h/d → h = d·tg('+ang1+'°)<br>'+
+      'En △DAC: tg('+ang2+'°) = h/(d+'+x+') → h = (d+'+x+')·tg('+ang2+'°)<br>'+
+      'Igualando: d·tg('+ang1+'°) = (d+'+x+')·tg('+ang2+'°)<br>'+
+      'Despejá d y luego h = d·tg('+ang1+'°)';
+    return { svg, enunciado, sol };
+  } else {
+    // Edificio entre observadores: B a la izquierda, C a la derecha, D cima
+    const ang1 = cfg.ang1, ang2 = cfg.ang2, total = cfg.base;
+    const W=280, H=160;
+    const Dx=140, Dy=20;
+    const Ax=140, Ay=H-20;
+    const Bx=20, By=H-20;
+    const Cx=W-20, Cy=H-20;
+    const sq=8;
+    const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+      '<line x1="'+Bx+'" y1="'+By+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="1.5"/>'+
+      '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+      '<line x1="'+Bx+'" y1="'+By+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#f97316" stroke-width="1.8"/>'+
+      '<line x1="'+Cx+'" y1="'+Cy+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#a855f7" stroke-width="1.8"/>'+
+      '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+      angleMark(Bx,By,Cx,Cy,Dx,Dy,26,''+ang1+'°','#f97316')+
+      angleMark(Cx,Cy,Bx,By,Dx,Dy,26,''+ang2+'°','#a855f7')+
+      '<text x="'+(Ax+4)+'" y="'+(Ay+14)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">A</text>'+
+      '<text x="'+(Dx+4)+'" y="'+(Dy+4)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>'+
+      '<text x="'+(Bx-14)+'" y="'+(By+14)+'" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">B</text>'+
+      '<text x="'+(Cx+4)+'" y="'+(Cy+14)+'" font-size="12" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="800">C</text>'+
+      '<text x="'+((Bx+Cx)/2)+'" y="'+(Cy+14)+'" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">BC = '+total+' m</text>'+
+      '</svg>';
+    const enunciado = 'D es la cima de un ' + cfg.label + ' (vertical AD). El ' + cfg.label + ' está entre los observadores B y C, separados '+total+' m. Desde B la cima se ve bajo '+ang1+'° y desde C bajo '+ang2+'°. Hallá la altura h = AD y las distancias AB y AC.';
+    const sol = 'Sea AB = d₁ y AC = d₂. d₁ + d₂ = '+total+'.<br>'+
+      'En △DAB: h = d₁·tg('+ang1+'°)<br>'+
+      'En △DAC: h = d₂·tg('+ang2+'°)<br>'+
+      'Entonces d₁·tg('+ang1+'°) = d₂·tg('+ang2+'°) y d₁+d₂='+total+'<br>'+
+      'Resolvé el sistema para d₁, d₂ y luego h.';
+    return { svg, enunciado, sol };
+  }
+}
+
+// ─── GENERAR EJERCITARIO PRINCIPAL ───────────────────────────────────────────
+function generateTrigrect() {
+  let total = 0;
+  for (let k = 1; k <= 9; k++) total += (trLevelQtys[k] || 0);
+  if (total === 0) { alert('Seleccioná al menos un ejercicio.'); return; }
+
+  const inclSol = document.getElementById('chk-incluir-sol') ? document.getElementById('chk-incluir-sol').checked : true;
+  const generators = [null, trGenLvl1, trGenLvl2, trGenLvl3, trGenLvl4, trGenLvl5, trGenLvl6, trGenLvl7, trGenLvl8, trGenLvl9];
+  const levelNames = [null,
+    'Nivel 1 — Tres lados dados',
+    'Nivel 2 — Dos lados dados',
+    'Nivel 3 — Un lado y un ángulo',
+    'Nivel 4 — Rectángulo',
+    'Nivel 5 — Cuadrado',
+    'Nivel 6 — Rombo',
+    'Nivel 7 — Área y Perímetro',
+    'Nivel 8 — Vida Real',
+    'Nivel 9 — Dos Triángulos'
+  ];
+
+  let html = '<div class="ej-header"><div class="ej-title">Funciones Trig. en el Triángulo Rectángulo</div>' +
+    '<div class="ej-meta">Fecha: _________________ &nbsp;&nbsp; Nombre: _________________________________</div></div>';
+
+  let ejNum = 1;
+  for (let lvl = 1; lvl <= 9; lvl++) {
+    const qty = trLevelQtys[lvl] || 0;
+    if (!qty) continue;
+    html += '<div class="fc-section-title">' + levelNames[lvl] + '</div>';
+    for (let i = 0; i < qty; i++) {
+      let item = null, att = 0;
+      while (!item && att++ < 30) { try { item = generators[lvl](); } catch(e) { item = null; } }
+      if (!item) continue;
+      html += '<div class="ej-item">';
+      html += '<div class="ej-num">' + ejNum++ + '</div>';
+      if (item.svg) html += item.svg;
+      html += '<div class="ej-enun">' + item.enunciado + '</div>';
+      if (inclSol && item.sol) {
+        html += '<div class="sol-block"><span class="sol-label">Solución:</span> ' + item.sol + '</div>';
+      }
+      html += '<div class="work-space" style="height:90px"></div>';
+      html += '</div>';
+    }
+  }
+
+  html += '<div class="ej-copyright">\u00a9 2026 Maria Lopez Nery Huerta</div>';
+  const el = document.getElementById('tr-ejercitario');
+  el.innerHTML = html;
+  el.classList.add('visible');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('tr-btnDownload').style.display = 'block';
 }
 
 // ── Mostrar btn-download-sol cuando aparezca btn-download ────────────────────

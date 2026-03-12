@@ -289,6 +289,8 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.92em; line-height: 1.1; }
 .frac .num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; }
 .frac .den { padding: 1px 3px 0; text-align: center; }
+.frac .frac-num, .frac-num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; display: block; width: 100%; }
+.frac .frac-den, .frac-den { padding: 1px 3px 0; text-align: center; display: block; width: 100%; }
 
 /* PRINT */
 @media print {
@@ -1099,6 +1101,31 @@ const CATALOG = {
       { id:'poly-resto', label:'Polinomios — Teo. del Resto', niveles:[1], gen:(lvl)=>eb_polyGen('resto',lvl) },
       { id:'poly-ruffini', label:'Polinomios — Ruffini Niv.1 (x−a)', niveles:[1], gen:(lvl)=>eb_polyGen('ruffini',lvl) },
       { id:'poly-ruffini2', label:'Polinomios — Ruffini Niv.2 (bx−c)', niveles:[2], gen:(lvl)=>eb_polyGen('ruffini',lvl) },
+      { id:'pn-cb2e', label:'Productos Notables — Cuad. Binomio (enteros)', niveles:[1], gen:()=>eb_pnGen('cb2e') },
+      { id:'pn-cb2f', label:'Productos Notables — Cuad. Binomio (fracciones)', niveles:[1], gen:()=>eb_pnGen('cb2f') },
+      { id:'pn-cb3e', label:'Productos Notables — Cubo Binomio (enteros)', niveles:[1], gen:()=>eb_pnGen('cb3e') },
+      { id:'pn-cb3f', label:'Productos Notables — Cubo Binomio (fracciones)', niveles:[1], gen:()=>eb_pnGen('cb3f') },
+      { id:'pn-sde', label:'Productos Notables — Suma×Diferencia (enteros)', niveles:[1], gen:()=>eb_pnGen('sde') },
+      { id:'pn-sdf', label:'Productos Notables — Suma×Diferencia (fracciones)', niveles:[1], gen:()=>eb_pnGen('sdf') },
+      { id:'vn-1', label:'Valor Numérico — Niv.1 (enteros)', niveles:[1], gen:()=>eb_vnGen(1) },
+      { id:'vn-2', label:'Valor Numérico — Niv.2 (fracciones/potencias)', niveles:[2], gen:()=>eb_vnGen(2) },
+      { id:'vn-3', label:'Valor Numérico — Niv.3 (expresiones complejas)', niveles:[3], gen:()=>eb_vnGen(3) },
+      { id:'suc-car1', label:'Sucesiones: Características Niv.1 (finita/infinita)', niveles:[1], gen:()=>eb_sucCarGen(1) },
+      { id:'suc-car2', label:'Sucesiones: Características Niv.2 (mono)', niveles:[2], gen:()=>eb_sucCarGen(2) },
+      { id:'suc-car3', label:'Sucesiones: Características Niv.3 (completa)', niveles:[3], gen:()=>eb_sucCarGen(3) },
+      { id:'suc-rep1', label:'Sucesiones: Representación Niv.1', niveles:[1], gen:()=>eb_sucRepGen(1) },
+      { id:'suc-rep2', label:'Sucesiones: Representación Niv.2', niveles:[2], gen:()=>eb_sucRepGen(2) },
+      { id:'suc-tg1', label:'Sucesiones: Término General Niv.1', niveles:[1], gen:()=>eb_sucTgGen(1) },
+      { id:'suc-tg2', label:'Sucesiones: Término General Niv.2', niveles:[2], gen:()=>eb_sucTgGen(2) },
+      { id:'suc-prob1', label:'Sucesiones: Problemas Niv.1', niveles:[1], gen:()=>eb_sucProbGen(1) },
+      { id:'suc-prob2', label:'Sucesiones: Problemas Niv.2', niveles:[2], gen:()=>eb_sucProbGen(2) },
+      { id:'pa-con', label:'Progresiones Aritméticas — Conceptos', niveles:[1], gen:()=>eb_paConGen() },
+      { id:'pa-tg', label:'Progresiones Aritméticas — Término General', niveles:[1], gen:()=>eb_paTgGen() },
+      { id:'pa-suma', label:'Progresiones Aritméticas — Suma de términos', niveles:[1], gen:()=>eb_paSumaGen() },
+      { id:'pa-prob', label:'Progresiones Aritméticas — Problemas', niveles:[1], gen:()=>eb_paProbGen() },
+      { id:'sp-alg1', label:'Sit. Problemáticas Álgebra Niv.1', niveles:[1], gen:()=>eb_algSpGen(1) },
+      { id:'sp-alg2', label:'Sit. Problemáticas Álgebra Niv.2', niveles:[2], gen:()=>eb_algSpGen(2) },
+      { id:'sp-alg3', label:'Sit. Problemáticas Álgebra Niv.3', niveles:[3], gen:()=>eb_algSpGen(3) },
       { id:'rad-exactas', label:'Radicales — Raíces exactas', niveles:[1], gen:(lvl)=>eb_radGen('exactas',lvl) },
       { id:'rad-extraccion', label:'Radicales — Extracción', niveles:[1,2], gen:(lvl)=>eb_radGen('extraccion',lvl) },
       { id:'rad-sumaresta', label:'Radicales — Suma y Resta', niveles:[1,2], gen:(lvl)=>eb_radGen('sumaresta',lvl) },
@@ -1131,12 +1158,43 @@ const CATALOG = {
       { id:'rac-ra', label:'Racionales — Radicación', niveles:[1,2,3], gen:(lvl)=>{currentMode='frac';return rac_gen('ra',lvl);} },
       { id:'rac-cs', label:'Racionales — Combinadas s/agrup.', niveles:[1,2,3], gen:(lvl)=>{currentMode='frac';return rac_gen('cs',lvl);} },
       { id:'rac-cc', label:'Racionales — Combinadas c/agrup.', niveles:[1,2,3], gen:(lvl)=>{currentMode='frac';return rac_gen('cc',lvl);} },
+      { id:'rc-ex1', label:'Raíz Cuadrada — Exacta Niv.1', niveles:[1], gen:()=>eb_rcGen('ex',1) },
+      { id:'rc-ex2', label:'Raíz Cuadrada — Exacta Niv.2', niveles:[2], gen:()=>eb_rcGen('ex',2) },
+      { id:'rc-inex1', label:'Raíz Cuadrada — Inexacta Niv.1', niveles:[1], gen:()=>eb_rcGen('inex',1) },
+      { id:'rc-inex2', label:'Raíz Cuadrada — Inexacta Niv.2', niveles:[2], gen:()=>eb_rcGen('inex',2) },
+      { id:'sp-arit1', label:'Sit. Problemáticas Aritmética Niv.1', niveles:[1], gen:()=>eb_aritSpGen(1) },
+      { id:'sp-arit2', label:'Sit. Problemáticas Aritmética Niv.2', niveles:[2], gen:()=>eb_aritSpGen(2) },
+      { id:'sp-arit3', label:'Sit. Problemáticas Aritmética Niv.3', niveles:[3], gen:()=>eb_aritSpGen(3) },
     ]
   },
   trigonometria: {
     label: 'Trigonometría',
     subtemas: [
       { id:'trig-ec', label:'Ecuaciones Trigonométricas', niveles:[1,2], gen:(lvl)=>trig_gen(lvl) },
+      { id:'tri-seno',   label:'Triángulos — Ley del Seno',   niveles:[1], gen:()=>tri_ej_seno() },
+      { id:'tri-coseno', label:'Triángulos — Ley del Coseno', niveles:[1], gen:()=>tri_ej_coseno() },
+      { id:'tri-ambas',  label:'Triángulos — Ambas leyes',    niveles:[1], gen:()=>tri_ej_ambas() },
+      { id:'tri-earea',  label:'Triángulos — Área',           niveles:[1], gen:()=>tri_ej_area() },
+      { id:'tri-eperim', label:'Triángulos — Perímetro',      niveles:[1], gen:()=>tri_ej_perim() },
+      { id:'tri-pseno',  label:'Triángulos Prob. — Seno',     niveles:[1], gen:()=>tri_prob_seno() },
+      { id:'tri-pcoseno',label:'Triángulos Prob. — Coseno',   niveles:[1], gen:()=>tri_prob_coseno() },
+      { id:'tri-pambas', label:'Triángulos Prob. — Ambas',    niveles:[1], gen:()=>tri_prob_ambas() },
+      { id:'tri-parea',  label:'Triángulos Prob. — Área',     niveles:[1], gen:()=>tri_prob_area() },
+      { id:'tri-pperim', label:'Triángulos Prob. — Perímetro',niveles:[1], gen:()=>tri_prob_perim() },
+      { id:'trig-id1', label:'Identidades Trigonométricas Niv.1', niveles:[1], gen:()=>eb_idGen(1) },
+      { id:'trig-id2', label:'Identidades Trigonométricas Niv.2', niveles:[2], gen:()=>eb_idGen(2) },
+      { id:'trig-id3', label:'Identidades Trigonométricas Niv.3', niveles:[3], gen:()=>eb_idGen(3) },
+      { id:'trig-fmad1', label:'Fórmulas: Arco Doble Niv.1', niveles:[1], gen:()=>eb_fmAdGen(1) },
+      { id:'trig-fmad2', label:'Fórmulas: Arco Doble Niv.2', niveles:[2], gen:()=>eb_fmAdGen(2) },
+      { id:'trigrect-1', label:'Func.Trig.Rect. Niv.1 — Tres lados dados', niveles:[1], gen:()=>eb_TR_gen(1) },
+      { id:'trigrect-2', label:'Func.Trig.Rect. Niv.2 — Dos lados dados', niveles:[2], gen:()=>eb_TR_gen(2) },
+      { id:'trigrect-3', label:'Func.Trig.Rect. Niv.3 — Un lado y un ángulo', niveles:[3], gen:()=>eb_TR_gen(3) },
+      { id:'trigrect-4', label:'Func.Trig.Rect. Niv.4 — Rectángulo', niveles:[4], gen:()=>eb_TR_gen(4) },
+      { id:'trigrect-5', label:'Func.Trig.Rect. Niv.5 — Cuadrado', niveles:[5], gen:()=>eb_TR_gen(5) },
+      { id:'trigrect-6', label:'Func.Trig.Rect. Niv.6 — Rombo', niveles:[6], gen:()=>eb_TR_gen(6) },
+      { id:'trigrect-7', label:'Func.Trig.Rect. Niv.7 — Área y Perímetro', niveles:[7], gen:()=>eb_TR_gen(7) },
+      { id:'trigrect-8', label:'Func.Trig.Rect. Niv.8 — Vida Real', niveles:[8], gen:()=>eb_TR_gen(8) },
+      { id:'trigrect-9', label:'Func.Trig.Rect. Niv.9 — Dos Triángulos', niveles:[9], gen:()=>eb_TR_gen(9) },
     ]
   },
   geometria: {
@@ -1152,6 +1210,15 @@ const CATALOG = {
     subtemas: [
       { id:'ineq-lin', label:'Inecuaciones Lineales', niveles:[1,2,3], gen:(lvl)=>ineq_gen(lvl) },
       { id:'ineq-cuad', label:'Inecuaciones Cuadráticas', niveles:[1,2], gen:(lvl)=>ineqc_gen(lvl) },
+      { id:'fc-rel', label:'Funciones: ¿Es función? (FC)', niveles:[1], gen:()=>eb_fcRelGen() },
+      { id:'fc-vdi', label:'Funciones: Variable dep./indep.', niveles:[1], gen:()=>eb_fcVdiGen() },
+      { id:'fc-tv', label:'Funciones: Tabla de valores', niveles:[1], gen:()=>eb_fcTvGen() },
+      { id:'ra-tipo', label:'Funciones: Identificar tipo (RA)', niveles:[1], gen:()=>eb_raTipoGen() },
+      { id:'ra-prop', label:'Funciones: Analizar propiedades', niveles:[1], gen:()=>eb_raPropGen() },
+      { id:'ra-sit', label:'Funciones: Situaciones problemáticas', niveles:[1], gen:()=>eb_raSitGen() },
+      { id:'car-dr', label:'Funciones: Dominio y rango (CAR)', niveles:[1], gen:()=>eb_carDrGen() },
+      { id:'car-crec', label:'Funciones: Crecimiento/decrecimiento', niveles:[1], gen:()=>eb_carCrecGen() },
+      { id:'car-mm', label:'Funciones: Máximos y mínimos', niveles:[1], gen:()=>eb_carMmGen() },
     ]
   },
   estadistica: {
@@ -2450,6 +2517,885 @@ function log_gen(lvl){
     return{...item,steps:item.steps||['Aplicar definición de logaritmo']};
   }catch(e){return null;}
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// IDENTIDADES TRIGONOMÉTRICAS
+// ═══════════════════════════════════════════════════════════════════
+
+// Helpers exclusivos para identidades (fr → fracción HTML visual, pw → potencia)
+function id_fr(num, den) {
+  return '<span class="frac"><span class="frac-num">' + num + '</span><span class="frac-den">' + den + '</span></span>';
+}
+function id_pw(base, exp) {
+  if (!exp) return base;
+  return '<span style="white-space:nowrap">' + base + '<sup>' + exp + '</sup></span>';
+}
+// Helper de raíz con vinculum para identidades
+function id_sqrtH(radicando) {
+  return '\u221a<span style="display:inline-block;border-top:1.2px solid currentColor;padding:0 1px;vertical-align:middle;line-height:1.1">' + radicando + '<\/span>';
+}
+
+function idBank1() {
+  return [
+    { lhs: id_fr('1',id_pw('tg','2')+'x') + ' + ' + id_fr('1','sen x &middot; cosec x'), rhs: id_pw('cosec','2')+'x' },
+    { lhs: 'tg x + cotg x', rhs: id_fr('cosec x','cos x') },
+    { lhs: 'sec x &minus; sen x &middot; tg x', rhs: id_fr('1','sec x') },
+    { lhs: id_fr('1',id_pw('cos','2')+'x') + ' &minus; ' + id_pw('tg','2')+'x', rhs: '1' },
+    { lhs: id_pw('sen','2')+'x + ' + id_pw('sen','2')+'x &middot; ' + id_pw('cotg','2')+'x', rhs: '1' },
+    { lhs: '1 &minus; 2' + id_pw('cos','2')+'x', rhs: id_pw('sen','2')+'x &minus; ' + id_pw('cos','2')+'x' },
+    { lhs: '1 + ' + id_pw('tg','2')+'x', rhs: id_fr('1',id_pw('cos','2')+'x') },
+    { lhs: id_fr(id_pw('cos','3')+'x + 2 sen x','cos x'), rhs: 'cos x + 2 tg x' },
+    { lhs: id_pw('cos','2')+'A &minus; ' + id_pw('sen','2')+'A', rhs: '2&thinsp;' + id_pw('cos','2')+'A &minus; 1' },
+    { lhs: '(sen A + cos A)' + id_pw('','2'), rhs: '2 sen A cos A + 1' },
+    { lhs: id_fr('1 + cosec A','cosec A &minus; 1'), rhs: id_fr('1 + sen A','1 &minus; sen A') },
+    { lhs: id_fr(id_pw('cos','2')+'A','sen A') + ' + ' + id_fr('sen 2A','cos A'), rhs: 'cosec A' },
+    { lhs: id_fr('2 tg &alpha;','1 + ' + id_pw('tg','2')+'&alpha;'), rhs: 'sen 2&alpha;' },
+    { lhs: id_pw('sen','2')+'x (1 + ' + id_pw('tg','2')+'x)', rhs: id_pw('tg','2')+'x' },
+    { lhs: id_fr('sen x &minus; cos x','sen x'), rhs: '1 &minus; ' + id_fr('1','tg x') },
+    { lhs: id_fr('cos x','cotg x'), rhs: 'sen x' },
+    { lhs: id_fr('sen x','cosec x') + ' + ' + id_fr('cos x','sec x'), rhs: '1' },
+    { lhs: id_fr('tg x','sen x'), rhs: 'sec x' },
+    { lhs: id_fr('sec x','tg x + cotg x'), rhs: 'sen x' },
+    { lhs: id_fr('cosec x','cotg x'), rhs: 'sec x' },
+    { lhs: id_pw('sen','4')+'x', rhs: id_fr('1 &minus; ' + id_pw('cos','2')+'x', id_pw('cosec','2')+'x') },
+    { lhs: 'sec x (1 &minus; ' + id_pw('sen','2')+'x)', rhs: 'cos x' },
+    { lhs: 'tg x &middot; cos x &middot; cosec x', rhs: '1' },
+    { lhs: 'sen x &middot; sec x', rhs: 'tg x' },
+    { lhs: 'tg x + cotg x', rhs: id_fr('1','sen x &middot; cos x') },
+    { lhs: id_pw('cos','2')+'x', rhs: '(1 + sen x)(1 &minus; sen x)' },
+    { lhs: '(1 &minus; ' + id_pw('sen','2')+'x)(1 + ' + id_pw('tg','2')+'x)', rhs: '1' },
+    { lhs: '2&thinsp;' + id_pw('sen','2')+'x + ' + id_pw('cos','2')+'x', rhs: '1 + ' + id_pw('sen','2')+'x' },
+    { lhs: 'tg y + cotg y', rhs: 'sec y &middot; cosec y' },
+    { lhs: id_pw('tg','2')+'x &middot; ' + id_pw('cotg','2')+'x', rhs: id_pw('sen','2')+'x + ' + id_pw('cos','2')+'x' },
+    { lhs: '2 tg x + 1', rhs: id_fr('cos x + 2 sen x','cos x') },
+    { lhs: '3 sen x &middot; cos x', rhs: '3&thinsp;' + id_pw('sen','2')+'x &middot; cotg x' },
+    { lhs: 'sen x + cos x', rhs: 'cos x (1 + tg x)' },
+    { lhs: id_fr('1',id_pw('tg','2')+'x') + ' &minus; ' + id_pw('cos','2')+'x', rhs: id_pw('cos','2')+'x &middot; ' + id_pw('cotg','2')+'x' },
+    { lhs: 'sen x &middot; sec x &middot; cotg x', rhs: '1' },
+  ];
+}
+
+function idBank2() {
+  return [
+    { lhs: id_pw('sec','2')+'x &middot; cotg x', rhs: 'tg x &middot; ' + id_pw('cosec','2')+'x' },
+    { lhs: id_fr('1',id_pw('tg','2')+'x') + ' + ' + id_fr('1','tg x &middot; cotg x'), rhs: id_fr('1',id_pw('sen','2')+'x') },
+    { lhs: 'sen 2x &middot; cotg x', rhs: 'cos 2x + 1' },
+    { lhs: id_fr(id_pw('sec','2')+'x &minus; 1', id_pw('tg','2')+'x + 1'), rhs: id_fr('1',id_pw('cosec','2')+'x') },
+    { lhs: id_fr('1 &minus; tg x','1 + tg x'), rhs: id_fr('cos x &minus; sen x','cos x + sen x') },
+    { lhs: id_fr('cotg x + cosec x','sen x'), rhs: id_fr('1 + cos x','1 &minus; ' + id_pw('cos','2')+'x') },
+    { lhs: 'tg x + cotg x', rhs: id_pw('cosec','2')+'x &middot; tg x' },
+    { lhs: id_pw('sen','2')+'x &middot; sec x', rhs: 'sec x &minus; cos x' },
+    { lhs: '(1 &minus; ' + id_pw('cos','2')+'x)(1 + ' + id_pw('tg','2')+'x)', rhs: id_fr('1',id_pw('cotg','2')+'x') },
+    { lhs: '1 + ' + id_pw('tg','2')+'x', rhs: id_fr(id_pw('cosec','2')+'x', id_pw('cotg','2')+'x') },
+    { lhs: id_fr('1 &minus; sen x','cos x'), rhs: id_fr('cos x','1 + sen x') },
+    { lhs: 'sec x &minus; cos x', rhs: id_fr('sen x','cotg x') },
+    { lhs: id_fr('sen x + cotg x','tg x + cosec x'), rhs: 'cotg x &middot; sen x' },
+    { lhs: id_pw('cos','4')+'x', rhs: id_fr('1 &minus; ' + id_pw('cos','2')+'x', id_pw('tg','2')+'x') },
+    { lhs: id_fr('sen A','1 &minus; cos A'), rhs: id_fr('1 + cos A','sen A') },
+    { lhs: id_pw('sec','2')+'A + ' + id_pw('tg','2')+'A', rhs: '2&thinsp;' + id_pw('tg','2')+'A + 1' },
+    { lhs: 'cos 3A', rhs: '4&thinsp;' + id_pw('cos','3')+'A &minus; 3 cos A' },
+    { lhs: 'sen(A+B) &minus; sen(A&minus;B)', rhs: '2 sen B &middot; cos A' },
+    { lhs: 'cos(A+B) &middot; cos(A&minus;B)', rhs: id_pw('cos','2')+'A &minus; ' + id_pw('sen','2')+'B' },
+    { lhs: 'cos 4A', rhs: '1 &minus; 8&thinsp;' + id_pw('sen','2')+'A &middot; ' + id_pw('cos','2')+'A' },
+    { lhs: '(1 + tg x)(1 &minus; tg x) + ' + id_pw('sec','2')+'x', rhs: '2' },
+    { lhs: id_fr('1 &minus; sen x','(sec x &minus; tg x)' + id_pw('','2')), rhs: '1 + sen x' },
+    { lhs: id_fr('sen x + cos x','sen x &minus; cos x'), rhs: id_fr('sec x + cosec x','sec x &minus; cosec x') },
+    { lhs: id_pw('sen','2')+'x &middot; ' + id_pw('cos','2')+'x + ' + id_pw('cos','4')+'x', rhs: '1 &minus; ' + id_fr('1',id_pw('cosec','2')+'x') },
+    { lhs: id_fr('sen x + tg x','cotg x + cosec x'), rhs: 'sen x &middot; tg x' },
+    { lhs: '1 &minus; 2&thinsp;' + id_pw('sen','2')+'x', rhs: id_fr('cotg x &minus; tg x','tg x + cotg x') },
+    { lhs: id_fr('1','1 + sen y') + ' + ' + id_fr('1','1 &minus; sen y'), rhs: '2&thinsp;' + id_pw('sec','2')+'y' },
+    { lhs: '1 + 2 sen x &middot; cos x', rhs: 'sen x &middot; cos x &middot; (1 + cotg x)(1 + tg x)' },
+    { lhs: id_pw('cotg','2')+'x (1 + ' + id_pw('tg','2')+'x)', rhs: id_pw('cosec','2')+'x' },
+    { lhs: id_fr('1','sec x &minus; 1') + ' + ' + id_fr('1','sec x + 1'), rhs: '2 cosec x &middot; cotg x' },
+    { lhs: 'sec x + tg x', rhs: id_fr('cos x','1 &minus; sen x') },
+    { lhs: '2&thinsp;' + id_pw('sen','2')+'x &minus; 1', rhs: id_pw('sen','4')+'x &minus; ' + id_pw('cos','4')+'x' },
+  ];
+}
+
+function idBank3() {
+  return [
+    { lhs: 'tg x &middot; sec x', rhs: id_fr('tg x + sec x','cotg x + cos x') },
+    { lhs: id_fr('sec x','cotg x'), rhs: id_fr('sec x + tg x','cos x + cotg x') },
+    { lhs: 'tg ' + id_fr('x','2'), rhs: 'cosec x &minus; cotg x' },
+    { lhs: id_fr('cos x','1 &minus; sen x') + ' &minus; ' + id_fr('1 &minus; sen x','cos x'), rhs: id_fr('2 sen x','cos x') },
+    { lhs: id_sqrtH(id_fr('1 + cos A','1 &minus; cos A')), rhs: 'cosec A + cotg A' },
+    { lhs: '(tg A &minus; sen A)' + id_pw('','2') + ' + (1 &minus; cos A)' + id_pw('','2'), rhs: '(1 &minus; sec A)' + id_pw('','2') },
+    { lhs: id_pw('sen','3')+'A + ' + id_pw('cos','3')+'A', rhs: '(1 &minus; sen A cos A)(sen A + cos A)' },
+    { lhs: id_fr('tg x + cotg x','tg x &minus; cotg x'), rhs: id_fr(id_pw('sec','2')+'x', id_pw('tg','2')+'x &minus; 1') },
+    { lhs: id_fr('cos 2x','1 &minus; sen 2x'), rhs: id_fr('1 + tg x','1 &minus; tg x') },
+    { lhs: id_pw('tg','4')+'x &minus; ' + id_pw('sec','4')+'x', rhs: '1 &minus; 2&thinsp;' + id_pw('sec','2')+'x' },
+    { lhs: '(1 &minus; ' + id_pw('sen','2')+'x)(1 + ' + id_pw('tg','2')+'x)', rhs: 'sen x &middot; sec x &middot; cotg x' },
+    { lhs: '(sen x + cos x)' + id_pw('','2') + ' + (sen x &minus; cos x)' + id_pw('','2'), rhs: '2(' + id_pw('tg','2')+'x &middot; ' + id_pw('cos','2')+'x + ' + id_pw('cotg','2')+'x &middot; ' + id_pw('sen','2')+'x)' },
+  ];
+}
+
+const ID_ANGLE_VARS = ['&alpha;', '&theta;', 'A', '&beta;', '&phi;'];
+
+function idApplyVariation(identity) {
+  let lhs = identity.lhs;
+  let rhs = identity.rhs;
+  const choice = rnd(0, 3);
+  if (choice === 1) {
+    const hasX = / x|>x<|&middot;x|x&|x\(|x\)|x$/.test(lhs);
+    if (hasX) {
+      const newVar = ID_ANGLE_VARS[rnd(0, ID_ANGLE_VARS.length - 1)];
+      const rep = (s) => s.replace(/(?<=[\s(&middot;;>])x(?=[\s)<&;]|$)/g, newVar);
+      lhs = rep(lhs);
+      rhs = rep(rhs);
+    }
+  } else if (choice === 3) {
+    [lhs, rhs] = [rhs, lhs];
+  }
+  return { lhs, rhs };
+}
+
+function idGenFromBank(bank) {
+  const base = bank[rnd(0, bank.length - 1)];
+  const varied = idApplyVariation(base);
+  return {
+    expr: varied.lhs + ' <span style="color:#888;margin:0 0.4rem;font-weight:400">=</span> ' + varied.rhs,
+    sol: base.lhs + ' <span style="color:#888;font-weight:400">=</span> ' + base.rhs
+  };
+}
+
+function eb_idGen(lvl) {
+  try {
+    const banks = { 1: idBank1, 2: idBank2, 3: idBank3 };
+    const item = idGenFromBank((banks[lvl] || banks[1])());
+    if (!item) return null;
+    return { ...item, steps: ['Verificar la identidad transformando un miembro hasta obtener el otro'] };
+  } catch(e) { return null; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FÓRMULAS: ARCO DOBLE
+// ═══════════════════════════════════════════════════════════════════
+
+const AD_NOTABLE = {
+   0: { s: '0',       c: '1'    },
+  30: { s: '1/2',     c: '\u221a3/2' },
+  45: { s: '\u221a2/2', c: '\u221a2/2' },
+  60: { s: '\u221a3/2', c: '1/2' },
+  90: { s: '1',       c: '0'    },
+};
+
+// ── ARCO DOBLE — NIVEL 1: sen(2α) y cos(2α) con ángulos notables ──
+function fmGenAD1() {
+  const notableAngs = [30, 45, 60];
+  const a = notableAngs[rnd(0, notableAngs.length - 1)];
+  const func = rnd(0, 2); // 0=sen, 1=cos v1, 2=cos v2
+  const sA = AD_NOTABLE[a].s, cA = AD_NOTABLE[a].c;
+  const dbl = a * 2;
+  const knownDbl = AD_NOTABLE[dbl];
+
+  if (func === 0) {
+    const resultS = knownDbl ? knownDbl.s : '&mdash;';
+    return {
+      expr: `Calculá <strong>sen(${dbl}°)</strong> usando la fórmula del arco doble.`,
+      sol: `sen(2&middot;${a}°) = 2&middot;sen(${a}°)&middot;cos(${a}°) = 2&middot;${sA}&middot;${cA} = ${resultS}`
+    };
+  } else if (func === 1) {
+    const resultC = knownDbl ? knownDbl.c : '&mdash;';
+    return {
+      expr: `Calculá <strong>cos(${dbl}°)</strong> usando la fórmula del arco doble.`,
+      sol: `cos(2&middot;${a}°) = cos\u00B2(${a}°) &minus; sen\u00B2(${a}°) = (${cA})\u00B2 &minus; (${sA})\u00B2 = ${resultC}`
+    };
+  } else {
+    const resultC = knownDbl ? knownDbl.c : '&mdash;';
+    return {
+      expr: `Calculá <strong>cos(${dbl}°)</strong> usando la fórmula 1 &minus; 2sen\u00B2(&alpha;).`,
+      sol: `cos(2&middot;${a}°) = 1 &minus; 2&middot;sen\u00B2(${a}°) = 1 &minus; 2&middot;(${sA})\u00B2 = ${resultC}`
+    };
+  }
+}
+
+// ── ARCO DOBLE — NIVEL 2: simplificar/expandir expresiones con sen(2x), cos(2x) ──
+function fmGenAD2() {
+  const tipo = rnd(0, 5);
+  if (tipo === 0) {
+    return {
+      expr: `Simplificá: <strong>2&middot;sen(<em>x</em>)&middot;cos(<em>x</em>)</strong>`,
+      sol: `2&middot;sen(<em>x</em>)&middot;cos(<em>x</em>) = sen(2<em>x</em>)`
+    };
+  }
+  if (tipo === 1) {
+    return {
+      expr: `Simplificá: <strong>cos\u00B2(<em>x</em>) &minus; sen\u00B2(<em>x</em>)</strong>`,
+      sol: `cos\u00B2(<em>x</em>) &minus; sen\u00B2(<em>x</em>) = cos(2<em>x</em>)`
+    };
+  }
+  if (tipo === 2) {
+    return {
+      expr: `Simplificá: <strong>1 &minus; 2&middot;sen\u00B2(<em>x</em>)</strong>`,
+      sol: `1 &minus; 2&middot;sen\u00B2(<em>x</em>) = cos(2<em>x</em>)`
+    };
+  }
+  if (tipo === 3) {
+    return {
+      expr: `Simplificá: <strong>2&middot;cos\u00B2(<em>x</em>) &minus; 1</strong>`,
+      sol: `2&middot;cos\u00B2(<em>x</em>) &minus; 1 = cos(2<em>x</em>)`
+    };
+  }
+  if (tipo === 4) {
+    return {
+      expr: `Expandí usando la fórmula del arco doble: <strong>sen(2<em>x</em>)</strong>`,
+      sol: `sen(2<em>x</em>) = 2&middot;sen(<em>x</em>)&middot;cos(<em>x</em>)`
+    };
+  }
+  const forma = rnd(0, 2);
+  const formas = [
+    'cos\u00B2(<em>x</em>) &minus; sen\u00B2(<em>x</em>)',
+    '1 &minus; 2&middot;sen\u00B2(<em>x</em>)',
+    '2&middot;cos\u00B2(<em>x</em>) &minus; 1'
+  ];
+  return {
+    expr: `Expandí usando la fórmula del arco doble: <strong>cos(2<em>x</em>)</strong>`,
+    sol: `cos(2<em>x</em>) = ${formas[forma]} (también: ${formas[(forma+1)%3]})`
+  };
+}
+
+function eb_fmAdGen(lvl) {
+  try {
+    const item = lvl === 2 ? fmGenAD2() : fmGenAD1();
+    if (!item) return null;
+    return { ...item, steps: ['Identificar la fórmula de arco doble aplicable', 'Sustituir y simplificar'] };
+  } catch(e) { return null; }
+}
+
+// ── Situaciones Problemáticas Aritmética ────────────────────────────────────
+// Helpers locales (contexto paraguayo)
+const aritSp_NOMBRES = ['Lucía','Valentina','Mateo','Santiago','Camila','Andrés','Sofía','Diego','Romina','Pablo','Florencia','Nicolás','Ana','Carlos','Belén'];
+const aritSp_CIUDADES = ['Asunción','Ciudad del Este','Encarnación','Luque','Capiata','Lambaré','Fernando de la Mora','San Lorenzo','Villarrica','Concepción'];
+const aritSp_DEPORTES = ['fútbol','básquet','vóley','atletismo','natación','tenis','ciclismo'];
+const aritSp_EQUIPOS = ['Olimpia','Cerro Porteño','Libertad','Nacional','Sol de América','Guaraní','Sportivo Luqueño'];
+function aritSp_fmtGs(n) { return 'Gs. ' + Math.abs(n).toLocaleString('es-PY'); }
+function aritSp_fmtGsSigned(n) { return (n < 0 ? '−Gs. ' : 'Gs. ') + Math.abs(n).toLocaleString('es-PY'); }
+function aritSp_fmt(n) { return n < 0 ? '−' + Math.abs(n).toLocaleString('es-PY') : n.toLocaleString('es-PY'); }
+
+// Nivel 1: Suma y Resta
+const aritSp_TMPL_SR = [
+  () => { const t1=rnd(-20,-3),t2=rnd(-12,-1),ciudad=rndItem(aritSp_CIUDADES),dif=t2-t1; return {enunciado:`El lunes la temperatura en ${ciudad} fue de ${t1}°C y el martes fue de ${t2}°C. ¿Cuántos grados cambió?`,sol:`${t2}°C − (${t1}°C) = ${dif}°C`}; },
+  () => { const t_ini=rnd(-15,-3),baja=rnd(2,8),t_fin=t_ini-baja,ciudad=rndItem(aritSp_CIUDADES); return {enunciado:`La temperatura en ${ciudad} era de ${aritSp_fmt(t_ini)}°C y bajó ${baja}°C más. ¿Cuál es la temperatura final?`,sol:`${aritSp_fmt(t_ini)} + (−${baja}) = ${aritSp_fmt(t_fin)}°C`}; },
+  () => { const piso=rnd(-4,-1),bajada=rnd(1,3),piso_fin=piso-bajada,nom=rndItem(aritSp_NOMBRES); return {enunciado:`${nom} está en el piso ${aritSp_fmt(piso)} y baja ${bajada} pisos más. ¿En qué piso queda?`,sol:`${aritSp_fmt(piso)} − ${bajada} = ${aritSp_fmt(piso_fin)}`}; },
+  () => { const saldo=rnd(-300,-50)*1000,retiro=rnd(20,100)*1000,nom=rndItem(aritSp_NOMBRES),saldo_fin=saldo-retiro; return {enunciado:`La cuenta de ${nom} tiene un saldo de ${aritSp_fmtGsSigned(saldo)}. Retira ${aritSp_fmtGs(retiro)} más. ¿Cuál es el nuevo saldo?`,sol:`${aritSp_fmtGsSigned(saldo)} − ${aritSp_fmtGs(retiro)} = ${aritSp_fmtGsSigned(saldo_fin)}`}; },
+  () => { const p1=rnd(-10,-2),p2=rnd(-8,-1),p3=rnd(5,20),nom=rndItem(aritSp_NOMBRES),dep=rndItem(aritSp_DEPORTES); return {enunciado:`En un torneo de ${dep}, ${nom} obtiene ${p1}, ${p2} y ${p3} puntos. ¿Cuál es su puntaje total?`,sol:`${p1} + (${p2}) + ${p3} = ${p1+p2+p3} puntos`}; },
+  () => { const prof=-rnd(30,150),asc=rnd(10,Math.abs(prof)-5),prof_fin=prof+asc; return {enunciado:`Un submarino se encuentra a ${prof} metros (bajo el nivel del mar). Asciende ${asc} metros. ¿A qué profundidad queda?`,sol:`${prof} + ${asc} = ${prof_fin} metros`}; },
+  () => { const gf=rnd(1,4),gc=rnd(gf+1,7),dif=gf-gc,equipo=rndItem(aritSp_EQUIPOS); return {enunciado:`${equipo} tiene ${gf} goles a favor y ${gc} en contra. ¿Cuál es su diferencia de goles?`,sol:`${gf} − ${gc} = ${dif}`}; },
+  () => { const nom1=rndItem(aritSp_NOMBRES),nom2=rndItem(aritSp_NOMBRES.filter(n=>n!==nom1)),deuda=-rnd(50,200)*1000,pago=rnd(10,80)*1000,saldo=deuda+pago; return {enunciado:`El saldo de ${nom1} es de ${aritSp_fmtGsSigned(deuda)}. Recibe ${aritSp_fmtGs(pago)} de ${nom2}. ¿Cuál es su nuevo saldo?`,sol:`${aritSp_fmtGsSigned(deuda)} + ${aritSp_fmtGs(pago)} = ${aritSp_fmtGsSigned(saldo)}`}; },
+];
+
+// Nivel 2: Multiplicación
+const aritSp_TMPL_MU = [
+  () => { const perdida=-rnd(10,80)*1000,dias=rnd(3,10),nom=rndItem(aritSp_NOMBRES),ciudad=rndItem(aritSp_CIUDADES); return {enunciado:`El negocio de ${nom} en ${ciudad} registra ${aritSp_fmtGsSigned(perdida)} por día. ¿Cuánto acumula en ${dias} días?`,sol:`${aritSp_fmtGsSigned(perdida)} × ${dias} = ${aritSp_fmtGsSigned(perdida*dias)}`}; },
+  () => { const baja=-rnd(2,6),horas=rnd(3,8); return {enunciado:`La temperatura cambia ${baja}°C por hora durante ${horas} horas. ¿Cuántos grados cambia en total?`,sol:`${baja} × ${horas} = ${baja*horas}°C`}; },
+  () => { const pen=-rnd(3,8),veces=rnd(3,7),equipo=rndItem(aritSp_EQUIPOS); return {enunciado:`${equipo} recibió ${veces} penalizaciones de ${pen} puntos cada una. ¿Cuántos puntos perdió en total?`,sol:`${pen} × ${veces} = ${pen*veces} puntos`}; },
+  () => { const desc=-rnd(5,20),inm=rnd(2,6); return {enunciado:`Un buzo desciende ${desc} metros en cada inmersión. Si realiza ${inm} inmersiones iguales, ¿cuál es su posición final?`,sol:`${desc} × ${inm} = ${desc*inm} metros`}; },
+  () => { const retiro=-rnd(50,200)*1000,veces=rnd(3,7),nom=rndItem(aritSp_NOMBRES); return {enunciado:`${nom} tiene una variación de ${aritSp_fmtGsSigned(retiro)} por día en su cuenta. ¿Cuánto cambia el saldo en ${veces} días?`,sol:`${aritSp_fmtGsSigned(retiro)} × ${veces} = ${aritSp_fmtGsSigned(retiro*veces)}`}; },
+];
+
+// Nivel 3: División
+const aritSp_TMPL_DV = [
+  () => { const dias=rnd(3,10),perd=-rnd(10,60)*1000,total=perd*dias,nom=rndItem(aritSp_NOMBRES); return {enunciado:`El negocio de ${nom} acumuló ${aritSp_fmtGsSigned(total)} en ${dias} días, con la misma variación diaria. ¿Cuánto fue la variación por día?`,sol:`${aritSp_fmtGsSigned(total)} ÷ ${dias} = ${aritSp_fmtGsSigned(perd)} por día`}; },
+  () => { const pasos=rnd(4,10),desc=-rnd(5,20),total=desc*pasos; return {enunciado:`Un submarino llegó a ${total} metros en ${pasos} descensos iguales. ¿Cuántos metros cambió en cada descenso?`,sol:`${total} ÷ ${pasos} = ${desc} metros por descenso`}; },
+  () => { const personas=rnd(3,8),deuda_c=-rnd(20,100)*1000,total=deuda_c*personas; return {enunciado:`Un grupo de ${personas} amigos tiene una deuda total de ${aritSp_fmtGsSigned(total)}, repartida en partes iguales. ¿Cuánto corresponde a cada uno?`,sol:`${aritSp_fmtGsSigned(total)} ÷ ${personas} = ${aritSp_fmtGsSigned(deuda_c)} por persona`}; },
+  () => { const horas=rnd(3,8),baja=-rnd(2,5),total=baja*horas,ciudad=rndItem(aritSp_CIUDADES); return {enunciado:`En ${ciudad} la temperatura pasó de 0°C a ${total}°C en ${horas} horas, bajando igual cada hora. ¿Cuántos grados bajó por hora?`,sol:`${total} ÷ ${horas} = ${baja}°C por hora`}; },
+  () => { const partidos=rnd(3,7),pen=-rnd(2,6),total=pen*partidos,equipo=rndItem(aritSp_EQUIPOS); return {enunciado:`${equipo} acumuló ${total} puntos en ${partidos} partidos por penalizaciones iguales. ¿Cuántos puntos sumó por partido?`,sol:`${total} ÷ ${partidos} = ${pen} puntos por partido`}; },
+];
+
+const aritSp_POOLS = [aritSp_TMPL_SR, aritSp_TMPL_MU, aritSp_TMPL_DV];
+
+function eb_aritSpGen(lvl) {
+  const pool = aritSp_POOLS[(lvl - 1) % aritSp_POOLS.length];
+  try {
+    const gen = rndItem(pool);
+    const result = gen();
+    return { expr: result.enunciado, sol: result.sol, steps: ['Identificar la operación', 'Resolver y verificar el signo del resultado'] };
+  } catch(e) { return eb_aritSpGen(lvl); }
+}
+
+// ── Raíz Cuadrada ────────────────────────────────────────────────────────────
+function eb_rcSqrtHTML(n) {
+  return '<span style="white-space:nowrap">√<span style="display:inline-block;border-top:1.5px solid currentColor;padding:0 2px;vertical-align:middle;line-height:1.1">' + n + '<\/span></span>';
+}
+
+function eb_rcGenExacta(lvl) {
+  const rangos = { 1:{min:10,max:99}, 2:{min:100,max:999} };
+  const r = rangos[lvl] || rangos[1];
+  const raiz = rnd(r.min, r.max);
+  const rad = raiz * raiz;
+  return { expr: eb_rcSqrtHTML(rad) + ' =', sol: String(raiz) };
+}
+
+function eb_rcGenInexacta(lvl) {
+  const rangos = { 1:{min:10,max:98}, 2:{min:100,max:998} };
+  const r = rangos[lvl] || rangos[1];
+  const n1 = rnd(r.min, r.max);
+  const n2 = n1 + 1;
+  const rad = rnd(n1*n1+1, n2*n2-1);
+  return {
+    expr: eb_rcSqrtHTML(rad) + ' = ?',
+    sol: n1 + ' &lt; ' + eb_rcSqrtHTML(rad) + ' &lt; ' + n2 + ' &nbsp;(ya que ' + eb_rcSqrtHTML(n1*n1) + ' = ' + n1 + ' y ' + eb_rcSqrtHTML(n2*n2) + ' = ' + n2 + ')'
+  };
+}
+
+function eb_rcGen(tipo, lvl) {
+  try {
+    const item = tipo === 'inex' ? eb_rcGenInexacta(lvl) : eb_rcGenExacta(lvl);
+    const tipoLabel = tipo === 'inex' ? 'Raíz Cuadrada — Inexacta' : 'Raíz Cuadrada — Exacta';
+    return { expr: item.expr, sol: item.sol, steps: ['Identificar el radicando', 'Calcular la raíz aplicando el algoritmo visto en clase'] };
+  } catch(e) { return eb_rcGen(tipo, lvl); }
+}
+
+// ─── FUNC. TRIG. TRIÁNGULO RECTÁNGULO — para examen-builder (prefijo eb_TR_) ───
+// FUNCIONES TRIG. EN EL TRIÁNGULO RECTÁNGULO
+// ═══════════════════════════════════════════════════════════════
+
+const trLevelQtys = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0 };
+
+function trToggleLevel(k) {
+  const el = document.getElementById('tr-lvl-' + k);
+  const isActive = el.classList.contains('active');
+  el.classList.toggle('active', !isActive);
+  trLevelQtys[k] = isActive ? 0 : 1;
+  document.getElementById('tr-lqv-' + k).textContent = trLevelQtys[k];
+  trUpdateTotal();
+}
+function trChangeLevelQty(k, delta) {
+  trLevelQtys[k] = Math.max(0, Math.min(20, (trLevelQtys[k] || 0) + delta));
+  document.getElementById('tr-lqv-' + k).textContent = trLevelQtys[k];
+  const el = document.getElementById('tr-lvl-' + k);
+  if (trLevelQtys[k] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  trUpdateTotal();
+}
+function trUpdateTotal() {
+  let t = 0;
+  for (let k = 1; k <= 9; k++) t += (trLevelQtys[k] || 0);
+  document.getElementById('tr-totalBadge').innerHTML = 'Total: <span>' + t + '</span> ejercicios';
+}
+
+// ─── SVG DEL TRIÁNGULO RECTÁNGULO (ángulo recto en C, α en A, β en B) ───────
+// A = vértice izquierdo (ángulo α), B = vértice derecho (ángulo β), C = vértice del ángulo recto (abajo-derecha)
+// Lados: a = BC (cateto opuesto a α), b = AC (cateto opuesto a β), c = AB (hipotenusa)
+function eb_TR_rectSVG(a, b, c, showSides, showAngles) {
+  // Coordenadas SVG: C abajo-derecha, A abajo-izquierda, B arriba-izquierda
+  // Usamos triángulo con ángulo recto en vértice C abajo-derecha
+  const W = 220, H = 160;
+  const Ax = 20, Ay = H - 20;      // A: abajo-izquierda
+  const Cx = W - 30, Cy = H - 20;  // C: abajo-derecha (ángulo recto)
+  const Bx = W - 30, By = 20;      // B: arriba-derecha
+  // Cuadradito en C (ángulo recto)
+  const sq = 10;
+  const squarePath = 'M ' + (Cx - sq) + ' ' + Cy + ' L ' + (Cx - sq) + ' ' + (Cy - sq) + ' L ' + Cx + ' ' + (Cy - sq) + ' L ' + Cx + ' ' + Cy;
+
+  // Etiquetas de lados
+  let sideLabels = '';
+  if (showSides) {
+    // Hipotenusa AB: etiqueta a la izquierda del segmento
+    const hLabel = (c !== null) ? (typeof c === 'string' ? c : String(c)) : 'c';
+    sideLabels += '<text x="' + ((Ax+Bx)/2 - 18) + '" y="' + ((Ay+By)/2) + '" font-size="11" fill="#4f6ef7" font-family="Nunito,sans-serif" font-weight="700">' + hLabel + '</text>';
+    // Cateto BC (vertical): etiqueta a la derecha
+    const aLabel = (a !== null) ? (typeof a === 'string' ? a : String(a)) : 'a';
+    sideLabels += '<text x="' + (Cx + 4) + '" y="' + ((By+Cy)/2) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + aLabel + '</text>';
+    // Cateto AC (horizontal): etiqueta abajo
+    const bLabel = (b !== null) ? (typeof b === 'string' ? b : String(b)) : 'b';
+    sideLabels += '<text x="' + ((Ax+Cx)/2) + '" y="' + (Ay + 14) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + bLabel + '</text>';
+  }
+
+  // Marcas de ángulos
+  let angleMarks = '';
+  if (showAngles) {
+    // α en A (abajo-izquierda): arco entre hipotenusa y cateto horizontal
+    angleMarks += angleMark(Ax, Ay, Bx, By, Cx, Cy, 22, '&alpha;', '#f97316');
+    // β en B (arriba-derecha): arco entre hipotenusa y cateto vertical
+    angleMarks += angleMark(Bx, By, Ax, Ay, Cx, Cy, 22, '&beta;', '#a855f7');
+  }
+
+  return '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<line x1="' + Ax + '" y1="' + Ay + '" x2="' + Bx + '" y2="' + By + '" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Bx + '" y1="' + By + '" x2="' + Cx + '" y2="' + Cy + '" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Cx + '" y1="' + Cy + '" x2="' + Ax + '" y2="' + Ay + '" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<path d="' + squarePath + '" fill="none" stroke="#555" stroke-width="1.5"/>' +
+    angleMarks + sideLabels +
+    '<text x="' + (Ax - 14) + '" y="' + (Ay + 4) + '" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (Bx + 4) + '" y="' + (By - 4) + '" font-size="12" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (Cx + 4) + '" y="' + (Cy + 4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '</svg>';
+}
+
+// ─── HELPER: gcd y simplificar decimales a enteros pitagóricos ───────────────
+function eb_TR_gcd(a, b) { return b === 0 ? a : eb_TR_gcd(b, a % b); }
+
+// Ternas pitagóricas primitivas escaladas
+const eb_TR_PYTHAGOREAN = [
+  [3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10],[9,12,15],[12,16,20],
+  [5,12,13],[8,6,10],[15,20,25],[9,40,41],[20,21,29],[11,60,61]
+];
+
+function eb_TR_pickTriangle() {
+  const base = eb_TR_PYTHAGOREAN[Math.floor(Math.random() * 8)];
+  const scale = [1,2,3][Math.floor(Math.random()*3)];
+  return { a: base[0]*scale, b: base[1]*scale, c: base[2]*scale };
+}
+
+// ─── Funciones trigonométricas formateadas ───────────────────────────────────
+function eb_TR_fracHTML(num, den) {
+  if (den === 1) return String(num);
+  const g = eb_TR_gcd(Math.abs(num), Math.abs(den));
+  const n = num/g, d = den/g;
+  return '<span class="frac"><span class="num">' + n + '</span><span class="den">' + d + '</span></span>';
+}
+
+function eb_TR_sixFunctions(opp, adj, hyp, angleLabel) {
+  // sen, cos, tg, cosec, sec, cotg
+  return '<div style="margin:0.4rem 0;line-height:2">' +
+    'sen ' + angleLabel + ' = ' + eb_TR_fracHTML(opp, hyp) + '&nbsp;&nbsp;&nbsp;' +
+    'cos ' + angleLabel + ' = ' + eb_TR_fracHTML(adj, hyp) + '&nbsp;&nbsp;&nbsp;' +
+    'tg ' + angleLabel + ' = ' + eb_TR_fracHTML(opp, adj) + '<br>' +
+    'cosec ' + angleLabel + ' = ' + eb_TR_fracHTML(hyp, opp) + '&nbsp;&nbsp;&nbsp;' +
+    'sec ' + angleLabel + ' = ' + eb_TR_fracHTML(hyp, adj) + '&nbsp;&nbsp;&nbsp;' +
+    'cotg ' + angleLabel + ' = ' + eb_TR_fracHTML(adj, opp) +
+    '</div>';
+}
+
+// ─── NIVEL 1: Los 3 lados dados ──────────────────────────────────────────────
+function eb_TR_genLvl1() {
+  const t = eb_TR_pickTriangle();
+  // a = BC (cateto frente a α), b = AC (cateto frente a β), c = AB (hipotenusa)
+  const svg = eb_TR_rectSVG(t.a, t.b, t.c, true, true);
+  const enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C) de la figura, con ' +
+    'AB = ' + t.c + ', BC = ' + t.a + ' y AC = ' + t.b + ', hallá las seis funciones trigonométricas de α y de β.';
+  // Solución: para α (en A): opuesto = a = BC, adyacente = b = AC, hipotenusa = c
+  // para β (en B): opuesto = b = AC, adyacente = a = BC, hipotenusa = c
+  const sol = '<strong>Para &alpha; (vértice A):</strong>' + eb_TR_sixFunctions(t.a, t.b, t.c, '&alpha;') +
+    '<strong>Para &beta; (vértice B):</strong>' + eb_TR_sixFunctions(t.b, t.a, t.c, '&beta;');
+  return { svg, enunciado, sol };
+}
+
+// ─── NIVEL 2: 2 lados dados, calcular el tercero ─────────────────────────────
+function eb_TR_genLvl2() {
+  const t = eb_TR_pickTriangle();
+  // Elegir qué lado ocultar: 0=cateto a, 1=cateto b, 2=hipotenusa
+  const hide = Math.floor(Math.random() * 3);
+  let svgA, svgB, enunciado, sol;
+  if (hide === 0) {
+    // Ocultar BC (a): dados AC=b e hipotenusa c → a = sqrt(c²-b²)
+    svgA = eb_TR_rectSVG('?', t.b, t.c, true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), con AB = ' + t.c + ' y AC = ' + t.b + '. Calculá el lado faltante y luego las seis funciones trigonométricas de α y β.';
+    sol = 'Por Pitágoras: BC = √(AB² − AC²) = √(' + t.c*t.c + ' − ' + t.b*t.b + ') = ' + t.a +
+      '<br><strong>Para &alpha;:</strong>' + eb_TR_sixFunctions(t.a, t.b, t.c, '&alpha;') +
+      '<strong>Para &beta;:</strong>' + eb_TR_sixFunctions(t.b, t.a, t.c, '&beta;');
+  } else if (hide === 1) {
+    // Ocultar AC (b): dados BC=a e hipotenusa c → b = sqrt(c²-a²)
+    svgA = eb_TR_rectSVG(t.a, '?', t.c, true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), con AB = ' + t.c + ' y BC = ' + t.a + '. Calculá el lado faltante y luego las seis funciones trigonométricas de α y β.';
+    sol = 'Por Pitágoras: AC = √(AB² − BC²) = √(' + t.c*t.c + ' − ' + t.a*t.a + ') = ' + t.b +
+      '<br><strong>Para &alpha;:</strong>' + eb_TR_sixFunctions(t.a, t.b, t.c, '&alpha;') +
+      '<strong>Para &beta;:</strong>' + eb_TR_sixFunctions(t.b, t.a, t.c, '&beta;');
+  } else {
+    // Ocultar hipotenusa c: dados BC=a y AC=b → c = sqrt(a²+b²)
+    svgA = eb_TR_rectSVG(t.a, t.b, '?', true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), con BC = ' + t.a + ' y AC = ' + t.b + '. Calculá la hipotenusa y luego las seis funciones trigonométricas de α y β.';
+    sol = 'Por Pitágoras: AB = √(BC² + AC²) = √(' + t.a*t.a + ' + ' + t.b*t.b + ') = ' + t.c +
+      '<br><strong>Para &alpha;:</strong>' + eb_TR_sixFunctions(t.a, t.b, t.c, '&alpha;') +
+      '<strong>Para &beta;:</strong>' + eb_TR_sixFunctions(t.b, t.a, t.c, '&beta;');
+  }
+  return { svg: svgA, enunciado, sol };
+}
+
+// ─── NIVEL 3: 1 lado + 1 ángulo agudo → hallar lados y ángulo faltante ───────
+function eb_TR_genLvl3() {
+  const angles = [30, 37, 45, 53, 60];
+  const ang = angles[Math.floor(Math.random() * angles.length)];
+  const beta = 90 - ang;
+  // Valores de sen/cos/tg para ángulos notables y aproximados
+  const trigVals = {
+    30: { sin: '1/2', cos: '√3/2', tan: '1/√3' },
+    37: { sin: '0,60', cos: '0,80', tan: '0,75' },
+    45: { sin: '√2/2', cos: '√2/2', tan: '1' },
+    53: { sin: '0,80', cos: '0,60', tan: '4/3' },
+    60: { sin: '√3/2', cos: '1/2', tan: '√3' }
+  };
+  const tv = trigVals[ang];
+  // Elegir qué lado dar: hipotenusa, cateto adyacente a α, o cateto opuesto a α
+  const sideGiven = ['hip', 'adj', 'opp'][Math.floor(Math.random() * 3)];
+  const baseLen = [5,6,8,10,12,15][Math.floor(Math.random()*6)];
+  let enunciado, sol, svgHtml;
+
+  if (sideGiven === 'hip') {
+    const c = baseLen;
+    svgHtml = eb_TR_rectSVG('x', 'y', c, true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + ang + '°. La hipotenusa AB = ' + c + '. Hallá los catetos x = BC e y = AC y el ángulo β.';
+    sol = '&beta; = 90° − ' + ang + '° = ' + beta + '°<br>' +
+      'x = BC = AB · sen(&alpha;) = ' + c + ' · sen(' + ang + '°) = ' + c + ' · ' + tv.sin + '<br>' +
+      'y = AC = AB · cos(&alpha;) = ' + c + ' · cos(' + ang + '°) = ' + c + ' · ' + tv.cos;
+  } else if (sideGiven === 'adj') {
+    const b = baseLen;
+    svgHtml = eb_TR_rectSVG('x', b, 'y', true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + ang + '°. El cateto adyacente AC = ' + b + '. Hallá el cateto opuesto x = BC, la hipotenusa y = AB y el ángulo β.';
+    sol = '&beta; = 90° − ' + ang + '° = ' + beta + '°<br>' +
+      'x = BC = AC · tg(&alpha;) = ' + b + ' · ' + tv.tan + '<br>' +
+      'y = AB = AC / cos(&alpha;) = ' + b + ' / ' + tv.cos;
+  } else {
+    const a = baseLen;
+    svgHtml = eb_TR_rectSVG(a, 'y', 'x', true, true);
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + ang + '°. El cateto opuesto BC = ' + a + '. Hallá el cateto adyacente y = AC, la hipotenusa x = AB y el ángulo β.';
+    sol = '&beta; = 90° − ' + ang + '° = ' + beta + '°<br>' +
+      'y = AC = BC / tg(&alpha;) = ' + a + ' / ' + tv.tan + '<br>' +
+      'x = AB = BC / sen(&alpha;) = ' + a + ' / ' + tv.sin;
+  }
+  return { svg: svgHtml, enunciado, sol };
+}
+
+// ─── NIVEL 4: Rectángulo con diagonal ────────────────────────────────────────
+function eb_TR_genLvl4() {
+  const t = eb_TR_pickTriangle();
+  // Rectángulo: base = b, altura = a, diagonal = c (hipotenusa)
+  const W = 240, H = 160;
+  const x0 = 20, y0 = 20, rw = W-40, rh = H-50;
+  const Ax = x0, Ay = y0+rh;      // abajo-izq
+  const Bx = x0+rw, By = y0+rh;   // abajo-der
+  const Cx = x0+rw, Cy = y0;      // arriba-der
+  const Dx = x0, Dy = y0;         // arriba-izq
+  const svgRect = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<rect x="' + x0 + '" y="' + y0 + '" width="' + rw + '" height="' + rh + '" fill="none" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Ax + '" y1="' + Ay + '" x2="' + Cx + '" y2="' + Cy + '" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>' +
+    angleMark(Ax, Ay, Bx, By, Cx, Cy, 24, '&alpha;', '#f97316') +
+    '<text x="' + (Ax-14) + '" y="' + (Ay+4) + '" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (Bx+4) + '" y="' + (By+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (Cx+4) + '" y="' + (Cy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '<text x="' + (Dx-14) + '" y="' + (Dy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>' +
+    '<text x="' + ((Ax+Bx)/2) + '" y="' + (Ay+14) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + t.b + '</text>' +
+    '<text x="' + (Bx+4) + '" y="' + ((By+Cy)/2) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + t.a + '</text>' +
+    '<text x="' + ((Ax+Cx)/2) + '" y="' + ((Ay+Cy)/2 - 6) + '" font-size="11" fill="#f97316" font-family="Nunito,sans-serif" font-weight="700">' + t.c + '</text>' +
+    '</svg>';
+  const enunciado = 'El rectángulo ABCD tiene base AB = ' + t.b + ' y altura BC = ' + t.a + '. La diagonal AC = ' + t.c + '. Hallá el ángulo α que forma la diagonal con la base y las funciones trigonométricas de α.';
+  const sol = 'El triángulo ABC es rectángulo en B.<br>' +
+    'tg(&alpha;) = BC/AB = ' + eb_TR_fracHTML(t.a, t.b) + '<br>' +
+    eb_TR_sixFunctions(t.a, t.b, t.c, '&alpha;');
+  return { svg: svgRect, enunciado, sol };
+}
+
+// ─── NIVEL 5: Cuadrado con diagonal ──────────────────────────────────────────
+function eb_TR_genLvl5() {
+  const sides = [5,6,7,8,10,12,14,15];
+  const s = sides[Math.floor(Math.random()*sides.length)];
+  const diagRaw = s * Math.SQRT2;
+  const diag = Math.round(diagRaw * 100)/100;
+  const W = 200, H = 180;
+  const x0=30,y0=20,sw=140,sh=140;
+  const svgSq = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<rect x="' + x0 + '" y="' + y0 + '" width="' + sw + '" height="' + sh + '" fill="none" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + x0 + '" y1="' + (y0+sh) + '" x2="' + (x0+sw) + '" y2="' + y0 + '" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>' +
+    '<text x="' + (x0-14) + '" y="' + (y0+sh+4) + '" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (x0+sw+4) + '" y="' + (y0+sh+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (x0+sw+4) + '" y="' + (y0+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '<text x="' + (x0-14) + '" y="' + (y0+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>' +
+    '<text x="' + (x0 + sw/2) + '" y="' + (y0+sh+14) + '" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">' + s + '</text>' +
+    '<text x="' + (x0 + sw/2 + 6) + '" y="' + (y0 + sh/2 - 4) + '" font-size="11" fill="#f97316" font-family="Nunito,sans-serif" font-weight="700">' + diag + '</text>' +
+    angleMark(x0, y0+sh, x0+sw, y0+sh, x0+sw, y0, 26, '&alpha;', '#f97316') +
+    '</svg>';
+  const enunciado = 'El cuadrado ABCD tiene lado ' + s + '. La diagonal AC = ' + diag + ' (≈ ' + s + '√2). Hallá el ángulo α que forma la diagonal con la base y las funciones trigonométricas de α.';
+  const sol = 'La diagonal divide al cuadrado en dos triángulos rectángulos isóceles.<br>' +
+    'α = 45° → sen(45°) = cos(45°) = √2/2 &nbsp;&nbsp; tg(45°) = 1<br>' +
+    'sen(&alpha;) = ' + s + ' / ' + diag + ' = √2/2 &nbsp;&nbsp; cos(&alpha;) = √2/2 &nbsp;&nbsp; tg(&alpha;) = 1<br>' +
+    'cosec(&alpha;) = √2 &nbsp;&nbsp; sec(&alpha;) = √2 &nbsp;&nbsp; cotg(&alpha;) = 1';
+  return { svg: svgSq, enunciado, sol };
+}
+
+// ─── NIVEL 6: Rombo con diagonales ───────────────────────────────────────────
+function eb_TR_genLvl6() {
+  // Usar mitades de diagonales como catetos de triángulo rectángulo
+  const bases = [[3,4,5],[5,12,13],[8,15,17],[6,8,10]];
+  const b = bases[Math.floor(Math.random()*bases.length)];
+  const d1 = b[0]*2, d2 = b[1]*2, lado = b[2]; // lado del rombo = hipotenusa
+  const W = 240, H = 170;
+  // Rombo: vértices arriba/abajo/izq/der
+  const cx=120, cy=85;
+  const Tx={x:cx,y:20}, Bx2={x:cx,y:H-20}, Lx={x:20,y:cy}, Rx={x:W-20,y:cy};
+  const svgRhomb = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">' +
+    '<polygon points="' + cx + ',' + Tx.y + ' ' + Rx.x + ',' + cy + ' ' + cx + ',' + Bx2.y + ' ' + Lx.x + ',' + cy + '" fill="none" stroke="#4f6ef7" stroke-width="2"/>' +
+    '<line x1="' + Lx.x + '" y1="' + cy + '" x2="' + Rx.x + '" y2="' + cy + '" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5,3"/>' +
+    '<line x1="' + cx + '" y1="' + Tx.y + '" x2="' + cx + '" y2="' + Bx2.y + '" stroke="#a855f7" stroke-width="1.5" stroke-dasharray="5,3"/>' +
+    // cuadradito en centro
+    '<rect x="' + cx + '" y="' + (cy-8) + '" width="8" height="8" fill="none" stroke="#555" stroke-width="1.2"/>' +
+    '<text x="' + (Lx.x-14) + '" y="' + (cy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">A</text>' +
+    '<text x="' + (Rx.x+4) + '" y="' + (cy+4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">C</text>' +
+    '<text x="' + (cx+4) + '" y="' + (Tx.y-4) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">B</text>' +
+    '<text x="' + (cx+4) + '" y="' + (Bx2.y+14) + '" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>' +
+    '<text x="' + (Lx.x + (cx-Lx.x)/2 - 4) + '" y="' + (cy+14) + '" font-size="11" fill="#f97316" font-family="Nunito,sans-serif" font-weight="700">d₁/2=' + b[0] + '</text>' +
+    '<text x="' + (cx+4) + '" y="' + (Tx.y + (cy-Tx.y)/2) + '" font-size="11" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="700">d₂/2=' + b[1] + '</text>' +
+    angleMark(Lx.x, cy, cx, Tx.y, cx+100, cy, 26, '&alpha;', '#f97316') +
+    '</svg>';
+  const enunciado = 'El rombo ABCD tiene diagonales AC = ' + d1 + ' y BD = ' + d2 + '. Las diagonales se cortan perpendicularmente. Hallá el lado del rombo y las funciones trigonométricas del ángulo α.';
+  const sol = 'Las diagonales se bisectan. En el triángulo rectángulo formado:<br>' +
+    'cateto₁ = d₁/2 = ' + b[0] + ' &nbsp; cateto₂ = d₂/2 = ' + b[1] + '<br>' +
+    'Lado = √(' + b[0] + '² + ' + b[1] + '²) = ' + lado + '<br>' +
+    eb_TR_sixFunctions(b[1], b[0], lado, '&alpha;');
+  return { svg: svgRhomb, enunciado, sol };
+}
+
+// ─── NIVEL 7: Área y perímetro dado ángulo agudo y un lado ───────────────────
+function eb_TR_genLvl7() {
+  const configs = [
+    { ang: 30, sideType: 'hip', sideVal: 10, note: 'sen(30°)=1/2, cos(30°)=√3/2' },
+    { ang: 45, sideType: 'hip', sideVal: 8,  note: 'sen(45°)=cos(45°)=√2/2' },
+    { ang: 60, sideType: 'adj', sideVal: 6,  note: 'tg(60°)=√3' },
+    { ang: 37, sideType: 'hip', sideVal: 10, note: 'sen(37°)≈0,60, cos(37°)≈0,80' },
+    { ang: 53, sideType: 'adj', sideVal: 9,  note: 'tg(53°)≈4/3' },
+    { ang: 30, sideType: 'opp', sideVal: 5,  note: 'sen(30°)=1/2' },
+  ];
+  const cfg = configs[Math.floor(Math.random() * configs.length)];
+  const svg = eb_TR_rectSVG(null, null, null, false, true);
+  let enunciado, sol;
+  if (cfg.sideType === 'hip') {
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + cfg.ang + '° e hipotenusa AB = ' + cfg.sideVal + '. Calculá el área y el perímetro. (' + cfg.note + ')';
+    sol = 'BC = AB · sen(&alpha;) = ' + cfg.sideVal + ' · sen(' + cfg.ang + '°)<br>' +
+      'AC = AB · cos(&alpha;) = ' + cfg.sideVal + ' · cos(' + cfg.ang + '°)<br>' +
+      'Área = (BC · AC) / 2<br>' +
+      'Perímetro = AB + BC + AC';
+  } else if (cfg.sideType === 'adj') {
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + cfg.ang + '° y el cateto adyacente AC = ' + cfg.sideVal + '. Calculá el área y el perímetro. (' + cfg.note + ')';
+    sol = 'BC = AC · tg(&alpha;) = ' + cfg.sideVal + ' · tg(' + cfg.ang + '°)<br>' +
+      'AB = AC / cos(&alpha;) = ' + cfg.sideVal + ' / cos(' + cfg.ang + '°)<br>' +
+      'Área = (BC · AC) / 2<br>' +
+      'Perímetro = AB + BC + AC';
+  } else {
+    enunciado = 'En el triángulo rectángulo ABC (ángulo recto en C), α = ' + cfg.ang + '° y el cateto opuesto BC = ' + cfg.sideVal + '. Calculá el área y el perímetro. (' + cfg.note + ')';
+    sol = 'AC = BC / tg(&alpha;) = ' + cfg.sideVal + ' / tg(' + cfg.ang + '°)<br>' +
+      'AB = BC / sen(&alpha;) = ' + cfg.sideVal + ' / sen(' + cfg.ang + '°)<br>' +
+      'Área = (BC · AC) / 2<br>' +
+      'Perímetro = AB + BC + AC';
+  }
+  return { svg, enunciado, sol };
+}
+
+// ─── NIVEL 8: Problemas de la vida real ──────────────────────────────────────
+function eb_TR_genLvl8() {
+  const probs = [
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const dist = [50,80,100,120,150][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20, Bx=W-30,By=H-20;
+      const Hx=W-30,Hy=20;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Bx+'" y1="'+By+'" x2="'+Hx+'" y2="'+Hy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Hx+'" y2="'+Hy+'" stroke="#f97316" stroke-width="1.8" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Bx-sq)+' '+By+' L '+(Bx-sq)+' '+(By-sq)+' L '+Bx+' '+(By-sq)+' L '+Bx+' '+By+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Ax,Ay,Bx,By,Hx,Hy,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-6)+'" y="'+(Ay+14)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">A</text>'+
+        '<text x="'+(Bx+4)+'" y="'+(By+14)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">B</text>'+
+        '<text x="'+(Hx+4)+'" y="'+(Hy+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">C</text>'+
+        '<text x="'+((Ax+Bx)/2)+'" y="'+(Ay+14)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+dist+' m</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Una pandorga está atada con una cuerda de '+dist+' m que forma un ángulo de '+ang+'° con el suelo (punto A). El punto B es la base de la vertical. Hallá la altura BC a la que vuela la pandorga.',
+        sol: 'BC = AB · sen('+ang+'°) = '+dist+' · sen('+ang+'°)'
+      };
+    },
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const shadow = [8,10,12,15,20][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20,Bx=W-30,By=H-20,Cx=W-30,Cy=20;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Bx+'" y1="'+By+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#f97316" stroke-width="1.6" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Bx-sq)+' '+By+' L '+(Bx-sq)+' '+(By-sq)+' L '+Bx+' '+(By-sq)+' L '+Bx+' '+By+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Ax,Ay,Bx,By,Cx,Cy,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-6)+'" y="'+(Ay+14)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">Sol</text>'+
+        '<text x="'+((Ax+Bx)/2)+'" y="'+(Ay+14)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+shadow+' m (sombra)</text>'+
+        '<text x="'+(Cx+4)+'" y="'+(Cy+10)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">Árbol</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Los rayos del sol forman un ángulo de '+ang+'° con el suelo. Un árbol proyecta una sombra de '+shadow+' m. Calculá la altura del árbol.',
+        sol: 'Altura = sombra · tg('+ang+'°) = '+shadow+' · tg('+ang+'°)'
+      };
+    },
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const h = [8,10,12,15,20][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20,Bx=20,By=30,Cx=W-20,Cy=H-20;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Bx+'" y1="'+By+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#f97316" stroke-width="1.6" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Cx,Cy,Ax,Ay,Bx,By,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-14)+'" y="'+(Ay+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">A</text>'+
+        '<text x="'+(Bx-14)+'" y="'+(By+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">B</text>'+
+        '<text x="'+(Cx+4)+'" y="'+(Cy+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">C</text>'+
+        '<text x="'+(Ax+4)+'" y="'+(Ay-h/2)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+h+' m</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Un poste de '+h+' m está sostenido por un cable tirante que forma un ángulo de '+ang+'° con la horizontal (punto C). ¿Qué longitud tiene el tirante BC?',
+        sol: 'BC = AB / sen('+ang+'°) = '+h+' / sen('+ang+'°)'
+      };
+    },
+    function() {
+      const ang = [30,37,45,53,60][Math.floor(Math.random()*5)];
+      const base = [50,80,100,120,150][Math.floor(Math.random()*5)];
+      const W=220,H=140;
+      const Ax=20,Ay=H-20,Bx=W-20,By=H-20,Hx=20,Hy=30;
+      const sq=9;
+      const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+        '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Bx+'" y2="'+By+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Hx+'" y1="'+Hy+'" x2="'+Ax+'" y2="'+Ay+'" stroke="#4f6ef7" stroke-width="2"/>'+
+        '<line x1="'+Hx+'" y1="'+Hy+'" x2="'+Bx+'" y2="'+By+'" stroke="#f97316" stroke-width="1.6" stroke-dasharray="5,3"/>'+
+        '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+        angleMark(Bx,By,Ax,Ay,Hx,Hy,28,''+ang+'°','#f97316')+
+        '<text x="'+(Ax-14)+'" y="'+(Ay+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">A</text>'+
+        '<text x="'+(Bx+4)+'" y="'+(By+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">B</text>'+
+        '<text x="'+(Hx-14)+'" y="'+(Hy+4)+'" font-size="11" fill="#555" font-family="Nunito,sans-serif" font-weight="700">C</text>'+
+        '<text x="'+((Ax+Bx)/2)+'" y="'+(Ay+14)+'" font-size="10" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">'+base+' m</text>'+
+        '</svg>';
+      return {
+        svg,
+        enunciado: 'Desde un punto B en el suelo, distante '+base+' m de la base A de un edificio, se observa la cima C bajo un ángulo de '+ang+'° con la horizontal. Calculá la altura del edificio.',
+        sol: 'Altura CA = AB · tg('+ang+'°) = '+base+' · tg('+ang+'°)'
+      };
+    }
+  ];
+  const fn = probs[Math.floor(Math.random()*probs.length)];
+  return fn();
+}
+
+// ─── NIVEL 9: Dos triángulos que comparten la altura ─────────────────────────
+// Configuraciones: observadores ambos del mismo lado (edificio al extremo)
+// o edificio entre los observadores
+function eb_TR_genLvl9() {
+  const configs = [
+    // Edificio al extremo, observadores ambos del mismo lado
+    {
+      tipo: 'mismo_lado',
+      ang1: 60, ang2: 30,
+      base: 50,
+      // D = cima, A = base edificio, B = punto cercano, C = punto lejano
+      // h = AB·tg(60°), h = (AB+BC)·tg(30°) → resuelvo para h y AB
+      label: 'edificio'
+    },
+    {
+      tipo: 'mismo_lado',
+      ang1: 45, ang2: 30,
+      base: 40,
+      label: 'torre'
+    },
+    {
+      tipo: 'mismo_lado',
+      ang1: 53, ang2: 37,
+      base: 30,
+      label: 'árbol'
+    },
+    // Edificio entre dos observadores (observadores a ambos lados)
+    {
+      tipo: 'ambos_lados',
+      ang1: 60, ang2: 45,
+      base: 100,
+      label: 'edificio'
+    },
+    {
+      tipo: 'ambos_lados',
+      ang1: 37, ang2: 53,
+      base: 80,
+      label: 'torre'
+    },
+  ];
+  const cfg = configs[Math.floor(Math.random()*configs.length)];
+
+  if (cfg.tipo === 'mismo_lado') {
+    // D (cima) arriba, A (base) abajo-izq, B y C a la derecha en la base
+    // Triángulo DAB: ángulo en B = ang1, cateto horizontal = AB
+    // Triángulo DAC: ángulo en C = ang2, cateto horizontal = AC = AB + x
+    const ang1 = cfg.ang1, ang2 = cfg.ang2, x = cfg.base;
+    const W=280, H=160;
+    const Dx=50, Dy=20;
+    const Ax=50, Ay=H-20;
+    const Bx=130, By=H-20;
+    const Cx=W-20, Cy=H-20;
+    const sq=8;
+    const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+      '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="1.5"/>'+
+      '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+      '<line x1="'+Bx+'" y1="'+By+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#f97316" stroke-width="1.8"/>'+
+      '<line x1="'+Cx+'" y1="'+Cy+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#a855f7" stroke-width="1.8"/>'+
+      '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+      angleMark(Bx,By,Ax,Ay,Dx,Dy,26,''+ang1+'°','#f97316')+
+      angleMark(Cx,Cy,Bx,By,Dx,Dy,28,''+ang2+'°','#a855f7')+
+      '<text x="'+(Ax-14)+'" y="'+(Ay+4)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">A</text>'+
+      '<text x="'+(Dx-14)+'" y="'+(Dy+4)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>'+
+      '<text x="'+(Bx-6)+'" y="'+(By+14)+'" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">B</text>'+
+      '<text x="'+(Cx+4)+'" y="'+(Cy+14)+'" font-size="12" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="800">C</text>'+
+      '<text x="'+((Bx+Cx)/2)+'" y="'+(Cy+14)+'" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">x = '+x+' m</text>'+
+      '<text x="'+((Ax+Bx)/2 - 6)+'" y="'+(Ay+14)+'" font-size="11" fill="#888" font-family="Nunito,sans-serif" font-weight="700">AB</text>'+
+      '</svg>';
+    const enunciado = 'D es la cima de un ' + cfg.label + ' (vertical AD). Desde el punto B se ve la cima bajo un ángulo de '+ang1+'° con la horizontal, y desde C (más alejado) bajo un ángulo de '+ang2+'°. La distancia BC = '+x+' m. Hallá la altura h = AD y la distancia AB.';
+    const sol = 'Llamemos h = AD y d = AB.<br>'+
+      'En △DAB: tg('+ang1+'°) = h/d → h = d·tg('+ang1+'°)<br>'+
+      'En △DAC: tg('+ang2+'°) = h/(d+'+x+') → h = (d+'+x+')·tg('+ang2+'°)<br>'+
+      'Igualando: d·tg('+ang1+'°) = (d+'+x+')·tg('+ang2+'°)<br>'+
+      'Despejá d y luego h = d·tg('+ang1+'°)';
+    return { svg, enunciado, sol };
+  } else {
+    // Edificio entre observadores: B a la izquierda, C a la derecha, D cima
+    const ang1 = cfg.ang1, ang2 = cfg.ang2, total = cfg.base;
+    const W=280, H=160;
+    const Dx=140, Dy=20;
+    const Ax=140, Ay=H-20;
+    const Bx=20, By=H-20;
+    const Cx=W-20, Cy=H-20;
+    const sq=8;
+    const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;margin:0.5rem auto;">'+
+      '<line x1="'+Bx+'" y1="'+By+'" x2="'+Cx+'" y2="'+Cy+'" stroke="#4f6ef7" stroke-width="1.5"/>'+
+      '<line x1="'+Ax+'" y1="'+Ay+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#4f6ef7" stroke-width="2"/>'+
+      '<line x1="'+Bx+'" y1="'+By+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#f97316" stroke-width="1.8"/>'+
+      '<line x1="'+Cx+'" y1="'+Cy+'" x2="'+Dx+'" y2="'+Dy+'" stroke="#a855f7" stroke-width="1.8"/>'+
+      '<path d="M '+(Ax+sq)+' '+Ay+' L '+(Ax+sq)+' '+(Ay-sq)+' L '+Ax+' '+(Ay-sq)+' L '+Ax+' '+Ay+'" fill="none" stroke="#555" stroke-width="1.4"/>'+
+      angleMark(Bx,By,Cx,Cy,Dx,Dy,26,''+ang1+'°','#f97316')+
+      angleMark(Cx,Cy,Bx,By,Dx,Dy,26,''+ang2+'°','#a855f7')+
+      '<text x="'+(Ax+4)+'" y="'+(Ay+14)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">A</text>'+
+      '<text x="'+(Dx+4)+'" y="'+(Dy+4)+'" font-size="12" fill="#555" font-family="Nunito,sans-serif" font-weight="800">D</text>'+
+      '<text x="'+(Bx-14)+'" y="'+(By+14)+'" font-size="12" fill="#f97316" font-family="Nunito,sans-serif" font-weight="800">B</text>'+
+      '<text x="'+(Cx+4)+'" y="'+(Cy+14)+'" font-size="12" fill="#a855f7" font-family="Nunito,sans-serif" font-weight="800">C</text>'+
+      '<text x="'+((Bx+Cx)/2)+'" y="'+(Cy+14)+'" font-size="11" fill="#22c55e" font-family="Nunito,sans-serif" font-weight="700">BC = '+total+' m</text>'+
+      '</svg>';
+    const enunciado = 'D es la cima de un ' + cfg.label + ' (vertical AD). El ' + cfg.label + ' está entre los observadores B y C, separados '+total+' m. Desde B la cima se ve bajo '+ang1+'° y desde C bajo '+ang2+'°. Hallá la altura h = AD y las distancias AB y AC.';
+    const sol = 'Sea AB = d₁ y AC = d₂. d₁ + d₂ = '+total+'.<br>'+
+      'En △DAB: h = d₁·tg('+ang1+'°)<br>'+
+      'En △DAC: h = d₂·tg('+ang2+'°)<br>'+
+      'Entonces d₁·tg('+ang1+'°) = d₂·tg('+ang2+'°) y d₁+d₂='+total+'<br>'+
+      'Resolvé el sistema para d₁, d₂ y luego h.';
+    return { svg, enunciado, sol };
+  }
+}
+
+// ─── Wrappers eb_TR_ para CATALOG ────────────────────────────────────────────
+function eb_TR_gen(lvl) {
+  const gens = [null, eb_TR_genLvl1, eb_TR_genLvl2, eb_TR_genLvl3, eb_TR_genLvl4,
+                eb_TR_genLvl5, eb_TR_genLvl6, eb_TR_genLvl7, eb_TR_genLvl8, eb_TR_genLvl9];
+  try {
+    const r = gens[lvl]();
+    const _u = Math.random().toString(36).slice(2);
+    return {
+      expr: (r.svg || '') + '<div style="margin-top:0.4rem">' + r.enunciado + '</div><!--' + _u + '-->',
+      sol: r.sol,
+      steps: ['Identificar cateto opuesto, cateto adyacente e hipotenusa',
+              'Aplicar las razones trigonométricas correspondientes',
+              'Verificar usando el teorema de Pitágoras si corresponde']
+    };
+  } catch(e) { return eb_TR_gen(lvl); }
+}
+
+
 
 // ── Números Enteros ──
 function ent_opnd(n) { return n < 0 ? `(${n})` : `${n}`; }
@@ -4162,10 +5108,17 @@ function omGenRad(lvl) {
 }
 
 // ── GENERADOR PRINCIPAL ──────────────────────────────────────
+function omGenSuma(lvl){const nTerms=rnd(2,3);const nv=rnd(1,2);const parts=omRandLit(nv,3);const lit=omLitStr(parts);const coefs=Array.from({length:nTerms},()=>omRandCoef(lvl));let[rn,rd]=[coefs[0].n,coefs[0].d];for(let i=1;i<nTerms;i++)[rn,rd]=omAdd(rn,rd,coefs[i].n,coefs[i].d);let expr=omMonomioStr(coefs[0],lit);for(let i=1;i<nTerms;i++){const c=coefs[i];if(c.n<0){const abs=omRandCoef(lvl);abs.n=Math.abs(c.n);abs.d=c.d;const absVal=Math.abs(c.n);abs.disp=lvl===1?(absVal===1?'':String(absVal)):c.disp.replace(/^−/,'').replace(/^-/,'');expr+=` − ${omMonomioStr(abs,lit)}`;}else{expr+=` + ${omMonomioStr(c,lit)}`;}}expr+=' =';return{expr,sol:omResSol(rn,rd,lit),lvl};}
+function omGenResta(lvl){const nv=rnd(1,2);const parts=omRandLit(nv,3);const lit=omLitStr(parts);const cA=omRandCoef(lvl);let cB;do{cB=omRandCoef(lvl);}while(cB.n===cA.n&&cB.d===cA.d);const[rn,rd]=omAdd(cA.n,cA.d,-cB.n,cB.d);const sol=omResSol(rn,rd,lit);const fmt=rnd(0,1);const mA=omMonomioStr(cA,lit,true);const mB=omMonomioStr(cB,lit,true);const expr=fmt===0?`De ${mA} restar ${mB}`:`Restar ${mB} de ${mA}`;return{expr,sol,lvl};}
+function omGenMult(lvl){const nTerms=rnd(2,3);const allVars=[...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,3);const coefs=Array.from({length:nTerms},()=>omRandCoef(lvl));const termParts=Array.from({length:nTerms},()=>{const nv=rnd(1,Math.min(2,allVars.length));const chosenVars=[...allVars].sort(()=>Math.random()-0.5).slice(0,nv);return chosenVars.map(v=>({v,e:rnd(1,3)}));});let[rn,rd]=[coefs[0].n,coefs[0].d];for(let i=1;i<nTerms;i++)[rn,rd]=omMul(rn,rd,coefs[i].n,coefs[i].d);const expMap={};termParts.forEach(ps=>ps.forEach(({v,e})=>{expMap[v]=(expMap[v]||0)+e;}));const litRes=Object.entries(expMap).sort().map(([v,e])=>e===1?v:`${v}${toSup(e)}`).join('');const monoStrs=coefs.map((c,i)=>{const lit=omLitStr(termParts[i]);return`(${omMonomioStr(c,lit)})`;});const expr=monoStrs.join(' · ')+' =';return{expr,sol:omResSol(rn,rd,litRes),lvl};}
+function omGenDiv(lvl){const nv=rnd(1,2);const allVars=[...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nv);const cA=omRandCoef(lvl);const cB=omRandCoef(lvl,true,false);const expsA=allVars.map(()=>rnd(2,5));const expsB=allVars.map((_,i)=>rnd(1,expsA[i]));const expsR=expsA.map((e,i)=>e-expsB[i]);const litA=allVars.map((v,i)=>expsA[i]===1?v:`${v}${toSup(expsA[i])}`).join('');const litB=allVars.map((v,i)=>expsB[i]===1?v:`${v}${toSup(expsB[i])}`).join('');const litR=allVars.map((v,i)=>expsR[i]===0?'':expsR[i]===1?v:`${v}${toSup(expsR[i])}`).join('');const[rn,rd]=omDiv(cA.n,cA.d,cB.n,cB.d);const expr=`${cA.disp}${litA} ÷ ${cB.disp}${litB} =`;return{expr,sol:omResSol(rn,rd,litR),lvl};}
+function omGenPot(lvl){const nv=rnd(1,2);const parts=omRandLit(nv,3);const lit=omLitStr(parts);const coef=omRandCoef(lvl);const potencia=rnd(2,4);const[rn,rd]=omPow(coef.n,coef.d,potencia);const litR=parts.map(({v,e})=>{const ne=e*potencia;return ne===1?v:`${v}${toSup(ne)}`;}).join('');const pSup=toSup(potencia);const inner=omMonomioStr(coef,lit);const expr=`(${inner})${pSup} =`;return{expr,sol:omResSol(rn,rd,litR),lvl};}
 const OM_GENS = { suma:omGenSuma, resta:omGenResta, mult:omGenMult, div:omGenDiv, pot:omGenPot, rad:omGenRad };
 
 
 // ── Helpers y generadores de polinomios (opMkPoly, opGenSuma..opGenRuffini, OP_GENS) ──
+// Variable selector para polinomios en examen-builder (siempre 'x' — sin UI, consistente con el examen)
+function ebOpPickLetter() { return 'x'; }
 function opMkPoly(maxDeg, nTerms, lvl, positivo=false) {
   const must = new Set([maxDeg, 0]);
   const avail = [];
@@ -4238,60 +5191,65 @@ function opDivPoly(dividendo, divisor) {
 // ── Generadores ──────────────────────────────────────────────
 
 function opGenSuma(lvl) {
+  const v=ebOpPickLetter();
   const deg=rnd(2,4);
   const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const sol=opAddPoly(A,B);
   if(lvl===1 && !opIsInteger(sol)) return opGenSuma(lvl);
   return{
-    expr:`(${opPolyStr(A)}) + (${opPolyStr(B)}) =`,
-    sol: opPolyStr(sol)||'0', lvl
+    expr:`(${opPolyStr(A,v)}) + (${opPolyStr(B,v)}) =`,
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenResta(lvl) {
+  const v=ebOpPickLetter();
   const deg=rnd(2,4);
   const A=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const B=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const sol=opSubPoly(A,B);
   if(lvl===1 && !opIsInteger(sol)) return opGenResta(lvl);
   const fmt=rnd(0,1);
-  const sA=`(${opPolyStr(A)})`, sB=`(${opPolyStr(B)})`;
+  const sA=`(${opPolyStr(A,v)})`, sB=`(${opPolyStr(B,v)})`;
   return{
     expr: fmt===0 ? `De ${sA} restar ${sB}` : `Restar ${sB} de ${sA}`,
-    sol: opPolyStr(sol)||'0', lvl
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenMultMP(lvl) {
   // Monomio × Polinomio
+  const v=ebOpPickLetter();
   const monoCoef=opRndCoef(lvl);
   const monoExp=rnd(0,3);
   const mono={n:monoCoef.n,d:monoCoef.d,exp:monoExp};
   const deg=rnd(2,4);
   const P=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const sol=opMulPolyMono(P,mono);
-  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoLit=monoExp===0?'':monoExp===1?v:`${v}${toSup(monoExp)}`;
   const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
   return{
-    expr:`${monoStr} · (${opPolyStr(P)}) =`,
-    sol: opPolyStr(sol)||'0', lvl
+    expr:`${monoStr} · (${opPolyStr(P,v)}) =`,
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenMultPP(lvl) {
+  const v=ebOpPickLetter();
   const degA=rnd(2,3), degB=rnd(2,3);
   const A=opMkPoly(degA, rnd(2,degA+1), lvl);
   const B=opMkPoly(degB, rnd(2,degB+1), lvl);
   const sol=opMulPoly(A,B);
   if(lvl===1 && !opIsInteger(sol)) return opGenMultPP(lvl);
   return{
-    expr:`(${opPolyStr(A)}) · (${opPolyStr(B)}) =`,
-    sol: opPolyStr(sol)||'0', lvl
+    expr:`(${opPolyStr(A,v)}) · (${opPolyStr(B,v)}) =`,
+    sol: opPolyStr(sol,v)||'0', lvl
   };
 }
 
 function opGenDivPM(lvl) {
+  const v=ebOpPickLetter();
   // Construir desde el cociente → dividendo = cociente × monomio (resultado exacto garantizado)
   const monoCoef=opRndCoef(lvl,true);
   const monoExp=rnd(0,2);
@@ -4299,15 +5257,16 @@ function opGenDivPM(lvl) {
   const deg=rnd(2,4);
   const Q=opMkPoly(deg, rnd(2,Math.min(deg+1,4)), lvl);
   const dividendo=opMulPolyMono(Q,mono);
-  const monoLit=monoExp===0?'':monoExp===1?'x':`x${toSup(monoExp)}`;
+  const monoLit=monoExp===0?'':monoExp===1?v:`${v}${toSup(monoExp)}`;
   const monoStr=`${opCDisp(mono.n,mono.d,monoLit!=='')}${monoLit}`;
   return{
-    expr:`<span class="frac" style="font-size:1em"><span class="num">${opPolyStr(dividendo)}</span><span class="den">${monoStr}</span></span> =`,
-    sol: opPolyStr(Q)||'0', lvl
+    expr:`(${opPolyStr(dividendo,v)}) ÷ (${monoStr}) =`,
+    sol: opPolyStr(Q,v)||'0', lvl
   };
 }
 
 function opGenDivPP(lvl) {
+  const v=ebOpPickLetter();
   // Siempre enteros — Construir desde cociente+resto → dividendo exacto
   const degDiv=rnd(1,2), degQ=rnd(1,2);
   const divisor=opMkPoly(degDiv, rnd(2,degDiv+1), 1);
@@ -4317,18 +5276,19 @@ function opGenDivPP(lvl) {
   const restoExp  = degDiv>0 ? rnd(0,degDiv-1) : 0;
   const resto     = restoCoef===0 ? [] : [{n:restoCoef,d:1,exp:restoExp}];
   const dividendo = opAddPoly(opMulPoly(divisor,cociente), restoCoef===0?[{n:0,d:1,exp:0}]:resto);
-  const cocStr    = opPolyStr(cociente);
+  const cocStr    = opPolyStr(cociente,v);
   const solStr    = restoCoef!==0
-    ? `Cociente: ${cocStr} — Resto: ${opPolyStr(resto)}`
+    ? `Cociente: ${cocStr} — Resto: ${opPolyStr(resto,v)}`
     : `Cociente: ${cocStr}`;
   return{
-    expr:`(${opPolyStr(dividendo)}) ÷ (${opPolyStr(divisor)}) =`,
+    expr:`(${opPolyStr(dividendo,v)}) ÷ (${opPolyStr(divisor,v)}) =`,
     sol: solStr, lvl
   };
 }
 
 function opGenResto(lvl) {
   // Teorema del resto: P(a) = resto de P(x)÷(x−a)
+  const v=ebOpPickLetter();
   const deg=rnd(2,4);
   // Polinomio completo (todos los grados) con coefs enteros
   const P=[];
@@ -4342,9 +5302,9 @@ function opGenResto(lvl) {
     [rn,rd]=opAddF(rn,rd,tn,td);
   });
   const aStr=a<0?`(${a})`:String(a);
-  const divStr=a<0?`x + ${Math.abs(a)}`:`x − ${a}`;
+  const divStr=a<0?`${v} + ${Math.abs(a)}`:`${v} − ${a}`;
   return{
-    expr:`Hallá el resto de dividir <strong>${opPolyStr(P)}</strong> por <strong>(${divStr})</strong>`,
+    expr:`Hallá el resto de dividir <strong>${opPolyStr(P,v)}</strong> por <strong>(${divStr})</strong>`,
     sol:`P${aStr} = ${opFracH(rn,rd)}`, lvl
   };
 }
@@ -5142,6 +6102,691 @@ function ineqc_gen(lvl){
     };
   }catch(e){return null;}
 }
+// ── TRIÁNGULOS OBLICUÁNGULOS ──
+const DEG = Math.PI / 180;
+function fmt(n, dec=2) { return Math.round(n * 10**dec) / 10**dec; }
+function fmtDeg(a) { return Math.round(a * 10) / 10 + '°'; }
+
+// Generate a valid oblique triangle given angles A,B (C=180-A-B) and side a
+// Returns all sides and angles
+function makeTriangle(A_deg, B_deg, a) {
+  const C_deg = 180 - A_deg - B_deg;
+  if (C_deg <= 0) return null;
+  const A = A_deg * DEG, B = B_deg * DEG, C = C_deg * DEG;
+  // Law of sines: a/sin(A) = b/sin(B) = c/sin(C)
+  const k = a / Math.sin(A);
+  const b = k * Math.sin(B);
+  const c = k * Math.sin(C);
+  const area = 0.5 * b * c * Math.sin(A); // or 0.5*a*b*sin(C) etc
+  const perim = a + b + c;
+  return { A: A_deg, B: B_deg, C: C_deg, a, b: fmt(b), c: fmt(c), area: fmt(area), perim: fmt(perim) };
+}
+
+// ─── EJERCICIOS GENERATORS ───
+
+// LEY DEL SENO: need AAS or ASA — two angles + one side
+// Case AAL: know A, B, a → find b, c, C
+function triGenSeno() {
+  let t = null, att = 0;
+  while (!t && att++ < 50) {
+    const A = rnd(25, 80), B = rnd(25, 80);
+    if (A + B >= 160) continue;
+    const a = rnd(5, 20);
+    t = makeTriangle(A, B, a);
+  }
+  if (!t) return null;
+  // Give: angles A, B and side a
+  const hint = '(Ley del Seno)';
+  const sol = `b ≈ ${t.b} | c ≈ ${t.c} | C = ${t.C}° | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
+  return {
+    expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá los lados y el ángulo desconocidos, el perímetro y el área.`,
+    sol, hint, tema: 'Triángulo — Ley del Seno'
+  };
+}
+
+// LEY DEL COSENO: need SAS (two sides + included angle) or SSS
+function triGenCoseno() {
+  const type = rnd(0, 1); // 0=SAS, 1=SSS
+  let t = null, att = 0;
+  if (type === 0) {
+    // SAS: know b, c, A → find a
+    while (!t && att++ < 50) {
+      const b = rnd(5, 18), c = rnd(5, 18), A = rnd(20, 140);
+      // a² = b² + c² - 2bc·cos(A)
+      const a2 = b*b + c*c - 2*b*c*Math.cos(A * DEG);
+      if (a2 <= 0) continue;
+      const a = Math.sqrt(a2);
+      const B = Math.asin(b * Math.sin(A * DEG) / a) / DEG;
+      const C = 180 - A - B;
+      if (C <= 0 || B <= 0) continue;
+      const area = 0.5 * b * c * Math.sin(A * DEG);
+      const perim = a + b + c;
+      t = { A, B: fmt(B), C: fmt(C), a: fmt(a), b, c, area: fmt(area), perim: fmt(perim) };
+    }
+    if (!t) return null;
+    const sol = `a ≈ ${t.a} | B̂ ≈ ${t.B}° | Ĉ ≈ ${t.C}° | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el lado y los ángulos desconocidos, el perímetro y el área.`,
+      sol, hint: '(Ley del Coseno)', tema: 'Triángulo — Ley del Coseno'
+    };
+  } else {
+    // SSS: know a, b, c → find all angles
+    while (!t && att++ < 50) {
+      const a = rnd(5, 15), b = rnd(5, 15), c = rnd(5, 15);
+      // Triangle inequality
+      if (a + b <= c || a + c <= b || b + c <= a) continue;
+      const cosA = (b*b + c*c - a*a) / (2*b*c);
+      if (Math.abs(cosA) >= 1) continue;
+      const A = Math.acos(cosA) / DEG;
+      const cosB = (a*a + c*c - b*b) / (2*a*c);
+      if (Math.abs(cosB) >= 1) continue;
+      const B = Math.acos(cosB) / DEG;
+      const C = 180 - A - B;
+      if (C <= 0) continue;
+      const s = (a + b + c) / 2;
+      const area = Math.sqrt(s * (s-a) * (s-b) * (s-c));
+      t = { A: fmt(A), B: fmt(B), C: fmt(C), a, b, c, area: fmt(area), perim: a+b+c };
+    }
+    if (!t) return null;
+    const sol = `Â ≈ ${t.A}° | B̂ ≈ ${t.B}° | Ĉ ≈ ${t.C}° | Perímetro = ${t.perim} | Área ≈ ${t.area}`;
+    return {
+      expr: `En el triángulo ABC: a = ${t.a}, b = ${t.b}, c = ${t.c}.<br>Hallá todos los ángulos, el perímetro y el área.`,
+      sol, hint: '(Ley del Coseno)', tema: 'Triángulo — Ley del Coseno'
+    };
+  }
+}
+
+// AMBAS LEYES: alterna aleatoriamente entre variantes que requieren seno o coseno
+// para garantizar mezcla real cuando el docente elige este nivel
+function triGenAmbas() {
+  const variant = rnd(0, 2); // 0,1 = requiere seno primero; 2 = requiere coseno + seno
+  if (variant <= 1) {
+    // AAS: dado A, B, a → seno para b y c; luego ángulo con seno
+    let t = null, att = 0;
+    while (!t && att++ < 50) {
+      const A = rnd(30, 75), B = rnd(25, 70);
+      if (A + B >= 160) continue;
+      const a = rnd(6, 18);
+      t = makeTriangle(A, B, a);
+    }
+    if (!t) return null;
+    const sol = `b ≈ ${t.b} | c ≈ ${t.c} | Ĉ = ${t.C}° | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
+    return {
+      expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá los lados y el ángulo desconocidos, el perímetro y el área.`,
+      sol, hint: '(Ley del Seno)', tema: 'Triángulo — Ley del Seno'
+    };
+  } else {
+    // SAS: dado b, c, A → coseno para hallar a; luego seno para ángulos restantes
+    let t = null, att = 0;
+    while (!t && att++ < 50) {
+      const b = rnd(5, 18), c = rnd(5, 18), A = rnd(20, 130);
+      const a2 = b*b + c*c - 2*b*c*Math.cos(A * DEG);
+      if (a2 <= 0) continue;
+      const a = Math.sqrt(a2);
+      const B = Math.asin(b * Math.sin(A * DEG) / a) / DEG;
+      const C = 180 - A - B;
+      if (C <= 0 || B <= 0) continue;
+      const area = 0.5 * b * c * Math.sin(A * DEG);
+      const perim = a + b + c;
+      t = { A, B: fmt(B), C: fmt(C), a: fmt(a), b, c, area: fmt(area), perim: fmt(perim) };
+    }
+    if (!t) return null;
+    const sol = `a ≈ ${t.a} | B̂ ≈ ${t.B}° | Ĉ ≈ ${t.C}° | Perímetro ≈ ${t.perim} | Área ≈ ${t.area}`;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el lado y los ángulos desconocidos, el perímetro y el área.`,
+      sol, hint: '(Ley del Coseno)', tema: 'Triángulo — Ley del Coseno'
+    };
+  }
+}
+
+// ─── PROBLEMAS GENERATORS ───────────────────
+// Each returns: { expr, sol, graph, tema }
+
+// ─── SVG HELPERS FOR PROBLEMS ───
+function triSVG(W, H, pts, labels, lines, extraFn) {
+  // pts: array of {x,y} in SVG coords
+  // labels: array of {x,y,text,color}
+  // lines: array of {x1,y1,x2,y2,color,dash}
+  let linesHTML = (lines||[]).map(l => {
+    const dashAttr = l.dash ? 'stroke-dasharray="5,3"' : '';
+    return `<line x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" stroke="${l.color||'#4f6ef7'}" stroke-width="${l.w||1.8}" ${dashAttr}/>`;
+  }).join('');
+  let dotsHTML = (pts||[]).map(p =>
+    `<circle cx="${p.x}" cy="${p.y}" r="${p.r||4}" fill="${p.color||'#4f6ef7'}"/>`
+  ).join('');
+  let labelsHTML = (labels||[]).map(l =>
+    `<text x="${l.x}" y="${l.y}" font-size="${l.size||11}" fill="${l.color||'#1a1d2e'}" font-weight="${l.bold?'800':'600'}" font-family="Nunito,sans-serif">${l.text}</text>`
+  ).join('');
+  const extra = extraFn ? extraFn() : '';
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:10px;background:#fafbff;display:block;">
+  ${linesHTML}${extra}${dotsHTML}${labelsHTML}
+</svg>`;
+}
+
+function angleMark(cx, cy, x1, y1, x2, y2, r, label, color) {
+  // Draw arc from direction (x1-cx,y1-cy) to (x2-cx,y2-cy)
+  const a1 = Math.atan2(y1-cy, x1-cx);
+  const a2 = Math.atan2(y2-cy, x2-cx);
+  const mx = cx + r * Math.cos((a1+a2)/2);
+  const my = cy + r * Math.sin((a1+a2)/2);
+  const px1 = cx + r * Math.cos(a1), py1 = cy + r * Math.sin(a1);
+  const px2 = cx + r * Math.cos(a2), py2 = cy + r * Math.sin(a2);
+  // determine large-arc-flag
+  let da = a2 - a1;
+  while (da > Math.PI) da -= 2*Math.PI;
+  while (da < -Math.PI) da += 2*Math.PI;
+  const sweep = da > 0 ? 1 : 0;
+  const large = Math.abs(da) > Math.PI ? 1 : 0;
+  return `<path d="M ${px1.toFixed(1)} ${py1.toFixed(1)} A ${r} ${r} 0 ${large} ${sweep} ${px2.toFixed(1)} ${py2.toFixed(1)}" fill="none" stroke="${color||'#f97316'}" stroke-width="1.5"/>
+  <text x="${(mx + (mx-cx)*0.6).toFixed(1)}" y="${(my + (my-cy)*0.6).toFixed(1)}" font-size="10" fill="${color||'#f97316'}" font-family="Nunito,sans-serif" font-weight="700" text-anchor="middle">${label}</text>`;
+}
+
+function midLabel(x1,y1,x2,y2,text,offset,color){
+  const mx=(x1+x2)/2+offset[0], my=(y1+y2)/2+offset[1];
+  return `<text x="${mx.toFixed(1)}" y="${my.toFixed(1)}" font-size="10" fill="${color||'#22c55e'}" font-family="Nunito,sans-serif" font-weight="700" text-anchor="middle">${text}</text>`;
+}
+
+// ─── 1. BARCOS DESDE UN PUERTO ───────────────
+function triGenTorre() {
+  // Two boats leave port P at the same time in different directions.
+  // Boat A travels along PA, Boat B along PB.
+  // Angle at P between the two routes = angle_P
+  // Given: PA distance, PB distance, angle at P → find AB (distance between boats)
+  // OR: given AB, PA, angle at P → find PB
+  let t = null, att = 0;
+  while (!t && att++ < 60) {
+    const A_ang = rnd(30, 80), B_ang = rnd(30, 80);
+    if (A_ang + B_ang >= 160) continue;
+    const ab = rnd(10, 40);
+    t = makeTriangle(A_ang, B_ang, ab);
+    if (!t || t.b < 5 || t.c < 5) { t = null; continue; }
+  }
+  if (!t) return null;
+
+  // Reinterpret: P is the port (vertex with angle C = t.C),
+  // sides from P are t.b (PA) and t.c (PB), angle at P = t.C
+  // distance between boats = t.a
+  const PA = Math.round(t.c * 10)/10;
+  const PB = Math.round(t.b * 10)/10;
+  const angleP = t.C;
+  const AB = Math.round(t.a * 10)/10;
+
+  const pide = rnd(0, 1); // 0 = find AB, 1 = find PB
+  let datosExtra, pedido, solVal;
+  if (pide === 0) {
+    datosExtra = `El barco A recorre ${PA} km y el barco B recorre ${PB} km.`;
+    pedido = 'la distancia entre los dos barcos';
+    solVal = `Ley del Coseno: AB² = PA² + PB² − 2·PA·PB·cos(${angleP}°) → AB ≈ ${AB} km`;
+  } else {
+    datosExtra = `El barco A recorre ${PA} km y la distancia entre los barcos es ${AB} km.`;
+    pedido = 'cuántos kilómetros recorrió el barco B';
+    solVal = `Ley del Coseno: AB² = PA² + PB² − 2·PA·PB·cos(${angleP}°) → PB ≈ ${PB} km`;
+  }
+
+  // SVG: P at bottom-left, A goes up-right at fixed angle, B opens angleP degrees to the right
+  // This guarantees the triangle is always visually clear regardless of angleP value
+  const W = 300, H = 210;
+  const Px = 55, Py = 175;
+  // PA goes up-right at 55° from horizontal (fixed base direction)
+  const baseAngleDeg = 55;
+  const baseAngleRad = baseAngleDeg * Math.PI / 180;
+  // PB is rotated clockwise by angleP from PA direction (opens to the right)
+  const dirB_rad = (baseAngleDeg - angleP) * Math.PI / 180;
+  const scaleF = Math.min(110 / Math.max(PA, PB), 3.5);
+  const Ax = Math.round(Px + PA * scaleF * Math.cos(baseAngleRad));
+  const Ay = Math.round(Py - PA * scaleF * Math.sin(baseAngleRad));
+  const Bx = Math.round(Px + PB * scaleF * Math.cos(dirB_rad));
+  const By = Math.round(Py - PB * scaleF * Math.sin(dirB_rad));
+  // Label offsets: A is upper area, B depends on angle
+  const Alabel_dx = Ax > Px + 60 ? -10 : -30;
+  const Blabel_dx = angleP < 50 ? 5 : Bx > Px + 30 ? 5 : -35;
+  const Blabel_dy = By < Py - 20 ? -8 : 14;
+
+  const graph = triSVG(W, H,
+    [{x:Px,y:Py,color:'#4f6ef7',r:6},{x:Ax,y:Ay,color:'#e74c3c',r:5},{x:Bx,y:By,color:'#e74c3c',r:5}],
+    [
+      {x:Px-8,y:Py+14,text:'P (puerto)',bold:true,color:'#4f6ef7',size:9},
+      {x:Ax+Alabel_dx,y:Ay-7,text:'Barco A',bold:true,color:'#e74c3c',size:9},
+      {x:Bx+Blabel_dx,y:By+Blabel_dy,text:'Barco B',bold:true,color:'#e74c3c',size:9},
+    ],
+    [
+      {x1:Px,y1:Py,x2:Ax,y2:Ay,color:'#4f6ef7'},
+      {x1:Px,y1:Py,x2:Bx,y2:By,color:'#4f6ef7'},
+      {x1:Ax,y1:Ay,x2:Bx,y2:By,color:'#aaa',dash:true,w:1.5},
+    ],
+    () =>
+      midLabel(Px,Py,Ax,Ay, `${PA} km`, [-18, 0], '#4f6ef7') +
+      midLabel(Px,Py,Bx,By, `${PB} km`, [10, 0], '#4f6ef7') +
+      (pide===0 ? '' : midLabel(Ax,Ay,Bx,By, `${AB} km`, [0,-12], '#aaa')) +
+      angleMark(Px,Py, Ax,Ay, Bx,By, 30, `${angleP}°`, '#f97316')
+  );
+
+  return {
+    expr: `Dos barcos parten simultáneamente del puerto P en distintas direcciones, formando un ángulo de ${angleP}° entre sus rutas. ${datosExtra}<br><strong>Hallá ${pedido}.</strong>`,
+    sol: solVal,
+    graph, tema: '⚓ Barcos desde un puerto'
+  };
+}
+
+
+// ─── 2. TRES CIUDADES ──────────────────────
+function triGenCiudad() {
+  let t = null, att = 0;
+  while (!t && att++ < 60) {
+    const A = rnd(30,75), B = rnd(30,75);
+    if (A+B >= 160) continue;
+    const ab = rnd(80, 300); // AB distance in km
+    t = makeTriangle(A, B, ab);
+    if (!t || t.b < 20 || t.c < 20) { t=null; continue; }
+  }
+  if (!t) return null;
+
+  const names = [['Buenos Aires','Córdoba','Rosario'],['Mendoza','San Luis','San Juan'],
+                 ['Salta','Jujuy','Tucumán'],['La Plata','Mar del Plata','Bahía Blanca'],
+                 ['Neuquén','Bariloche','Zapala']];
+  const [cityA, cityB, cityC] = names[rnd(0,names.length-1)];
+
+  const pide = rnd(0,2); // 0=distBC, 1=distAC, 2=ángulo en C
+  let pedido, solVal;
+  if (pide===0) { pedido=`la distancia entre ${cityB} y ${cityC}`; solVal=`${cityB}–${cityC} ≈ ${t.b} km`; }
+  else if (pide===1) { pedido=`la distancia entre ${cityA} y ${cityC}`; solVal=`${cityA}–${cityC} ≈ ${t.c} km`; }
+  else { pedido=`el ángulo formado en ${cityC}`; solVal=`Ĉ = ${t.C}°`; }
+
+  // SVG triangle map-style
+  const W=280, H=200;
+  const Ax=40, Ay=160, Bx=240, By=160;
+  const fracAC = t.c / (t.b + t.c);
+  const angle_A = t.A * Math.PI/180;
+  const Cx = Ax + t.c * Math.cos(angle_A) * (W-80)/(t.c+t.b) * 1.5;
+  const Cy = Ay - t.c * Math.sin(angle_A) * (H-60)/(t.a) * 1.2;
+  const CxC = Math.min(Math.max(Cx, 30), W-30);
+  const CyC = Math.min(Math.max(Cy, 20), Ay-20);
+
+  const graph = triSVG(W, H,
+    [{x:Ax,y:Ay,color:'#4f6ef7'},{x:Bx,y:By,color:'#4f6ef7'},{x:CxC,y:CyC,color:'#e74c3c',r:5}],
+    [
+      {x:Ax-16,y:Ay+4,text:cityA[0],bold:true,color:'#4f6ef7',size:10},
+      {x:Bx+5,y:By+4,text:cityB[0],bold:true,color:'#4f6ef7',size:10},
+      {x:CxC+6,y:CyC-6,text:cityC[0],bold:true,color:'#e74c3c',size:10},
+    ],
+    [
+      {x1:Ax,y1:Ay,x2:Bx,y2:By,color:'#4f6ef7'},
+      {x1:Ax,y1:Ay,x2:CxC,y2:CyC,color:'#888'},
+      {x1:Bx,y1:By,x2:CxC,y2:CyC,color:'#888'},
+    ],
+    () =>
+      `<text x="${Ax-28}" y="${Ay-6}" font-size="8" fill="#4f6ef7" font-family="Nunito">${cityA}</text>` +
+      `<text x="${Bx+6}" y="${By-6}" font-size="8" fill="#4f6ef7" font-family="Nunito">${cityB}</text>` +
+      `<text x="${CxC-10}" y="${CyC-14}" font-size="8" fill="#e74c3c" font-family="Nunito">${cityC}</text>` +
+      midLabel(Ax,Ay,Bx,By, `${t.a} km`, [0,-10], '#4f6ef7') +
+      angleMark(Ax,Ay, Ax+30,Ay, CxC,CyC, 22, `${t.A}°`, '#f97316') +
+      angleMark(Bx,By, CxC,CyC, Bx-30,By, 22, `${t.B}°`, '#f97316')
+  );
+
+  return {
+    expr: `Las ciudades ${cityA} (A), ${cityB} (B) y ${cityC} (C) forman un triángulo. La distancia ${cityA}–${cityB} = ${t.a} km, el ángulo en ${cityA} = ${t.A}° y el ángulo en ${cityB} = ${t.B}°.<br><strong>Hallá ${pedido}.</strong>`,
+    sol: `Ĉ = 180° − ${t.A}° − ${t.B}° = ${t.C}° | Ley del Seno: ${solVal}`,
+    graph, tema: '🗺 Tres ciudades'
+  };
+}
+
+// ─── 3. INCENDIO Y ESTACIONES ─────────────
+function triGenIncendio() {
+  let t = null, att = 0;
+  while (!t && att++ < 60) {
+    const A = rnd(30,80), B = rnd(30,80);
+    if (A+B >= 165) continue;
+    const ab = rnd(5, 25);
+    t = makeTriangle(A, B, ab);
+    if (!t || t.b < 2 || t.c < 2) { t=null; continue; }
+  }
+  if (!t) return null;
+
+  const closer = t.b < t.c ? 'A' : 'B';
+  const closerDist = t.b < t.c ? t.b : t.c;
+  const fartherDist = t.b < t.c ? t.c : t.b;
+
+  const contexts = [
+    { name: 'incendio forestal', stationA: 'Estación A', stationB: 'Estación B', unit: 'km' },
+    { name: 'naufragio', stationA: 'Puerto A', stationB: 'Puerto B', unit: 'km' },
+    { name: 'accidente vial', stationA: 'Hospital A', stationB: 'Hospital B', unit: 'km' },
+  ];
+  const ctx = contexts[rnd(0, contexts.length-1)];
+
+  // SVG: A left, B right, F (fire/incident) top-center
+  const W=280, H=200;
+  const Ax=40, Ay=160, Bx=240, By=160;
+  const angle_A = t.A * Math.PI/180;
+  const Fx_raw = Ax + t.c * Math.cos(angle_A) * (W-80)/t.a * 0.9;
+  const Fy_raw = Ay - t.c * Math.sin(angle_A) * (H-50)/t.a * 1.5;
+  const Fx = Math.min(Math.max(Fx_raw, 40), W-40);
+  const Fy = Math.min(Math.max(Fy_raw, 25), Ay-30);
+
+  const fireColor = '#e74c3c';
+  const graph = triSVG(W, H,
+    [{x:Ax,y:Ay,color:'#4f6ef7'},{x:Bx,y:By,color:'#4f6ef7'},{x:Fx,y:Fy,color:fireColor,r:6}],
+    [
+      {x:Ax-16,y:Ay+4,text:'A',bold:true,color:'#4f6ef7'},
+      {x:Bx+6,y:By+4,text:'B',bold:true,color:'#4f6ef7'},
+      {x:Fx-6,y:Fy-10,text:'🔥',bold:true,color:fireColor,size:14},
+    ],
+    [
+      {x1:Ax,y1:Ay,x2:Bx,y2:By,color:'#4f6ef7'},
+      {x1:Ax,y1:Ay,x2:Fx,y2:Fy,color:'#f97316',dash:true},
+      {x1:Bx,y1:By,x2:Fx,y2:Fy,color:'#f97316',dash:true},
+    ],
+    () =>
+      midLabel(Ax,Ay,Bx,By, `${t.a} ${ctx.unit}`, [0,-10], '#4f6ef7') +
+      angleMark(Ax,Ay, Ax+30,Ay, Fx,Fy, 22, `${t.A}°`, '#f97316') +
+      angleMark(Bx,By, Fx,Fy, Bx-30,By, 22, `${t.B}°`, '#f97316') +
+      `<text x="${Ax-24}" y="${Ay-8}" font-size="8" fill="#4f6ef7" font-family="Nunito">${ctx.stationA}</text>` +
+      `<text x="${Bx+4}" y="${By-8}" font-size="8" fill="#4f6ef7" font-family="Nunito">${ctx.stationB}</text>`
+  );
+
+  return {
+    expr: `Se detecta un ${ctx.name} en el punto F. La ${ctx.stationA} (A) y la ${ctx.stationB} (B) están separadas ${t.a} ${ctx.unit}. Desde A, el ángulo hacia F es ${t.A}° y desde B es ${t.B}°.<br><strong>¿Cuál estación está más cerca del ${ctx.name}? ¿A qué distancia?</strong>`,
+    sol: `AF ≈ ${t.c} ${ctx.unit} | BF ≈ ${t.b} ${ctx.unit} | La ${closer==='A'?ctx.stationA:ctx.stationB} está más cerca (${closerDist} ${ctx.unit} vs ${fartherDist} ${ctx.unit})`,
+    graph, tema: '🔥 Incendio / Emergencia'
+  };
+}
+
+// ─── 4. TERRENO TRIANGULAR ────────────────
+function triGenTerreno(forcePide) {
+  let t = null, att = 0;
+  while (!t && att++ < 60) {
+    const A = rnd(35,80), B = rnd(35,80);
+    if (A+B >= 155) continue;
+    const a = rnd(20, 80);
+    t = makeTriangle(A, B, a);
+    if (!t || t.b < 10 || t.c < 10) { t=null; continue; }
+  }
+  if (!t) return null;
+
+  const pide = forcePide !== undefined ? forcePide : rnd(0,1); // 0=área, 1=perímetro
+  const area = Math.round(0.5 * t.b * t.c * Math.sin(t.A * Math.PI/180) * 100)/100;
+  const perim = Math.round((t.a + t.b + t.c) * 100)/100;
+
+  const W=280, H=200;
+  const Ax=40, Ay=160, Bx=240, By=160;
+  const angle_A = t.A * Math.PI/180;
+  const Cx_raw = Ax + t.c * Math.cos(angle_A) * (W-80)/t.a * 0.9;
+  const Cy_raw = Ay - t.c * Math.sin(angle_A) * (H-50)/t.a * 1.5;
+  const Cx = Math.min(Math.max(Cx_raw, 40), W-40);
+  const Cy = Math.min(Math.max(Cy_raw, 25), Ay-30);
+
+  const graph = triSVG(W, H,
+    [{x:Ax,y:Ay,color:'#22c55e'},{x:Bx,y:By,color:'#22c55e'},{x:Cx,y:Cy,color:'#22c55e',r:5}],
+    [
+      {x:Ax-16,y:Ay+4,text:'A',bold:true,color:'#22c55e'},
+      {x:Bx+6,y:By+4,text:'B',bold:true,color:'#22c55e'},
+      {x:Cx+4,y:Cy-8,text:'C',bold:true,color:'#22c55e'},
+    ],
+    [
+      {x1:Ax,y1:Ay,x2:Bx,y2:By,color:'#22c55e'},
+      {x1:Ax,y1:Ay,x2:Cx,y2:Cy,color:'#22c55e'},
+      {x1:Bx,y1:By,x2:Cx,y2:Cy,color:'#22c55e'},
+    ],
+    () =>
+      `<polygon points="${Ax},${Ay} ${Bx},${By} ${Cx},${Cy}" fill="rgba(34,197,94,0.1)" stroke="none"/>` +
+      midLabel(Ax,Ay,Bx,By, `${t.a} m`, [0,-10], '#22c55e') +
+      midLabel(Ax,Ay,Cx,Cy, `${t.c} m`, [-18,0], '#22c55e') +
+      angleMark(Ax,Ay, Ax+30,Ay, Cx,Cy, 22, `${t.A}°`, '#f97316') +
+      angleMark(Bx,By, Cx,Cy, Bx-30,By, 22, `${t.B}°`, '#f97316')
+  );
+
+  return {
+    expr: `Un terreno triangular ABC tiene: AB = ${t.a} m, AC = ${t.c} m, el ángulo en A = ${t.A}° y el ángulo en B = ${t.B}°.<br><strong>Hallá el ${pide===0?'área':'perímetro'} del terreno.</strong>`,
+    sol: pide===0
+      ? `Área = ½ · AC · AB · sen(Â) ≈ ${area} m²`
+      : `BC ≈ ${t.b} m | Perímetro = ${t.a} + ${t.b} + ${t.c} ≈ ${perim} m`,
+    graph, tema: '🌿 Terreno triangular'
+  };
+}
+
+// ─── 5. PARALELOGRAMO ─────────────────────
+function triGenParalelogramo(forcePide) {
+  const a = rnd(5, 20), b = rnd(5, 20);
+  const alpha = rnd(30, 80); // acute angle
+  const beta = 180 - alpha;  // obtuse angle
+  const DEGr = Math.PI/180;
+
+  // Diagonals by law of cosines:
+  // d1² = a² + b² - 2ab·cos(alpha)  (diagonal opposite to acute angle → shorter? not always)
+  // d2² = a² + b² - 2ab·cos(beta)
+  const d1sq = a*a + b*b - 2*a*b*Math.cos(alpha*DEGr);
+  const d2sq = a*a + b*b - 2*a*b*Math.cos(beta*DEGr);
+  if (d1sq <= 0 || d2sq <= 0) return triGenParalelogramo();
+  const d1 = Math.round(Math.sqrt(d1sq)*100)/100;
+  const d2 = Math.round(Math.sqrt(d2sq)*100)/100;
+  const dMin = Math.min(d1,d2), dMax = Math.max(d1,d2);
+  const area = Math.round(a * b * Math.sin(alpha*DEGr) * 100)/100;
+  const perim = 2*(a+b);
+
+  const pide = forcePide !== undefined ? forcePide : rnd(0,3); // 0=area, 1=perim, 2=dMin, 3=dMax
+  let pedido, solVal;
+  if (pide===0) { pedido='el área'; solVal=`Área = a·b·sen(α) = ${a}·${b}·sen(${alpha}°) ≈ ${area} u²`; }
+  else if (pide===1) { pedido='el perímetro'; solVal=`Perímetro = 2(a+b) = 2·(${a}+${b}) = ${perim} u`; }
+  else if (pide===2) { pedido='la diagonal menor'; solVal=`Diagonal menor ≈ ${dMin} u (Ley del Coseno con ángulo ${alpha}°)`; }
+  else { pedido='la diagonal mayor'; solVal=`Diagonal mayor ≈ ${dMax} u (Ley del Coseno con ángulo ${beta}°)`; }
+
+  // SVG: draw parallelogram
+  const W=280, H=180;
+  const offset = 35; // horizontal offset for slant
+  const Ax=50, Ay=150, Bx=Ax+120, By=150;
+  const Dx=Ax+offset, Dy=50;
+  const Cx=Bx+offset, Cy=50;
+
+  const graph = triSVG(W, H,
+    [{x:Ax,y:Ay,color:'#4f6ef7'},{x:Bx,y:By,color:'#4f6ef7'},{x:Cx,y:Cy,color:'#4f6ef7'},{x:Dx,y:Dy,color:'#4f6ef7'}],
+    [
+      {x:Ax-16,y:Ay+4,text:'A',bold:true,color:'#4f6ef7'},
+      {x:Bx+5,y:By+4,text:'B',bold:true,color:'#4f6ef7'},
+      {x:Cx+5,y:Cy-4,text:'C',bold:true,color:'#4f6ef7'},
+      {x:Dx-16,y:Dy-4,text:'D',bold:true,color:'#4f6ef7'},
+    ],
+    [
+      {x1:Ax,y1:Ay,x2:Bx,y2:By,color:'#4f6ef7'},
+      {x1:Bx,y1:By,x2:Cx,y2:Cy,color:'#4f6ef7'},
+      {x1:Cx,y1:Cy,x2:Dx,y2:Dy,color:'#4f6ef7'},
+      {x1:Dx,y1:Dy,x2:Ax,y2:Ay,color:'#4f6ef7'},
+      {x1:Ax,y1:Ay,x2:Cx,y2:Cy,color:'#aaa',dash:true,w:1.2},
+      {x1:Bx,y1:By,x2:Dx,y2:Dy,color:'#aaa',dash:true,w:1.2},
+    ],
+    () =>
+      `<polygon points="${Ax},${Ay} ${Bx},${By} ${Cx},${Cy} ${Dx},${Dy}" fill="rgba(79,110,247,0.08)" stroke="none"/>` +
+      midLabel(Ax,Ay,Bx,By, `${a} u`, [0,14], '#4f6ef7') +
+      midLabel(Bx,By,Cx,Cy, `${b} u`, [14,0], '#4f6ef7') +
+      angleMark(Ax,Ay, Bx,By, Dx,Dy, 20, `${alpha}°`, '#f97316')
+  );
+
+  return {
+    expr: `Un paralelogramo ABCD tiene lados AB = ${a} u y BC = ${b} u, con un ángulo en A = ${alpha}°.<br><strong>Hallá ${pedido}.</strong>`,
+    sol: solVal,
+    graph, tema: '⬛ Paralelogramo'
+  };
+}
+
+
+// ─── EJERCICIO: ÁREA (dato puro, sin contexto real) ──────────────────────────
+// Variantes: SAS → Área = ½·b·c·sin(A) | SSS → Herón | AAS → Área vía seno
+function triEjArea() {
+  const variant = rnd(0, 2);
+  let t = null, att = 0;
+  if (variant === 0) {
+    // SAS: dados b, c, A → pedir solo área
+    while (!t && att++ < 50) {
+      const b = rnd(4, 20), c = rnd(4, 20), A = rnd(20, 140);
+      const area = 0.5 * b * c * Math.sin(A * DEG);
+      if (area < 1) continue;
+      t = { b, c, A, area: fmt(area) };
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el <strong>área</strong> del triángulo.`,
+      sol: `Área = ½ · ${t.b} · ${t.c} · sin(${t.A}°) ≈ ${t.area} u²`,
+      hint: '(½·b·c·sin A)',
+      tema: 'Triángulo — Área'
+    };
+  } else if (variant === 1) {
+    // SSS: dados a, b, c → Herón → pedir área
+    while (!t && att++ < 50) {
+      const a = rnd(5, 15), b = rnd(5, 15), c = rnd(5, 15);
+      if (a + b <= c || a + c <= b || b + c <= a) continue;
+      const s = (a + b + c) / 2;
+      const area2 = s * (s-a) * (s-b) * (s-c);
+      if (area2 <= 0) continue;
+      t = { a, b, c, s: fmt(s), area: fmt(Math.sqrt(area2)) };
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: a = ${t.a}, b = ${t.b}, c = ${t.c}.<br>Hallá el <strong>área</strong> usando la fórmula de Herón.`,
+      sol: `s = (${t.a}+${t.b}+${t.c})/2 = ${t.s} | Área = √(s(s−a)(s−b)(s−c)) ≈ ${t.area} u²`,
+      hint: '(Herón)',
+      tema: 'Triángulo — Área'
+    };
+  } else {
+    // AAS: dados A, B, a → hallar área con seno
+    while (!t && att++ < 50) {
+      const A = rnd(30, 80), B = rnd(25, 75);
+      if (A + B >= 160) continue;
+      const a = rnd(5, 18);
+      t = makeTriangle(A, B, a);
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá el <strong>área</strong> del triángulo.`,
+      sol: `b ≈ ${t.b} (Ley del Seno) | c ≈ ${t.c} | Área = ½·b·c·sin(${t.C}°) ≈ ${t.area} u²`,
+      hint: '(Ley del Seno + ½·b·c·sin C)',
+      tema: 'Triángulo — Área'
+    };
+  }
+}
+
+// ─── EJERCICIO: PERÍMETRO (dato puro, sin contexto real) ─────────────────────
+// Variantes: AAS → Ley del Seno → sumar lados | SAS → Coseno → sumar lados
+function triEjPerim() {
+  const variant = rnd(0, 1);
+  let t = null, att = 0;
+  if (variant === 0) {
+    // AAS: dados A, B, a → hallar b, c con seno → perímetro
+    while (!t && att++ < 50) {
+      const A = rnd(30, 80), B = rnd(25, 75);
+      if (A + B >= 160) continue;
+      const a = rnd(5, 18);
+      t = makeTriangle(A, B, a);
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: Â = ${t.A}°, B̂ = ${t.B}°, a = ${t.a}.<br>Hallá el <strong>perímetro</strong> del triángulo.`,
+      sol: `Ĉ = ${t.C}° | b ≈ ${t.b} (Ley del Seno) | c ≈ ${t.c} | Perímetro ≈ ${t.perim}`,
+      hint: '(Ley del Seno)',
+      tema: 'Triángulo — Perímetro'
+    };
+  } else {
+    // SAS: dados b, c, A → hallar a con coseno → perímetro
+    while (!t && att++ < 50) {
+      const b = rnd(5, 18), c = rnd(5, 18), A = rnd(20, 130);
+      const a2 = b*b + c*c - 2*b*c*Math.cos(A * DEG);
+      if (a2 <= 0) continue;
+      const a = Math.sqrt(a2);
+      const B = Math.asin(b * Math.sin(A * DEG) / a) / DEG;
+      const C = 180 - A - B;
+      if (C <= 0 || B <= 0) continue;
+      const perim = fmt(a + b + c);
+      t = { A, b, c, a: fmt(a), perim };
+    }
+    if (!t) return null;
+    return {
+      expr: `En el triángulo ABC: b = ${t.b}, c = ${t.c}, Â = ${t.A}°.<br>Hallá el <strong>perímetro</strong> del triángulo.`,
+      sol: `a² = b² + c² − 2bc·cos(A) → a ≈ ${t.a} | Perímetro ≈ ${t.perim}`,
+      hint: '(Ley del Coseno)',
+      tema: 'Triángulo — Perímetro'
+    };
+  }
+}
+
+// ─── PROBLEM DISPATCHERS ─────────────────
+// Pick context randomly; the required law determines which generators are valid
+
+// Seno (AAS/AAL): ciudades o barcos — both use 2 angles + 1 side
+function triProbSeno() {
+  return rnd(0,1) === 0 ? triGenCiudad() : triGenTorre();
+}
+
+// Coseno (LAL/LLL): barcos con 2 lados + ángulo, o paralelogramo diagonal
+function triProbCoseno() {
+  return rnd(0,1) === 0 ? triGenTorre() : triGenParalelogramo(rnd(2,3)); // diagonal
+}
+
+// Ambas: incendio (find both distances) o ciudades con ángulo+lado combinado
+function triProbAmbas() {
+  return rnd(0,1) === 0 ? triGenIncendio() : triGenCiudad();
+}
+
+// Área: terreno o paralelogramo — forced to ask for area
+function triProbArea() {
+  return rnd(0,1) === 0 ? triGenTerreno(0) : triGenParalelogramo(0);
+}
+
+// Perímetro: terreno o paralelogramo — forced to ask for perímetro
+function triProbPerim() {
+  return rnd(0,1) === 0 ? triGenTerreno(1) : triGenParalelogramo(1);
+}
+
+// Wrappers para examen-builder (formato {expr, sol, steps})
+function tri_ej_seno()   { try { const e=triGenSeno();   if(!e) return null; return {...e, steps:['Aplicar Ley del Seno: a/sen A = b/sen B = c/sen C','Despejar el lado o ángulo buscado','Calcular perímetro y área']}; } catch(err){return null;} }
+function tri_ej_coseno() { try { const e=triGenCoseno(); if(!e) return null; return {...e, steps:['Aplicar Ley del Coseno: a² = b² + c² − 2bc·cos A','Despejar el elemento buscado','Calcular perímetro y área']}; } catch(err){return null;} }
+function tri_ej_ambas()  { try { const e=triGenAmbas();  if(!e) return null; return {...e, steps:['Identificar la ley a usar según los datos','Calcular los elementos desconocidos','Calcular perímetro y área']}; } catch(err){return null;} }
+function tri_ej_area()   { try { const e=triEjArea();    if(!e) return null; return {...e, steps:['Identificar los datos disponibles','Aplicar la fórmula de área correspondiente','Expresar el resultado en u²']}; } catch(err){return null;} }
+function tri_ej_perim()  { try { const e=triEjPerim();   if(!e) return null; return {...e, steps:['Hallar los lados desconocidos con la ley correspondiente','Sumar los tres lados','Expresar el resultado']}; } catch(err){return null;} }
+function tri_prob_seno()   { try { const e=triProbSeno();   if(!e) return null; return {...e, steps:['Identificar el triángulo en el contexto','Aplicar Ley del Seno','Interpretar el resultado']}; } catch(err){return null;} }
+function tri_prob_coseno() { try { const e=triProbCoseno(); if(!e) return null; return {...e, steps:['Identificar el triángulo en el contexto','Aplicar Ley del Coseno','Interpretar el resultado']}; } catch(err){return null;} }
+function tri_prob_ambas()  { try { const e=triProbAmbas();  if(!e) return null; return {...e, steps:['Modelar el triángulo','Aplicar la ley correspondiente','Interpretar el resultado']}; } catch(err){return null;} }
+function tri_prob_area()   { try { const e=triProbArea();   if(!e) return null; return {...e, steps:['Identificar el triángulo en el contexto','Calcular el área','Expresar el resultado con unidades']}; } catch(err){return null;} }
+function tri_prob_perim()  { try { const e=triProbPerim();  if(!e) return null; return {...e, steps:['Hallar los lados desconocidos','Sumar para obtener el perímetro','Expresar el resultado con unidades']}; } catch(err){return null;} }
+
+// ── Situaciones Problemáticas Álgebra ────────────────────────────────────────
+const SP_NOMBRES = ['Lucía','Valentina','Mateo','Santiago','Camila','Andrés','Sofía','Diego','Romina','Pablo','Florencia','Nicolás','Ana','Carlos','Belén','Pedro','Elena','Miguel','Rosa','Jorge'];
+const SP_CIUDADES = ['Asunción','Ciudad del Este','Encarnación','Luque','Capiata','Lambaré','Villarrica','Concepción','San Lorenzo','Fernando de la Mora'];
+const SP_PRODUCTOS = ['cuadernos','lápices','bolígrafos','carpetas','libros','mochilas','calculadoras','reglas','marcadores','gomas'];
+const SP_COMIDA = ['chipas','empanadas','sándwiches','alfajores','panes'];
+const SP_EQUIPOS = ['Olimpia','Cerro Porteño','Libertad','Nacional','Guaraní'];
+function spRnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function spItem(arr){return arr[spRnd(0,arr.length-1)];}
+function spGs(n){return 'Gs. '+n.toLocaleString('es-PY');}
+
+const SP_LVL1=[
+  ()=>{const nom1=spItem(SP_NOMBRES),nom2=spItem(SP_NOMBRES.filter(n=>n!==nom1));const edad2=spRnd(8,40),dif=spRnd(2,15);const edad1=edad2+dif;return{enunciado:nom1+' tiene '+dif+' años más que '+nom2+'. Si '+nom2+' tiene '+edad2+' años, ¿cuántos años tiene '+nom1+'?',sol:'x = '+edad1};},
+  ()=>{const nom1=spItem(SP_NOMBRES),nom2=spItem(SP_NOMBRES.filter(n=>n!==nom1));const edad1=spRnd(10,40),dif=spRnd(2,12);const total=edad1+(edad1-dif);return{enunciado:'La suma de las edades de '+nom1+' y '+nom2+' es '+total+'. '+nom1+' tiene '+dif+' años más que '+nom2+'. ¿Cuántos años tiene cada uno?',sol:nom1+': '+edad1+', '+nom2+': '+(edad1-dif)};},
+  ()=>{const x=spRnd(5,30);const total=x+(x+1)+(x+2);return{enunciado:'La suma de tres números enteros consecutivos es '+total+'. ¿Cuáles son?',sol:'x = '+x+' → '+x+', '+(x+1)+', '+(x+2)};},
+  ()=>{const x=spRnd(4,25);const total=x+(x+2);return{enunciado:'La suma de dos números pares consecutivos es '+total+'. ¿Cuáles son?',sol:'x = '+x+' → '+x+' y '+(x+2)};},
+  ()=>{const nom=spItem(SP_NOMBRES),prod=spItem(SP_PRODUCTOS);const precio=spRnd(2,10)*1000,total=spRnd(5,15)*precio;const cant=total/precio;return{enunciado:nom+' gasta '+spGs(total)+' comprando '+prod+' que cuestan '+spGs(precio)+' cada uno. ¿Cuántos '+prod+' compró?',sol:'x = '+cant};},
+  ()=>{const nom=spItem(SP_NOMBRES);const billetes=spRnd(3,8),valor=spRnd(2,5)*10000;const total=billetes*valor;return{enunciado:nom+' tiene '+spGs(total)+' en billetes de '+spGs(valor)+'. ¿Cuántos billetes tiene?',sol:'x = '+billetes};},
+  ()=>{const lado_a=spRnd(5,20),dif=spRnd(2,8);const lado_b=lado_a+dif;const perim=2*(lado_a+lado_b);return{enunciado:'Un rectángulo tiene un lado que mide '+dif+' cm más que el otro. Si el perímetro es '+perim+' cm, ¿cuánto mide cada lado?',sol:'x = '+lado_a+' cm, lado mayor = '+lado_b+' cm'};},
+  ()=>{const vel=spRnd(60,120),tiempo=spRnd(2,5);const dist=vel*tiempo;const c1=spItem(SP_CIUDADES),c2=spItem(SP_CIUDADES.filter(c=>c!==c1));return{enunciado:'Un colectivo viaja de '+c1+' a '+c2+' a velocidad constante durante '+tiempo+' horas y recorre '+dist+' km. ¿A qué velocidad viajó?',sol:'x = '+vel+' km/h'};},
+];
+const SP_LVL2=[
+  ()=>{const nom1=spItem(SP_NOMBRES),nom2=spItem(SP_NOMBRES.filter(n=>n!==nom1));const mult=spRnd(2,4),edad=spRnd(5,25);const res=mult*edad;const mulStr=mult===2?'el doble':mult===3?'el triple':'el cuádruple';return{enunciado:nom1+' tiene '+mulStr+' de la edad de '+nom2+'. Si '+nom1+' tiene '+res+' años, ¿cuántos años tiene '+nom2+'?',sol:'x = '+edad+' años'};},
+  ()=>{const nom1=spItem(SP_NOMBRES),nom2=spItem(SP_NOMBRES.filter(n=>n!==nom1));const edad2=spRnd(8,30),suma=spRnd(2,8);const res=2*(edad2+suma);return{enunciado:nom1+' tiene el doble de lo que tendría '+nom2+' si tuviera '+suma+' años más. Si '+nom1+' tiene '+res+' años, ¿cuántos años tiene '+nom2+'?',sol:'x = '+edad2+' años'};},
+  ()=>{const x=spRnd(5,20);const total=x+3*x;return{enunciado:'Un número y su triple suman '+total+'. ¿Cuál es el número?',sol:'x = '+x};},
+  ()=>{const x=spRnd(4,20),mas=spRnd(2,8);const total=x+2*(x+mas);return{enunciado:'Un número más el doble de ese número aumentado en '+mas+' es igual a '+total+'. ¿Cuál es el número?',sol:'x = '+x};},
+  ()=>{const base=spRnd(4,15),mult=spRnd(2,3);const perim=2*base+2*mult*base;return{enunciado:'Un rectángulo tiene su largo '+(mult===2?'el doble':'el triple')+' del ancho. Si el perímetro es '+perim+' cm, ¿cuánto mide el ancho?',sol:'x = '+base+' cm, largo = '+(mult*base)+' cm'};},
+  ()=>{const vel_a=spRnd(40,80),tiempo=spRnd(2,4);const vel_b=vel_a*2;const total=(vel_a+vel_b)*tiempo;const nom1=spItem(SP_NOMBRES),nom2=spItem(SP_NOMBRES.filter(n=>n!==nom1));return{enunciado:nom1+' y '+nom2+' salen al mismo tiempo en direcciones opuestas. '+nom2+' viaja al doble de velocidad que '+nom1+'. Después de '+tiempo+' horas están separados por '+total+' km. ¿A qué velocidad viaja '+nom1+'?',sol:'x = '+vel_a+' km/h'};},
+];
+const SP_LVL3=[
+  ()=>{const x=spRnd(4,30)*2,b=spRnd(2,10);const res=x/2+b;return{enunciado:'La mitad de un número más '+b+' es igual a '+res+'. ¿Cuál es el número?',sol:'x = '+x};},
+  ()=>{const x=spRnd(3,20)*3,b=spRnd(2,8);const res=x/3-b;return{enunciado:'Un tercio de un número menos '+b+' es igual a '+res+'. ¿Cuál es el número?',sol:'x = '+x};},
+  ()=>{const total=spRnd(6,20)*6;const c=total-total/2-total/3;const nom=spItem(SP_NOMBRES);return{enunciado:nom+' gasta la mitad de su dinero en alquiler, un tercio en comida y le sobran '+spGs(c)+' guaraníes. ¿Cuánto dinero tenía?',sol:'x = '+spGs(total)};},
+  ()=>{const total=spRnd(4,15)*12;const c=total-total/3-total/4;const nom=spItem(SP_NOMBRES),ciudad=spItem(SP_CIUDADES);return{enunciado:nom+' recorre un trayecto en '+ciudad+'. Ya hizo un tercio caminando, un cuarto en colectivo, y le faltan '+c+' metros. ¿Qué distancia total tiene el trayecto?',sol:'x = '+total+' metros'};},
+  ()=>{const x=spRnd(2,8)*4;const nom1=spItem(SP_NOMBRES);const dif=x-x/4;return{enunciado:nom1+' tiene '+dif+' años más que un cuarto de su propia edad. ¿Cuántos años tiene?',sol:'x = '+x+' años'};},
+  ()=>{const total=spRnd(4,12)*6*1000;const sobra=total-total/2-total/3;const nom=spItem(SP_NOMBRES);return{enunciado:nom+' cobra su sueldo. Destina la mitad al alquiler, un tercio a gastos del hogar y le quedan '+spGs(sobra)+' guaraníes. ¿Cuánto cobra?',sol:'x = '+spGs(total)};},
+  ()=>{const total=spRnd(3,8)*10;const c=total-total/2-total/5;return{enunciado:'En un torneo participan varios equipos. La mitad son de fútbol, un quinto de básquet y los otros '+c+' de vóley. ¿Cuántos equipos participan en total?',sol:'x = '+total+' equipos'};},
+  ()=>{const x=spRnd(2,8)*6;const total=x/2+x/3;return{enunciado:'La mitad de un número más su tercio es '+total+'. ¿Cuál es el número?',sol:'x = '+x};},
+];
+
+function eb_spGenProblem(lvl){const pools={1:SP_LVL1,2:SP_LVL2,3:SP_LVL3};const pool=pools[lvl];const gen=pool[spRnd(0,pool.length-1)];try{const p=gen();return{...p,lvl};}catch(e){return eb_spGenProblem(lvl);}}
+function eb_algSpGen(lvl){try{const p=eb_spGenProblem(lvl);return{expr:p.enunciado,sol:p.sol,steps:['Definir la variable','Plantear la ecuación','Resolver y verificar']};}catch(e){return null;}}
+
 </script>
 <div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 </body>
