@@ -403,6 +403,10 @@ body { padding-bottom: 2.5rem; }
         <div class="tipo-row"><span class="tipo-label">Niv.7 — Área y Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_7',-1)">−</button><span class="qty-val" id="q-mixTR_7">0</span><button class="qty-btn" onclick="chgQty('mixTR_7',1)">+</button></div></div>
         <div class="tipo-row"><span class="tipo-label">Niv.8 — Vida Real</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_8',-1)">−</button><span class="qty-val" id="q-mixTR_8">0</span><button class="qty-btn" onclick="chgQty('mixTR_8',1)">+</button></div></div>
         <div class="tipo-row"><span class="tipo-label">Niv.9 — Dos triángulos / altura compartida</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_9',-1)">−</button><span class="qty-val" id="q-mixTR_9">0</span><button class="qty-btn" onclick="chgQty('mixTR_9',1)">+</button></div></div>
+        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Fórmulas Fundamentales — Circ. Trig.</strong></div>
+        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.1 — Dado sen β o cos β</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_1',-1)">−</button><span class="qty-val" id="q-mixFfc_1">0</span><button class="qty-btn" onclick="chgQty('mixFfc_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.2 — Dado sec α o cosec α</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_2',-1)">−</button><span class="qty-val" id="q-mixFfc_2">0</span><button class="qty-btn" onclick="chgQty('mixFfc_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.3 — Dado tg α o cotg α</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_3',-1)">−</button><span class="qty-val" id="q-mixFfc_3">0</span><button class="qty-btn" onclick="chgQty('mixFfc_3',1)">+</button></div></div>
       </div>
     </div>
   </div>
@@ -864,7 +868,8 @@ const TEMA_KEYS = {
          'trig_id1','trig_id2','trig_id3',
          'trig_ad1','trig_ad2',
          'mixTR_1','mixTR_2','mixTR_3','mixTR_4','mixTR_5',
-         'mixTR_6','mixTR_7','mixTR_8','mixTR_9'],
+         'mixTR_6','mixTR_7','mixTR_8','mixTR_9',
+         'mixFfc_1','mixFfc_2','mixFfc_3'],
   ga: ['par00_1','par00_2','par00_3','par00_4','par00_6',
        'parhk_1','parhk_2','parhk_3','parhk_4','parhk_6',
        'circ00_1','circ00_2','circ00_3',
@@ -1806,6 +1811,124 @@ function mixAritSpGen(lvl) {
     return { expr: result.enunciado, sol: result.sol, steps: ['Identificar la operación', 'Resolver y verificar el signo del resultado'], tema: 'Sit. Prob. Aritmética Niv.' + lvl };
   } catch(e) { return mixAritSpGen(lvl); }
 }
+
+// ── Fórmulas Fundamentales — Circunferencia Trigonométrica (prefijo mixFfc_) ──
+
+function mixFfc_Fr(num, den) {
+  return '<span class="frac"><span class="num">' + num + '</span><span class="den">' + den + '</span></span>';
+}
+function mixFfc_Sqrt(inner) {
+  return '\u221a<span style="display:inline-block;border-top:1.2px solid currentColor;padding:0 1px;vertical-align:middle;line-height:1.1">' + inner + '<\/span>';
+}
+
+const MIX_FFC_QUADRANTS = [
+  { label: 'I cuadrante',   sen:+1, cos:+1, tg:+1 },
+  { label: 'II cuadrante',  sen:+1, cos:-1, tg:-1 },
+  { label: 'III cuadrante', sen:-1, cos:-1, tg:+1 },
+  { label: 'IV cuadrante',  sen:-1, cos:+1, tg:-1 },
+];
+
+function mixFfc_gen(lvl) {
+  const quad = MIX_FFC_QUADRANTS[Math.floor(Math.random()*4)];
+  const Fr = mixFfc_Fr, Sq = mixFfc_Sqrt;
+  function gcd(a,b){return b===0?a:gcd(b,a%b);}
+
+  if (lvl === 1) {
+    // Dado sen β o cos β — ternas pitagóricas
+    const vals = [
+      {n:3,d:5},{n:4,d:5},{n:5,d:13},{n:12,d:13},
+      {n:8,d:17},{n:15,d:17},{n:7,d:25},{n:24,d:25},{n:1,d:2}
+    ];
+    const v = vals[Math.floor(Math.random()*vals.length)];
+    const funcGiven = Math.random()<0.5?'sen':'cos';
+    const senAbsN = funcGiven==='sen'?v.n:Math.round(Math.sqrt(v.d*v.d-v.n*v.n));
+    const cosAbsN = funcGiven==='cos'?v.n:Math.round(Math.sqrt(v.d*v.d-v.n*v.n));
+    if(cosAbsN<=0||senAbsN<=0) return mixFfc_gen(lvl);
+    const g1=gcd(senAbsN,v.d),g2=gcd(cosAbsN,v.d);
+    const senStr=g1===v.d?String(senAbsN/g1):Fr(String(senAbsN/g1),String(v.d/g1));
+    const cosStr=g2===v.d?String(cosAbsN/g2):Fr(String(cosAbsN/g2),String(v.d/g2));
+    const tgG=gcd(senAbsN,cosAbsN);
+    const tgStr=Fr(String(senAbsN/tgG),String(cosAbsN/tgG));
+    const cotgStr=Fr(String(cosAbsN/tgG),String(senAbsN/tgG));
+    const cosecStr=gcd(v.d,senAbsN)===senAbsN?String(v.d/gcd(v.d,senAbsN)):Fr(String(v.d/g1),String(senAbsN/g1));
+    const secStr=gcd(v.d,cosAbsN)===cosAbsN?String(v.d/gcd(v.d,cosAbsN)):Fr(String(v.d/g2),String(cosAbsN/g2));
+    const sign=s=>s===-1?'&minus;':'';
+    const givenAbsN=v.n, givenG=gcd(v.n,v.d);
+    const givenStr=givenG===v.d?String(v.n/givenG):Fr(String(v.n/givenG),String(v.d/givenG));
+    const givenSign=funcGiven==='sen'?quad.sen:quad.cos;
+    const expr='Dado que '+funcGiven+' &beta; = '+sign(givenSign)+givenStr+' y &beta; es del '+quad.label+', hallá las demás funciones trigonométricas de &beta;.';
+    const sol=
+      'sen &beta; = '+sign(quad.sen)+senStr+' &nbsp;&nbsp; '+
+      'cos &beta; = '+sign(quad.cos)+cosStr+'<br>'+
+      'tg &beta; = '+sign(quad.tg)+tgStr+' &nbsp;&nbsp; '+
+      'cotg &beta; = '+sign(quad.tg)+cotgStr+'<br>'+
+      'cosec &beta; = '+sign(quad.sen)+cosecStr+' &nbsp;&nbsp; '+
+      'sec &beta; = '+sign(quad.cos)+secStr;
+    return {expr,sol};
+
+  } else if (lvl === 2) {
+    // Dado sec α o cosec α
+    const vals = [
+      {num:'5',den:3,cosN:3,cosD:5,senN:4,senD:5},
+      {num:'5',den:4,cosN:4,cosD:5,senN:3,senD:5},
+      {num:'13',den:5,cosN:5,cosD:13,senN:12,senD:13},
+      {num:'13',den:12,cosN:12,cosD:13,senN:5,senD:13},
+      {num:'17',den:8,cosN:8,cosD:17,senN:15,senD:17},
+      {num:'17',den:15,cosN:15,cosD:17,senN:8,senD:17},
+    ];
+    const v = vals[Math.floor(Math.random()*vals.length)];
+    const funcGiven = Math.random()<0.5?'sec':'cosec';
+    const sign=s=>s===-1?'&minus;':'';
+    const cosN=v.cosN,cosD=v.cosD,senN=v.senN,senD=v.senD;
+    const givenStr=Fr(v.num,String(v.den));
+    const givenSign=funcGiven==='sec'?quad.cos:quad.sen;
+    const cosStr=cosD===1?String(cosN):Fr(String(cosN),String(cosD));
+    const senStr=senD===1?String(senN):Fr(String(senN),String(senD));
+    const tgG=gcd(senN*cosD,cosN*senD);
+    const tgN=senN*cosD/tgG, tgD=cosN*senD/tgG;
+    const tgStr=tgD===1?String(tgN):Fr(String(tgN),String(tgD));
+    const cotgStr=tgN===1?String(tgD):Fr(String(tgD),String(tgN));
+    const cosecStr=senD===1?String(senN):Fr(String(senD),String(senN));
+    const secStr=cosD===1?String(cosN):Fr(String(cosD),String(cosN));
+    const expr='Dado que '+funcGiven+' &alpha; = '+sign(givenSign)+givenStr+' y &alpha; es del '+quad.label+', hallá las demás funciones trigonométricas de &alpha;.';
+    const sol=
+      'sen &alpha; = '+sign(quad.sen)+senStr+' &nbsp;&nbsp; '+
+      'cos &alpha; = '+sign(quad.cos)+cosStr+'<br>'+
+      'tg &alpha; = '+sign(quad.tg)+tgStr+' &nbsp;&nbsp; '+
+      'cotg &alpha; = '+sign(quad.tg)+cotgStr+'<br>'+
+      'cosec &alpha; = '+sign(quad.sen)+cosecStr+' &nbsp;&nbsp; '+
+      'sec &alpha; = '+sign(quad.cos)+secStr;
+    return {expr,sol};
+
+  } else {
+    // Dado tg α o cotg α — ternas pitagóricas
+    const pairs = [
+      {p:3,q:4,h:5},{p:4,q:3,h:5},{p:5,q:12,h:13},{p:12,q:5,h:13},
+      {p:8,q:15,h:17},{p:15,q:8,h:17},{p:7,q:24,h:25},{p:24,q:7,h:25},
+    ];
+    const v = pairs[Math.floor(Math.random()*pairs.length)];
+    const funcGiven = Math.random()<0.5?'tg':'cotg';
+    const sign=s=>s===-1?'&minus;':'';
+    const tgG=gcd(v.p,v.q),senG=gcd(v.p,v.h),cosG=gcd(v.q,v.h);
+    const tgStr=Fr(String(v.p/tgG),String(v.q/tgG));
+    const cotgStr=Fr(String(v.q/tgG),String(v.p/tgG));
+    const senStr=Fr(String(v.p/senG),String(v.h/senG));
+    const cosStr=Fr(String(v.q/cosG),String(v.h/cosG));
+    const cosecStr=Fr(String(v.h/senG),String(v.p/senG));
+    const secStr=Fr(String(v.h/cosG),String(v.q/cosG));
+    const givenStr=funcGiven==='tg'?tgStr:cotgStr;
+    const expr='Dado que '+funcGiven+' &alpha; = '+sign(quad.tg)+givenStr+' y &alpha; es del '+quad.label+', hallá las demás funciones trigonométricas de &alpha;.';
+    const sol=
+      'sen &alpha; = '+sign(quad.sen)+senStr+' &nbsp;&nbsp; '+
+      'cos &alpha; = '+sign(quad.cos)+cosStr+'<br>'+
+      'tg &alpha; = '+sign(quad.tg)+tgStr+' &nbsp;&nbsp; '+
+      'cotg &alpha; = '+sign(quad.tg)+cotgStr+'<br>'+
+      'cosec &alpha; = '+sign(quad.sen)+cosecStr+' &nbsp;&nbsp; '+
+      'sec &alpha; = '+sign(quad.cos)+secStr;
+    return {expr,sol};
+  }
+}
+
 
 // ── Raíz Cuadrada (prefijo mixRC_) ───────────────────────────────────────────
 function mixRC_sqrtHTML(n) {
@@ -4769,6 +4892,10 @@ const GENERATORS = {
   mixTR_7: ()=>{ const r=mixTR_genLvl7(); const _u7=Math.random().toString(36).slice(2); return {expr:r.enunciado+'<!--'+_u7+'-->', sol:r.sol, graph:r.svg||'', showGraphInQ:true, tema:'Trig.Rect. Niv.7 — Área y Perímetro'}; },
   mixTR_8: ()=>{ const r=mixTR_genLvl8(); const _u8=Math.random().toString(36).slice(2); return {expr:r.enunciado+'<!--'+_u8+'-->', sol:r.sol, graph:r.svg||'', showGraphInQ:true, tema:'Trig.Rect. Niv.8 — Vida Real'}; },
   mixTR_9: ()=>{ const r=mixTR_genLvl9(); const _u9=Math.random().toString(36).slice(2); return {expr:r.enunciado+'<!--'+_u9+'-->', sol:r.sol, graph:r.svg||'', showGraphInQ:true, tema:'Trig.Rect. Niv.9 — Dos Triángulos'}; },
+  // ── FÓRMULAS FUNDAMENTALES — CIRCUNFERENCIA TRIGONOMÉTRICA ──
+  mixFfc_1: ()=>{ const r=mixFfc_gen(1); return {expr:r.expr, sol:r.sol, graph:'', showGraphInQ:false, tema:'Fórmulas Fund. Niv.1'}; },
+  mixFfc_2: ()=>{ const r=mixFfc_gen(2); return {expr:r.expr, sol:r.sol, graph:'', showGraphInQ:false, tema:'Fórmulas Fund. Niv.2'}; },
+  mixFfc_3: ()=>{ const r=mixFfc_gen(3); return {expr:r.expr, sol:r.sol, graph:'', showGraphInQ:false, tema:'Fórmulas Fund. Niv.3'}; },
   // ── CÁLCULO — INECUACIONES ──
   calc_ineqL1: ()=>mixIneqGenN1(),
   calc_ineqL2: ()=>mixIneqGenN2(),

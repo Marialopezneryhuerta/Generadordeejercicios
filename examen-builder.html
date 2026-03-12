@@ -1195,6 +1195,9 @@ const CATALOG = {
       { id:'trigrect-7', label:'Func.Trig.Rect. Niv.7 — Área y Perímetro', niveles:[7], gen:()=>eb_TR_gen(7) },
       { id:'trigrect-8', label:'Func.Trig.Rect. Niv.8 — Vida Real', niveles:[8], gen:()=>eb_TR_gen(8) },
       { id:'trigrect-9', label:'Func.Trig.Rect. Niv.9 — Dos Triángulos', niveles:[9], gen:()=>eb_TR_gen(9) },
+      { id:'ffc-1', label:'Fórmulas Fund. Niv.1 — Dado sen β o cos β', niveles:[1], gen:()=>eb_ffc_gen(1) },
+      { id:'ffc-2', label:'Fórmulas Fund. Niv.2 — Dado sec α o cosec α', niveles:[2], gen:()=>eb_ffc_gen(2) },
+      { id:'ffc-3', label:'Fórmulas Fund. Niv.3 — Dado tg α o cotg α', niveles:[3], gen:()=>eb_ffc_gen(3) },
     ]
   },
   geometria: {
@@ -3393,6 +3396,87 @@ function eb_TR_gen(lvl) {
               'Verificar usando el teorema de Pitágoras si corresponde']
     };
   } catch(e) { return eb_TR_gen(lvl); }
+}
+
+// ─── Fórmulas Fundamentales — Circunferencia Trig. (prefijo eb_ffc_) ──────────
+function eb_ffc_gen(lvl) {
+  function Fr(n,d){return '<span class="frac"><span class="num">'+n+'</span><span class="den">'+d+'</span></span>';}
+  function gcd(a,b){return b===0?a:gcd(b,a%b);}
+  const quads=[
+    {label:'I cuadrante',  sen:+1,cos:+1,tg:+1},
+    {label:'II cuadrante', sen:+1,cos:-1,tg:-1},
+    {label:'III cuadrante',sen:-1,cos:-1,tg:+1},
+    {label:'IV cuadrante', sen:-1,cos:+1,tg:-1},
+  ];
+  const quad=quads[Math.floor(Math.random()*4)];
+  const sign=s=>s===-1?'&minus;':'';
+  try {
+    if(lvl===1){
+      const vals=[{n:3,d:5},{n:4,d:5},{n:5,d:13},{n:12,d:13},{n:8,d:17},{n:15,d:17},{n:7,d:25},{n:24,d:25},{n:1,d:2}];
+      const v=vals[Math.floor(Math.random()*vals.length)];
+      const funcGiven=Math.random()<0.5?'sen':'cos';
+      const cosNumSq=v.d*v.d-v.n*v.n;
+      const cosNum=Math.round(Math.sqrt(cosNumSq));
+      if(cosNum<=0||!Number.isInteger(cosNum)) return eb_ffc_gen(lvl);
+      const senAbsN=funcGiven==='sen'?v.n:cosNum;
+      const cosAbsN=funcGiven==='cos'?v.n:cosNum;
+      const gS=gcd(senAbsN,v.d),gC=gcd(cosAbsN,v.d);
+      const senStr=Fr(String(senAbsN/gS),String(v.d/gS));
+      const cosStr=Fr(String(cosAbsN/gC),String(v.d/gC));
+      const tgG=gcd(senAbsN,cosAbsN);
+      const tgStr=Fr(String(senAbsN/tgG),String(cosAbsN/tgG));
+      const cotgStr=Fr(String(cosAbsN/tgG),String(senAbsN/tgG));
+      const cosecStr=Fr(String(v.d/gS),String(senAbsN/gS));
+      const secStr=Fr(String(v.d/gC),String(cosAbsN/gC));
+      const gV=gcd(v.n,v.d);
+      const givenStr=Fr(String(v.n/gV),String(v.d/gV));
+      const givenSign=funcGiven==='sen'?quad.sen:quad.cos;
+      const expr='Dado que '+funcGiven+' &beta; = '+sign(givenSign)+givenStr+' y &beta; es del '+quad.label+', hallá las demás funciones trigonométricas de &beta;.';
+      const sol='sen &beta; = '+sign(quad.sen)+senStr+' &nbsp;&nbsp; cos &beta; = '+sign(quad.cos)+cosStr+'<br>tg &beta; = '+sign(quad.tg)+tgStr+' &nbsp;&nbsp; cotg &beta; = '+sign(quad.tg)+cotgStr+'<br>cosec &beta; = '+sign(quad.sen)+cosecStr+' &nbsp;&nbsp; sec &beta; = '+sign(quad.cos)+secStr;
+      return {expr,sol,steps:['Identificar cuadrante y signos','Aplicar sen²+cos²=1','Calcular las 6 funciones']};
+    } else if(lvl===2){
+      const vals=[
+        {num:'5',den:3,cosN:3,cosD:5,senN:4,senD:5},
+        {num:'5',den:4,cosN:4,cosD:5,senN:3,senD:5},
+        {num:'13',den:5,cosN:5,cosD:13,senN:12,senD:13},
+        {num:'13',den:12,cosN:12,cosD:13,senN:5,senD:13},
+        {num:'17',den:8,cosN:8,cosD:17,senN:15,senD:17},
+        {num:'17',den:15,cosN:15,cosD:17,senN:8,senD:17},
+      ];
+      const v=vals[Math.floor(Math.random()*vals.length)];
+      const funcGiven=Math.random()<0.5?'sec':'cosec';
+      const givenStr=Fr(v.num,String(v.den));
+      const givenSign=funcGiven==='sec'?quad.cos:quad.sen;
+      const cosStr=Fr(String(v.cosN),String(v.cosD));
+      const senStr=Fr(String(v.senN),String(v.senD));
+      const tgG=gcd(v.senN*v.cosD,v.cosN*v.senD);
+      const tgStr=Fr(String(v.senN*v.cosD/tgG),String(v.cosN*v.senD/tgG));
+      const cotgStr=Fr(String(v.cosN*v.senD/tgG),String(v.senN*v.cosD/tgG));
+      const cosecStr=Fr(String(v.senD),String(v.senN));
+      const secStr=Fr(String(v.cosD),String(v.cosN));
+      const expr='Dado que '+funcGiven+' &alpha; = '+sign(givenSign)+givenStr+' y &alpha; es del '+quad.label+', hallá las demás funciones trigonométricas de &alpha;.';
+      const sol='sen &alpha; = '+sign(quad.sen)+senStr+' &nbsp;&nbsp; cos &alpha; = '+sign(quad.cos)+cosStr+'<br>tg &alpha; = '+sign(quad.tg)+tgStr+' &nbsp;&nbsp; cotg &alpha; = '+sign(quad.tg)+cotgStr+'<br>cosec &alpha; = '+sign(quad.sen)+cosecStr+' &nbsp;&nbsp; sec &alpha; = '+sign(quad.cos)+secStr;
+      return {expr,sol,steps:['Hallar cos=1/sec o sen=1/cosec','Usar terna pitagórica','Calcular las 6 funciones']};
+    } else {
+      const pairs=[
+        {p:3,q:4,h:5},{p:4,q:3,h:5},{p:5,q:12,h:13},{p:12,q:5,h:13},
+        {p:8,q:15,h:17},{p:15,q:8,h:17},{p:7,q:24,h:25},{p:24,q:7,h:25},
+      ];
+      const v=pairs[Math.floor(Math.random()*pairs.length)];
+      const funcGiven=Math.random()<0.5?'tg':'cotg';
+      const tgG=gcd(v.p,v.q),senG=gcd(v.p,v.h),cosG=gcd(v.q,v.h);
+      const tgStr=Fr(String(v.p/tgG),String(v.q/tgG));
+      const cotgStr=Fr(String(v.q/tgG),String(v.p/tgG));
+      const senStr=Fr(String(v.p/senG),String(v.h/senG));
+      const cosStr=Fr(String(v.q/cosG),String(v.h/cosG));
+      const cosecStr=Fr(String(v.h/senG),String(v.p/senG));
+      const secStr=Fr(String(v.h/cosG),String(v.q/cosG));
+      const givenStr=funcGiven==='tg'?tgStr:cotgStr;
+      const expr='Dado que '+funcGiven+' &alpha; = '+sign(quad.tg)+givenStr+' y &alpha; es del '+quad.label+', hallá las demás funciones trigonométricas de &alpha;.';
+      const sol='sen &alpha; = '+sign(quad.sen)+senStr+' &nbsp;&nbsp; cos &alpha; = '+sign(quad.cos)+cosStr+'<br>tg &alpha; = '+sign(quad.tg)+tgStr+' &nbsp;&nbsp; cotg &alpha; = '+sign(quad.tg)+cotgStr+'<br>cosec &alpha; = '+sign(quad.sen)+cosecStr+' &nbsp;&nbsp; sec &alpha; = '+sign(quad.cos)+secStr;
+      return {expr,sol,steps:['Construir terna pitagórica a partir de tg','Calcular hipotenusa','Calcular las 6 funciones']};
+    }
+  } catch(e){ return eb_ffc_gen(lvl); }
 }
 
 
