@@ -32,12 +32,26 @@ nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
 .hero p { font-size: 1rem; opacity: 0.85; max-width: 520px; margin: 0 auto; }
 main { max-width: 860px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid; gap: 1.2rem; }
 
-/* TEMA BLOCKS */
-.tema-block { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(79,110,247,0.05); }
-.tema-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: background 0.15s; }
+/* ══ GRUPOS DE MATERIA ══ */
+.materia-group { border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(79,110,247,0.05); margin-bottom: 0; }
+.materia-group-header { display: flex; align-items: center; gap: 0.7rem; padding: 0.8rem 1.2rem; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.95rem; }
+.materia-group-header .mat-count { margin-left: auto; font-size: 0.72rem; font-weight: 700; opacity: 0.7; }
+.materia-group-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 16px 16px; background: var(--white); }
+
+/* Colores por materia */
+.mat-algebra .materia-group-header    { background: #eef1ff; color: #3347cc; border: 1px solid #c7d2fe; border-bottom: none; }
+.mat-aritmetica .materia-group-header { background: #fff7ed; color: #b45309; border: 1px solid #fed7aa; border-bottom: none; }
+.mat-trig .materia-group-header       { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-bottom: none; }
+.mat-geo .materia-group-header        { background: #fdf4ff; color: #7e22ce; border: 1px solid #e9d5ff; border-bottom: none; }
+.mat-calculo .materia-group-header    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-bottom: none; }
+
+/* TEMA BLOCKS — ahora dentro de cada grupo */
+.tema-block { background: var(--white); border-bottom: 1px solid var(--border); }
+.tema-block:last-child { border-bottom: none; }
+.tema-header { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.2rem; cursor: pointer; user-select: none; border-bottom: 1px solid transparent; transition: background 0.15s; }
 .tema-header:hover { background: #f8f9ff; }
 .tema-header.open { border-bottom-color: var(--border); }
-.tema-title { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1rem; display: flex; align-items: center; gap: 0.6rem; }
+.tema-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.6rem; }
 .tema-badge { font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 800; background: var(--accent-light); color: var(--accent); padding: 0.2rem 0.7rem; border-radius: 20px; }
 .tema-badge.zero { background: #f5f5f5; color: var(--muted); }
 .tema-arrow { font-size: 0.8rem; color: var(--muted); transition: transform 0.2s; }
@@ -315,10 +329,180 @@ body { padding-bottom: 2.5rem; }
 
 <main>
 
-  <!-- ══ ÁLGEBRA ══ -->
+  <!-- ══════════════════════════════════ -->
+  <!-- GRUPO: ÁLGEBRA                   -->
+  <!-- ══════════════════════════════════ -->
+  <div class="materia-group mat-algebra">
+    <div class="materia-group-header">
+      ✏️ Álgebra
+      <span class="mat-count">7 módulos</span>
+    </div>
+    <div class="materia-group-body">
+
+  <!-- Módulo: Expresiones Algebraicas Intro -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('alg_intro')">
+      <div class="tema-title">🌱 Expresiones Algebraicas — Intro</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="alg_intro-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="alg_intro-body">
+      <div class="subtema">
+        <div class="subtema-title">Monomio opuesto</div>
+        <div class="tipo-row"><span class="tipo-label">Escribí el monomio opuesto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_monop1',-1)">−</button><span class="qty-val" id="q-intro_monop1">0</span><button class="qty-btn" onclick="chgQty('intro_monop1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Homogéneos y Heterogéneos</div>
+        <div class="tipo-row"><span class="tipo-label">Clasificar polinomios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_homhet1',-1)">−</button><span class="qty-val" id="q-intro_homhet1">0</span><button class="qty-btn" onclick="chgQty('intro_homhet1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Problemas con Expresiones Algebraicas</div>
+        <div class="tipo-row"><span class="tipo-label">Escribí la expresión</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_probexpr1',-1)">−</button><span class="qty-val" id="q-intro_probexpr1">0</span><button class="qty-btn" onclick="chgQty('intro_probexpr1',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Módulo: Operaciones con Monomios -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('mono')">
+      <div class="tema-title">⚙️ Op. con Monomios</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="mono-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="mono-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Coeficientes enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_suma1',-1)">−</button><span class="qty-val" id="q-mono_suma1">0</span><button class="qty-btn" onclick="chgQty('mono_suma1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios y decimales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_suma2',-1)">−</button><span class="qty-val" id="q-mono_suma2">0</span><button class="qty-btn" onclick="chgQty('mono_suma2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Coeficientes enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_resta1',-1)">−</button><span class="qty-val" id="q-mono_resta1">0</span><button class="qty-btn" onclick="chgQty('mono_resta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios y decimales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_resta2',-1)">−</button><span class="qty-val" id="q-mono_resta2">0</span><button class="qty-btn" onclick="chgQty('mono_resta2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_mult1',-1)">−</button><span class="qty-val" id="q-mono_mult1">0</span><button class="qty-btn" onclick="chgQty('mono_mult1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_mult2',-1)">−</button><span class="qty-val" id="q-mono_mult2">0</span><button class="qty-btn" onclick="chgQty('mono_mult2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_div1',-1)">−</button><span class="qty-val" id="q-mono_div1">0</span><button class="qty-btn" onclick="chgQty('mono_div1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_div2',-1)">−</button><span class="qty-val" id="q-mono_div2">0</span><button class="qty-btn" onclick="chgQty('mono_div2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Potenciación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_pot1',-1)">−</button><span class="qty-val" id="q-mono_pot1">0</span><button class="qty-btn" onclick="chgQty('mono_pot1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_pot2',-1)">−</button><span class="qty-val" id="q-mono_pot2">0</span><button class="qty-btn" onclick="chgQty('mono_pot2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_rad1',-1)">−</button><span class="qty-val" id="q-mono_rad1">0</span><button class="qty-btn" onclick="chgQty('mono_rad1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_rad2',-1)">−</button><span class="qty-val" id="q-mono_rad2">0</span><button class="qty-btn" onclick="chgQty('mono_rad2',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Módulo: Operaciones con Polinomios -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('poly')">
+      <div class="tema-title">📐 Op. con Polinomios</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="poly-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="poly-body">
+      <div class="subtema" style="padding-bottom:0.3rem">
+        <div class="subtema-title">Variable</div>
+        <div style="display:flex;gap:0.6rem;align-items:center;margin-bottom:0.5rem">
+          <button id="mix-op-lmode-x" class="subtype-btn active" onclick="mixOpSetLetterMode('x')">Solo x</button>
+          <button id="mix-op-lmode-any" class="subtype-btn" onclick="mixOpSetLetterMode('any')">Cualquiera</button>
+        </div>
+        <div class="letter-grid" id="mix-op-letterGrid" style="display:none"></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Suma / Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Suma Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_suma1',-1)">−</button><span class="qty-val" id="q-poly_suma1">0</span><button class="qty-btn" onclick="chgQty('poly_suma1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Suma Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_suma2',-1)">−</button><span class="qty-val" id="q-poly_suma2">0</span><button class="qty-btn" onclick="chgQty('poly_suma2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Resta Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resta1',-1)">−</button><span class="qty-val" id="q-poly_resta1">0</span><button class="qty-btn" onclick="chgQty('poly_resta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Resta Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resta2',-1)">−</button><span class="qty-val" id="q-poly_resta2">0</span><button class="qty-btn" onclick="chgQty('poly_resta2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Mon × Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multmp1',-1)">−</button><span class="qty-val" id="q-poly_multmp1">0</span><button class="qty-btn" onclick="chgQty('poly_multmp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mon × Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multmp2',-1)">−</button><span class="qty-val" id="q-poly_multmp2">0</span><button class="qty-btn" onclick="chgQty('poly_multmp2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol × Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multpp1',-1)">−</button><span class="qty-val" id="q-poly_multpp1">0</span><button class="qty-btn" onclick="chgQty('poly_multpp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol × Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multpp2',-1)">−</button><span class="qty-val" id="q-poly_multpp2">0</span><button class="qty-btn" onclick="chgQty('poly_multpp2',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División / Teo. del Resto / Ruffini</div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Mon — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpm1',-1)">−</button><span class="qty-val" id="q-poly_divpm1">0</span><button class="qty-btn" onclick="chgQty('poly_divpm1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Mon — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpm2',-1)">−</button><span class="qty-val" id="q-poly_divpm2">0</span><button class="qty-btn" onclick="chgQty('poly_divpm2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpp1',-1)">−</button><span class="qty-val" id="q-poly_divpp1">0</span><button class="qty-btn" onclick="chgQty('poly_divpp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pol ÷ Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpp2',-1)">−</button><span class="qty-val" id="q-poly_divpp2">0</span><button class="qty-btn" onclick="chgQty('poly_divpp2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Teo. del Resto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resto1',-1)">−</button><span class="qty-val" id="q-poly_resto1">0</span><button class="qty-btn" onclick="chgQty('poly_resto1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ruffini</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_ruffini1',-1)">−</button><span class="qty-val" id="q-poly_ruffini1">0</span><button class="qty-btn" onclick="chgQty('poly_ruffini1',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Módulo: Radicales Álgebra -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('rad')">
+      <div class="tema-title">√ Radicales (Álgebra)</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="rad-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="rad-body">
+      <div class="subtema">
+        <div class="subtema-title">Raíces exactas / Extracción / Intro</div>
+        <div class="tipo-row"><span class="tipo-label">Raíces exactas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_exactas1',-1)">−</button><span class="qty-val" id="q-rad_exactas1">0</span><button class="qty-btn" onclick="chgQty('rad_exactas1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Extracción Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_extraccion1',-1)">−</button><span class="qty-val" id="q-rad_extraccion1">0</span><button class="qty-btn" onclick="chgQty('rad_extraccion1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Extracción Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_extraccion2',-1)">−</button><span class="qty-val" id="q-rad_extraccion2">0</span><button class="qty-btn" onclick="chgQty('rad_extraccion2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Intro al signo radical</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_intro1',-1)">−</button><span class="qty-val" id="q-rad_intro1">0</span><button class="qty-btn" onclick="chgQty('rad_intro1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Suma y Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Radicales semejantes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta1',-1)">−</button><span class="qty-val" id="q-rad_sumaresta1">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con extracción previa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta2',-1)">−</button><span class="qty-val" id="q-rad_sumaresta2">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta2',1)">+</button></div></div>
+        <div class="tipo-row">
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Mult. I — mon×mon</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multI1',-1)">−</button><span class="qty-val" id="q-rad_multI1">0</span><button class="qty-btn" onclick="chgQty('rad_multI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mult. II — mon×pol</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multII1',-1)">−</button><span class="qty-val" id="q-rad_multII1">0</span><button class="qty-btn" onclick="chgQty('rad_multII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mult. III — pol×pol</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multIII1',-1)">−</button><span class="qty-val" id="q-rad_multIII1">0</span><button class="qty-btn" onclick="chgQty('rad_multIII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mult. distintos índices</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multIndices1',-1)">−</button><span class="qty-val" id="q-rad_multIndices1">0</span><button class="qty-btn" onclick="chgQty('rad_multIndices1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División / Potenciación / Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">División mon÷mon</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_divI1',-1)">−</button><span class="qty-val" id="q-rad_divI1">0</span><button class="qty-btn" onclick="chgQty('rad_divI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Div. distintos índices</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_divIndices1',-1)">−</button><span class="qty-val" id="q-rad_divIndices1">0</span><button class="qty-btn" onclick="chgQty('rad_divIndices1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pot. I — monomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_potI1',-1)">−</button><span class="qty-val" id="q-rad_potI1">0</span><button class="qty-btn" onclick="chgQty('rad_potI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pot. II — pol²</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_potII1',-1)">−</button><span class="qty-val" id="q-rad_potII1">0</span><button class="qty-btn" onclick="chgQty('rad_potII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Radicación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_radrad1',-1)">−</button><span class="qty-val" id="q-rad_radrad1">0</span><button class="qty-btn" onclick="chgQty('rad_radrad1',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Racionalización</div>
+        <div class="tipo-row"><span class="tipo-label">Rac. I — mon, índice 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racI1',-1)">−</button><span class="qty-val" id="q-rad_racI1">0</span><button class="qty-btn" onclick="chgQty('rad_racI1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Rac. II — mon, índice &gt;2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racII1',-1)">−</button><span class="qty-val" id="q-rad_racII1">0</span><button class="qty-btn" onclick="chgQty('rad_racII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Rac. III — binomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racIII1',-1)">−</button><span class="qty-val" id="q-rad_racIII1">0</span><button class="qty-btn" onclick="chgQty('rad_racIII1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Rac. IV — trinomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racIV1',-1)">−</button><span class="qty-val" id="q-rad_racIV1">0</span><button class="qty-btn" onclick="chgQty('rad_racIV1',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Módulo: Ecuaciones / Sit. Prob. / PN / VN -->
   <div class="tema-block">
     <div class="tema-header" onclick="toggleTema('alg')">
-      <div class="tema-title">✏️ Álgebra</div>
+      <div class="tema-title">✏️ Ecuaciones, Sit. Prob. y Álgebra</div>
       <div style="display:flex;align-items:center;gap:0.6rem">
         <span class="tema-badge zero" id="alg-badge">0 ejercicios</span>
         <span class="tema-arrow">▶</span>
@@ -355,112 +539,20 @@ body { padding-bottom: 2.5rem; }
     </div>
   </div>
 
-  <!-- ══ TRIGONOMETRÍA ══ -->
-  <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('trig')">
-      <div class="tema-title">📐 Trigonometría</div>
-      <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="trig-badge">0 ejercicios</span>
-        <span class="tema-arrow">▶</span>
-      </div>
+    </div><!-- fin materia-group-body álgebra -->
+  </div><!-- fin materia-group mat-algebra -->
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- GRUPO: ARITMÉTICA                     -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="materia-group mat-aritmetica">
+    <div class="materia-group-header">
+      🔢 Aritmética
+      <span class="mat-count">3 módulos</span>
     </div>
-    <div class="tema-body" id="trig-body">
-      <div class="subtema">
-        <div class="subtema-title">Ecuaciones Trigonométricas</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Primer grado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig1',-1)">−</button><span class="qty-val" id="q-trig1">0</span><button class="qty-btn" onclick="chgQty('trig1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Segundo grado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig2',-1)">−</button><span class="qty-val" id="q-trig2">0</span><button class="qty-btn" onclick="chgQty('trig2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Combinación de funciones</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig3',-1)">−</button><span class="qty-val" id="q-trig3">0</span><button class="qty-btn" onclick="chgQty('trig3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Triángulos Oblicuángulos — Ejercicios</div>
-        <div class="tipo-row"><span class="tipo-label">Ley del Seno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_seno',-1)">−</button><span class="qty-val" id="q-tri_seno">0</span><button class="qty-btn" onclick="chgQty('tri_seno',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Ley del Coseno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_coseno',-1)">−</button><span class="qty-val" id="q-tri_coseno">0</span><button class="qty-btn" onclick="chgQty('tri_coseno',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Ambas leyes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_ambas',-1)">−</button><span class="qty-val" id="q-tri_ambas">0</span><button class="qty-btn" onclick="chgQty('tri_ambas',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Área</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_earea',-1)">−</button><span class="qty-val" id="q-tri_earea">0</span><button class="qty-btn" onclick="chgQty('tri_earea',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_eperim',-1)">−</button><span class="qty-val" id="q-tri_eperim">0</span><button class="qty-btn" onclick="chgQty('tri_eperim',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Triángulos Oblicuángulos — Problemas</div>
-        <div class="tipo-row"><span class="tipo-label">Ley del Seno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pseno',-1)">−</button><span class="qty-val" id="q-tri_pseno">0</span><button class="qty-btn" onclick="chgQty('tri_pseno',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Ley del Coseno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pcoseno',-1)">−</button><span class="qty-val" id="q-tri_pcoseno">0</span><button class="qty-btn" onclick="chgQty('tri_pcoseno',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Ambas leyes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pambas',-1)">−</button><span class="qty-val" id="q-tri_pambas">0</span><button class="qty-btn" onclick="chgQty('tri_pambas',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Área</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_parea',-1)">−</button><span class="qty-val" id="q-tri_parea">0</span><button class="qty-btn" onclick="chgQty('tri_parea',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pperim',-1)">−</button><span class="qty-val" id="q-tri_pperim">0</span><button class="qty-btn" onclick="chgQty('tri_pperim',1)">+</button></div></div>
-        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Identidades Trigonométricas</strong></div>
-        <div class="tipo-row"><span class="tipo-label">Identidades Niv.1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_id1',-1)">−</button><span class="qty-val" id="q-trig_id1">0</span><button class="qty-btn" onclick="chgQty('trig_id1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Identidades Niv.2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_id2',-1)">−</button><span class="qty-val" id="q-trig_id2">0</span><button class="qty-btn" onclick="chgQty('trig_id2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Identidades Niv.3</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_id3',-1)">−</button><span class="qty-val" id="q-trig_id3">0</span><button class="qty-btn" onclick="chgQty('trig_id3',1)">+</button></div></div>
-        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Arco Doble</strong></div>
-        <div class="tipo-row"><span class="tipo-label">Arco Doble Niv.1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_ad1',-1)">−</button><span class="qty-val" id="q-trig_ad1">0</span><button class="qty-btn" onclick="chgQty('trig_ad1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Arco Doble Niv.2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_ad2',-1)">−</button><span class="qty-val" id="q-trig_ad2">0</span><button class="qty-btn" onclick="chgQty('trig_ad2',1)">+</button></div></div>
-        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Func. Trig. en el Triángulo Rectángulo</strong></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.1 — Tres lados dados</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_1',-1)">−</button><span class="qty-val" id="q-mixTR_1">0</span><button class="qty-btn" onclick="chgQty('mixTR_1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.2 — Dos lados dados</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_2',-1)">−</button><span class="qty-val" id="q-mixTR_2">0</span><button class="qty-btn" onclick="chgQty('mixTR_2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.3 — Un lado y un ángulo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_3',-1)">−</button><span class="qty-val" id="q-mixTR_3">0</span><button class="qty-btn" onclick="chgQty('mixTR_3',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.4 — Rectángulo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_4',-1)">−</button><span class="qty-val" id="q-mixTR_4">0</span><button class="qty-btn" onclick="chgQty('mixTR_4',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.5 — Cuadrado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_5',-1)">−</button><span class="qty-val" id="q-mixTR_5">0</span><button class="qty-btn" onclick="chgQty('mixTR_5',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.6 — Rombo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_6',-1)">−</button><span class="qty-val" id="q-mixTR_6">0</span><button class="qty-btn" onclick="chgQty('mixTR_6',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.7 — Área y Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_7',-1)">−</button><span class="qty-val" id="q-mixTR_7">0</span><button class="qty-btn" onclick="chgQty('mixTR_7',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.8 — Vida Real</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_8',-1)">−</button><span class="qty-val" id="q-mixTR_8">0</span><button class="qty-btn" onclick="chgQty('mixTR_8',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Niv.9 — Dos triángulos / altura compartida</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_9',-1)">−</button><span class="qty-val" id="q-mixTR_9">0</span><button class="qty-btn" onclick="chgQty('mixTR_9',1)">+</button></div></div>
-        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Fórmulas Fundamentales — Circ. Trig.</strong></div>
-        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.1 — Dado sen β o cos β</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_1',-1)">−</button><span class="qty-val" id="q-mixFfc_1">0</span><button class="qty-btn" onclick="chgQty('mixFfc_1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.2 — Dado sec α o cosec α</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_2',-1)">−</button><span class="qty-val" id="q-mixFfc_2">0</span><button class="qty-btn" onclick="chgQty('mixFfc_2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.3 — Dado tg α o cotg α</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_3',-1)">−</button><span class="qty-val" id="q-mixFfc_3">0</span><button class="qty-btn" onclick="chgQty('mixFfc_3',1)">+</button></div></div>
-      </div>
-    </div>
-  </div>
+    <div class="materia-group-body">
 
-  <!-- ══ GEOMETRÍA ANALÍTICA ══ -->
-  <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('ga')">
-      <div class="tema-title">📈 Geometría Analítica</div>
-      <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="ga-badge">0 ejercicios</span>
-        <span class="tema-arrow">▶</span>
-      </div>
-    </div>
-    <div class="tema-body" id="ga-body">
-
-      <div class="subtema">
-        <div class="subtema-title">Parábolas — Vértice (0,0)</div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el foco</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_1',-1)">−</button><span class="qty-val" id="q-par00_1">0</span><button class="qty-btn" onclick="chgQty('par00_1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_2',-1)">−</button><span class="qty-val" id="q-par00_2">0</span><button class="qty-btn" onclick="chgQty('par00_2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Punto y directriz</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_3',-1)">−</button><span class="qty-val" id="q-par00_3">0</span><button class="qty-btn" onclick="chgQty('par00_3',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Punto y eje de simetría</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_4',-1)">−</button><span class="qty-val" id="q-par00_4">0</span><button class="qty-btn" onclick="chgQty('par00_4',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 6 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_6',-1)">−</button><span class="qty-val" id="q-par00_6">0</span><button class="qty-btn" onclick="chgQty('par00_6',1)">+</button></div></div>
-      </div>
-
-      <div class="subtema">
-        <div class="subtema-title">Parábolas — Vértice (h,k)</div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el foco</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_1',-1)">−</button><span class="qty-val" id="q-parhk_1">0</span><button class="qty-btn" onclick="chgQty('parhk_1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_2',-1)">−</button><span class="qty-val" id="q-parhk_2">0</span><button class="qty-btn" onclick="chgQty('parhk_2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Punto y directriz</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_3',-1)">−</button><span class="qty-val" id="q-parhk_3">0</span><button class="qty-btn" onclick="chgQty('parhk_3',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Punto y eje de simetría</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_4',-1)">−</button><span class="qty-val" id="q-parhk_4">0</span><button class="qty-btn" onclick="chgQty('parhk_4',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 6 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_6',-1)">−</button><span class="qty-val" id="q-parhk_6">0</span><button class="qty-btn" onclick="chgQty('parhk_6',1)">+</button></div></div>
-      </div>
-
-      <div class="subtema">
-        <div class="subtema-title">Circunferencia — Centro (0,0)</div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el radio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_1',-1)">−</button><span class="qty-val" id="q-circ00_1">0</span><button class="qty-btn" onclick="chgQty('circ00_1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dado un punto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_2',-1)">−</button><span class="qty-val" id="q-circ00_2">0</span><button class="qty-btn" onclick="chgQty('circ00_2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_3',-1)">−</button><span class="qty-val" id="q-circ00_3">0</span><button class="qty-btn" onclick="chgQty('circ00_3',1)">+</button></div></div>
-      </div>
-
-      <div class="subtema">
-        <div class="subtema-title">Circunferencia — Centro (h,k)</div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado centro y radio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_1',-1)">−</button><span class="qty-val" id="q-circhk_1">0</span><button class="qty-btn" onclick="chgQty('circhk_1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dado centro y punto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_2',-1)">−</button><span class="qty-val" id="q-circhk_2">0</span><button class="qty-btn" onclick="chgQty('circhk_2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Dada la ecuación general</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_3',-1)">−</button><span class="qty-val" id="q-circhk_3">0</span><button class="qty-btn" onclick="chgQty('circhk_3',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Posición recta-circunferencia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_4',-1)">−</button><span class="qty-val" id="q-circhk_4">0</span><button class="qty-btn" onclick="chgQty('circhk_4',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Tipo 5 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_5',-1)">−</button><span class="qty-val" id="q-circhk_5">0</span><button class="qty-btn" onclick="chgQty('circhk_5',1)">+</button></div></div>
-      </div>
-
-    </div>
-  </div>
-
-
-  <!-- ══ NÚMEROS ENTEROS ══ -->
+  <!-- Módulo: Números Enteros -->
   <div class="tema-block">
     <div class="tema-header" onclick="toggleTema('ent')">
       <div class="tema-title">🔢 Números Enteros</div>
@@ -528,10 +620,10 @@ body { padding-bottom: 2.5rem; }
     </div>
   </div>
 
-  <!-- ══ NÚMEROS RACIONALES ══ -->
+  <!-- Módulo: Números Racionales -->
   <div class="tema-block">
     <div class="tema-header" onclick="toggleTema('rac')">
-      <div class="tema-title">½ Números Racionales</div>
+      <div class="tema-title">½ Números Racionales (Fracciones)</div>
       <div style="display:flex;align-items:center;gap:0.6rem">
         <span class="tema-badge zero" id="rac-badge">0 ejercicios</span>
         <span class="tema-arrow">▶</span>
@@ -583,169 +675,190 @@ body { padding-bottom: 2.5rem; }
     </div>
   </div>
 
-  <!-- ══ EXPRESIONES ALGEBRAICAS — INTRO ══ -->
-  <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('alg_intro')">
-      <div class="tema-title">🌱 Expresiones Algebraicas — Intro</div>
-      <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="alg_intro-badge">0 ejercicios</span>
-        <span class="tema-arrow">▶</span>
-      </div>
-    </div>
-    <div class="tema-body" id="alg_intro-body">
-      <div class="subtema">
-        <div class="subtema-title">Monomio opuesto</div>
-        <div class="tipo-row"><span class="tipo-label">Escribí el monomio opuesto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_monop1',-1)">−</button><span class="qty-val" id="q-intro_monop1">0</span><button class="qty-btn" onclick="chgQty('intro_monop1',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Homogéneos y Heterogéneos</div>
-        <div class="tipo-row"><span class="tipo-label">Clasificar polinomios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_homhet1',-1)">−</button><span class="qty-val" id="q-intro_homhet1">0</span><button class="qty-btn" onclick="chgQty('intro_homhet1',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Problemas con Expresiones Algebraicas</div>
-        <div class="tipo-row"><span class="tipo-label">Escribí la expresión</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_probexpr1',-1)">−</button><span class="qty-val" id="q-intro_probexpr1">0</span><button class="qty-btn" onclick="chgQty('intro_probexpr1',1)">+</button></div></div>
-      </div>
-  </div>
+    </div><!-- fin materia-group-body aritmética -->
+  </div><!-- fin materia-group mat-aritmetica -->
 
-  <!-- ══ OPERACIONES CON MONOMIOS ══ -->
-  <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('mono')">
-      <div class="tema-title">⚙️ Op. con Monomios</div>
-      <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="mono-badge">0 ejercicios</span>
-        <span class="tema-arrow">▶</span>
-      </div>
+  <!-- ══════════════════════════════════════ -->
+  <!-- GRUPO: TRIGONOMETRÍA                  -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="materia-group mat-trig">
+    <div class="materia-group-header">
+      📐 Trigonometría
+      <span class="mat-count">2 módulos</span>
     </div>
-    <div class="tema-body" id="mono-body">
-      <div class="subtema">
-        <div class="subtema-title">Suma</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Coeficientes enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_suma1',-1)">−</button><span class="qty-val" id="q-mono_suma1">0</span><button class="qty-btn" onclick="chgQty('mono_suma1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios y decimales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_suma2',-1)">−</button><span class="qty-val" id="q-mono_suma2">0</span><button class="qty-btn" onclick="chgQty('mono_suma2',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Resta</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Coeficientes enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_resta1',-1)">−</button><span class="qty-val" id="q-mono_resta1">0</span><button class="qty-btn" onclick="chgQty('mono_resta1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios y decimales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_resta2',-1)">−</button><span class="qty-val" id="q-mono_resta2">0</span><button class="qty-btn" onclick="chgQty('mono_resta2',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Multiplicación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_mult1',-1)">−</button><span class="qty-val" id="q-mono_mult1">0</span><button class="qty-btn" onclick="chgQty('mono_mult1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_mult2',-1)">−</button><span class="qty-val" id="q-mono_mult2">0</span><button class="qty-btn" onclick="chgQty('mono_mult2',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">División</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_div1',-1)">−</button><span class="qty-val" id="q-mono_div1">0</span><button class="qty-btn" onclick="chgQty('mono_div1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_div2',-1)">−</button><span class="qty-val" id="q-mono_div2">0</span><button class="qty-btn" onclick="chgQty('mono_div2',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Potenciación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_pot1',-1)">−</button><span class="qty-val" id="q-mono_pot1">0</span><button class="qty-btn" onclick="chgQty('mono_pot1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_pot2',-1)">−</button><span class="qty-val" id="q-mono_pot2">0</span><button class="qty-btn" onclick="chgQty('mono_pot2',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Radicación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_rad1',-1)">−</button><span class="qty-val" id="q-mono_rad1">0</span><button class="qty-btn" onclick="chgQty('mono_rad1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mono_rad2',-1)">−</button><span class="qty-val" id="q-mono_rad2">0</span><button class="qty-btn" onclick="chgQty('mono_rad2',1)">+</button></div></div>
-      </div>
-    </div>
-  </div>
+    <div class="materia-group-body">
 
-  <!-- ══ OPERACIONES CON POLINOMIOS ══ -->
   <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('poly')">
-      <div class="tema-title">📐 Op. con Polinomios</div>
+    <div class="tema-header" onclick="toggleTema('trig')">
+      <div class="tema-title">📐 Trigonometría</div>
       <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="poly-badge">0 ejercicios</span>
+        <span class="tema-badge zero" id="trig-badge">0 ejercicios</span>
         <span class="tema-arrow">▶</span>
       </div>
     </div>
-    <div class="tema-body" id="poly-body">
-      <div class="subtema" style="padding-bottom:0.3rem">
-        <div class="subtema-title">Variable</div>
-        <div style="display:flex;gap:0.6rem;align-items:center;margin-bottom:0.5rem">
-          <button id="mix-op-lmode-x" class="subtype-btn active" onclick="mixOpSetLetterMode('x')">Solo x</button>
-          <button id="mix-op-lmode-any" class="subtype-btn" onclick="mixOpSetLetterMode('any')">Cualquiera</button>
-        </div>
-        <div class="letter-grid" id="mix-op-letterGrid" style="display:none"></div>
+    <div class="tema-body" id="trig-body">
+      <div class="subtema">
+        <div class="subtema-title">Ecuaciones Trigonométricas</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Primer grado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig1',-1)">−</button><span class="qty-val" id="q-trig1">0</span><button class="qty-btn" onclick="chgQty('trig1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Segundo grado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig2',-1)">−</button><span class="qty-val" id="q-trig2">0</span><button class="qty-btn" onclick="chgQty('trig2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Combinación de funciones</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig3',-1)">−</button><span class="qty-val" id="q-trig3">0</span><button class="qty-btn" onclick="chgQty('trig3',1)">+</button></div></div>
       </div>
       <div class="subtema">
-        <div class="subtema-title">Suma / Resta</div>
-        <div class="tipo-row"><span class="tipo-label">Suma Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_suma1',-1)">−</button><span class="qty-val" id="q-poly_suma1">0</span><button class="qty-btn" onclick="chgQty('poly_suma1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Suma Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_suma2',-1)">−</button><span class="qty-val" id="q-poly_suma2">0</span><button class="qty-btn" onclick="chgQty('poly_suma2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Resta Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resta1',-1)">−</button><span class="qty-val" id="q-poly_resta1">0</span><button class="qty-btn" onclick="chgQty('poly_resta1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Resta Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resta2',-1)">−</button><span class="qty-val" id="q-poly_resta2">0</span><button class="qty-btn" onclick="chgQty('poly_resta2',1)">+</button></div></div>
+        <div class="subtema-title">Triángulos Oblicuángulos — Ejercicios</div>
+        <div class="tipo-row"><span class="tipo-label">Ley del Seno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_seno',-1)">−</button><span class="qty-val" id="q-tri_seno">0</span><button class="qty-btn" onclick="chgQty('tri_seno',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ley del Coseno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_coseno',-1)">−</button><span class="qty-val" id="q-tri_coseno">0</span><button class="qty-btn" onclick="chgQty('tri_coseno',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ambas leyes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_ambas',-1)">−</button><span class="qty-val" id="q-tri_ambas">0</span><button class="qty-btn" onclick="chgQty('tri_ambas',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Área</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_earea',-1)">−</button><span class="qty-val" id="q-tri_earea">0</span><button class="qty-btn" onclick="chgQty('tri_earea',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_eperim',-1)">−</button><span class="qty-val" id="q-tri_eperim">0</span><button class="qty-btn" onclick="chgQty('tri_eperim',1)">+</button></div></div>
       </div>
       <div class="subtema">
-        <div class="subtema-title">Multiplicación</div>
-        <div class="tipo-row"><span class="tipo-label">Mon × Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multmp1',-1)">−</button><span class="qty-val" id="q-poly_multmp1">0</span><button class="qty-btn" onclick="chgQty('poly_multmp1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Mon × Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multmp2',-1)">−</button><span class="qty-val" id="q-poly_multmp2">0</span><button class="qty-btn" onclick="chgQty('poly_multmp2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pol × Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multpp1',-1)">−</button><span class="qty-val" id="q-poly_multpp1">0</span><button class="qty-btn" onclick="chgQty('poly_multpp1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pol × Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_multpp2',-1)">−</button><span class="qty-val" id="q-poly_multpp2">0</span><button class="qty-btn" onclick="chgQty('poly_multpp2',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">División / Teo. del Resto / Ruffini</div>
-        <div class="tipo-row"><span class="tipo-label">Pol ÷ Mon — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpm1',-1)">−</button><span class="qty-val" id="q-poly_divpm1">0</span><button class="qty-btn" onclick="chgQty('poly_divpm1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pol ÷ Mon — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpm2',-1)">−</button><span class="qty-val" id="q-poly_divpm2">0</span><button class="qty-btn" onclick="chgQty('poly_divpm2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pol ÷ Pol — Nivel 1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpp1',-1)">−</button><span class="qty-val" id="q-poly_divpp1">0</span><button class="qty-btn" onclick="chgQty('poly_divpp1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pol ÷ Pol — Nivel 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_divpp2',-1)">−</button><span class="qty-val" id="q-poly_divpp2">0</span><button class="qty-btn" onclick="chgQty('poly_divpp2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Teo. del Resto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_resto1',-1)">−</button><span class="qty-val" id="q-poly_resto1">0</span><button class="qty-btn" onclick="chgQty('poly_resto1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Ruffini</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('poly_ruffini1',-1)">−</button><span class="qty-val" id="q-poly_ruffini1">0</span><button class="qty-btn" onclick="chgQty('poly_ruffini1',1)">+</button></div></div>
+        <div class="subtema-title">Triángulos Oblicuángulos — Problemas</div>
+        <div class="tipo-row"><span class="tipo-label">Ley del Seno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pseno',-1)">−</button><span class="qty-val" id="q-tri_pseno">0</span><button class="qty-btn" onclick="chgQty('tri_pseno',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ley del Coseno</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pcoseno',-1)">−</button><span class="qty-val" id="q-tri_pcoseno">0</span><button class="qty-btn" onclick="chgQty('tri_pcoseno',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ambas leyes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pambas',-1)">−</button><span class="qty-val" id="q-tri_pambas">0</span><button class="qty-btn" onclick="chgQty('tri_pambas',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Área</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_parea',-1)">−</button><span class="qty-val" id="q-tri_parea">0</span><button class="qty-btn" onclick="chgQty('tri_parea',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('tri_pperim',-1)">−</button><span class="qty-val" id="q-tri_pperim">0</span><button class="qty-btn" onclick="chgQty('tri_pperim',1)">+</button></div></div>
+        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Identidades Trigonométricas</strong></div>
+        <div class="tipo-row"><span class="tipo-label">Identidades Niv.1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_id1',-1)">−</button><span class="qty-val" id="q-trig_id1">0</span><button class="qty-btn" onclick="chgQty('trig_id1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Identidades Niv.2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_id2',-1)">−</button><span class="qty-val" id="q-trig_id2">0</span><button class="qty-btn" onclick="chgQty('trig_id2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Identidades Niv.3</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_id3',-1)">−</button><span class="qty-val" id="q-trig_id3">0</span><button class="qty-btn" onclick="chgQty('trig_id3',1)">+</button></div></div>
+        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Arco Doble</strong></div>
+        <div class="tipo-row"><span class="tipo-label">Arco Doble Niv.1</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_ad1',-1)">−</button><span class="qty-val" id="q-trig_ad1">0</span><button class="qty-btn" onclick="chgQty('trig_ad1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Arco Doble Niv.2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('trig_ad2',-1)">−</button><span class="qty-val" id="q-trig_ad2">0</span><button class="qty-btn" onclick="chgQty('trig_ad2',1)">+</button></div></div>
+        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Func. Trig. en el Triángulo Rectángulo</strong></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.1 — Tres lados dados</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_1',-1)">−</button><span class="qty-val" id="q-mixTR_1">0</span><button class="qty-btn" onclick="chgQty('mixTR_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.2 — Dos lados dados</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_2',-1)">−</button><span class="qty-val" id="q-mixTR_2">0</span><button class="qty-btn" onclick="chgQty('mixTR_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.3 — Un lado y un ángulo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_3',-1)">−</button><span class="qty-val" id="q-mixTR_3">0</span><button class="qty-btn" onclick="chgQty('mixTR_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.4 — Rectángulo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_4',-1)">−</button><span class="qty-val" id="q-mixTR_4">0</span><button class="qty-btn" onclick="chgQty('mixTR_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.5 — Cuadrado</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_5',-1)">−</button><span class="qty-val" id="q-mixTR_5">0</span><button class="qty-btn" onclick="chgQty('mixTR_5',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.6 — Rombo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_6',-1)">−</button><span class="qty-val" id="q-mixTR_6">0</span><button class="qty-btn" onclick="chgQty('mixTR_6',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.7 — Área y Perímetro</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_7',-1)">−</button><span class="qty-val" id="q-mixTR_7">0</span><button class="qty-btn" onclick="chgQty('mixTR_7',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.8 — Vida Real</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_8',-1)">−</button><span class="qty-val" id="q-mixTR_8">0</span><button class="qty-btn" onclick="chgQty('mixTR_8',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Niv.9 — Dos triángulos / altura compartida</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixTR_9',-1)">−</button><span class="qty-val" id="q-mixTR_9">0</span><button class="qty-btn" onclick="chgQty('mixTR_9',1)">+</button></div></div>
+        <div class="tipo-row" style="margin-top:6px"><strong style="font-size:0.8rem;color:#6c757d">Fórmulas Fundamentales — Circ. Trig.</strong></div>
+        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.1 — Dado sen β o cos β</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_1',-1)">−</button><span class="qty-val" id="q-mixFfc_1">0</span><button class="qty-btn" onclick="chgQty('mixFfc_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.2 — Dado sec α o cosec α</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_2',-1)">−</button><span class="qty-val" id="q-mixFfc_2">0</span><button class="qty-btn" onclick="chgQty('mixFfc_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Fórmulas Fund. Niv.3 — Dado tg α o cotg α</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixFfc_3',-1)">−</button><span class="qty-val" id="q-mixFfc_3">0</span><button class="qty-btn" onclick="chgQty('mixFfc_3',1)">+</button></div></div>
       </div>
     </div>
   </div>
 
-  <!-- ══ RADICALES ══ -->
+    </div><!-- fin materia-group-body trig -->
+  </div><!-- fin materia-group mat-trig -->
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- GRUPO: GEOMETRÍA ANALÍTICA            -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="materia-group mat-geo">
+    <div class="materia-group-header">
+      📈 Geometría Analítica
+      <span class="mat-count">3 módulos</span>
+    </div>
+    <div class="materia-group-body">
+
+  <!-- ══ GEOMETRÍA ANALÍTICA ══ -->
   <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('rad')">
-      <div class="tema-title">√ Radicales (Álgebra)</div>
+    <div class="tema-header" onclick="toggleTema('ga')">
+      <div class="tema-title">📈 Geometría Analítica</div>
       <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="rad-badge">0 ejercicios</span>
+        <span class="tema-badge zero" id="ga-badge">0 ejercicios</span>
         <span class="tema-arrow">▶</span>
       </div>
     </div>
-    <div class="tema-body" id="rad-body">
+    <div class="tema-body" id="ga-body">
+
       <div class="subtema">
-        <div class="subtema-title">Raíces exactas / Extracción / Intro</div>
-        <div class="tipo-row"><span class="tipo-label">Raíces exactas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_exactas1',-1)">−</button><span class="qty-val" id="q-rad_exactas1">0</span><button class="qty-btn" onclick="chgQty('rad_exactas1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Extracción Nivel 1 — Enteros</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_extraccion1',-1)">−</button><span class="qty-val" id="q-rad_extraccion1">0</span><button class="qty-btn" onclick="chgQty('rad_extraccion1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Extracción Nivel 2 — Fraccionarios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_extraccion2',-1)">−</button><span class="qty-val" id="q-rad_extraccion2">0</span><button class="qty-btn" onclick="chgQty('rad_extraccion2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Intro al signo radical</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_intro1',-1)">−</button><span class="qty-val" id="q-rad_intro1">0</span><button class="qty-btn" onclick="chgQty('rad_intro1',1)">+</button></div></div>
+        <div class="subtema-title">Parábolas — Vértice (0,0)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el foco</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_1',-1)">−</button><span class="qty-val" id="q-par00_1">0</span><button class="qty-btn" onclick="chgQty('par00_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_2',-1)">−</button><span class="qty-val" id="q-par00_2">0</span><button class="qty-btn" onclick="chgQty('par00_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Punto y directriz</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_3',-1)">−</button><span class="qty-val" id="q-par00_3">0</span><button class="qty-btn" onclick="chgQty('par00_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Punto y eje de simetría</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_4',-1)">−</button><span class="qty-val" id="q-par00_4">0</span><button class="qty-btn" onclick="chgQty('par00_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 6 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('par00_6',-1)">−</button><span class="qty-val" id="q-par00_6">0</span><button class="qty-btn" onclick="chgQty('par00_6',1)">+</button></div></div>
       </div>
+
       <div class="subtema">
-        <div class="subtema-title">Suma y Resta</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Radicales semejantes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta1',-1)">−</button><span class="qty-val" id="q-rad_sumaresta1">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con extracción previa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta2',-1)">−</button><span class="qty-val" id="q-rad_sumaresta2">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta2',1)">+</button></div></div>
-        <div class="tipo-row">
+        <div class="subtema-title">Parábolas — Vértice (h,k)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el foco</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_1',-1)">−</button><span class="qty-val" id="q-parhk_1">0</span><button class="qty-btn" onclick="chgQty('parhk_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_2',-1)">−</button><span class="qty-val" id="q-parhk_2">0</span><button class="qty-btn" onclick="chgQty('parhk_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Punto y directriz</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_3',-1)">−</button><span class="qty-val" id="q-parhk_3">0</span><button class="qty-btn" onclick="chgQty('parhk_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Punto y eje de simetría</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_4',-1)">−</button><span class="qty-val" id="q-parhk_4">0</span><button class="qty-btn" onclick="chgQty('parhk_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 6 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('parhk_6',-1)">−</button><span class="qty-val" id="q-parhk_6">0</span><button class="qty-btn" onclick="chgQty('parhk_6',1)">+</button></div></div>
       </div>
+
       <div class="subtema">
-        <div class="subtema-title">Multiplicación</div>
-        <div class="tipo-row"><span class="tipo-label">Mult. I — mon×mon</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multI1',-1)">−</button><span class="qty-val" id="q-rad_multI1">0</span><button class="qty-btn" onclick="chgQty('rad_multI1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Mult. II — mon×pol</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multII1',-1)">−</button><span class="qty-val" id="q-rad_multII1">0</span><button class="qty-btn" onclick="chgQty('rad_multII1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Mult. III — pol×pol</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multIII1',-1)">−</button><span class="qty-val" id="q-rad_multIII1">0</span><button class="qty-btn" onclick="chgQty('rad_multIII1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Mult. distintos índices</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_multIndices1',-1)">−</button><span class="qty-val" id="q-rad_multIndices1">0</span><button class="qty-btn" onclick="chgQty('rad_multIndices1',1)">+</button></div></div>
+        <div class="subtema-title">Circunferencia — Centro (0,0)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado el radio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_1',-1)">−</button><span class="qty-val" id="q-circ00_1">0</span><button class="qty-btn" onclick="chgQty('circ00_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dado un punto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_2',-1)">−</button><span class="qty-val" id="q-circ00_2">0</span><button class="qty-btn" onclick="chgQty('circ00_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Dada la ecuación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circ00_3',-1)">−</button><span class="qty-val" id="q-circ00_3">0</span><button class="qty-btn" onclick="chgQty('circ00_3',1)">+</button></div></div>
       </div>
+
       <div class="subtema">
-        <div class="subtema-title">División / Potenciación / Radicación</div>
-        <div class="tipo-row"><span class="tipo-label">División mon÷mon</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_divI1',-1)">−</button><span class="qty-val" id="q-rad_divI1">0</span><button class="qty-btn" onclick="chgQty('rad_divI1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Div. distintos índices</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_divIndices1',-1)">−</button><span class="qty-val" id="q-rad_divIndices1">0</span><button class="qty-btn" onclick="chgQty('rad_divIndices1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pot. I — monomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_potI1',-1)">−</button><span class="qty-val" id="q-rad_potI1">0</span><button class="qty-btn" onclick="chgQty('rad_potI1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Pot. II — pol²</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_potII1',-1)">−</button><span class="qty-val" id="q-rad_potII1">0</span><button class="qty-btn" onclick="chgQty('rad_potII1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Radicación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_radrad1',-1)">−</button><span class="qty-val" id="q-rad_radrad1">0</span><button class="qty-btn" onclick="chgQty('rad_radrad1',1)">+</button></div></div>
+        <div class="subtema-title">Circunferencia — Centro (h,k)</div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 1 — Dado centro y radio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_1',-1)">−</button><span class="qty-val" id="q-circhk_1">0</span><button class="qty-btn" onclick="chgQty('circhk_1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 2 — Dado centro y punto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_2',-1)">−</button><span class="qty-val" id="q-circhk_2">0</span><button class="qty-btn" onclick="chgQty('circhk_2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 3 — Dada la ecuación general</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_3',-1)">−</button><span class="qty-val" id="q-circhk_3">0</span><button class="qty-btn" onclick="chgQty('circhk_3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 4 — Posición recta-circunferencia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_4',-1)">−</button><span class="qty-val" id="q-circhk_4">0</span><button class="qty-btn" onclick="chgQty('circhk_4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Tipo 5 — Dado el gráfico</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('circhk_5',-1)">−</button><span class="qty-val" id="q-circhk_5">0</span><button class="qty-btn" onclick="chgQty('circhk_5',1)">+</button></div></div>
       </div>
-      <div class="subtema">
-        <div class="subtema-title">Racionalización</div>
-        <div class="tipo-row"><span class="tipo-label">Rac. I — mon, índice 2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racI1',-1)">−</button><span class="qty-val" id="q-rad_racI1">0</span><button class="qty-btn" onclick="chgQty('rad_racI1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Rac. II — mon, índice &gt;2</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racII1',-1)">−</button><span class="qty-val" id="q-rad_racII1">0</span><button class="qty-btn" onclick="chgQty('rad_racII1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Rac. III — binomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racIII1',-1)">−</button><span class="qty-val" id="q-rad_racIII1">0</span><button class="qty-btn" onclick="chgQty('rad_racIII1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Rac. IV — trinomio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_racIV1',-1)">−</button><span class="qty-val" id="q-rad_racIV1">0</span><button class="qty-btn" onclick="chgQty('rad_racIV1',1)">+</button></div></div>
-      </div>
+
     </div>
   </div>
 
-  <!-- ══ CÁLCULO ══ -->
+  <!-- ══ PUNTOS Y RECTAS ══ -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('mixPR')">
+      <div class="tema-title">📍 Puntos y Rectas</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="mixPR-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="mixPR-body">
+
+      <div class="subtema">
+        <div class="subtema-title">Puntos</div>
+        <div class="tipo-row"><span class="tipo-label">Distancia entre dos puntos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_p1',-1)">−</button><span class="qty-val" id="q-mixPR_p1">0</span><button class="qty-btn" onclick="chgQty('mixPR_p1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Hallar coordenada dada la distancia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_p2',-1)">−</button><span class="qty-val" id="q-mixPR_p2">0</span><button class="qty-btn" onclick="chgQty('mixPR_p2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Punto medio de un segmento</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_p3',-1)">−</button><span class="qty-val" id="q-mixPR_p3">0</span><button class="qty-btn" onclick="chgQty('mixPR_p3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Hallar un extremo dado el punto medio</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_p4',-1)">−</button><span class="qty-val" id="q-mixPR_p4">0</span><button class="qty-btn" onclick="chgQty('mixPR_p4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Pendiente dados dos puntos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_p5',-1)">−</button><span class="qty-val" id="q-mixPR_p5">0</span><button class="qty-btn" onclick="chgQty('mixPR_p5',1)">+</button></div></div>
+      </div>
+
+      <div class="subtema">
+        <div class="subtema-title">Rectas</div>
+        <div class="tipo-row"><span class="tipo-label">Ecuación general (dado punto y pendiente)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r1',-1)">−</button><span class="qty-val" id="q-mixPR_r1">0</span><button class="qty-btn" onclick="chgQty('mixPR_r1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ecuación explícita (dado punto y pendiente)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r2',-1)">−</button><span class="qty-val" id="q-mixPR_r2">0</span><button class="qty-btn" onclick="chgQty('mixPR_r2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ecuación canónica (dado punto y pendiente)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r3',-1)">−</button><span class="qty-val" id="q-mixPR_r3">0</span><button class="qty-btn" onclick="chgQty('mixPR_r3',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Posición entre dos rectas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r4',-1)">−</button><span class="qty-val" id="q-mixPR_r4">0</span><button class="qty-btn" onclick="chgQty('mixPR_r4',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Intersección entre dos rectas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r5',-1)">−</button><span class="qty-val" id="q-mixPR_r5">0</span><button class="qty-btn" onclick="chgQty('mixPR_r5',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Distancia de un punto a una recta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r6',-1)">−</button><span class="qty-val" id="q-mixPR_r6">0</span><button class="qty-btn" onclick="chgQty('mixPR_r6',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Área de polígonos (triángulos y cuadriláteros)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r7',-1)">−</button><span class="qty-val" id="q-mixPR_r7">0</span><button class="qty-btn" onclick="chgQty('mixPR_r7',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Ecuación de la recta por dos puntos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r8',-1)">−</button><span class="qty-val" id="q-mixPR_r8">0</span><button class="qty-btn" onclick="chgQty('mixPR_r8',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Perímetro de polígonos (triángulos y cuadriláteros)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r9',-1)">−</button><span class="qty-val" id="q-mixPR_r9">0</span><button class="qty-btn" onclick="chgQty('mixPR_r9',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Mediana relativa de un triángulo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mixPR_r10',-1)">−</button><span class="qty-val" id="q-mixPR_r10">0</span><button class="qty-btn" onclick="chgQty('mixPR_r10',1)">+</button></div></div>
+      </div>
+
+    </div>
+  </div>
+
+    </div><!-- fin materia-group-body geo -->
+  </div><!-- fin materia-group mat-geo -->
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- GRUPO: CÁLCULO                        -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="materia-group mat-calculo">
+    <div class="materia-group-header">
+      📊 Cálculo
+      <span class="mat-count">3 módulos</span>
+    </div>
+    <div class="materia-group-body">
+
+
+  <!-- ══ INECUACIONES + FUNCIONES ══ -->
   <div class="tema-block">
     <div class="tema-header" onclick="toggleTema('calc')">
-      <div class="tema-title">📊 Cálculo</div>
+      <div class="tema-title">📊 Inecuaciones y Funciones</div>
       <div style="display:flex;align-items:center;gap:0.6rem">
         <span class="tema-badge zero" id="calc-badge">0 ejercicios</span>
         <span class="tema-arrow">▶</span>
@@ -799,6 +912,9 @@ body { padding-bottom: 2.5rem; }
       </div>
     </div>
   </div>
+
+    </div><!-- fin materia-group-body calculo -->
+  </div><!-- fin materia-group mat-calculo -->
 
   <!-- TOTAL + GENERAR -->
   <div class="total-bar">
@@ -933,6 +1049,9 @@ const TEMA_KEYS = {
        'parhk_1','parhk_2','parhk_3','parhk_4','parhk_6',
        'circ00_1','circ00_2','circ00_3',
        'circhk_1','circhk_2','circhk_3','circhk_4','circhk_5'],
+  mixPR: ['mixPR_p1','mixPR_p2','mixPR_p3','mixPR_p4','mixPR_p5',
+          'mixPR_r1','mixPR_r2','mixPR_r3','mixPR_r4','mixPR_r5',
+          'mixPR_r6','mixPR_r7','mixPR_r8','mixPR_r9','mixPR_r10'],
   calc: ['calc_ineqL1','calc_ineqL2','calc_ineqL3',
          'calc_ineqC1','calc_ineqC2',
          'calc_fc_rel','calc_fc_diag','calc_fc_vdi','calc_fc_tv',
@@ -942,7 +1061,7 @@ const TEMA_KEYS = {
          'calc_ri_dib','calc_ri_esc','calc_not'],
 };
 const ALL_KEYS = [...TEMA_KEYS.alg, ...TEMA_KEYS.alg_intro, ...TEMA_KEYS.trig, ...TEMA_KEYS.ga,
-                  ...TEMA_KEYS.ent, ...TEMA_KEYS.rac, ...TEMA_KEYS.mono,
+                  ...TEMA_KEYS.mixPR, ...TEMA_KEYS.ent, ...TEMA_KEYS.rac, ...TEMA_KEYS.mono,
                   ...TEMA_KEYS.poly, ...TEMA_KEYS.rad, ...TEMA_KEYS.calc];
 ALL_KEYS.forEach(k => qtys[k] = 0);
 
@@ -2157,6 +2276,341 @@ function mixCircGen(tipo,isHK){
 // ══════════════════════════════════════════════════════════════
 // NUEVOS GENERADORES PARA MIXTO
 // ══════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════
+// PUNTOS Y RECTAS — helpers y generadores (prefijo mixPR_)
+// ══════════════════════════════════════════════════════
+
+// ── Math helpers ──
+function mixPR_rndPt(lo, hi) {
+  lo = (lo === undefined) ? -8 : lo;
+  hi = (hi === undefined) ? 8 : hi;
+  return [rnd(lo, hi), rnd(lo, hi)];
+}
+function mixPR_fmtN(n) {
+  var r = Math.round(n * 100) / 100;
+  return String(r);
+}
+function mixPR_dist(p1, p2) {
+  return Math.sqrt((p2[0]-p1[0])*(p2[0]-p1[0]) + (p2[1]-p1[1])*(p2[1]-p1[1]));
+}
+function mixPR_slope(p1, p2) {
+  return (p2[1]-p1[1]) / (p2[0]-p1[0]);
+}
+function mixPR_slopeAsFrac(m) {
+  if (m === Math.floor(m)) return [m, 1];
+  var best = [Math.round(m * 10), 10];
+  for (var d = 1; d <= 8; d++) {
+    var n = Math.round(m * d);
+    if (Math.abs(n/d - m) < 0.001) { best = [n, d]; break; }
+  }
+  var g = mixPR_gcd(Math.abs(best[0]), Math.abs(best[1]));
+  return [best[0]/g, best[1]/g];
+}
+function mixPR_gcd(a, b) { return b === 0 ? a : mixPR_gcd(b, a % b); }
+function mixPR_fmtSqrt(n) {
+  var s = Math.sqrt(n);
+  if (Number.isInteger(s)) return String(s);
+  return '\u221a' + n;
+}
+function mixPR_formatLineEq(A, B, C) {
+  var parts = [];
+  if (A !== 0) parts.push((A === 1 ? '' : A === -1 ? '-' : String(A)) + 'x');
+  if (B !== 0) {
+    var bAbs = Math.abs(B), bSign = B > 0 ? '+' : '-';
+    var bStr = (bAbs === 1 ? '' : String(bAbs)) + 'y';
+    parts.push((parts.length ? bSign + ' ' : (B < 0 ? '-' : '')) + bStr);
+  }
+  if (C !== 0) {
+    var cSign = C > 0 ? '+' : '-';
+    parts.push((parts.length ? cSign + ' ' : (C < 0 ? '-' : '')) + Math.abs(C));
+  }
+  return (parts.join(' ') || '0') + ' = 0';
+}
+function mixPR_lineExplicit(px, py, m) {
+  var b = py - m * px;
+  var nd = mixPR_slopeAsFrac(m), n = nd[0], d = nd[1];
+  var mStr = d === 1 ? (n === 1 ? '' : n === -1 ? '-' : String(n)) : String(n) + '/' + String(d);
+  var bStr = b === 0 ? '' : b > 0 ? ' + ' + mixPR_fmtN(b) : ' - ' + mixPR_fmtN(Math.abs(b));
+  return 'y = ' + mStr + 'x' + bStr;
+}
+function mixPR_lineCanonic(px, py, m) {
+  var nd = mixPR_slopeAsFrac(m), n = nd[0], d = nd[1];
+  var mStr = d === 1 ? String(n) : String(n) + '/' + String(d);
+  var xStr = px === 0 ? 'x' : px > 0 ? '(x - ' + px + ')' : '(x + ' + Math.abs(px) + ')';
+  var yStr = py === 0 ? 'y' : py > 0 ? '(y - ' + py + ')' : '(y + ' + Math.abs(py) + ')';
+  return yStr + ' = ' + mStr + xStr;
+}
+function mixPR_distPointLine(x0, y0, A, B, C) {
+  return Math.abs(A*x0 + B*y0 + C) / Math.sqrt(A*A + B*B);
+}
+function mixPR_polygonArea(pts) {
+  var n = pts.length, area = 0;
+  for (var i = 0; i < n; i++) {
+    var j = (i + 1) % n;
+    area += pts[i][0] * pts[j][1];
+    area -= pts[j][0] * pts[i][1];
+  }
+  return Math.abs(area) / 2;
+}
+function mixPR_polygonPerim(pts) {
+  var n = pts.length, p = 0;
+  for (var i = 0; i < n; i++) p += mixPR_dist(pts[i], pts[(i+1)%n]);
+  return p;
+}
+
+// ── SVG helpers ──
+function mixPR_makeAxesSVG(pts, extraFn, W, H) {
+  W = W || 240; H = H || 240;
+  var allX = pts.map(function(p){return p[0];}), allY = pts.map(function(p){return p[1];});
+  var minX = Math.min.apply(null,allX)-2, maxX = Math.max.apply(null,allX)+2;
+  var minY = Math.min.apply(null,allY)-2, maxY = Math.max.apply(null,allY)+2;
+  var rangeX = maxX-minX, rangeY = maxY-minY;
+  var range = Math.max(rangeX, rangeY, 8);
+  var scale = (W*0.78)/range;
+  var midX = (minX+maxX)/2, midY = (minY+maxY)/2;
+  var ox = W/2 - midX*scale, oy = H/2 + midY*scale;
+  function toSVG(mx,my){ return {x: ox+mx*scale, y: oy-my*scale}; }
+  var ticks = '', step = range>16 ? 5 : range>8 ? 2 : 1;
+  var x0 = toSVG(0,0);
+  for (var v=Math.floor(minX); v<=maxX; v+=step) {
+    var p = toSVG(v,0);
+    ticks += '<line x1="'+p.x.toFixed(1)+'" y1="'+(x0.y-3)+'" x2="'+p.x.toFixed(1)+'" y2="'+(x0.y+3)+'" stroke="#ccc" stroke-width="1"/>';
+    if (v!==0) ticks += '<text x="'+p.x.toFixed(1)+'" y="'+(x0.y+13)+'" text-anchor="middle" font-size="8" fill="#bbb">'+v+'</text>';
+  }
+  for (var v=Math.floor(minY); v<=maxY; v+=step) {
+    var p = toSVG(0,v);
+    ticks += '<line x1="'+(x0.x-3)+'" y1="'+p.y.toFixed(1)+'" x2="'+(x0.x+3)+'" y2="'+p.y.toFixed(1)+'" stroke="#ccc" stroke-width="1"/>';
+    if (v!==0) ticks += '<text x="'+(x0.x+4)+'" y="'+(p.y+3)+'" font-size="8" fill="#bbb">'+v+'</text>';
+  }
+  var extra = extraFn ? extraFn(toSVG, scale) : '';
+  return '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="border:1px solid #eef1ff;border-radius:8px;background:#fafbff;display:block;">'
+    +'<line x1="'+x0.x.toFixed(1)+'" y1="6" x2="'+x0.x.toFixed(1)+'" y2="'+(H-6)+'" stroke="#e0e4f0" stroke-width="1"/>'
+    +'<line x1="6" y1="'+x0.y.toFixed(1)+'" x2="'+(W-6)+'" y2="'+x0.y.toFixed(1)+'" stroke="#e0e4f0" stroke-width="1"/>'
+    +ticks
+    +'<polygon points="'+x0.x+',5 '+(x0.x-4)+',13 '+(x0.x+4)+',13" fill="#bbb"/>'
+    +'<polygon points="'+(W-5)+','+x0.y+' '+(W-13)+','+(x0.y-4)+' '+(W-13)+','+(x0.y+4)+'" fill="#bbb"/>'
+    +'<text x="'+(x0.x+4)+'" y="13" font-size="9" fill="#aaa">y</text>'
+    +'<text x="'+(W-13)+'" y="'+(x0.y-5)+'" font-size="9" fill="#aaa">x</text>'
+    +'<text x="'+(x0.x+3)+'" y="'+(x0.y+11)+'" font-size="8" fill="#aaa">O</text>'
+    +extra+'</svg>';
+}
+function mixPR_drawPts(toSVG, pts, labels, color) {
+  color = color || '#4f6ef7';
+  return pts.map(function(p,i){
+    var s = toSVG(p[0],p[1]), lbl = labels ? labels[i] : '';
+    return '<circle cx="'+s.x.toFixed(1)+'" cy="'+s.y.toFixed(1)+'" r="4" fill="'+color+'"/>'
+      +(lbl ? '<text x="'+(s.x+6).toFixed(1)+'" y="'+(s.y-5).toFixed(1)+'" font-size="9" fill="'+color+'" font-weight="bold">'+lbl+'('+p[0]+','+p[1]+')</text>' : '');
+  }).join('');
+}
+function mixPR_drawLine(toSVG, m, px, py, color, W, H) {
+  color = color || '#f97316'; W = W||240; H = H||240;
+  var x1m=px-20, x2m=px+20;
+  var y1l=m*(x1m-px)+py, y2l=m*(x2m-px)+py;
+  var p1=toSVG(x1m,y1l), p2=toSVG(x2m,y2l);
+  return '<line x1="'+p1.x.toFixed(1)+'" y1="'+p1.y.toFixed(1)+'" x2="'+p2.x.toFixed(1)+'" y2="'+p2.y.toFixed(1)+'" stroke="'+color+'" stroke-width="1.8"/>';
+}
+function mixPR_drawSegment(toSVG, p1, p2, color) {
+  color = color || '#4f6ef7';
+  var s1=toSVG(p1[0],p1[1]), s2=toSVG(p2[0],p2[1]);
+  return '<line x1="'+s1.x.toFixed(1)+'" y1="'+s1.y.toFixed(1)+'" x2="'+s2.x.toFixed(1)+'" y2="'+s2.y.toFixed(1)+'" stroke="'+color+'" stroke-width="2"/>';
+}
+function mixPR_drawPolygon(toSVG, pts, fillColor, strokeColor) {
+  fillColor = fillColor || 'rgba(79,110,247,0.08)'; strokeColor = strokeColor || '#4f6ef7';
+  var svgPts = pts.map(function(p){var s=toSVG(p[0],p[1]);return s.x.toFixed(1)+','+s.y.toFixed(1);}).join(' ');
+  return '<polygon points="'+svgPts+'" fill="'+fillColor+'" stroke="'+strokeColor+'" stroke-width="1.8"/>';
+}
+
+// ── Generadores mixPR_ ──
+function mixPR_genP1() {
+  var p1=mixPR_rndPt(), p2=mixPR_rndPt();
+  if (p1[0]===p2[0]&&p1[1]===p2[1]) return mixPR_genP1();
+  var dx=p2[0]-p1[0], dy=p2[1]-p1[1];
+  var dStr=mixPR_fmtSqrt(dx*dx+dy*dy);
+  var graph=mixPR_makeAxesSVG([p1,p2],function(toSVG){
+    return mixPR_drawSegment(toSVG,p1,p2)+mixPR_drawPts(toSVG,[p1,p2],['A','B']);
+  });
+  return {expr:'Hallá la distancia entre los puntos A('+p1[0]+', '+p1[1]+') y B('+p2[0]+', '+p2[1]+'). Graficá.',sol:'d(A,B) = '+dStr,graph:graph,tema:'Puntos y Rectas: Distancia entre puntos'};
+}
+function mixPR_genP2() {
+  var findAxis=rnd(0,1)===0?'x':'y';
+  var p1=mixPR_rndPt(-5,5), d=rnd(2,10);
+  if (findAxis==='x') {
+    var p2y=rnd(-6,6), dy=p2y-p1[1], dx2=d*d-dy*dy;
+    if (dx2<0||!Number.isInteger(Math.sqrt(dx2))) return mixPR_genP2();
+    var dx=Math.sqrt(dx2), x1=p1[0]+dx, x2=p1[0]-dx;
+    var graph=mixPR_makeAxesSVG([p1,[x1,p2y],[x2,p2y]],function(toSVG){
+      return mixPR_drawPts(toSVG,[p1],['A'],'#4f6ef7')+mixPR_drawPts(toSVG,[[x1,p2y],[x2,p2y]],['B\u2081','B\u2082'],'#f97316');
+    });
+    return {expr:'La distancia entre A('+p1[0]+', '+p1[1]+') y B(x, '+p2y+') es '+d+'. Hallá la abscisa de B. Graficá.',sol:'x = '+x1+' o x = '+x2,graph:graph,tema:'Puntos y Rectas: Coordenada dada la distancia'};
+  } else {
+    var p2x=rnd(-6,6), dx2_=d*d-(p2x-p1[0])*(p2x-p1[0]);
+    if (dx2_<0||!Number.isInteger(Math.sqrt(dx2_))) return mixPR_genP2();
+    var dy_=Math.sqrt(dx2_), y1=p1[1]+dy_, y2=p1[1]-dy_;
+    var graph=mixPR_makeAxesSVG([p1,[p2x,y1],[p2x,y2]],function(toSVG){
+      return mixPR_drawPts(toSVG,[p1],['A'],'#4f6ef7')+mixPR_drawPts(toSVG,[[p2x,y1],[p2x,y2]],['B\u2081','B\u2082'],'#f97316');
+    });
+    return {expr:'La distancia entre A('+p1[0]+', '+p1[1]+') y B('+p2x+', y) es '+d+'. Hallá la ordenada de B. Graficá.',sol:'y = '+y1+' o y = '+y2,graph:graph,tema:'Puntos y Rectas: Coordenada dada la distancia'};
+  }
+}
+function mixPR_genP3() {
+  var p1=mixPR_rndPt(-7,7), p2=mixPR_rndPt(-7,7);
+  var mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2;
+  if (!Number.isInteger(mx)||!Number.isInteger(my)) return mixPR_genP3();
+  var M=[mx,my];
+  var graph=mixPR_makeAxesSVG([p1,p2,M],function(toSVG){
+    return mixPR_drawSegment(toSVG,p1,p2)+mixPR_drawPts(toSVG,[p1,p2],['A','B'],'#4f6ef7')+mixPR_drawPts(toSVG,[M],['M'],'#22c55e');
+  });
+  return {expr:'Hallá el punto medio del segmento AB con A('+p1[0]+', '+p1[1]+') y B('+p2[0]+', '+p2[1]+'). Graficá.',sol:'M = ('+mx+', '+my+')',graph:graph,tema:'Puntos y Rectas: Punto medio'};
+}
+function mixPR_genP4() {
+  var m=[rnd(-6,6),rnd(-6,6)], p1=mixPR_rndPt(-5,5);
+  var p2=[2*m[0]-p1[0], 2*m[1]-p1[1]];
+  var graph=mixPR_makeAxesSVG([p1,p2,m],function(toSVG){
+    return mixPR_drawSegment(toSVG,p1,p2)+mixPR_drawPts(toSVG,[p1],['A'],'#4f6ef7')+mixPR_drawPts(toSVG,[m],['M'],'#22c55e')+mixPR_drawPts(toSVG,[p2],['B'],'#f97316');
+  });
+  return {expr:'El punto medio del segmento AB es M('+m[0]+', '+m[1]+') y un extremo es A('+p1[0]+', '+p1[1]+'). Hallá B. Graficá.',sol:'B = ('+p2[0]+', '+p2[1]+')',graph:graph,tema:'Puntos y Rectas: Extremo dado el punto medio'};
+}
+function mixPR_genP5() {
+  var p1=mixPR_rndPt(-7,7), p2=mixPR_rndPt(-7,7);
+  if (p1[0]===p2[0]) return mixPR_genP5();
+  var m=mixPR_slope(p1,p2), nd=mixPR_slopeAsFrac(m), n=nd[0], d=nd[1];
+  var mStr=d===1?String(n):String(n)+'/'+String(d);
+  var graph=mixPR_makeAxesSVG([p1,p2],function(toSVG){
+    return mixPR_drawLine(toSVG,n/d,p1[0],p1[1],'#f97316')+mixPR_drawPts(toSVG,[p1,p2],['A','B'],'#4f6ef7');
+  });
+  return {expr:'Hallá la pendiente de la recta que pasa por A('+p1[0]+', '+p1[1]+') y B('+p2[0]+', '+p2[1]+'). Graficá.',sol:'m = '+mStr,graph:graph,tema:'Puntos y Rectas: Pendiente'};
+}
+function mixPR_genR1() {
+  var p=mixPR_rndPt(-6,6), m=rnd(-4,4); if(m===0) return mixPR_genR1();
+  var nd=mixPR_slopeAsFrac(m), n=nd[0], d=nd[1];
+  var mStr=d===1?String(n):String(n)+'/'+String(d);
+  var eq=mixPR_formatLineEq(n,-d,d*p[1]-n*p[0]);
+  var graph=mixPR_makeAxesSVG([p],function(toSVG){return mixPR_drawLine(toSVG,n/d,p[0],p[1],'#f97316')+mixPR_drawPts(toSVG,[p],['P'],'#4f6ef7');});
+  return {expr:'Escribí la ecuación general de la recta que pasa por P('+p[0]+', '+p[1]+') con pendiente m = '+mStr+'. Graficá.',sol:eq,graph:graph,tema:'Puntos y Rectas: Ec. general'};
+}
+function mixPR_genR2() {
+  var p=mixPR_rndPt(-6,6), m=rnd(-4,4); if(m===0) return mixPR_genR2();
+  var nd=mixPR_slopeAsFrac(m), n=nd[0], d=nd[1];
+  var mStr=d===1?String(n):String(n)+'/'+String(d);
+  var graph=mixPR_makeAxesSVG([p],function(toSVG){return mixPR_drawLine(toSVG,n/d,p[0],p[1],'#f97316')+mixPR_drawPts(toSVG,[p],['P'],'#4f6ef7');});
+  return {expr:'Escribí la ecuación explícita de la recta que pasa por P('+p[0]+', '+p[1]+') con pendiente m = '+mStr+'. Graficá.',sol:mixPR_lineExplicit(p[0],p[1],n/d),graph:graph,tema:'Puntos y Rectas: Ec. explícita'};
+}
+function mixPR_genR3() {
+  var p=mixPR_rndPt(-6,6), m=rnd(-4,4); if(m===0) return mixPR_genR3();
+  var nd=mixPR_slopeAsFrac(m), n=nd[0], d=nd[1];
+  var mStr=d===1?String(n):String(n)+'/'+String(d);
+  var graph=mixPR_makeAxesSVG([p],function(toSVG){return mixPR_drawLine(toSVG,n/d,p[0],p[1],'#f97316')+mixPR_drawPts(toSVG,[p],['P'],'#4f6ef7');});
+  return {expr:'Escribí la ecuación canónica de la recta que pasa por P('+p[0]+', '+p[1]+') con pendiente m = '+mStr+'. Graficá.',sol:mixPR_lineCanonic(p[0],p[1],n/d),graph:graph,tema:'Puntos y Rectas: Ec. canónica'};
+}
+function mixPR_genR4() {
+  var posType=rnd(0,2), p1=mixPR_rndPt(-5,5), m1=rnd(-3,3)||1;
+  var nd1=mixPR_slopeAsFrac(m1), n1=nd1[0], d1=nd1[1];
+  var A1=n1, B1=-d1, C1=d1*p1[1]-n1*p1[0];
+  var eq1=mixPR_formatLineEq(A1,B1,C1);
+  var eq2, sol, m2;
+  if (posType===0) {
+    var p2=[p1[0],p1[1]+rndNZ(2,6)];
+    var A2=A1,B2=B1,C2=d1*p2[1]-n1*p2[0];
+    eq2=mixPR_formatLineEq(A2,B2,C2); sol='Rectas paralelas'; m2=m1;
+  } else if (posType===1) {
+    var nd2=[-d1,n1]; var p2b=mixPR_rndPt(-5,5);
+    var A2b=nd2[0],B2b=-nd2[1],C2b=nd2[1]*p2b[1]-nd2[0]*p2b[0];
+    eq2=mixPR_formatLineEq(A2b,B2b,C2b); sol='Rectas perpendiculares (m\u2081 \u00b7 m\u2082 = \u22121)'; m2=nd2[0]/nd2[1];
+  } else {
+    m2=m1+rndNZ(1,3); var nd2c=mixPR_slopeAsFrac(m2); var p2c=mixPR_rndPt(-5,5);
+    var A2c=nd2c[0],B2c=-nd2c[1],C2c=nd2c[1]*p2c[1]-nd2c[0]*p2c[0];
+    eq2=mixPR_formatLineEq(A2c,B2c,C2c); sol='Rectas concurrentes (secantes)'; m2=nd2c[0]/nd2c[1];
+  }
+  var graph=mixPR_makeAxesSVG([p1],function(toSVG){
+    return mixPR_drawLine(toSVG,m1,p1[0],p1[1],'#4f6ef7')+mixPR_drawLine(toSVG,m2,0,0,'#f97316');
+  });
+  return {expr:'Determiná la posición relativa entre las rectas:<br>r\u2081: '+eq1+'<br>r\u2082: '+eq2+'<br>Graficá.',sol:sol,graph:graph,tema:'Puntos y Rectas: Posición relativa'};
+}
+function mixPR_genR5() {
+  var m1=rnd(-3,3), m2=m1+rndNZ(1,3);
+  var p1=mixPR_rndPt(-5,5), p2=mixPR_rndPt(-5,5);
+  var b1=p1[1]-m1*p1[0], b2=p2[1]-m2*p2[0];
+  var xi=(b2-b1)/(m1-m2), yi=m1*xi+b1;
+  if (!Number.isFinite(xi)||!Number.isFinite(yi)) return mixPR_genR5();
+  var eq1=mixPR_lineExplicit(p1[0],p1[1],m1), eq2=mixPR_lineExplicit(p2[0],p2[1],m2);
+  var graph=mixPR_makeAxesSVG([p1,p2,[xi,yi]],function(toSVG){
+    return mixPR_drawLine(toSVG,m1,p1[0],p1[1],'#4f6ef7')+mixPR_drawLine(toSVG,m2,p2[0],p2[1],'#f97316')+mixPR_drawPts(toSVG,[[xi,yi]],['I'],'#22c55e');
+  });
+  return {expr:'Hallá la intersección de las rectas:<br>r\u2081: '+eq1+'<br>r\u2082: '+eq2+'<br>Graficá.',sol:'Punto de intersección: ('+mixPR_fmtN(xi)+', '+mixPR_fmtN(yi)+')',graph:graph,tema:'Puntos y Rectas: Intersección'};
+}
+function mixPR_genR6() {
+  var p=mixPR_rndPt(-6,6), lp=mixPR_rndPt(-5,5), m=rnd(-3,3)||1;
+  var nd=mixPR_slopeAsFrac(m), n=nd[0], d=nd[1];
+  var A=n,B=-d,C=d*lp[1]-n*lp[0];
+  var lineEq=mixPR_formatLineEq(A,B,C);
+  var dist_=mixPR_distPointLine(p[0],p[1],A,B,C);
+  var t=-(A*p[0]+B*p[1]+C)/(A*A+B*B);
+  var foot=[p[0]+A*t, p[1]+B*t];
+  var graph=mixPR_makeAxesSVG([p,lp,foot],function(toSVG){
+    return mixPR_drawLine(toSVG,n/d,lp[0],lp[1],'#f97316')+mixPR_drawSegment(toSVG,p,foot,'#22c55e')+mixPR_drawPts(toSVG,[p],['P'],'#4f6ef7')+mixPR_drawPts(toSVG,[foot],['F'],'#22c55e');
+  });
+  return {expr:'Hallá la distancia del punto P('+p[0]+', '+p[1]+') a la recta: '+lineEq+'. Graficá.',sol:'d \u2248 '+mixPR_fmtN(dist_),graph:graph,tema:'Puntos y Rectas: Distancia punto-recta'};
+}
+function mixPR_genR7() {
+  var isQuad=rnd(0,1), pts, area, name, att=0;
+  if (!isQuad) {
+    do { pts=[mixPR_rndPt(-6,6),mixPR_rndPt(-6,6),mixPR_rndPt(-6,6)]; area=mixPR_polygonArea(pts); att++; } while ((area<3||!Number.isFinite(area))&&att<50);
+    name='tri\u00e1ngulo';
+  } else {
+    do { var cx=rnd(-3,3),cy=rnd(-3,3),r=rnd(2,5); pts=[[cx+r,cy+rnd(-1,1)],[cx+rnd(-1,1),cy+r],[cx-r,cy+rnd(-1,1)],[cx+rnd(-1,1),cy-r]]; area=mixPR_polygonArea(pts); att++; } while ((area<4||!Number.isFinite(area))&&att<50);
+    name='cuadril\u00e1tero';
+  }
+  var ptsStr=pts.map(function(p,i){return String.fromCharCode(65+i)+'('+p[0]+','+p[1]+')';}).join(', ');
+  var graph=mixPR_makeAxesSVG(pts,function(toSVG){
+    return mixPR_drawPolygon(toSVG,pts)+mixPR_drawPts(toSVG,pts,pts.map(function(_,i){return String.fromCharCode(65+i);}));
+  });
+  return {expr:'Hallá el área del '+name+' de vértices: '+ptsStr+'. Graficá.',sol:'Área = '+mixPR_fmtN(area)+' u²',graph:graph,tema:'Puntos y Rectas: Área de polígono'};
+}
+function mixPR_genR8() {
+  var p1=mixPR_rndPt(-7,7), p2=mixPR_rndPt(-7,7);
+  if (p1[0]===p2[0]&&p1[1]===p2[1]) return mixPR_genR8();
+  var graph=mixPR_makeAxesSVG([p1,p2],function(toSVG){
+    var line = p1[0]===p2[0]
+      ? '<line x1="'+toSVG(p1[0],-10).x+'" y1="'+toSVG(p1[0],-10).y+'" x2="'+toSVG(p2[0],10).x+'" y2="'+toSVG(p2[0],10).y+'" stroke="#f97316" stroke-width="1.8"/>'
+      : mixPR_drawLine(toSVG,mixPR_slope(p1,p2),p1[0],p1[1],'#f97316');
+    return line+mixPR_drawPts(toSVG,[p1,p2],['A','B'],'#4f6ef7');
+  });
+  if (p1[0]===p2[0]) return {expr:'Escribí la ecuación de la recta que pasa por A('+p1[0]+','+p1[1]+') y B('+p2[0]+','+p2[1]+'). Graficá.',sol:'x = '+p1[0]+' (recta vertical)',graph:graph,tema:'Puntos y Rectas: Ec. por dos puntos'};
+  var m=mixPR_slope(p1,p2), nd=mixPR_slopeAsFrac(m), n=nd[0], d=nd[1];
+  var mStr=d===1?String(n):String(n)+'/'+String(d);
+  return {expr:'Escribí la ecuación de la recta que pasa por A('+p1[0]+','+p1[1]+') y B('+p2[0]+','+p2[1]+'). Graficá.',sol:'m = '+mStr+' | Explícita: '+mixPR_lineExplicit(p1[0],p1[1],n/d)+' | General: '+mixPR_formatLineEq(n,-d,d*p1[1]-n*p1[0]),graph:graph,tema:'Puntos y Rectas: Ec. por dos puntos'};
+}
+function mixPR_genR9() {
+  var isQuad=rnd(0,1), pts, name;
+  if (!isQuad) { pts=[mixPR_rndPt(-6,6),mixPR_rndPt(-6,6),mixPR_rndPt(-6,6)]; name='tri\u00e1ngulo'; }
+  else { var cx=rnd(-3,3),cy=rnd(-3,3),r=rnd(2,5); pts=[[cx+r,cy],[cx,cy+r],[cx-r,cy],[cx,cy-r]]; name='cuadril\u00e1tero'; }
+  var perim=mixPR_polygonPerim(pts);
+  var ptsStr=pts.map(function(p,i){return String.fromCharCode(65+i)+'('+p[0]+','+p[1]+')';}).join(', ');
+  var graph=mixPR_makeAxesSVG(pts,function(toSVG){
+    return mixPR_drawPolygon(toSVG,pts)+mixPR_drawPts(toSVG,pts,pts.map(function(_,i){return String.fromCharCode(65+i);}));
+  });
+  return {expr:'Hallá el perímetro del '+name+' de vértices: '+ptsStr+'. Graficá.',sol:'Per\u00edmetro \u2248 '+mixPR_fmtN(perim)+' u',graph:graph,tema:'Puntos y Rectas: Perímetro de polígono'};
+}
+function mixPR_genR10() {
+  var A=mixPR_rndPt(-6,6), B=mixPR_rndPt(-6,6), C=mixPR_rndPt(-6,6);
+  if (A[0]===B[0]&&A[1]===B[1]) return mixPR_genR10();
+  var vIdx=rnd(0,2), pts=[A,B,C], labels=['A','B','C'];
+  var vPt=pts[vIdx];
+  var opp1=pts[(vIdx+1)%3], opp2=pts[(vIdx+2)%3];
+  var oppLabel=labels[(vIdx+1)%3]+labels[(vIdx+2)%3];
+  var Mx=(opp1[0]+opp2[0])/2, My=(opp1[1]+opp2[1])/2;
+  if (!Number.isInteger(Mx)||!Number.isInteger(My)) return mixPR_genR10();
+  var medLen=mixPR_dist(vPt,[Mx,My]);
+  var eqMed = vPt[0]===Mx ? 'x = '+Mx : mixPR_lineExplicit(vPt[0],vPt[1],mixPR_slope(vPt,[Mx,My]));
+  var M=[Mx,My];
+  var graph=mixPR_makeAxesSVG([A,B,C,M],function(toSVG){
+    return mixPR_drawPolygon(toSVG,[A,B,C],'rgba(79,110,247,0.06)','#4f6ef7')+mixPR_drawSegment(toSVG,vPt,M,'#22c55e')+mixPR_drawPts(toSVG,[A,B,C],['A','B','C'],'#4f6ef7')+mixPR_drawPts(toSVG,[M],['M'],'#22c55e');
+  });
+  return {expr:'En el triángulo ABC con A('+A[0]+','+A[1]+'), B('+B[0]+','+B[1]+'), C('+C[0]+','+C[1]+').<br>Hallá la ecuación y longitud de la mediana relativa al lado '+oppLabel+'. Graficá.',sol:'M'+oppLabel+' = ('+Mx+','+My+') | Ecuación: '+eqMed+' | Longitud \u2248 '+mixPR_fmtN(medLen)+' u',graph:graph,tema:'Puntos y Rectas: Mediana relativa'};
+}
+
+// ── Fin PUNTOS Y RECTAS ──
 
 // ── Enteros: helpers ──
 function sup(n) { return '<sup>'+n+'</sup>'; }
@@ -4942,6 +5396,14 @@ const GENERATORS = {
   circ00_1: ()=>mixCircGen(1,false), circ00_2: ()=>mixCircGen(2,false), circ00_3: ()=>mixCircGen(3,false),
   circhk_1: ()=>mixCircGen(1,true), circhk_2: ()=>mixCircGen(2,true),
   circhk_3: ()=>mixCircGen(3,true), circhk_4: ()=>mixCircGen(4,true), circhk_5: ()=>mixCircGen(5,true),
+
+  // ── PUNTOS Y RECTAS ──
+  mixPR_p1: mixPR_genP1, mixPR_p2: mixPR_genP2, mixPR_p3: mixPR_genP3,
+  mixPR_p4: mixPR_genP4, mixPR_p5: mixPR_genP5,
+  mixPR_r1: mixPR_genR1, mixPR_r2: mixPR_genR2, mixPR_r3: mixPR_genR3,
+  mixPR_r4: mixPR_genR4, mixPR_r5: mixPR_genR5, mixPR_r6: mixPR_genR6,
+  mixPR_r7: mixPR_genR7, mixPR_r8: mixPR_genR8, mixPR_r9: mixPR_genR9,
+  mixPR_r10: mixPR_genR10,
 
   // ── NÚMEROS ENTEROS ──
   ent_sr1: ()=>({...genSR(1), tema:'Enteros: Suma y Resta Niv.1'}),
