@@ -2964,6 +2964,27 @@ function rootHTML(radicand,idx){if(idx===2)return`√<span style="text-decoratio
 
 
 
+// ── Racionales: helpers faltantes (propagados desde aritmetica.html) ──
+const PERIODIC=[
+  {f:mkF(1,3),disp:`0.<span class="per">3</span>`,val:1/3},{f:mkF(2,3),disp:`0.<span class="per">6</span>`,val:2/3},
+  {f:mkF(1,6),disp:`0.1<span class="per">6</span>`,val:1/6},{f:mkF(5,6),disp:`0.8<span class="per">3</span>`,val:5/6},
+  {f:mkF(1,9),disp:`0.<span class="per">1</span>`,val:1/9},{f:mkF(2,9),disp:`0.<span class="per">2</span>`,val:2/9},
+  {f:mkF(4,9),disp:`0.<span class="per">4</span>`,val:4/9},{f:mkF(7,9),disp:`0.<span class="per">7</span>`,val:7/9},
+  {f:mkF(1,7),disp:`0.<span class="per">142857</span>`,val:1/7},{f:mkF(1,11),disp:`0.<span class="per">09</span>`,val:1/11},
+  {f:mkF(2,11),disp:`0.<span class="per">18</span>`,val:2/11},{f:mkF(3,11),disp:`0.<span class="per">27</span>`,val:3/11},
+  {f:mkF(1,12),disp:`0.08<span class="per">3</span>`,val:1/12},{f:mkF(5,12),disp:`0.41<span class="per">6</span>`,val:5/12},
+];
+function randExact(){return EXACT_DECS[rnd(0,EXACT_DECS.length-1)];}
+function randPeriodic(){return PERIODIC[rnd(0,PERIODIC.length-1)];}
+function randRat(allowPeriodic=true){
+  if(currentMode==='frac'){const f=randFrac(8,true);return{disp:fracStr(f),f};}
+  if(currentMode==='dec'){const useP=allowPeriodic&&rnd(0,2)===0;const e=useP?randPeriodic():randExact();return{disp:e.disp,f:e.f};}
+  const type=rnd(0,2);
+  if(type===0){const f=randFrac(8,true);return{disp:fracStr(f),f};}
+  if(type===1){const e=randExact();return{disp:e.disp,f:e.f};}
+  const e=allowPeriodic?randPeriodic():randExact();return{disp:e.disp,f:e.f};
+}
+
 // ── Racionales: generadores ──
 function rac_genSR(lvl){
   let a,b,res,expr;
