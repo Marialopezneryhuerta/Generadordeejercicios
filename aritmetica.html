@@ -3189,7 +3189,7 @@ function racToggleChip(btn) {
 function racRenderQty() {
   const wrap = document.getElementById('rac-qty-controls');
   if (!wrap) return;
-  const selectedChips = document.querySelectorAll('#rac-chips .chip.selected');
+  const selectedChips = document.querySelectorAll('#rac-chips .chip.selected:not(.chip-all)');
   wrap.innerHTML = '';
   if (selectedChips.length === 0) {
     wrap.innerHTML = '<p style="font-size:0.85rem;color:#8b92b1;text-align:center;padding:0.5rem 0">Seleccioná al menos una operación.</p>';
@@ -3223,7 +3223,7 @@ function racUnifChangeQty(pfx, lvl, delta) {
 }
 
 function generateRacUnif() {
-  const selectedChips = document.querySelectorAll('#rac-chips .chip.selected');
+  const selectedChips = document.querySelectorAll('#rac-chips .chip.selected:not(.chip-all)');
   const activePfx = Array.from(selectedChips).map(function(c) { return c.dataset.pfx; });
   if (activePfx.length === 0) { alert('Seleccioná al menos una operación.'); return; }
   const hasQty = activePfx.some(function(pfx) {
@@ -3305,6 +3305,8 @@ function generateRacUnif() {
   var _ru = document.getElementById('rac-unif-btnSolAparte'); if(_ru) _ru.style.display='block';
 }
 
+var currentMode = 'frac';
+
 // Inicializar controles de cantidad al cargar
 racRenderQty();
 
@@ -3314,8 +3316,6 @@ function racSwitchTopic(t) {
   document.getElementById('rac-topic-' + t).classList.add('active');
   document.getElementById('rac-panel-' + t).classList.add('active');
 }
-
-var currentMode = 'frac';
 
 function setMode(m) {
   currentMode = m;

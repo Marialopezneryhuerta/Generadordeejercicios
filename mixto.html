@@ -2974,6 +2974,14 @@ const PERIODIC=[
   {f:mkF(2,11),disp:`0.<span class="per">18</span>`,val:2/11},{f:mkF(3,11),disp:`0.<span class="per">27</span>`,val:3/11},
   {f:mkF(1,12),disp:`0.08<span class="per">3</span>`,val:1/12},{f:mkF(5,12),disp:`0.41<span class="per">6</span>`,val:5/12},
 ];
+const EXACT_DECS=[
+  {f:mkF(1,2),disp:'0.5',val:0.5},{f:mkF(1,4),disp:'0.25',val:0.25},{f:mkF(3,4),disp:'0.75',val:0.75},
+  {f:mkF(1,5),disp:'0.2',val:0.2},{f:mkF(2,5),disp:'0.4',val:0.4},{f:mkF(3,5),disp:'0.6',val:0.6},
+  {f:mkF(4,5),disp:'0.8',val:0.8},{f:mkF(1,8),disp:'0.125',val:0.125},{f:mkF(3,8),disp:'0.375',val:0.375},
+  {f:mkF(7,8),disp:'0.875',val:0.875},{f:mkF(1,10),disp:'0.1',val:0.1},{f:mkF(3,10),disp:'0.3',val:0.3},
+  {f:mkF(7,10),disp:'0.7',val:0.7},{f:mkF(9,10),disp:'0.9',val:0.9},{f:mkF(3,2),disp:'1.5',val:1.5},
+  {f:mkF(5,4),disp:'1.25',val:1.25},{f:mkF(5,2),disp:'2.5',val:2.5},
+];
 function randExact(){return EXACT_DECS[rnd(0,EXACT_DECS.length-1)];}
 function randPeriodic(){return PERIODIC[rnd(0,PERIODIC.length-1)];}
 function randRat(allowPeriodic=true){
@@ -2984,6 +2992,29 @@ function randRat(allowPeriodic=true){
   if(type===1){const e=randExact();return{disp:e.disp,f:e.f};}
   const e=allowPeriodic?randPeriodic():randExact();return{disp:e.disp,f:e.f};
 }
+function randPosRat(){
+  if(currentMode==='frac'){const f=randPosFrac(8);return{disp:fracStr(f),f};}
+  if(currentMode==='dec'){const e=randExact();return{disp:e.disp,f:e.f};}
+  return rnd(0,1)?{disp:fracStr(randPosFrac(8)),f:randPosFrac(8)}:(()=>{const e=randExact();return{disp:e.disp,f:e.f};})();
+}
+function mixedDisp(whole,f){if(whole===0)return fracStr(f);const sign=whole<0?'−':'';const w=Math.abs(whole);return`${sign}${w}<span class="frac" style="font-size:0.8em"><span class="num">${f.n}</span><span class="den">${f.d}</span></span>`;}
+function randNum(lvl,allowNeg=true){
+  if(lvl===1){
+    if(currentMode==='dec'||(currentMode==='both'&&rnd(0,1))){const exactSimple=EXACT_DECS.filter(e=>e.val<1&&e.val>0);const e=exactSimple[rnd(0,exactSimple.length-1)];const sign=allowNeg&&rnd(0,2)===0;return{disp:(sign?'−':'')+e.disp,f:sign?mkF(-e.f.n,e.f.d):e.f};}
+    const d=rnd(2,6);const n=rnd(1,d-1);const neg=allowNeg&&rnd(0,2)===0;const f=mkF(neg?-n:n,d);return{disp:fracStr(f),f};
+  }
+  if(lvl===2){
+    if(currentMode==='dec'||(currentMode==='both'&&rnd(0,1))){const pool=rnd(0,1)?PERIODIC:EXACT_DECS;const e=pool[rnd(0,pool.length-1)];const sign=allowNeg&&rnd(0,2)===0;return{disp:(sign?'−':'')+e.disp,f:sign?mkF(-e.f.n,e.f.d):e.f};}
+    const d=rnd(2,8);const n=rnd(d+1,d*3);const neg=allowNeg&&rnd(0,2)===0;const f=mkF(neg?-n:n,d);return{disp:fracStr(f),f};
+  }
+  if(currentMode==='dec'||(currentMode==='both'&&rnd(0,2)===0)){const pool=[...PERIODIC,...EXACT_DECS];const e=pool[rnd(0,pool.length-1)];return{disp:e.disp,f:e.f};}
+  const whole=rnd(1,3);const d=rnd(2,6);const n=rnd(1,d-1);const neg=allowNeg&&rnd(0,2)===0;const totalN=whole*d+n;const f=mkF(neg?-totalN:totalN,d);const fracPart=mkF(n,d);return{disp:mixedDisp(neg?-whole:whole,fracPart),f};
+}
+function perfectSqFrac(){const sq=[1,4,9,16,25,36,49,64,81,100];const n=sq[rnd(0,sq.length-1)];const d=sq[rnd(1,sq.length-1)];const f=mkF(n,d);return{f,resF:mkF(Math.round(Math.sqrt(n)),Math.round(Math.sqrt(d)))};}
+function perfectCbFrac(){const cb=[1,8,27,64,125];const n=cb[rnd(0,4)],d=cb[rnd(1,4)];return{f:mkF(n,d),resF:mkF(Math.round(Math.cbrt(n)),Math.round(Math.cbrt(d)))};}
+function perfect4thFrac(){const f4=[1,16,81,256];const n=f4[rnd(0,3)],d=f4[rnd(1,3)];return{f:mkF(n,d),resF:mkF(Math.round(Math.pow(n,0.25)),Math.round(Math.pow(d,0.25)))};}
+function randRootFrac(){const idx=[2,2,3,4][rnd(0,3)];let data;if(idx===2)data=perfectSqFrac();else if(idx===3)data=perfectCbFrac();else data=perfect4thFrac();return{disp:rootHTML(fracStr(data.f),idx),f:data.resF};}
+function mkTerm(lvl){const type=rnd(0,3);if(type<=1||type===3)return randNum(lvl);if(type===2){const base=randNum(lvl,false);if(base.f.n<=0)return randNum(lvl);const e=rnd(2,3);const sup=e===2?'²':'³';return{disp:`(${base.disp})${sup}`,f:powF(base.f,e)};}const rr=randRootFrac();return{disp:rr.disp,f:rr.f};}
 
 // ── Racionales: generadores ──
 function rac_genSR(lvl){
