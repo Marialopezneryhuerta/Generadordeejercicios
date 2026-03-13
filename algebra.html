@@ -4749,16 +4749,17 @@ function renderAct10(items, startIdx) {
   let html = `<div class="intro-section-title">Actividad 10 — Clasificá cada polinomio: homogéneo o heterogéneo</div>
   <div class="intro-classify-list">`;
   items.forEach((it,i) => {
-    html += `<div class="intro-classify-item">
-      <span class="intro-classify-num">${startIdx+i}.</span>
-      <span class="intro-classify-poly">${it.str}
-        &nbsp;&nbsp;
-        <label style="font-size:0.85rem;font-weight:600;color:var(--muted)">
-          <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;vertical-align:middle"> homogéneo
+    html += `<div class="intro-classify-item" style="flex-direction:column;align-items:flex-start;gap:0.3rem;">
+      <span style="display:flex;gap:0.5rem;align-items:baseline;">
+        <span class="intro-classify-num">${startIdx+i}.</span>
+        <span class="intro-classify-poly">${it.str}</span>
+      </span>
+      <span style="display:flex;gap:1.2rem;padding-left:1.9rem;">
+        <label style="font-size:0.85rem;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:0.3rem;cursor:pointer;">
+          <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;"> homogéneo
         </label>
-        &nbsp;
-        <label style="font-size:0.85rem;font-weight:600;color:var(--muted)">
-          <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;vertical-align:middle"> heterogéneo
+        <label style="font-size:0.85rem;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:0.3rem;cursor:pointer;">
+          <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;"> heterogéneo
         </label>
       </span>
     </div>`;
