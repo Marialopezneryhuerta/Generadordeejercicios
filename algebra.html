@@ -1033,6 +1033,16 @@ body { padding-bottom: 2.5rem; }
           </div>
         </div>
 
+        <div class="level-item" data-level="11" id="intro-lvl-11">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="introToggle(11)">11 — Problemas con expresiones algebraicas: escribí la expresión</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="introQty(11,-1)">−</button>
+            <span class="lq-val" id="intro-lqv-11">0</span>
+            <button class="lq-btn" onclick="introQty(11,+1)">+</button>
+          </div>
+        </div>
+
       </div>
       <div class="total-badge" id="intro-totalBadge">Total: <span>0</span> ejercicios</div>
     </div>
@@ -4072,7 +4082,7 @@ function generateValorNumerico() {
 // EXPRESIONES ALGEBRAICAS — INTRO
 // ══════════════════════════════════════════════════════════════
 
-const introQtys = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0};
+const introQtys = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0};
 
 function introToggle(n) {
   const el = document.getElementById('intro-lvl-'+n);
@@ -4768,7 +4778,125 @@ function renderAct10(items, startIdx) {
   return { html, sols: items.map((it,i)=>({ id: startIdx+i, sol: it.tipo })) };
 }
 
-// ── RENDER PRINCIPAL ──────────────────────────────────────────
+// ── ACTIVIDAD 11: Problemas con expresiones algebraicas ───────
+// El alumno debe escribir la expresión algebraica que representa la situación
+const ACT11_TEMPLATES = [
+  // Perímetro rectángulo
+  { gen: () => {
+      const a = rnd(2,5); const b = rnd(1,3);
+      const largo = a===1?'x':`${a}x`; const ancho = b===1?'x':`${b}x`;
+      const sol = a===b ? `${2*(a+b)}x` : `${2*a+2*b}x`;
+      return { enunciado:`Un rectángulo tiene de largo <b>${largo}</b> y de ancho <b>${ancho}</b>. ¿Cuánto mide su perímetro?`, sol:`P = ${sol}` };
+  }},
+  // Perímetro rectángulo largo+ancho mixto
+  { gen: () => {
+      const k = rnd(2,6); const c = rnd(1,5);
+      const largo = k===1?'x':`${k}x`; const ancho = `${c}`;
+      const per = 2*k; const per2 = 2*c;
+      const solStr = per===0?`${per2}`:(per2===0?`${per}x`:`${per}x + ${per2}`);
+      return { enunciado:`Un rectángulo tiene de largo <b>${largo}</b> y de ancho <b>${ancho}</b>. ¿Cuánto mide su perímetro?`, sol:`P = ${solStr}` };
+  }},
+  // Precio por unidad
+  { gen: () => {
+      const total = rnd(2,8)*10000;
+      const totalStr = total.toLocaleString('es-PY');
+      return { enunciado:`Compraste <b>x</b> libros de igual precio por un total de <b>₲${totalStr}</b>. ¿Cuánto cuesta cada libro?`, sol:`precio = ${totalStr}/x` };
+  }},
+  // Suma de edades
+  { gen: () => {
+      const d = rnd(2,10);
+      return { enunciado:`Ana tiene <b>x</b> años. Su hermano tiene <b>${d}</b> años más que ella. ¿Cuántos años tienen entre los dos?`, sol:`edad total = 2x + ${d}` };
+  }},
+  // Monedas
+  { gen: () => {
+      const v1 = [500,1000][rnd(0,1)]; const v2 = [500,1000,2000][rnd(0,1)];
+      if (v1===v2) return null;
+      return { enunciado:`María tiene <b>x</b> monedas de ₲${v1} y también <b>y</b> monedas de ₲${v2}. ¿Cuántos guaraníes tiene en total?`, sol:`total = ${v1}x + ${v2}y` };
+  }},
+  // Compra de dos productos
+  { gen: () => {
+      const prod1 = ['azúcar','arroz','harina','yerba'][rnd(0,3)];
+      const prod2 = ['aceite','sal','fideos','leche'][rnd(0,3)];
+      return { enunciado:`Un kilo de ${prod1} cuesta <b>x</b> guaraníes y un kilo de ${prod2} cuesta <b>y</b> guaraníes. ¿Cuánto pagás por <b>3</b> kg de ${prod1} y <b>5</b> kg de ${prod2}?`, sol:`total = 3x + 5y` };
+  }},
+  // Triple de un número menos otro
+  { gen: () => {
+      const k = rnd(2,5);
+      return { enunciado:`Un número es <b>x</b> y otro número es <b>y</b>. ¿Cuánto es el triple del primero menos el doble del segundo?`, sol:`resultado = 3x − 2y` };
+  }},
+  // Área rectángulo
+  { gen: () => {
+      const a = rnd(2,4); const b = rnd(2,4);
+      const largo = a===1?'x':`${a}x`; const ancho = b===1?'y':`${b}y`;
+      const coef = a*b;
+      return { enunciado:`Un terreno rectangular mide <b>${largo}</b> de largo y <b>${ancho}</b> de ancho. ¿Cuál es su área?`, sol:`A = ${coef}xy` };
+  }},
+  // Sueldo con horas extra
+  { gen: () => {
+      const base = rnd(1,3)*500000;
+      const extra = (rnd(4,10))*5000;
+      const baseStr = base.toLocaleString('es-PY');
+      const extraStr = extra.toLocaleString('es-PY');
+      return { enunciado:`Un trabajador gana ₲${baseStr} de sueldo fijo más ₲${extraStr} por cada hora extra trabajada. Si trabajó <b>x</b> horas extra, ¿cuánto cobró en total?`, sol:`total = ${baseStr} + ${extraStr}x` };
+  }},
+  // Edades: padre e hijo
+  { gen: () => {
+      const d = rnd(20,35);
+      return { enunciado:`El padre tiene <b>${d}</b> años más que su hijo. Si el hijo tiene <b>x</b> años, ¿cuántos años tienen entre los dos?`, sol:`edad total = 2x + ${d}` };
+  }},
+  // Perímetro triángulo equilátero
+  { gen: () => {
+      const k = rnd(2,5);
+      const lado = k===1?'x':`${k}x`;
+      return { enunciado:`Un triángulo equilátero tiene cada lado de longitud <b>${lado}</b>. ¿Cuánto mide su perímetro?`, sol:`P = ${3*k}x` };
+  }},
+  // Descuento en precio
+  { gen: () => {
+      const desc = [10,20,25,30][rnd(0,3)];
+      return { enunciado:`Un artículo cuesta <b>x</b> guaraníes. Le hacen un descuento del ${desc}%. ¿Cuánto pagás finalmente?`, sol:`precio final = x − ${desc}x/100` };
+  }},
+];
+
+function rndAct11() {
+  // Intenta hasta 10 veces para evitar nulls
+  for (let i = 0; i < 10; i++) {
+    const t = ACT11_TEMPLATES[rnd(0, ACT11_TEMPLATES.length - 1)];
+    const r = t.gen();
+    if (r) return r;
+  }
+  return { enunciado:'Un rectángulo tiene de largo <b>3x</b> y de ancho <b>2x</b>. ¿Cuánto mide su perímetro?', sol:'P = 10x' };
+}
+
+function genAct11(n) {
+  const items = [];
+  const seenEnunciados = new Set();
+  let att = 0;
+  while (items.length < n && att++ < n * 30) {
+    const item = rndAct11();
+    if (seenEnunciados.has(item.enunciado)) continue;
+    seenEnunciados.add(item.enunciado);
+    items.push(item);
+  }
+  return items;
+}
+
+function renderAct11(items, startIdx) {
+  let html = `<div class="intro-section-title">Actividad 11 — Problemas con expresiones algebraicas: escribí la expresión que representa cada situación</div>
+  <div class="intro-classify-list">`;
+  items.forEach((it, i) => {
+    html += `<div class="intro-classify-item" style="flex-direction:column;align-items:flex-start;gap:0.4rem;padding:0.7rem 0.5rem;border-bottom:1px solid #eee;">
+      <span style="display:flex;gap:0.5rem;align-items:baseline;">
+        <span class="intro-classify-num" style="min-width:1.5rem">${startIdx + i}.</span>
+        <span style="font-size:0.97rem;line-height:1.5">${it.enunciado}</span>
+      </span>
+      <span style="padding-left:2rem;font-size:0.9rem;color:var(--muted);font-weight:600;">Expresión: <span style="display:inline-block;min-width:200px;border-bottom:1.5px solid #bbb;">&nbsp;</span></span>
+    </div>`;
+  });
+  html += `</div>`;
+  return { html, sols: items.map((it, i) => ({ id: startIdx + i, sol: it.sol })) };
+}
+
+
 function generateIntro() {
   const total = Object.values(introQtys).reduce((a,b)=>a+b,0);
   if (total===0) { alert('Agregá al menos un ejercicio con +'); return; }
@@ -4853,6 +4981,14 @@ function generateIntro() {
   if (introQtys[10] > 0) {
     const data = genAct10(introQtys[10]);
     const r = renderAct10(data, globalIdx);
+    allHTML += r.html;
+    allSols = allSols.concat(r.sols);
+    globalIdx += data.length;
+  }
+  // Act 11 — Problemas con expresiones algebraicas
+  if (introQtys[11] > 0) {
+    const data = genAct11(introQtys[11]);
+    const r = renderAct11(data, globalIdx);
     allHTML += r.html;
     allSols = allSols.concat(r.sols);
     globalIdx += data.length;

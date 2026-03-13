@@ -601,7 +601,10 @@ body { padding-bottom: 2.5rem; }
         <div class="subtema-title">Homogéneos y Heterogéneos</div>
         <div class="tipo-row"><span class="tipo-label">Clasificar polinomios</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_homhet1',-1)">−</button><span class="qty-val" id="q-intro_homhet1">0</span><button class="qty-btn" onclick="chgQty('intro_homhet1',1)">+</button></div></div>
       </div>
-    </div>
+      <div class="subtema">
+        <div class="subtema-title">Problemas con Expresiones Algebraicas</div>
+        <div class="tipo-row"><span class="tipo-label">Escribí la expresión</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('intro_probexpr1',-1)">−</button><span class="qty-val" id="q-intro_probexpr1">0</span><button class="qty-btn" onclick="chgQty('intro_probexpr1',1)">+</button></div></div>
+      </div>
   </div>
 
   <!-- ══ OPERACIONES CON MONOMIOS ══ -->
@@ -917,7 +920,7 @@ const TEMA_KEYS = {
   alg: ['alg_lin1','alg_lin2','alg_lin3','alg_lin4','alg_lin5',
         'alg_expL1','alg_expL2','alg_expL3','alg_expC1','alg_expC2','alg_expC3',
         'alg_log1','alg_log2','alg_log3'],
-  alg_intro: ['intro_monop1','intro_homhet1'],
+  alg_intro: ['intro_monop1','intro_homhet1','intro_probexpr1'],
   trig: ['trig1','trig2','trig3',
          'tri_seno','tri_coseno','tri_ambas','tri_earea','tri_eperim',
          'tri_pseno','tri_pcoseno','tri_pambas','tri_parea','tri_pperim',
@@ -4896,6 +4899,20 @@ const GENERATORS = {
       sol: tipo,
       tema: 'Intro: Homogéneo/Heterogéneo'
     };
+  },
+  intro_probexpr1: () => {
+    const TEMPLATES = [
+      () => { const a=rnd(2,5),b=rnd(1,3); return { expr:`Un rectángulo tiene de largo ${a}x y de ancho ${b}x. ¿Cuánto mide su perímetro?`, sol:`P = ${2*a+2*b}x`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const total=(rnd(2,8)*10000); const ts=total.toLocaleString('es-PY'); return { expr:`Compraste x libros por un total de ₲${ts}. ¿Cuánto cuesta cada libro?`, sol:`precio = ${ts}/x`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const d=rnd(2,10); return { expr:`Ana tiene x años. Su hermano tiene ${d} años más. ¿Cuántos años tienen entre los dos?`, sol:`total = 2x + ${d}`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const v1=500,v2=1000; return { expr:`María tiene x monedas de ₲${v1} y y monedas de ₲${v2}. ¿Cuánto tiene en total?`, sol:`total = ${v1}x + ${v2}y`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const k=rnd(2,5); return { expr:`Un triángulo equilátero tiene cada lado de longitud ${k}x. ¿Cuánto mide su perímetro?`, sol:`P = ${3*k}x`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const a=rnd(2,4),b=rnd(2,4); return { expr:`Un terreno rectangular mide ${a}x de largo y ${b}y de ancho. ¿Cuál es su área?`, sol:`A = ${a*b}xy`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const base=(rnd(1,3)*500000); const extra=(rnd(4,10)*5000); const bs=base.toLocaleString('es-PY'); const es=extra.toLocaleString('es-PY'); return { expr:`Un trabajador gana ₲${bs} fijo más ₲${es} por hora extra. Trabajó x horas extra. ¿Cuánto cobró?`, sol:`total = ${bs} + ${es}x`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+      () => { const d=rnd(20,35); return { expr:`El padre tiene ${d} años más que su hijo. El hijo tiene x años. ¿Cuántos años tienen entre los dos?`, sol:`total = 2x + ${d}`, tema:'Intro: Prob. Expresiones Algebraicas' }; },
+    ];
+    const t = TEMPLATES[rnd(0, TEMPLATES.length-1)]();
+    return t;
   },
   alg_lin1: ()=>({...gen1(),tema:'Ec. Lineales Niv.1'}),
   alg_lin2: ()=>({...gen2(),tema:'Ec. Lineales Niv.2'}),
