@@ -1086,6 +1086,8 @@ const CATALOG = {
       { id:'ec-lin', label:'Ecuaciones Lineales', niveles:[1,2,3,4,5], gen:(lvl)=>ecLin(lvl) },
       { id:'ec-exp', label:'Ec. Exponenciales', niveles:[1,2,3], gen:(lvl)=>exp_gen(lvl) },
       { id:'ec-log', label:'Ecuaciones Logarítmicas', niveles:[1,2,3], gen:(lvl)=>log_gen(lvl) },
+      { id:'intro-monop', label:'Intro — Monomio opuesto', niveles:[1], gen:()=>eb_introMonopGen() },
+      { id:'intro-homhet', label:'Intro — Homogéneo / Heterogéneo', niveles:[1], gen:()=>eb_introHomhetGen() },
       { id:'mon-suma', label:'Monomios — Suma', niveles:[1,2], gen:(lvl)=>omSuma(lvl) },
       { id:'mon-resta', label:'Monomios — Resta', niveles:[1,2], gen:(lvl)=>omResta(lvl) },
       { id:'mon-mult', label:'Monomios — Multiplicación', niveles:[1,2], gen:(lvl)=>omMult(lvl) },
@@ -1219,9 +1221,15 @@ const CATALOG = {
       { id:'ra-tipo', label:'Funciones: Identificar tipo (RA)', niveles:[1], gen:()=>eb_raTipoGen() },
       { id:'ra-prop', label:'Funciones: Analizar propiedades', niveles:[1], gen:()=>eb_raPropGen() },
       { id:'ra-sit', label:'Funciones: Situaciones problemáticas', niveles:[1], gen:()=>eb_raSitGen() },
+      { id:'fg-lin', label:'Funciones Gráficas — Lineal', niveles:[1], gen:()=>eb_fgGen('fg-lin') },
+      { id:'fg-cua', label:'Funciones Gráficas — Cuadrática', niveles:[1], gen:()=>eb_fgGen('fg-cua') },
+      { id:'fg-cub', label:'Funciones Gráficas — Cúbica', niveles:[1], gen:()=>eb_fgGen('fg-cub') },
       { id:'car-dr', label:'Funciones: Dominio y rango (CAR)', niveles:[1], gen:()=>eb_carDrGen() },
       { id:'car-crec', label:'Funciones: Crecimiento/decrecimiento', niveles:[1], gen:()=>eb_carCrecGen() },
       { id:'car-mm', label:'Funciones: Máximos y mínimos', niveles:[1], gen:()=>eb_carMmGen() },
+      { id:'ri-dib', label:'Intervalos: Dado el intervalo, dibujar (RI)', niveles:[1], gen:()=>eb_riDibujarGen() },
+      { id:'ri-esc', label:'Intervalos: Dado el gráfico, escribir (RI)', niveles:[1], gen:()=>eb_riEscribirGen() },
+      { id:'not-fil', label:'Notación de intervalos — Completar tabla (NOT)', niveles:[1], gen:()=>eb_notFilaGen() },
     ]
   },
   estadistica: {
@@ -6020,6 +6028,80 @@ const RAD_GENS={
 };
 
 
+// ── Intro: Monomio opuesto ──
+function eb_introMonopGen() {
+  try {
+    const FRAC_COEFS = [
+      { display: '−<span class="frac"><span>1</span><span>9</span></span>', opposite: '<span class="frac"><span>1</span><span>9</span></span>' },
+      { display: '<span class="frac"><span>2</span><span>3</span></span>', opposite: '−<span class="frac"><span>2</span><span>3</span></span>' },
+      { display: '−<span class="frac"><span>3</span><span>4</span></span>', opposite: '<span class="frac"><span>3</span><span>4</span></span>' },
+    ];
+    const useFrac = Math.random() < 0.3;
+    let display, opposite;
+    if (useFrac) {
+      const fc = FRAC_COEFS[rnd(0, FRAC_COEFS.length-1)];
+      const nv = rnd(1,2);
+      const varPool = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nv);
+      const parts = varPool.map(v=>({v, exp:rnd(1,3)}));
+      const partsStr = parts.map(p=>p.exp===1?p.v:`${p.v}${toSup(p.exp)}`).join('');
+      display = fc.display + partsStr;
+      opposite = fc.opposite + partsStr;
+    } else {
+      const nv = rnd(1,3);
+      const m = makeMonomio(nv, 3, true, 15);
+      const oppCoef = -m.coef;
+      const oppCoefStr = Math.abs(oppCoef)===1 ? (oppCoef<0?'−':'') : (oppCoef<0?`−${Math.abs(oppCoef)}`:`${oppCoef}`);
+      display = m.str;
+      opposite = `${oppCoefStr}${m.partelit}`;
+    }
+    return { expr: `Escribí el monomio opuesto de: ${display}`, sol: opposite };
+  } catch(e) { return { expr: 'Escribí el monomio opuesto de: −3ab', sol: '3ab' }; }
+}
+
+// ── Intro: Homogéneo / Heterogéneo ──
+function eb_introHomhetGen() {
+  try {
+    const nTerms = rnd(3,4);
+    const nVars = rnd(1,2);
+    const varNames = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
+    const makeHom = Math.random() < 0.5;
+    let str = '', tipo = '';
+    if (makeHom && nVars >= 2) {
+      const gradoFijo = rnd(2,5);
+      const terms = []; const usedParts = new Set(); let tAtt = 0;
+      while (terms.length < nTerms && tAtt++ < 200) {
+        const e1 = rnd(0, gradoFijo); const e2 = gradoFijo - e1;
+        if (e1===0 && e2===0) continue;
+        const key = `${e1},${e2}`; if (usedParts.has(key)) continue; usedParts.add(key);
+        const coef = (rnd(0,1)?-1:1)*rnd(1,8);
+        const parts = []; if(e1>0) parts.push({v:varNames[0],exp:e1}); if(e2>0) parts.push({v:varNames[1],exp:e2});
+        const partsStr = parts.map(p=>p.exp===1?p.v:`${p.v}${toSup(p.exp)}`).join('');
+        const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
+        terms.push({coef, parts, grado:gradoFijo, partsStr, coefDisp});
+      }
+      if (terms.length >= 3) { str = polyStr(terms.slice(0,nTerms)); tipo = 'homogéneo'; }
+    }
+    if (!str) {
+      const terms = []; const usedGrados = new Set(); let tAtt = 0;
+      while (terms.length < nTerms && tAtt++ < 200) {
+        const nV = rnd(1, nVars);
+        const vs = [...varNames].sort(()=>Math.random()-0.5).slice(0,nV);
+        const exps = vs.map(()=>rnd(1,4));
+        const grado = exps.reduce((s,e)=>s+e,0);
+        if (usedGrados.has(grado)) continue; usedGrados.add(grado);
+        const coef = (rnd(0,1)?-1:1)*rnd(1,8);
+        const parts = vs.map((v,i)=>({v,exp:exps[i]}));
+        const partsStr = parts.map(p=>p.exp===1?p.v:`${p.v}${toSup(p.exp)}`).join('');
+        const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
+        terms.push({coef, parts, grado, partsStr, coefDisp});
+      }
+      str = terms.length >= 3 ? polyStr(terms.slice(0,nTerms)) : '3x² − 2x + 5';
+      tipo = 'heterogéneo';
+    }
+    return { expr: `Clasificá el polinomio: ${str} → ¿homogéneo o heterogéneo?`, sol: tipo };
+  } catch(e) { return { expr: 'Clasificá: 3x² − 2x + 5 → ¿homogéneo o heterogéneo?', sol: 'heterogéneo' }; }
+}
+
 // ── Adaptadores para CATALOG (devuelven {expr, sol}) ──
 function eb_omRad(lvl) { try { return omGenRad(lvl); } catch(e) { return null; } }
 function eb_polyGen(op, lvl) { try { const g = OP_GENS[op]; return g ? g(lvl) : null; } catch(e) { return null; } }
@@ -6871,6 +6953,227 @@ const SP_LVL3=[
 function eb_spGenProblem(lvl){const pools={1:SP_LVL1,2:SP_LVL2,3:SP_LVL3};const pool=pools[lvl];const gen=pool[spRnd(0,pool.length-1)];try{const p=gen();return{...p,lvl};}catch(e){return eb_spGenProblem(lvl);}}
 function eb_algSpGen(lvl){try{const p=eb_spGenProblem(lvl);return{expr:p.enunciado,sol:p.sol,steps:['Definir la variable','Plantear la ecuación','Resolver y verificar']};}catch(e){return null;}}
 
+// ══════════════════════════════════════════════════════════════
+// CÁLCULO — FC / RA / FG / CAR / RI / NOT  (funciones para CATALOG)
+// ══════════════════════════════════════════════════════════════
+
+// ── Helpers ──────────────────────────────────────────────────
+function eb_calcShuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function eb_calcRndNZ(a,b){let v;do{v=rnd(a,b);}while(v===0);return v;}
+
+// ── FC: ¿Es función? ─────────────────────────────────────────
+const EB_REL_POOL=[
+  {text:'A cada país le corresponde su capital.',esFuncion:true,razon:'Sí: a cada país le corresponde una sola capital.'},
+  {text:'A cada número le corresponde su mitad.',esFuncion:true,razon:'Sí: a cada número le corresponde exactamente su mitad.'},
+  {text:'A cada número le corresponde otro número menor.',esFuncion:false,razon:'No: a cada número le corresponden infinitos números menores.'},
+  {text:'A cada madre le corresponde su hijo.',esFuncion:false,razon:'No: una madre puede tener varios hijos.'},
+  {text:'A cada estudiante le corresponde su nota final.',esFuncion:true,razon:'Sí: cada estudiante tiene una sola nota final por materia.'},
+  {text:'A cada número natural le corresponde su cuadrado.',esFuncion:true,razon:'Sí: a cada número le corresponde exactamente un cuadrado.'},
+  {text:'A cada ciudad le corresponde su país.',esFuncion:true,razon:'Sí: cada ciudad pertenece a un único país.'},
+  {text:'A cada número par le corresponde un divisor.',esFuncion:false,razon:'No: cada número par tiene más de un divisor.'},
+  {text:'A cada vehículo le corresponde su número de patente.',esFuncion:true,razon:'Sí: cada vehículo tiene una sola patente.'},
+  {text:'A cada número le corresponde su valor absoluto.',esFuncion:true,razon:'Sí: a cada número le corresponde un único valor absoluto.'},
+  {text:'A cada número le corresponde su raíz cuadrada.',esFuncion:false,razon:'No (en ℝ): para n > 0 hay dos raíces ±√n.'},
+  {text:'A cada departamento del Paraguay le corresponde su capital.',esFuncion:true,razon:'Sí: cada departamento tiene una sola capital.'},
+  {text:'A cada persona le corresponde su número de cédula.',esFuncion:true,razon:'Sí: cada persona tiene un único número de cédula.'},
+  {text:'A cada persona le corresponde su apellido.',esFuncion:false,razon:'No: una persona puede tener más de un apellido.'},
+];
+function eb_fcRelGen(){try{const it=eb_calcShuffle(EB_REL_POOL)[0];return{expr:it.text+'<br><span style="font-size:0.82rem;color:#555;">¿Es función? <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>',sol:(it.esFuncion?'✓ Sí':'✗ No')+' — '+it.razon};}catch(e){return null;}}
+
+// ── FC: Variable dep./indep. ─────────────────────────────────
+const EB_VDI_POOL=[
+  {texto:'La cantidad de horas trabajadas y el salario cobrado.',indep:'Horas trabajadas',dep:'Salario cobrado (Gs.)'},
+  {texto:'El lado de un cuadrado y su área.',indep:'Lado (cm)',dep:'Área (cm²)'},
+  {texto:'La cantidad de productos comprados y el total a pagar.',indep:'Cantidad de productos',dep:'Total a pagar (Gs.)'},
+  {texto:'Los kilómetros recorridos y el combustible consumido.',indep:'Kilómetros recorridos',dep:'Combustible (litros)'},
+  {texto:'El radio de una circunferencia y su longitud.',indep:'Radio (cm)',dep:'Longitud (cm)'},
+  {texto:'La energía eléctrica consumida y la suma a pagar.',indep:'Energía consumida (kW)',dep:'Importe a pagar (Gs.)'},
+  {texto:'La altura desde la que cae un objeto y el tiempo de caída.',indep:'Altura (m)',dep:'Tiempo de caída (s)'},
+];
+function eb_fcVdiGen(){try{const it=eb_calcShuffle(EB_VDI_POOL)[0];return{expr:it.texto+'<br><span style="font-size:0.82rem;color:#555;">V. independiente: <span style="display:inline-block;min-width:120px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span> V. dependiente: <span style="display:inline-block;min-width:120px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>',sol:'Independiente: '+it.indep+' · Dependiente: '+it.dep};}catch(e){return null;}}
+
+// ── FC: Tabla de valores ─────────────────────────────────────
+const EB_TV_POOL=[
+  ()=>{const v=rnd(2,8);return{ctx:'Un ciclista recorre '+v+' km/h.',varX:'t (h)',varY:'d (km)',xVals:[1,2,3,4],f:x=>v*x,ley:'f(t) = '+v+' · t'};},
+  ()=>({ctx:'Perímetro de un triángulo equilátero.',varX:'l (cm)',varY:'P (cm)',xVals:[1,2,3,4],f:x=>3*x,ley:'f(l) = 3 · l'}),
+  ()=>({ctx:'Área de un cuadrado en función del lado.',varX:'l (m)',varY:'A (m²)',xVals:[1,2,3,4],f:x=>x*x,ley:'f(l) = l²'}),
+  ()=>{const p=rnd(2,9)*1000;return{ctx:'Precio por unidad: Gs. '+p.toLocaleString('es-PY')+'.',varX:'q (unid.)',varY:'total (Gs.)',xVals:[1,2,3,4],f:x=>p*x,ley:'f(q) = '+p.toLocaleString('es-PY')+' · q'};},
+];
+function eb_fcTvGen(){
+  try{
+    const sit=eb_calcShuffle(EB_TV_POOL)[0]();
+    const allX=[...sit.xVals,rnd(5,8)];
+    const hidden=eb_calcShuffle([0,1,2,3,4]).slice(0,2);
+    let table='<table style="border-collapse:collapse;font-size:0.82rem;margin-top:0.4rem;">'
+      +'<tr><th style="border:1px solid #ccc;padding:2px 7px;background:#f0f4ff;">'+sit.varX+'<\/th>';
+    allX.forEach(x=>{table+='<th style="border:1px solid #ccc;padding:2px 7px;background:#f0f4ff;">'+x+'<\/th>';});
+    table+='<\/tr><tr><th style="border:1px solid #ccc;padding:2px 7px;background:#f0f4ff;">'+sit.varY+'<\/th>';
+    allX.forEach((x,i)=>{
+      if(hidden.includes(i))table+='<td style="border:1px solid #ccc;padding:2px 14px;background:#fffbf0;">&nbsp;<\/td>';
+      else table+='<td style="border:1px solid #ccc;padding:2px 7px;text-align:center;">'+sit.f(x)+'<\/td>';
+    });
+    table+='<\/tr><\/table>';
+    const hidVals=allX.map((x,i)=>hidden.includes(i)?sit.varX+'='+x+'→'+sit.f(x):null).filter(Boolean).join(', ');
+    return{expr:sit.ctx+table+'<br><span style="font-size:0.82rem;color:#555;">Ley: f(x) = <span style="display:inline-block;min-width:100px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>',sol:'Ley: '+sit.ley+(hidVals?' | Valores: '+hidVals:'')};
+  }catch(e){return null;}
+}
+
+// ── RA: Identificar tipo / Propiedades ───────────────────────
+function eb_buildFuncion(){
+  const tipo=['constante','lineal','cuadratica'][rnd(0,2)];
+  if(tipo==='constante'){const k=eb_calcRndNZ(-8,8);return{expr:'y = '+k,tipo,nombre:'Función constante',m:null,b:k,a:null,dominio:'ℝ',rango:'{'+k+'}',vertice:null,abertura:null};}
+  if(tipo==='lineal'){const m=eb_calcRndNZ(-5,5),b=rnd(-6,6);const mS=m===1?'':m===-1?'−':String(m);const bS=b===0?'':(b>0?' + '+b:' − '+Math.abs(b));return{expr:'y = '+mS+'x'+bS,tipo,nombre:'Función lineal',m,b,a:null,dominio:'ℝ',rango:'ℝ',vertice:null,abertura:null};}
+  const a=eb_calcRndNZ(-3,3),b=rnd(-4,4),c=rnd(-5,5);
+  const aS=a===1?'':a===-1?'−':String(a);
+  let expr='y = '+aS+'x²';if(b!==0)expr+=b>0?' + '+b+'x':' − '+Math.abs(b)+'x';if(c!==0)expr+=c>0?' + '+c:' − '+Math.abs(c);
+  const vx=(-b/(2*a)).toFixed(2).replace('.00','');const vy=(a*(-b/(2*a))**2+b*(-b/(2*a))+c).toFixed(2).replace('.00','');
+  return{expr,tipo,nombre:'Función cuadrática',m:null,b:c,a,dominio:'ℝ',rango:a>0?'['+vy+' ; +∞)':'(−∞ ; '+vy+']',vertice:'('+vx+' ; '+vy+')',abertura:a>0?'hacia arriba':'hacia abajo'};
+}
+function eb_raTipoGen(){try{const f=eb_buildFuncion();let just='';if(f.tipo==='constante')just='y no depende de x.';else if(f.tipo==='lineal')just='Forma y=mx+b, m='+f.m+'.';else just='Forma y=ax²+bx+c, a='+f.a+'.';return{expr:f.expr+'<br><span style="font-size:0.82rem;color:#555;">Tipo: <span style="display:inline-block;min-width:100px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>',sol:f.nombre+' — '+just};}catch(e){return null;}}
+function eb_raPropGen(){try{const f=eb_buildFuncion();const b='<br><span style="font-size:0.82rem;color:#555;display:flex;flex-direction:column;gap:0.2rem;">'+'<span>Tipo: <span style="display:inline-block;min-width:100px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>'+'<span>Dom.: <span style="display:inline-block;min-width:70px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span> Rango: <span style="display:inline-block;min-width:70px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>'+(f.m!==null?'<span>Pendiente: <span style="display:inline-block;min-width:50px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>':'')+(f.vertice?'<span>Vértice: <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>':'')+'<\/span>';let sol=f.nombre+' · Dom: '+f.dominio+' · Rang: '+f.rango+' · Ord: '+f.b;if(f.m!==null)sol+=' · m='+f.m;if(f.vertice)sol+=' · V='+f.vertice+' · '+f.abertura;return{expr:f.expr+b,sol};}catch(e){return null;}}
+
+// ── RA: Situaciones ──────────────────────────────────────────
+const EB_RA_SIT=[
+  ()=>{const i=rnd(3,9)*10,r=rnd(5,15);const ops=eb_calcShuffle([{t:'f(t)='+r+'t+'+i,c:true},{t:'f(t)='+i+'t+'+r,c:false},{t:'f(t)='+r+'t−'+i,c:false}]);const cor=ops.find(o=>o.c).t;return{enunciado:'Tanque con '+i+' L; grifo agrega '+r+' L/min. f(t)=',opts:ops,sol:'✓ '+cor};},
+  ()=>{const v=rnd(10,30);const ops=eb_calcShuffle([{t:'f(t)='+v+'t',c:true},{t:'f(t)='+v+'t+'+v,c:false},{t:'f(t)=t+'+v,c:false}]);const cor=ops.find(o=>o.c).t;return{enunciado:'Ciclista a '+v+' km/h desde el origen. f(t)=',opts,sol:'✓ '+cor};},
+  ()=>{const k=rnd(18,28);const ops=eb_calcShuffle([{t:'f(t)='+k,c:true},{t:'f(t)='+k+'t',c:false},{t:'f(t)=t+'+k,c:false}]);const cor=ops.find(o=>o.c).t;return{enunciado:'Temperatura constante '+k+'°C. f(t)=',opts,sol:'✓ '+cor+' — Función constante.'};},
+];
+function eb_raSitGen(){
+  try{
+    const s=eb_calcShuffle(EB_RA_SIT)[0]();
+    const opHtml=s.opts.map(o=>'<div style="display:flex;gap:0.5rem;align-items:center;font-size:0.85rem;"><span style="width:16px;height:16px;border:2px solid #ccc;border-radius:3px;display:inline-block;flex-shrink:0;"><\/span>'+o.t+'<\/div>').join('');
+    return{expr:s.enunciado+'<div style="margin-top:0.4rem;">'+opHtml+'<\/div>',sol:s.sol};
+  }catch(e){return null;}
+}
+
+// ── CAR: Características ─────────────────────────────────────
+function eb_carBuildSegs(tipo){
+  if(tipo==='simple'){const x0=rnd(-5,-2),x1=rnd(1,5),y0=rnd(-4,4),y1=rnd(-4,4);return[{x0,y0,x1,y1,p0:true,p1:true}];}
+  const x0=rnd(-5,-3),x3=rnd(3,5),x1=rnd(x0+2,-1),x2=rnd(1,x3-2);
+  const y0=rnd(-3,3),y3=rnd(-3,3);const goUp=Math.random()>0.5;
+  const ym1=goUp?rnd(2,5):rnd(-5,-2),ym2=goUp?rnd(-5,-2):rnd(2,5);
+  return[{x0,y0,x1,y1:ym1,p0:true,p1:true},{x0:x1,y0:ym1,x1:x2,y1:ym2,p0:true,p1:true},{x0:x2,y0:ym2,x1:x3,y1:y3,p0:true,p1:true}];
+}
+function eb_carSvgSegs(segs){
+  const W=200,H=155,pad=25;
+  let allX=[],allY=[];segs.forEach(s=>{allX.push(s.x0,s.x1);allY.push(s.y0,s.y1);});
+  const xMin=Math.min(...allX)-1,xMax=Math.max(...allX)+1,yMin=Math.min(...allY)-1,yMax=Math.max(...allY)+1;
+  const sx=x=>pad+(x-xMin)/(xMax-xMin)*(W-pad*2),sy=y=>pad+(yMax-y)/(yMax-yMin)*(H-pad*2);
+  const ox=sx(0),oy=sy(0);
+  let svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" style="display:block;max-width:100%;border:1px solid #eee;border-radius:8px;background:#fafbff;">';
+  svg+='<g stroke="#e8ecf5" stroke-width="0.6">';
+  for(let x=Math.ceil(xMin);x<=Math.floor(xMax);x++)svg+='<line x1="'+sx(x).toFixed(1)+'" y1="'+pad+'" x2="'+sx(x).toFixed(1)+'" y2="'+(H-pad)+'"\/>';
+  for(let y=Math.ceil(yMin);y<=Math.floor(yMax);y++)svg+='<line x1="'+pad+'" y1="'+sy(y).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+sy(y).toFixed(1)+'"\/>';
+  svg+='<\/g>';
+  if(oy>=pad&&oy<=H-pad)svg+='<line x1="'+pad+'" y1="'+oy.toFixed(1)+'" x2="'+(W-pad+4)+'" y2="'+oy.toFixed(1)+'" stroke="#666" stroke-width="1.3"\/>';
+  if(ox>=pad&&ox<=W-pad)svg+='<line x1="'+ox.toFixed(1)+'" y1="'+(H-pad)+'" x2="'+ox.toFixed(1)+'" y2="'+(pad-4)+'" stroke="#666" stroke-width="1.3"\/>';
+  svg+='<text x="'+(W-pad+5)+'" y="'+(oy+4).toFixed(1)+'" font-size="9" fill="#666" font-family="Nunito Sans,sans-serif">x<\/text>';
+  svg+='<text x="'+(ox+3).toFixed(1)+'" y="'+(pad-5)+'" font-size="9" fill="#666" font-family="Nunito Sans,sans-serif">y<\/text>';
+  for(const s of segs){
+    svg+='<line x1="'+sx(s.x0).toFixed(1)+'" y1="'+sy(s.y0).toFixed(1)+'" x2="'+sx(s.x1).toFixed(1)+'" y2="'+sy(s.y1).toFixed(1)+'" stroke="#4f6ef7" stroke-width="2.2"\/>';
+    svg+='<circle cx="'+sx(s.x0).toFixed(1)+'" cy="'+sy(s.y0).toFixed(1)+'" r="3.5" fill="'+(s.p0?'#4f6ef7':'white')+'" stroke="#4f6ef7" stroke-width="1.8"\/>';
+    svg+='<circle cx="'+sx(s.x1).toFixed(1)+'" cy="'+sy(s.y1).toFixed(1)+'" r="3.5" fill="'+(s.p1?'#4f6ef7':'white')+'" stroke="#4f6ef7" stroke-width="1.8"\/>';
+    svg+='<text x="'+sx(s.x0).toFixed(1)+'" y="'+(sy(s.y0)+11).toFixed(1)+'" font-size="8" fill="#888" text-anchor="middle" font-family="Nunito Sans,sans-serif">'+s.x0+'<\/text>';
+    svg+='<text x="'+sx(s.x1).toFixed(1)+'" y="'+(sy(s.y1)+11).toFixed(1)+'" font-size="8" fill="#888" text-anchor="middle" font-family="Nunito Sans,sans-serif">'+s.x1+'<\/text>';
+  }
+  svg+='<\/svg>';return svg;
+}
+function eb_carDrGen(){
+  try{const segs=eb_carBuildSegs('simple');const svg=eb_carSvgSegs(segs);
+  const allX=segs.map(s=>[s.x0,s.x1]).flat(),allY=segs.map(s=>[s.y0,s.y1]).flat();
+  const dMin=Math.min(...allX),dMax=Math.max(...allX),rMin=Math.min(...allY),rMax=Math.max(...allY);
+  const blanks='<br><span style="font-size:0.82rem;color:#555;">D(f): <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span> R(f): <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>';
+  return{expr:svg+blanks,sol:'D(f) = ['+dMin+', '+dMax+'] | R(f) = ['+rMin+', '+rMax+']'};}catch(e){return null;}
+}
+function eb_carCrecGen(){
+  try{const segs=eb_carBuildSegs('tramos');const svg=eb_carSvgSegs(segs);
+  const crec=[],decr=[];for(const s of segs){if(s.y1>s.y0)crec.push('['+s.x0+', '+s.x1+']');else if(s.y1<s.y0)decr.push('['+s.x0+', '+s.x1+']');}
+  const blanks='<br><span style="font-size:0.82rem;color:#555;">Creciente: <span style="display:inline-block;min-width:90px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span> Decreciente: <span style="display:inline-block;min-width:90px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>';
+  return{expr:svg+blanks,sol:'Creciente: '+(crec.join(' ∪ ')||'No crece')+' | Decreciente: '+(decr.join(' ∪ ')||'No decrece')};}catch(e){return null;}
+}
+function eb_carMmGen(){
+  try{const segs=eb_carBuildSegs('tramos');const svg=eb_carSvgSegs(segs);
+  const maxPts=[],minPts=[];
+  for(let i=1;i<segs.length;i++){const prev=segs[i-1],curr=segs[i];if(prev.y1>prev.y0&&curr.y1<curr.y0)maxPts.push('('+prev.x1+', '+prev.y1+')');if(prev.y1<prev.y0&&curr.y1>curr.y0)minPts.push('('+prev.x1+', '+prev.y1+')');}
+  const blanks='<br><span style="font-size:0.82rem;color:#555;">Máx. relat.: <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span> Mín. relat.: <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>';
+  return{expr:svg+blanks,sol:'Máx. rel.: '+(maxPts.join(', ')||'No tiene')+' | Mín. rel.: '+(minPts.join(', ')||'No tiene')};}catch(e){return null;}
+}
+
+// ── FG: Funciones gráficas ────────────────────────────────────
+function eb_fgSvgEmpty(W,H){
+  const pad=24,xMin=-5,xMax=5,yMin=-6,yMax=6;
+  const scX=x=>pad+(x-xMin)/(xMax-xMin)*(W-pad*2),scY=y=>pad+(yMax-y)/(yMax-yMin)*(H-pad*2);
+  const ox=scX(0),oy=scY(0);
+  let svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" style="display:block;max-width:100%;">';
+  svg+='<g stroke="#e0e4f0" stroke-width="0.7">';
+  for(let x=xMin;x<=xMax;x++)svg+='<line x1="'+scX(x).toFixed(1)+'" y1="'+pad+'" x2="'+scX(x).toFixed(1)+'" y2="'+(H-pad)+'"\/>';
+  for(let y=yMin;y<=yMax;y++)svg+='<line x1="'+pad+'" y1="'+scY(y).toFixed(1)+'" x2="'+(W-pad)+'" y2="'+scY(y).toFixed(1)+'"\/>';
+  svg+='<\/g>';
+  svg+='<defs><marker id="ebfax" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#555"\/><\/marker><marker id="ebfay" markerWidth="6" markerHeight="6" refX="3" refY="6" orient="auto"><path d="M0,6 L3,0 L6,6 Z" fill="#555"\/><\/marker><\/defs>';
+  svg+='<line x1="'+pad+'" y1="'+oy.toFixed(1)+'" x2="'+(W-pad+5)+'" y2="'+oy.toFixed(1)+'" stroke="#555" stroke-width="1.4" marker-end="url(#ebfax)"\/>';
+  svg+='<line x1="'+ox.toFixed(1)+'" y1="'+(H-pad)+'" x2="'+ox.toFixed(1)+'" y2="'+(pad-4)+'" stroke="#555" stroke-width="1.4" marker-end="url(#ebfay)"\/>';
+  svg+='<text x="'+(W-pad+7)+'" y="'+(oy+4).toFixed(1)+'" font-size="10" fill="#555">x<\/text>';
+  svg+='<text x="'+(ox+3).toFixed(1)+'" y="'+(pad-6)+'" font-size="10" fill="#555">y<\/text>';
+  for(let x=xMin;x<=xMax;x++){if(x===0)continue;const px=scX(x);svg+='<line x1="'+px.toFixed(1)+'" y1="'+(oy-3).toFixed(1)+'" x2="'+px.toFixed(1)+'" y2="'+(oy+3).toFixed(1)+'" stroke="#555" stroke-width="1"\/>';if(x%2===0)svg+='<text x="'+px.toFixed(1)+'" y="'+(oy+12).toFixed(1)+'" font-size="8" fill="#888" text-anchor="middle">'+x+'<\/text>';}
+  for(let y=yMin;y<=yMax;y++){if(y===0)continue;const py=scY(y);svg+='<line x1="'+(ox-3).toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(ox+3).toFixed(1)+'" y2="'+py.toFixed(1)+'" stroke="#555" stroke-width="1"\/>';if(y%2===0)svg+='<text x="'+(ox-5).toFixed(1)+'" y="'+(py+3).toFixed(1)+'" font-size="8" fill="#888" text-anchor="end">'+y+'<\/text>';}
+  svg+='<text x="'+(ox+2).toFixed(1)+'" y="'+(oy+11).toFixed(1)+'" font-size="8" fill="#888">0<\/text><\/svg>';return svg;
+}
+function eb_fgGen(tipo){
+  try{
+    const W=155,H=135;
+    let formula,solDesc,consigna;
+    if(tipo==='fg-lin'){const m=eb_calcRndNZ(-4,4),b=rnd(-4,4);const mS=m===1?'':m===-1?'−':String(m);const bS=b===0?'':(b>0?' + '+b:' − '+Math.abs(b));formula='y = '+mS+'x'+bS;const cX=b!==0?(-b/m).toFixed(2).replace('.00',''):'0';solDesc='Corte eje x: ('+cX+', 0) | Corte eje y: (0, '+b+')';consigna='Graficá. Señalá los cortes con los ejes.';}
+    else if(tipo==='fg-cua'){const a=eb_calcRndNZ(-2,2),b=rnd(-3,3),c=rnd(-4,4);const aS=a===1?'':a===-1?'−':String(a);let f='y = '+aS+'x²';if(b!==0)f+=b>0?' + '+b+'x':' − '+Math.abs(b)+'x';if(c!==0)f+=c>0?' + '+c:' − '+Math.abs(c);formula=f;const vx=(-b/(2*a)).toFixed(2).replace('.00','');const vy=(a*(-b/(2*a))**2+b*(-b/(2*a))+c).toFixed(2).replace('.00','');solDesc='Vértice: ('+vx+', '+vy+') | Abertura: '+(a>0?'arriba':'abajo');consigna='Graficá. Señalá el vértice y el eje de simetría.';}
+    else{const a=eb_calcRndNZ(-1,1);formula='y = '+(a===1?'':a===-1?'−':String(a))+'x³';solDesc='Función cúbica '+(a>0?'creciente':'decreciente')+' en general.';consigna='Graficá la función cúbica.';}
+    const svgV=eb_fgSvgEmpty(W,H);
+    return{expr:'<span style="font-size:0.78rem;color:#8b92b1;">'+consigna+'<\/span><br><div style="display:flex;gap:0.8rem;align-items:flex-start;flex-wrap:wrap;margin-top:0.3rem;"><span style="font-family:\'Nunito\',sans-serif;font-weight:700;font-size:0.95rem;min-width:90px;padding-top:0.3rem;">'+formula+'<\/span>'+svgV+'<\/div>',sol:formula+' | '+solDesc};
+  }catch(e){return null;}
+}
+
+// ── RI: Intervalos ───────────────────────────────────────────
+function eb_riSvg(a,b,tipo,mostrar){
+  const W=280,H=50,mar=32;const ext=Math.max(2,Math.round((b-a)*0.5));const xMin=a-ext,xMax=b+ext;const tot=xMax-xMin;const px=v=>mar+((v-xMin)/tot)*(W-2*mar);const y=24,tH=5;
+  const lO=tipo[0]==='a',rO=tipo[1]==='a';
+  let ticks='';for(let v=xMin;v<=xMax;v++){const x=px(v);ticks+='<line x1="'+x.toFixed(1)+'" y1="'+(y-tH)+'" x2="'+x.toFixed(1)+'" y2="'+(y+tH)+'" stroke="#999" stroke-width="1"\/><text x="'+x.toFixed(1)+'" y="'+(y+tH+10)+'" text-anchor="middle" font-size="9" fill="#666">'+v+'<\/text>';}
+  const arL='<polygon points="'+(mar-8)+','+y+' '+mar+','+(y-4)+' '+mar+','+(y+4)+'" fill="#555"\/>';
+  const arR='<polygon points="'+(W-mar+8)+','+y+' '+(W-mar)+','+(y-4)+' '+(W-mar)+','+(y+4)+'" fill="#555"\/>';
+  let seg='';
+  if(mostrar){const x1=px(a),x2=px(b);seg='<line x1="'+x1.toFixed(1)+'" y1="'+y+'" x2="'+x2.toFixed(1)+'" y2="'+y+'" stroke="#4f6ef7" stroke-width="3"\/>';seg+='<circle cx="'+x1.toFixed(1)+'" cy="'+y+'" r="4" fill="'+(lO?'white':'#4f6ef7')+'" stroke="#4f6ef7" stroke-width="2"\/>';seg+='<circle cx="'+x2.toFixed(1)+'" cy="'+y+'" r="4" fill="'+(rO?'white':'#4f6ef7')+'" stroke="#4f6ef7" stroke-width="2"\/>'}
+  return'<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="display:block;max-width:100%"><line x1="'+mar+'" y1="'+y+'" x2="'+(W-mar)+'" y2="'+y+'" stroke="#555" stroke-width="1.8"/>'+arL+arR+ticks+seg+'<\/svg>';
+}
+function eb_riDatos(){
+  const tipos=['aa','cc','ac','ca'],tipo=tipos[rnd(0,3)],a=rnd(-8,5),b=a+rnd(2,7);
+  const li=(tipo==='cc'||tipo==='ca')?'[':'(',ld=(tipo==='cc'||tipo==='ac')?']':')';
+  const nombres={aa:'Abierto',cc:'Cerrado',ac:'Semiabierto',ca:'Semicerrado'};
+  return{tipo,a,b,notacion:li+a+', '+b+ld,nombre:nombres[tipo]};
+}
+function eb_riDibujarGen(){try{const d=eb_riDatos();const sv=eb_riSvg(d.a,d.b,d.tipo,false);const ss=eb_riSvg(d.a,d.b,d.tipo,true);return{expr:'Representá el intervalo <strong>'+d.notacion+'</strong> ('+d.nombre+') en la recta numérica:<br>'+sv,sol:ss};}catch(e){return null;}}
+function eb_riEscribirGen(){try{const d=eb_riDatos();const sv=eb_riSvg(d.a,d.b,d.tipo,true);return{expr:'Escribí el intervalo representado:<br>'+sv+'<br><span style="font-size:0.82rem;color:#555;">Notación: <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span> Tipo: <span style="display:inline-block;min-width:80px;border-bottom:1.5px solid #bbb;">&nbsp;<\/span><\/span>',sol:'Notación: '+d.notacion+' | Tipo: '+d.nombre};}catch(e){return null;}}
+
+// ── NOT: Notación de intervalos ──────────────────────────────
+function eb_notFilaGen(){
+  try{
+    const d=eb_riDatos();
+    const li=(d.tipo==='cc'||d.tipo==='ca')?'[':'(',ld=(d.tipo==='cc'||d.tipo==='ac')?']':')';
+    const liD=(d.tipo==='cc'||d.tipo==='ca')?'≤':'<',ldD=(d.tipo==='cc'||d.tipo==='ac')?'≤':'<';
+    const notI=li+d.a+', '+d.b+ld;
+    const notD=d.a+' '+liD+' x '+ldD+' '+d.b;
+    const notC='{ x ∈ ℝ | '+d.a+' '+liD+' x '+ldD+' '+d.b+' }';
+    const colDada=eb_calcShuffle(['intervalo','desigualdad','conjunto'])[0];
+    const valores={intervalo:notI,desigualdad:notD,conjunto:notC};
+    let row='<table style="border-collapse:collapse;font-size:0.8rem;margin-top:0.3rem;"><tr>'
+      +'<th style="border:1px solid #ccc;padding:2px 6px;background:#f0f4ff;">Intervalo<\/th>'
+      +'<th style="border:1px solid #ccc;padding:2px 6px;background:#f0f4ff;">Desigualdad<\/th>'
+      +'<th style="border:1px solid #ccc;padding:2px 6px;background:#f0f4ff;">Conjunto<\/th>'
+      +'<th style="border:1px solid #ccc;padding:2px 6px;background:#f0f4ff;">Tipo<\/th><\/tr><tr>';
+    ['intervalo','desigualdad','conjunto'].forEach(col=>{
+      if(col===colDada)row+='<td style="border:1px solid #ccc;padding:2px 8px;text-align:center;">'+valores[col]+'<\/td>';
+      else row+='<td style="border:1px solid #ccc;padding:2px 20px;background:#fffbf0;">&nbsp;<\/td>';
+    });
+    row+='<td style="border:1px solid #ccc;padding:2px 16px;background:#fffbf0;">&nbsp;<\/td><\/tr><\/table>';
+    return{expr:'Completá las notaciones faltantes:<br>'+row,sol:'Intervalo: '+notI+' | Desigualdad: '+notD+' | Conjunto: '+notC+' | Tipo: '+d.nombre};
+  }catch(e){return null;}
+}
 </script>
 <div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 </body>

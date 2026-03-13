@@ -1013,6 +1013,26 @@ body { padding-bottom: 2.5rem; }
           </div>
         </div>
 
+        <div class="level-item" data-level="9" id="intro-lvl-9">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="introToggle(9)">9 — Monomio opuesto: escribí el monomio opuesto</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="introQty(9,-1)">−</button>
+            <span class="lq-val" id="intro-lqv-9">0</span>
+            <button class="lq-btn" onclick="introQty(9,+1)">+</button>
+          </div>
+        </div>
+
+        <div class="level-item" data-level="10" id="intro-lvl-10">
+          <span class="level-dot"></span>
+          <span class="level-name" onclick="introToggle(10)">10 — Polinomios homogéneos y heterogéneos: clasificar</span>
+          <div class="level-qty">
+            <button class="lq-btn" onclick="introQty(10,-1)">−</button>
+            <span class="lq-val" id="intro-lqv-10">0</span>
+            <button class="lq-btn" onclick="introQty(10,+1)">+</button>
+          </div>
+        </div>
+
       </div>
       <div class="total-badge" id="intro-totalBadge">Total: <span>0</span> ejercicios</div>
     </div>
@@ -4052,7 +4072,7 @@ function generateValorNumerico() {
 // EXPRESIONES ALGEBRAICAS — INTRO
 // ══════════════════════════════════════════════════════════════
 
-const introQtys = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0};
+const introQtys = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0};
 
 function introToggle(n) {
   const el = document.getElementById('intro-lvl-'+n);
@@ -4579,6 +4599,174 @@ function renderAct8(items, startIdx) {
   return { html, sols };
 }
 
+// ── ACTIVIDAD 9: Monomio opuesto ─────────────────────────────
+// El monomio opuesto es aquel con el mismo valor absoluto del coeficiente pero signo contrario
+function genAct9(n) {
+  const items = [];
+  const seen = new Set();
+  let att = 0;
+  // Pool de monomios especiales (como en la foto: con fracciones y variables múltiples)
+  const FRAC_COEFS = [
+    { display: '−<span class="frac"><span>1</span><span>9</span></span>', opposite: '<span class="frac"><span>1</span><span>9</span></span>', label: '-1/9' },
+    { display: '<span class="frac"><span>2</span><span>3</span></span>', opposite: '−<span class="frac"><span>2</span><span>3</span></span>', label: '2/3' },
+    { display: '−<span class="frac"><span>3</span><span>4</span></span>', opposite: '<span class="frac"><span>3</span><span>4</span></span>', label: '-3/4' },
+    { display: '<span class="frac"><span>5</span><span>6</span></span>', opposite: '−<span class="frac"><span>5</span><span>6</span></span>', label: '5/6' },
+  ];
+  while (items.length < n && att++ < n*40) {
+    const useFrac = Math.random() < 0.3;
+    if (useFrac) {
+      const fc = FRAC_COEFS[rnd(0, FRAC_COEFS.length-1)];
+      const nv = rnd(1,2);
+      const varPool = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nv);
+      const parts = varPool.map(v=>({v, exp:rnd(1,3)}));
+      const partsStr = parts.map(p=>p.exp===1?p.v:`${p.v}${toSup(p.exp)}`).join('');
+      const key = fc.label + partsStr;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      items.push({
+        display: fc.display + partsStr,
+        opposite: fc.opposite + partsStr,
+        hasFrac: true
+      });
+    } else {
+      const nv = rnd(1,3);
+      const m = makeMonomio(nv, 3, true, 15);
+      if (seen.has(m.str)) continue;
+      seen.add(m.str);
+      // El opuesto cambia el signo del coeficiente
+      const oppCoef = -m.coef;
+      const oppCoefStr = Math.abs(oppCoef)===1
+        ? (oppCoef<0?'−':'')
+        : (oppCoef<0?`−${Math.abs(oppCoef)}`:`${oppCoef}`);
+      const oppStr = `${oppCoefStr}${m.partelit}`;
+      items.push({ display: m.str, opposite: oppStr, hasFrac: false });
+    }
+  }
+  return items;
+}
+
+function renderAct9(items, startIdx) {
+  let html = `<div class="intro-section-title">Actividad 9 — Monomio opuesto: escribí el monomio opuesto a cada uno</div>
+  <div class="intro-table-wrap">
+  <table class="intro-table">
+    <thead><tr>
+      <th>#</th><th>Monomio</th><th>Monomio opuesto</th>
+    </tr></thead>
+    <tbody>`;
+  items.forEach((it,i) => {
+    html += `<tr>
+      <td style="color:var(--muted);font-weight:700;width:2rem">${startIdx+i}</td>
+      <td style="font-size:1.05rem">${it.display}</td>
+      <td class="blank" style="height:28px;min-width:130px"></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  return { html, sols: items.map((it,i)=>({ id: startIdx+i, sol: it.opposite })) };
+}
+
+// ── ACTIVIDAD 10: Polinomios homogéneos y heterogéneos ────────
+// Homogéneo: todos los términos tienen el mismo grado total
+// Heterogéneo: los términos tienen distintos grados totales
+function genAct10(n) {
+  const items = [];
+  const seen = new Set();
+  let att = 0;
+  while (items.length < n && att++ < n*50) {
+    const nTerms = rnd(3,4);
+    const nVars = rnd(1,2);
+    const varNames = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
+    const makeHomogeneo = Math.random() < 0.5;
+    let terminos, tipo;
+    if (makeHomogeneo) {
+      // Todos los términos tienen el mismo grado
+      const gradoFijo = rnd(2,5);
+      const terms = [];
+      const usedParts = new Set();
+      let tAtt = 0;
+      while (terms.length < nTerms && tAtt++ < 200) {
+        if (nVars === 1) {
+          // Una sola variable → todos los términos son v^gradoFijo
+          if (terms.length > 0) break; // solo un exponente posible
+          const coef = (rnd(0,1)?-1:1)*rnd(1,8);
+          const v = varNames[0];
+          const partsStr = gradoFijo===1?v:`${v}${toSup(gradoFijo)}`;
+          const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
+          terms.push({coef, parts:[{v,exp:gradoFijo}], grado:gradoFijo, partsStr, coefDisp});
+          break;
+        }
+        // Dos variables: distribuir exps que sumen gradoFijo
+        const e1 = rnd(0, gradoFijo);
+        const e2 = gradoFijo - e1;
+        if (e1===0 && e2===0) continue;
+        const key = `${e1},${e2}`;
+        if (usedParts.has(key)) continue;
+        usedParts.add(key);
+        const coef = (rnd(0,1)?-1:1)*rnd(1,8);
+        const parts = [];
+        if(e1>0) parts.push({v:varNames[0],exp:e1});
+        if(e2>0) parts.push({v:varNames[1],exp:e2});
+        const partsStr = parts.map(p=>p.exp===1?p.v:`${p.v}${toSup(p.exp)}`).join('');
+        const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
+        terms.push({coef, parts, grado:gradoFijo, partsStr, coefDisp});
+      }
+      if (terms.length < 3) continue;
+      terminos = terms.slice(0, nTerms);
+      tipo = 'homogéneo';
+    } else {
+      // Heterogéneo: generar términos con distintos grados
+      const terms = [];
+      const usedGrados = new Set();
+      let tAtt = 0;
+      while (terms.length < nTerms && tAtt++ < 200) {
+        const nV = rnd(1, nVars);
+        const vs = [...varNames].sort(()=>Math.random()-0.5).slice(0,nV);
+        const exps = vs.map(()=>rnd(1,4));
+        const grado = exps.reduce((s,e)=>s+e,0);
+        if (usedGrados.has(grado)) continue;
+        usedGrados.add(grado);
+        const coef = (rnd(0,1)?-1:1)*rnd(1,8);
+        const parts = vs.map((v,i)=>({v,exp:exps[i]}));
+        const partsStr = parts.map(p=>p.exp===1?p.v:`${p.v}${toSup(p.exp)}`).join('');
+        const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
+        terms.push({coef, parts, grado, partsStr, coefDisp});
+      }
+      if (terms.length < 3) continue;
+      terminos = terms.slice(0, nTerms);
+      // Verificar que efectivamente los grados son distintos
+      const grados = terminos.map(t=>t.grado);
+      if (new Set(grados).size < 2) continue;
+      tipo = 'heterogéneo';
+    }
+    const str = polyStr(terminos);
+    if (seen.has(str)) continue;
+    seen.add(str);
+    items.push({ str, tipo });
+  }
+  return items;
+}
+
+function renderAct10(items, startIdx) {
+  let html = `<div class="intro-section-title">Actividad 10 — Clasificá cada polinomio: homogéneo o heterogéneo</div>
+  <div class="intro-classify-list">`;
+  items.forEach((it,i) => {
+    html += `<div class="intro-classify-item">
+      <span class="intro-classify-num">${startIdx+i}.</span>
+      <span class="intro-classify-poly">${it.str}
+        &nbsp;&nbsp;
+        <label style="font-size:0.85rem;font-weight:600;color:var(--muted)">
+          <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;vertical-align:middle"> homogéneo
+        </label>
+        &nbsp;
+        <label style="font-size:0.85rem;font-weight:600;color:var(--muted)">
+          <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;vertical-align:middle"> heterogéneo
+        </label>
+      </span>
+    </div>`;
+  });
+  html += `</div>`;
+  return { html, sols: items.map((it,i)=>({ id: startIdx+i, sol: it.tipo })) };
+}
+
 // ── RENDER PRINCIPAL ──────────────────────────────────────────
 function generateIntro() {
   const total = Object.values(introQtys).reduce((a,b)=>a+b,0);
@@ -4648,6 +4836,22 @@ function generateIntro() {
   if (introQtys[8] > 0) {
     const data = genAct8(introQtys[8]);
     const r = renderAct8(data, globalIdx);
+    allHTML += r.html;
+    allSols = allSols.concat(r.sols);
+    globalIdx += data.length;
+  }
+  // Act 9 — Monomio opuesto
+  if (introQtys[9] > 0) {
+    const data = genAct9(introQtys[9]);
+    const r = renderAct9(data, globalIdx);
+    allHTML += r.html;
+    allSols = allSols.concat(r.sols);
+    globalIdx += data.length;
+  }
+  // Act 10 — Polinomios homogéneos y heterogéneos
+  if (introQtys[10] > 0) {
+    const data = genAct10(introQtys[10]);
+    const r = renderAct10(data, globalIdx);
     allHTML += r.html;
     allSols = allSols.concat(r.sols);
     globalIdx += data.length;
