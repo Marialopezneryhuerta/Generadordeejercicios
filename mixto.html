@@ -332,6 +332,142 @@ body { padding-bottom: 2.5rem; }
   <!-- ══════════════════════════════════ -->
   <!-- GRUPO: ÁLGEBRA                   -->
   <!-- ══════════════════════════════════ -->
+  <div class="materia-group mat-aritmetica">
+    <div class="materia-group-header">
+      🔢 Aritmética
+      <span class="mat-count">3 módulos</span>
+    </div>
+    <div class="materia-group-body">
+
+  <!-- Módulo: Números Enteros -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('ent')">
+      <div class="tema-title">🔢 Números Enteros</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="ent-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="ent-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma y Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Corto (2 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr1',-1)">−</button><span class="qty-val" id="q-ent_sr1">0</span><button class="qty-btn" onclick="chgQty('ent_sr1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Medio (3-4 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr2',-1)">−</button><span class="qty-val" id="q-ent_sr2">0</span><button class="qty-btn" onclick="chgQty('ent_sr2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Largo (5-6 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr3',-1)">−</button><span class="qty-val" id="q-ent_sr3">0</span><button class="qty-btn" onclick="chgQty('ent_sr3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — 2 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu1',-1)">−</button><span class="qty-val" id="q-ent_mu1">0</span><button class="qty-btn" onclick="chgQty('ent_mu1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — 3 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu2',-1)">−</button><span class="qty-val" id="q-ent_mu2">0</span><button class="qty-btn" onclick="chgQty('ent_mu2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — 4+ factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu3',-1)">−</button><span class="qty-val" id="q-ent_mu3">0</span><button class="qty-btn" onclick="chgQty('ent_mu3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — División exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv1',-1)">−</button><span class="qty-val" id="q-ent_dv1">0</span><button class="qty-btn" onclick="chgQty('ent_dv1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con resto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv2',-1)">−</button><span class="qty-val" id="q-ent_dv2">0</span><button class="qty-btn" onclick="chgQty('ent_dv2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Cadena</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv3',-1)">−</button><span class="qty-val" id="q-ent_dv3">0</span><button class="qty-btn" onclick="chgQty('ent_dv3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Potenciación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Potencia simple</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po1',-1)">−</button><span class="qty-val" id="q-ent_po1">0</span><button class="qty-btn" onclick="chgQty('ent_po1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Misma base</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po2',-1)">−</button><span class="qty-val" id="q-ent_po2">0</span><button class="qty-btn" onclick="chgQty('ent_po2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Potencia de potencia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po3',-1)">−</button><span class="qty-val" id="q-ent_po3">0</span><button class="qty-btn" onclick="chgQty('ent_po3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Raíz cuadrada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra1',-1)">−</button><span class="qty-val" id="q-ent_ra1">0</span><button class="qty-btn" onclick="chgQty('ent_ra1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Raíz cúbica y potencias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra2',-1)">−</button><span class="qty-val" id="q-ent_ra2">0</span><button class="qty-btn" onclick="chgQty('ent_ra2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Combinadas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra3',-1)">−</button><span class="qty-val" id="q-ent_ra3">0</span><button class="qty-btn" onclick="chgQty('ent_ra3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas sin Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — +/−/·</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs1',-1)">−</button><span class="qty-val" id="q-ent_cs1">0</span><button class="qty-btn" onclick="chgQty('ent_cs1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — + División y potencias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs2',-1)">−</button><span class="qty-val" id="q-ent_cs2">0</span><button class="qty-btn" onclick="chgQty('ent_cs2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — + Raíces</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs3',-1)">−</button><span class="qty-val" id="q-ent_cs3">0</span><button class="qty-btn" onclick="chgQty('ent_cs3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas con Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Solo paréntesis</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc1',-1)">−</button><span class="qty-val" id="q-ent_cc1">0</span><button class="qty-btn" onclick="chgQty('ent_cc1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Paréntesis y corchetes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc2',-1)">−</button><span class="qty-val" id="q-ent_cc2">0</span><button class="qty-btn" onclick="chgQty('ent_cc2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — + Llaves</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc3',-1)">−</button><span class="qty-val" id="q-ent_cc3">0</span><button class="qty-btn" onclick="chgQty('ent_cc3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Situaciones Problemáticas Aritmética</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Suma y Resta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_aritsp1',-1)">−</button><span class="qty-val" id="q-mix_aritsp1">0</span><button class="qty-btn" onclick="chgQty('mix_aritsp1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Multiplicación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_aritsp2',-1)">−</button><span class="qty-val" id="q-mix_aritsp2">0</span><button class="qty-btn" onclick="chgQty('mix_aritsp2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — División</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_aritsp3',-1)">−</button><span class="qty-val" id="q-mix_aritsp3">0</span><button class="qty-btn" onclick="chgQty('mix_aritsp3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Raíz Cuadrada</div>
+        <div class="tipo-row"><span class="tipo-label">Exacta Niv.1 (2 cifras)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_ex1',-1)">−</button><span class="qty-val" id="q-mix_rc_ex1">0</span><button class="qty-btn" onclick="chgQty('mix_rc_ex1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Exacta Niv.2 (3 cifras)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_ex2',-1)">−</button><span class="qty-val" id="q-mix_rc_ex2">0</span><button class="qty-btn" onclick="chgQty('mix_rc_ex2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Inexacta Niv.1 (entre enteros)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_inex1',-1)">−</button><span class="qty-val" id="q-mix_rc_inex1">0</span><button class="qty-btn" onclick="chgQty('mix_rc_inex1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Inexacta Niv.2 (3 cifras)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_inex2',-1)">−</button><span class="qty-val" id="q-mix_rc_inex2">0</span><button class="qty-btn" onclick="chgQty('mix_rc_inex2',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Módulo: Números Racionales -->
+  <div class="tema-block">
+    <div class="tema-header" onclick="toggleTema('rac')">
+      <div class="tema-title">½ Números Racionales (Fracciones)</div>
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <span class="tema-badge zero" id="rac-badge">0 ejercicios</span>
+        <span class="tema-arrow">▶</span>
+      </div>
+    </div>
+    <div class="tema-body" id="rac-body">
+      <div class="subtema">
+        <div class="subtema-title">Suma y Resta</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Mismo denominador</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr1',-1)">−</button><span class="qty-val" id="q-rac_sr1">0</span><button class="qty-btn" onclick="chgQty('rac_sr1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Distinto denominador</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr2',-1)">−</button><span class="qty-val" id="q-rac_sr2">0</span><button class="qty-btn" onclick="chgQty('rac_sr2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Expresiones mixtas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr3',-1)">−</button><span class="qty-val" id="q-rac_sr3">0</span><button class="qty-btn" onclick="chgQty('rac_sr3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Multiplicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — 2 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu1',-1)">−</button><span class="qty-val" id="q-rac_mu1">0</span><button class="qty-btn" onclick="chgQty('rac_mu1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — 3 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu2',-1)">−</button><span class="qty-val" id="q-rac_mu2">0</span><button class="qty-btn" onclick="chgQty('rac_mu2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — 4+ factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu3',-1)">−</button><span class="qty-val" id="q-rac_mu3">0</span><button class="qty-btn" onclick="chgQty('rac_mu3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">División</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv1',-1)">−</button><span class="qty-val" id="q-rac_dv1">0</span><button class="qty-btn" onclick="chgQty('rac_dv1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Encadenada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv2',-1)">−</button><span class="qty-val" id="q-rac_dv2">0</span><button class="qty-btn" onclick="chgQty('rac_dv2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Expresiones mixtas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv3',-1)">−</button><span class="qty-val" id="q-rac_dv3">0</span><button class="qty-btn" onclick="chgQty('rac_dv3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Potenciación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Potencia simple</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po1',-1)">−</button><span class="qty-val" id="q-rac_po1">0</span><button class="qty-btn" onclick="chgQty('rac_po1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Misma base</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po2',-1)">−</button><span class="qty-val" id="q-rac_po2">0</span><button class="qty-btn" onclick="chgQty('rac_po2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Potencia de fracción</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po3',-1)">−</button><span class="qty-val" id="q-rac_po3">0</span><button class="qty-btn" onclick="chgQty('rac_po3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Radicación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Raíz cuadrada exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra1',-1)">−</button><span class="qty-val" id="q-rac_ra1">0</span><button class="qty-btn" onclick="chgQty('rac_ra1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Simplificación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra2',-1)">−</button><span class="qty-val" id="q-rac_ra2">0</span><button class="qty-btn" onclick="chgQty('rac_ra2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Operaciones con radicales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra3',-1)">−</button><span class="qty-val" id="q-rac_ra3">0</span><button class="qty-btn" onclick="chgQty('rac_ra3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas sin Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Fracciones propias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs1',-1)">−</button><span class="qty-val" id="q-rac_cs1">0</span><button class="qty-btn" onclick="chgQty('rac_cs1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fracciones impropias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs2',-1)">−</button><span class="qty-val" id="q-rac_cs2">0</span><button class="qty-btn" onclick="chgQty('rac_cs2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Números mixtos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs3',-1)">−</button><span class="qty-val" id="q-rac_cs3">0</span><button class="qty-btn" onclick="chgQty('rac_cs3',1)">+</button></div></div>
+      </div>
+      <div class="subtema">
+        <div class="subtema-title">Combinadas con Agrupación</div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Fracciones propias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc1',-1)">−</button><span class="qty-val" id="q-rac_cc1">0</span><button class="qty-btn" onclick="chgQty('rac_cc1',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fracciones impropias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc2',-1)">−</button><span class="qty-val" id="q-rac_cc2">0</span><button class="qty-btn" onclick="chgQty('rac_cc2',1)">+</button></div></div>
+        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Números mixtos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc3',-1)">−</button><span class="qty-val" id="q-rac_cc3">0</span><button class="qty-btn" onclick="chgQty('rac_cc3',1)">+</button></div></div>
+      </div>
+    </div>
+  </div>
+
+    </div><!-- fin materia-group-body aritmética -->
+  </div><!-- fin materia-group mat-aritmetica -->
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- GRUPO: ARITMÉTICA                     -->
+  <!-- ══════════════════════════════════════ -->
   <div class="materia-group mat-algebra">
     <div class="materia-group-header">
       ✏️ Álgebra
@@ -472,7 +608,6 @@ body { padding-bottom: 2.5rem; }
         <div class="subtema-title">Suma y Resta</div>
         <div class="tipo-row"><span class="tipo-label">Nivel 1 — Radicales semejantes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta1',-1)">−</button><span class="qty-val" id="q-rad_sumaresta1">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta1',1)">+</button></div></div>
         <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con extracción previa</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rad_sumaresta2',-1)">−</button><span class="qty-val" id="q-rad_sumaresta2">0</span><button class="qty-btn" onclick="chgQty('rad_sumaresta2',1)">+</button></div></div>
-        <div class="tipo-row">
       </div>
       <div class="subtema">
         <div class="subtema-title">Multiplicación</div>
@@ -541,142 +676,6 @@ body { padding-bottom: 2.5rem; }
 
     </div><!-- fin materia-group-body álgebra -->
   </div><!-- fin materia-group mat-algebra -->
-
-  <!-- ══════════════════════════════════════ -->
-  <!-- GRUPO: ARITMÉTICA                     -->
-  <!-- ══════════════════════════════════════ -->
-  <div class="materia-group mat-aritmetica">
-    <div class="materia-group-header">
-      🔢 Aritmética
-      <span class="mat-count">3 módulos</span>
-    </div>
-    <div class="materia-group-body">
-
-  <!-- Módulo: Números Enteros -->
-  <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('ent')">
-      <div class="tema-title">🔢 Números Enteros</div>
-      <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="ent-badge">0 ejercicios</span>
-        <span class="tema-arrow">▶</span>
-      </div>
-    </div>
-    <div class="tema-body" id="ent-body">
-      <div class="subtema">
-        <div class="subtema-title">Suma y Resta</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Corto (2 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr1',-1)">−</button><span class="qty-val" id="q-ent_sr1">0</span><button class="qty-btn" onclick="chgQty('ent_sr1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Medio (3-4 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr2',-1)">−</button><span class="qty-val" id="q-ent_sr2">0</span><button class="qty-btn" onclick="chgQty('ent_sr2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Largo (5-6 términos)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_sr3',-1)">−</button><span class="qty-val" id="q-ent_sr3">0</span><button class="qty-btn" onclick="chgQty('ent_sr3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Multiplicación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — 2 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu1',-1)">−</button><span class="qty-val" id="q-ent_mu1">0</span><button class="qty-btn" onclick="chgQty('ent_mu1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — 3 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu2',-1)">−</button><span class="qty-val" id="q-ent_mu2">0</span><button class="qty-btn" onclick="chgQty('ent_mu2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — 4+ factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_mu3',-1)">−</button><span class="qty-val" id="q-ent_mu3">0</span><button class="qty-btn" onclick="chgQty('ent_mu3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">División</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — División exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv1',-1)">−</button><span class="qty-val" id="q-ent_dv1">0</span><button class="qty-btn" onclick="chgQty('ent_dv1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Con resto</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv2',-1)">−</button><span class="qty-val" id="q-ent_dv2">0</span><button class="qty-btn" onclick="chgQty('ent_dv2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Cadena</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_dv3',-1)">−</button><span class="qty-val" id="q-ent_dv3">0</span><button class="qty-btn" onclick="chgQty('ent_dv3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Potenciación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Potencia simple</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po1',-1)">−</button><span class="qty-val" id="q-ent_po1">0</span><button class="qty-btn" onclick="chgQty('ent_po1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Misma base</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po2',-1)">−</button><span class="qty-val" id="q-ent_po2">0</span><button class="qty-btn" onclick="chgQty('ent_po2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Potencia de potencia</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_po3',-1)">−</button><span class="qty-val" id="q-ent_po3">0</span><button class="qty-btn" onclick="chgQty('ent_po3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Radicación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Raíz cuadrada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra1',-1)">−</button><span class="qty-val" id="q-ent_ra1">0</span><button class="qty-btn" onclick="chgQty('ent_ra1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Raíz cúbica y potencias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra2',-1)">−</button><span class="qty-val" id="q-ent_ra2">0</span><button class="qty-btn" onclick="chgQty('ent_ra2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Combinadas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_ra3',-1)">−</button><span class="qty-val" id="q-ent_ra3">0</span><button class="qty-btn" onclick="chgQty('ent_ra3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Combinadas sin Agrupación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — +/−/·</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs1',-1)">−</button><span class="qty-val" id="q-ent_cs1">0</span><button class="qty-btn" onclick="chgQty('ent_cs1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — + División y potencias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs2',-1)">−</button><span class="qty-val" id="q-ent_cs2">0</span><button class="qty-btn" onclick="chgQty('ent_cs2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — + Raíces</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cs3',-1)">−</button><span class="qty-val" id="q-ent_cs3">0</span><button class="qty-btn" onclick="chgQty('ent_cs3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Combinadas con Agrupación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Solo paréntesis</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc1',-1)">−</button><span class="qty-val" id="q-ent_cc1">0</span><button class="qty-btn" onclick="chgQty('ent_cc1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Paréntesis y corchetes</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc2',-1)">−</button><span class="qty-val" id="q-ent_cc2">0</span><button class="qty-btn" onclick="chgQty('ent_cc2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — + Llaves</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('ent_cc3',-1)">−</button><span class="qty-val" id="q-ent_cc3">0</span><button class="qty-btn" onclick="chgQty('ent_cc3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Situaciones Problemáticas Aritmética</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Suma y Resta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_aritsp1',-1)">−</button><span class="qty-val" id="q-mix_aritsp1">0</span><button class="qty-btn" onclick="chgQty('mix_aritsp1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Multiplicación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_aritsp2',-1)">−</button><span class="qty-val" id="q-mix_aritsp2">0</span><button class="qty-btn" onclick="chgQty('mix_aritsp2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — División</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_aritsp3',-1)">−</button><span class="qty-val" id="q-mix_aritsp3">0</span><button class="qty-btn" onclick="chgQty('mix_aritsp3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Raíz Cuadrada</div>
-        <div class="tipo-row"><span class="tipo-label">Exacta Niv.1 (2 cifras)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_ex1',-1)">−</button><span class="qty-val" id="q-mix_rc_ex1">0</span><button class="qty-btn" onclick="chgQty('mix_rc_ex1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Exacta Niv.2 (3 cifras)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_ex2',-1)">−</button><span class="qty-val" id="q-mix_rc_ex2">0</span><button class="qty-btn" onclick="chgQty('mix_rc_ex2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Inexacta Niv.1 (entre enteros)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_inex1',-1)">−</button><span class="qty-val" id="q-mix_rc_inex1">0</span><button class="qty-btn" onclick="chgQty('mix_rc_inex1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Inexacta Niv.2 (3 cifras)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('mix_rc_inex2',-1)">−</button><span class="qty-val" id="q-mix_rc_inex2">0</span><button class="qty-btn" onclick="chgQty('mix_rc_inex2',1)">+</button></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Módulo: Números Racionales -->
-  <div class="tema-block">
-    <div class="tema-header" onclick="toggleTema('rac')">
-      <div class="tema-title">½ Números Racionales (Fracciones)</div>
-      <div style="display:flex;align-items:center;gap:0.6rem">
-        <span class="tema-badge zero" id="rac-badge">0 ejercicios</span>
-        <span class="tema-arrow">▶</span>
-      </div>
-    </div>
-    <div class="tema-body" id="rac-body">
-      <div class="subtema">
-        <div class="subtema-title">Suma y Resta</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Mismo denominador</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr1',-1)">−</button><span class="qty-val" id="q-rac_sr1">0</span><button class="qty-btn" onclick="chgQty('rac_sr1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Distinto denominador</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr2',-1)">−</button><span class="qty-val" id="q-rac_sr2">0</span><button class="qty-btn" onclick="chgQty('rac_sr2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Expresiones mixtas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_sr3',-1)">−</button><span class="qty-val" id="q-rac_sr3">0</span><button class="qty-btn" onclick="chgQty('rac_sr3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Multiplicación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — 2 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu1',-1)">−</button><span class="qty-val" id="q-rac_mu1">0</span><button class="qty-btn" onclick="chgQty('rac_mu1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — 3 factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu2',-1)">−</button><span class="qty-val" id="q-rac_mu2">0</span><button class="qty-btn" onclick="chgQty('rac_mu2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — 4+ factores</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_mu3',-1)">−</button><span class="qty-val" id="q-rac_mu3">0</span><button class="qty-btn" onclick="chgQty('rac_mu3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">División</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv1',-1)">−</button><span class="qty-val" id="q-rac_dv1">0</span><button class="qty-btn" onclick="chgQty('rac_dv1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Encadenada</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv2',-1)">−</button><span class="qty-val" id="q-rac_dv2">0</span><button class="qty-btn" onclick="chgQty('rac_dv2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Expresiones mixtas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_dv3',-1)">−</button><span class="qty-val" id="q-rac_dv3">0</span><button class="qty-btn" onclick="chgQty('rac_dv3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Potenciación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Potencia simple</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po1',-1)">−</button><span class="qty-val" id="q-rac_po1">0</span><button class="qty-btn" onclick="chgQty('rac_po1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Misma base</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po2',-1)">−</button><span class="qty-val" id="q-rac_po2">0</span><button class="qty-btn" onclick="chgQty('rac_po2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Potencia de fracción</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_po3',-1)">−</button><span class="qty-val" id="q-rac_po3">0</span><button class="qty-btn" onclick="chgQty('rac_po3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Radicación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Raíz cuadrada exacta</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra1',-1)">−</button><span class="qty-val" id="q-rac_ra1">0</span><button class="qty-btn" onclick="chgQty('rac_ra1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Simplificación</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra2',-1)">−</button><span class="qty-val" id="q-rac_ra2">0</span><button class="qty-btn" onclick="chgQty('rac_ra2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Operaciones con radicales</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_ra3',-1)">−</button><span class="qty-val" id="q-rac_ra3">0</span><button class="qty-btn" onclick="chgQty('rac_ra3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Combinadas sin Agrupación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Fracciones propias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs1',-1)">−</button><span class="qty-val" id="q-rac_cs1">0</span><button class="qty-btn" onclick="chgQty('rac_cs1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fracciones impropias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs2',-1)">−</button><span class="qty-val" id="q-rac_cs2">0</span><button class="qty-btn" onclick="chgQty('rac_cs2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Números mixtos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cs3',-1)">−</button><span class="qty-val" id="q-rac_cs3">0</span><button class="qty-btn" onclick="chgQty('rac_cs3',1)">+</button></div></div>
-      </div>
-      <div class="subtema">
-        <div class="subtema-title">Combinadas con Agrupación</div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 1 — Fracciones propias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc1',-1)">−</button><span class="qty-val" id="q-rac_cc1">0</span><button class="qty-btn" onclick="chgQty('rac_cc1',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 2 — Fracciones impropias</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc2',-1)">−</button><span class="qty-val" id="q-rac_cc2">0</span><button class="qty-btn" onclick="chgQty('rac_cc2',1)">+</button></div></div>
-        <div class="tipo-row"><span class="tipo-label">Nivel 3 — Números mixtos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgQty('rac_cc3',-1)">−</button><span class="qty-val" id="q-rac_cc3">0</span><button class="qty-btn" onclick="chgQty('rac_cc3',1)">+</button></div></div>
-      </div>
-    </div>
-  </div>
-
-    </div><!-- fin materia-group-body aritmética -->
-  </div><!-- fin materia-group mat-aritmetica -->
 
   <!-- ══════════════════════════════════════ -->
   <!-- GRUPO: TRIGONOMETRÍA                  -->
