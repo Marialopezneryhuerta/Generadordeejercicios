@@ -746,14 +746,6 @@ body { padding-bottom: 2.5rem; }
   <!-- ══════════════════════════════════════ -->
   <div class="section-panel" id="panel-exponencial">
 
-    <div class="card">
-      <div class="card-title"><span class="icon" style="background:#fff7ed">📈</span> Tipo</div>
-      <div class="subtype-selector">
-        <button class="subtype-btn active" id="exp-subLineal" onclick="expSetSubtype('lineal')">Lineales</button>
-        <button class="subtype-btn" id="exp-subCuad" onclick="expSetSubtype('cuad')">Cuadráticas</button>
-      </div>
-    </div>
-
     <!-- Niveles Lineales -->
     <div class="card" id="exp-levels-lineal">
       <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Lineales</div>
@@ -786,11 +778,10 @@ body { padding-bottom: 2.5rem; }
           </div>
         </div>
       </div>
-      <div class="total-badge" id="expl-totalBadge">Total: <span>0</span> ejercicios</div>
     </div>
 
     <!-- Niveles Cuadráticas -->
-    <div class="card" id="exp-levels-cuad" style="display:none">
+    <div class="card" id="exp-levels-cuad">
       <div class="card-title"><span class="icon" style="background:#fdf2f8">📊</span> Niveles — Cuadráticas</div>
       <div class="levels">
         <div class="level-item" data-level="1" id="expc-lvl-1">
@@ -2330,17 +2321,8 @@ function generateLineal() {
 // ═══════════════════════════════════════════
 // ECUACIONES EXPONENCIALES — ESTADO
 // ═══════════════════════════════════════════
-let expSubtype = 'lineal';
 let expLLevelQtys = { 1:0, 2:0, 3:0 }; // lineales
 let expCLevelQtys = { 1:0, 2:0, 3:0 }; // cuadráticas
-
-function expSetSubtype(s) {
-  expSubtype = s;
-  document.getElementById('exp-subLineal').classList.toggle('active', s === 'lineal');
-  document.getElementById('exp-subCuad').classList.toggle('active', s === 'cuad');
-  document.getElementById('exp-levels-lineal').style.display = s === 'lineal' ? 'block' : 'none';
-  document.getElementById('exp-levels-cuad').style.display = s === 'cuad' ? 'block' : 'none';
-}
 
 // Lineales level controls
 function expLToggleLevel(n) {
@@ -2358,10 +2340,7 @@ function expLChangeLevelQty(n, delta) {
   if (expLLevelQtys[n] === 0) el.classList.remove('active'); else el.classList.add('active');
   expLUpdateTotal();
 }
-function expLUpdateTotal() {
-  const t = Object.values(expLLevelQtys).reduce((a,b) => a+b, 0);
-  document.getElementById('expl-totalBadge').innerHTML = `Total: <span>${t}</span> ejercicios`;
-}
+function expLUpdateTotal() { expUpdateGlobalTotal(); }
 
 // Cuadráticas level controls
 function expCToggleLevel(n) {
@@ -2379,8 +2358,10 @@ function expCChangeLevelQty(n, delta) {
   if (expCLevelQtys[n] === 0) el.classList.remove('active'); else el.classList.add('active');
   expCUpdateTotal();
 }
-function expCUpdateTotal() {
-  const t = Object.values(expCLevelQtys).reduce((a,b) => a+b, 0);
+function expCUpdateTotal() { expUpdateGlobalTotal(); }
+function expUpdateGlobalTotal() {
+  const t = Object.values(expLLevelQtys).reduce((a,b)=>a+b,0)
+           + Object.values(expCLevelQtys).reduce((a,b)=>a+b,0);
   document.getElementById('expc-totalBadge').innerHTML = `Total: <span>${t}</span> ejercicios`;
 }
 
@@ -2957,35 +2938,56 @@ function expCGen3() {
 // GENERAR EXPONENCIAL (UNIFICADO)
 // ═══════════════════════════════════════════
 function generateExponencial() {
-  const isLineal = expSubtype === 'lineal';
-  const levelQtys = isLineal ? expLLevelQtys : expCLevelQtys;
-  const gens = isLineal
-    ? { 1: expGen1, 2: expGen2, 3: expGen3 }
-    : { 1: expCGen1, 2: expCGen2, 3: expCGen3 };
-  const levelNames = isLineal
-    ? ['','Igualar bases directamente','Exponente lineal (ax+b) y fracciones','Factor común (x+1, x−1)']
-    : ['','Exponente cuadrático — base directa','Base compuesta, fracciones, exp. negativos','Cambio de variable / sustitución'];
-  const titulo = isLineal ? 'Ec. Exponenciales Lineales' : 'Ec. Exponenciales Cuadráticas';
+  const levelNamesL = ['','Igualar bases directamente','Exponente lineal (ax+b) y fracciones','Factor común (x+1, x−1)'];
+  const levelNamesC = ['','Exponente cuadrático — base directa','Base compuesta, fracciones, exp. negativos','Cambio de variable / sustitución'];
+  const gensL = { 1: expGen1, 2: expGen2, 3: expGen3 };
+  const gensC = { 1: expCGen1, 2: expCGen2, 3: expCGen3 };
 
-  const total = Object.values(levelQtys).reduce((a,b) => a+b, 0);
-  if (total === 0) { alert('Agregá al menos un ejercicio en algún nivel.'); return; }
+  const totalL = Object.values(expLLevelQtys).reduce((a,b)=>a+b,0);
+  const totalC = Object.values(expCLevelQtys).reduce((a,b)=>a+b,0);
+  if (totalL + totalC === 0) { alert('Agregá al menos un ejercicio en algún nivel.'); return; }
 
   const ejercicios = [], seen = new Set();
+
+  // Generar lineales
   for (let lvl = 1; lvl <= 3; lvl++) {
-    const qty = levelQtys[lvl]||0; if (!qty) continue;
+    const qty = expLLevelQtys[lvl]||0; if (!qty) continue;
     let count = 0, att = 0;
     while (count < qty && att < qty*25) {
       att++;
       try {
-        const e = gens[lvl]();
+        const e = gensL[lvl]();
         if (!e || seen.has(e.expr)) continue;
         seen.add(e.expr);
-        ejercicios.push({ level:lvl, levelName:levelNames[lvl], ...e });
+        ejercicios.push({ level:lvl, levelName: levelNamesL[lvl] + ' (Lineal)', ...e });
         count++;
       } catch(err) {}
     }
   }
+
+  // Generar cuadráticas
+  for (let lvl = 1; lvl <= 3; lvl++) {
+    const qty = expCLevelQtys[lvl]||0; if (!qty) continue;
+    let count = 0, att = 0;
+    while (count < qty && att < qty*25) {
+      att++;
+      try {
+        const e = gensC[lvl]();
+        if (!e || seen.has(e.expr)) continue;
+        seen.add(e.expr);
+        ejercicios.push({ level:lvl, levelName: levelNamesC[lvl] + ' (Cuadrática)', ...e });
+        count++;
+      } catch(err) {}
+    }
+  }
+
   ejercicios.forEach((e,i) => e.id = i+1);
+
+  const hayAmbos = totalL > 0 && totalC > 0;
+  const titulo = hayAmbos
+    ? 'Ec. Exponenciales — Lineales y Cuadráticas'
+    : totalL > 0 ? 'Ec. Exponenciales Lineales' : 'Ec. Exponenciales Cuadráticas';
+
   renderEjercitario(ejercicios, 'exp-ejercitario', titulo);
 }
 // ═══════════════════════════════════════════

@@ -1131,7 +1131,8 @@ const CATALOG = {
     label: 'Álgebra',
     subtemas: [
       { id:'ec-lin', label:'Ecuaciones Lineales', niveles:[1,2,3,4,5], gen:(lvl)=>ecLin(lvl) },
-      { id:'ec-exp', label:'Ec. Exponenciales', niveles:[1,2,3], gen:(lvl)=>exp_gen(lvl) },
+      { id:'ec-exp-lin', label:'Ec. Exponenciales Lineales', niveles:[1,2,3], gen:(lvl)=>exp_gen(lvl) },
+      { id:'ec-exp-cuad', label:'Ec. Exponenciales Cuadráticas', niveles:[1,2,3], gen:(lvl)=>exp_gen_cuad(lvl) },
       { id:'ec-log', label:'Ecuaciones Logarítmicas', niveles:[1,2,3], gen:(lvl)=>log_gen(lvl) },
       { id:'intro-monop', label:'Intro — Monomio opuesto', niveles:[1], gen:()=>eb_introMonopGen() },
       { id:'intro-homhet', label:'Intro — Homogéneo / Heterogéneo', niveles:[1], gen:()=>eb_introHomhetGen() },
@@ -1346,7 +1347,7 @@ function renderStepBar(){
 // ══════════════════════════════════════════════════════════════
 const GRUPOS = {
   algebra: [
-    { nombre:'Ecuaciones', ids:['ec-lin','ec-exp','ec-log'] },
+    { nombre:'Ecuaciones', ids:['ec-lin','ec-exp-lin','ec-exp-cuad','ec-log'] },
     { nombre:'Expresiones Algebraicas', ids:['intro-monop','intro-homhet','intro-probexpr'] },
     { nombre:'Monomios', ids:['mon-suma','mon-resta','mon-mult','mon-div','mon-pot','mon-rad'] },
     { nombre:'Polinomios', ids:['poly-suma','poly-resta','poly-multmp','poly-multpp','poly-divpm','poly-divpp','poly-resto','poly-ruffini','poly-ruffini2'] },
@@ -1598,30 +1599,8 @@ function updateIndTotal(){
 function getIndTotal(){return indRows.reduce((s,r)=>s+(r.pts||0),0);}
 
 // ══════════════════════════════════════════════════════════════
-// GENERAR EJERCICIOS
+// GENERAR EJERCICIOS (función única — ver definición arriba)
 // ══════════════════════════════════════════════════════════════
-function generarEjerciciosTema(){
-  if(!currentSubtema){alert('Primero elegí un tema de la lista.');return;}
-  const cat=CATALOG[currentRama];
-  const st=cat.subtemas.find(s=>s.id===currentSubtema);
-  if(!st){return;}
-  const lvlChip=document.querySelector(`.lvl-chip[data-st="${currentSubtema}"].sel`);
-  currentLvl=lvlChip?parseInt(lvlChip.dataset.lvl):1;
-  const seen=new Set();currentItems=[];
-  let att=0;
-  while(currentItems.length<8&&att<120){
-    att++;try{
-      const item=st.gen(currentLvl);
-      if(!item||seen.has(item.expr))continue;
-      seen.add(item.expr);
-      currentItems.push({...item,id:currentItems.length+1,subtema:st.label,lvl:currentLvl});
-    }catch(e){}
-  }
-  document.getElementById('ej-card-title').textContent=`${st.label} — Nivel ${currentLvl}`;
-  renderEjItems();
-  document.getElementById('card-ejercicios').style.display='block';
-  document.getElementById('card-ejercicios').scrollIntoView({behavior:'smooth',block:'start'});
-}
 
 function renderEjItems(){
   const list=document.getElementById('ej-items-list');
@@ -2450,6 +2429,15 @@ function exp_gen(lvl){
     const item=(gens[lvl]||gens[1])();
     if(!item)return null;
     return{...item,steps:item.steps||['Igualar exponentes y resolver']};
+  }catch(e){return null;}
+}
+
+function exp_gen_cuad(lvl){
+  try{
+    const gens={1:expCGen1,2:expCGen2,3:expCGen3};
+    const item=(gens[lvl]||gens[1])();
+    if(!item)return null;
+    return{...item,steps:item.steps||['Aplicar cambio de variable y resolver la cuadrática resultante']};
   }catch(e){return null;}
 }
 
