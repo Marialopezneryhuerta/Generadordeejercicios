@@ -1249,6 +1249,10 @@ const CATALOG = {
       { id:'ffc-1', label:'Fórmulas Fund. Niv.1 — Dado sen β o cos β', niveles:[1], gen:()=>eb_ffc_gen(1) },
       { id:'ffc-2', label:'Fórmulas Fund. Niv.2 — Dado sec α o cosec α', niveles:[2], gen:()=>eb_ffc_gen(2) },
       { id:'ffc-3', label:'Fórmulas Fund. Niv.3 — Dado tg α o cotg α', niveles:[3], gen:()=>eb_ffc_gen(3) },
+      { id:'conv-s2r-1', label:'Conversiones Sex→Rad Niv.1 — Grados enteros', niveles:[1], gen:()=>eb_convGen('s2r',1) },
+      { id:'conv-s2r-2', label:'Conversiones Sex→Rad Niv.2 — Grados°min\'seg"', niveles:[2], gen:()=>eb_convGen('s2r',2) },
+      { id:'conv-r2s-1', label:'Conversiones Rad→Sex Niv.1 — Fracción de π', niveles:[1], gen:()=>eb_convGen('r2s',1) },
+      { id:'conv-r2s-2', label:'Conversiones Rad→Sex Niv.2 — Valor decimal', niveles:[2], gen:()=>eb_convGen('r2s',2) },
     ]
   },
   geometria: {
@@ -1371,6 +1375,7 @@ const GRUPOS = {
     { nombre:'Fórmulas de Arco Doble', ids:['trig-fmad1','trig-fmad2'] },
     { nombre:'Func. Trig. en Triángulo Rectángulo', ids:['trigrect-1','trigrect-2','trigrect-3','trigrect-4','trigrect-5','trigrect-6','trigrect-7','trigrect-8','trigrect-9'] },
     { nombre:'Fórmulas Fundamentales', ids:['ffc-1','ffc-2','ffc-3'] },
+    { nombre:'Conversiones Sex↔Rad', ids:['conv-s2r-1','conv-s2r-2','conv-r2s-1','conv-r2s-2'] },
   ],
   geometria: [
     { nombre:'Parábolas', ids:['geom-par'] },
@@ -3712,7 +3717,78 @@ function eb_ffc_gen(lvl) {
   } catch(e){ return eb_ffc_gen(lvl); }
 }
 
+// ─── Conversiones Sexagesimal ↔ Radián (prefijo eb_conv_) ───────────────────
 
+var eb_CONV_DEG_EXACT = [30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360];
+var eb_CONV_RAD_FRAC = [
+  {num:1,den:6,deg:30},{num:1,den:4,deg:45},{num:1,den:3,deg:60},
+  {num:1,den:2,deg:90},{num:2,den:3,deg:120},{num:3,den:4,deg:135},
+  {num:5,den:6,deg:150},{num:1,den:1,deg:180},{num:7,den:6,deg:210},
+  {num:5,den:4,deg:225},{num:4,den:3,deg:240},{num:3,den:2,deg:270},
+  {num:5,den:3,deg:300},{num:7,den:4,deg:315},{num:11,den:6,deg:330},
+  {num:2,den:1,deg:360}
+];
+
+function eb_conv_mcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a;}
+
+function eb_conv_piFrac(num,den){
+  if(den===1&&num===1) return '&pi;';
+  if(den===1) return num+'&pi;';
+  if(num===1) return '<span class="frac"><span>&pi;</span><span>'+den+'</span></span>';
+  return '<span class="frac"><span>'+num+'&pi;</span><span>'+den+'</span></span>';
+}
+
+function eb_conv_decToDMS(decDeg){
+  var d=Math.floor(decDeg);
+  var mFull=(decDeg-d)*60;
+  var m=Math.floor(Math.round(mFull*100)/100);
+  var s=Math.round((mFull-m)*60);
+  if(s===60){s=0;m+=1;}
+  if(m===60){m=0;d+=1;}
+  return {d:d,m:m,s:s};
+}
+
+function eb_conv_degToRadFrac(deg){
+  var g=eb_conv_mcd(deg,180);
+  return {num:deg/g,den:180/g};
+}
+
+function eb_conv_S2R_L1(){
+  var deg=eb_CONV_DEG_EXACT[Math.floor(Math.random()*eb_CONV_DEG_EXACT.length)];
+  var frac=eb_conv_degToRadFrac(deg);
+  return {expr:deg+'°', sol:eb_conv_piFrac(frac.num,frac.den)+' rad'};
+}
+
+function eb_conv_S2R_L2(){
+  var d=10+Math.floor(Math.random()*350);
+  var m=Math.floor(Math.random()*60);
+  var s=Math.floor(Math.random()*60);
+  var decDeg=d+m/60+s/3600;
+  var radVal=decDeg*Math.PI/180;
+  var g=eb_conv_mcd(Math.round(decDeg*3600),180*3600);
+  var numRaw=Math.round(decDeg*3600)/g;
+  var denRaw=(180*3600)/g;
+  var isExact=(denRaw<=36&&numRaw<=360&&Math.abs(numRaw/denRaw*180-decDeg)<0.0001);
+  var ansHtml=isExact ? eb_conv_piFrac(numRaw,denRaw)+' rad' : radVal.toFixed(4)+' rad';
+  return {expr:d+'°'+m+"'"+s+'"', sol:ansHtml};
+}
+
+function eb_conv_R2S_L1(){
+  var item=eb_CONV_RAD_FRAC[Math.floor(Math.random()*eb_CONV_RAD_FRAC.length)];
+  return {expr:eb_conv_piFrac(item.num,item.den)+' rad', sol:item.deg+'°'};
+}
+
+function eb_conv_R2S_L2(){
+  var i=1+Math.floor(Math.random()*62);
+  var rad=+(i*0.1).toFixed(1);
+  var dms=eb_conv_decToDMS(rad*180/Math.PI);
+  return {expr:rad+' rad', sol:dms.d+'°'+dms.m+"'"+dms.s+'"'};
+}
+
+function eb_convGen(grp, lvl){
+  if(grp==='s2r') return lvl===1 ? eb_conv_S2R_L1() : eb_conv_S2R_L2();
+  return lvl===1 ? eb_conv_R2S_L1() : eb_conv_R2S_L2();
+}
 
 // ── Números Enteros ──
 function ent_opnd(n) { return n < 0 ? `(${n})` : `${n}`; }

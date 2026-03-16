@@ -378,6 +378,9 @@ body.sin-soluciones .sp-sol-grid { display: none !important; }
     <button class="topic-btn" id="topic-ffc" onclick="switchTopic('ffc')">
       ⭕ Fórmulas Fundamentales — Circ. Trig.
     </button>
+    <button class="topic-btn" id="topic-conv" onclick="switchTopic('conv')">
+      🔁 Conversiones — Sexagesimal ↔ Radián
+    </button>
   </div>
 
   <!-- ══════════════════════════════════════ -->
@@ -905,6 +908,63 @@ body.sin-soluciones .sp-sol-grid { display: none !important; }
     <button class="btn-download" id="ffc-btnDownload" onclick="downloadEjercitario('ffc-ejercitario','formulas-fundamentales')" style="display:none">⬇️ Descargar PDF</button>
     <button class="btn-download-sol" id="ffc-btnSolAparte" onclick="downloadSolucionesAparte('ffc-ejercitario','formulas-fundamentales')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
 
+  </div>
+
+  <!-- PANEL: CONVERSIONES SEXAGESIMAL ↔ RADIÁN -->
+  <div class="section-panel" id="panel-conv">
+    <h2 style="margin:0 0 0.5rem">🔁 Conversiones — Sexagesimal ↔ Radián</h2>
+
+    <!-- SEXAGESIMAL → RADIÁN -->
+    <div style="font-size:0.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin:0.4rem 0 0.3rem">Sexagesimal → Radián</div>
+    <div class="level-item" id="conv-s2r-lvl-1">
+      <div class="level-header">
+        <span class="level-name" onclick="convToggleLevel('s2r',1)">Nivel 1 — Grados enteros (ej: 45°, 120°)</span>
+        <div class="lq-controls">
+          <button class="lq-btn" onclick="convChgLvl('s2r',1,-1)">−</button>
+          <span class="lq-val" id="conv-s2r-lqv-1">0</span>
+          <button class="lq-btn" onclick="convChgLvl('s2r',1,+1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="level-item" id="conv-s2r-lvl-2">
+      <div class="level-header">
+        <span class="level-name" onclick="convToggleLevel('s2r',2)">Nivel 2 — Grados, minutos y segundos (ej: 32°17'18")</span>
+        <div class="lq-controls">
+          <button class="lq-btn" onclick="convChgLvl('s2r',2,-1)">−</button>
+          <span class="lq-val" id="conv-s2r-lqv-2">0</span>
+          <button class="lq-btn" onclick="convChgLvl('s2r',2,+1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RADIÁN → SEXAGESIMAL -->
+    <div style="font-size:0.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin:0.8rem 0 0.3rem">Radián → Sexagesimal</div>
+    <div class="level-item" id="conv-r2s-lvl-1">
+      <div class="level-header">
+        <span class="level-name" onclick="convToggleLevel('r2s',1)">Nivel 1 — Fracción exacta de π (ej: π/4, 2π/3)</span>
+        <div class="lq-controls">
+          <button class="lq-btn" onclick="convChgLvl('r2s',1,-1)">−</button>
+          <span class="lq-val" id="conv-r2s-lqv-1">0</span>
+          <button class="lq-btn" onclick="convChgLvl('r2s',1,+1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="level-item" id="conv-r2s-lvl-2">
+      <div class="level-header">
+        <span class="level-name" onclick="convToggleLevel('r2s',2)">Nivel 2 — Valor decimal de radianes (ej: 1.5 rad, 0.8 rad)</span>
+        <div class="lq-controls">
+          <button class="lq-btn" onclick="convChgLvl('r2s',2,-1)">−</button>
+          <span class="lq-val" id="conv-r2s-lqv-2">0</span>
+          <button class="lq-btn" onclick="convChgLvl('r2s',2,+1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-badge" id="conv-totalBadge">Total: <span>0</span> ejercicios</div>
+    <button class="btn-generar" id="conv-btnGenerar" onclick="generateConv()" style="display:none">Generar ejercitario</button>
+    <div class="ejercitario" id="conv-ejercitario"></div>
+    <button class="btn-download" id="conv-btnDownload" onclick="downloadEjercitario('conv-ejercitario','conversiones-trig')" style="display:none">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="conv-btnSolAparte" onclick="downloadSolucionesAparte('conv-ejercitario','conversiones-trig')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
   </div>
 
 </main>
@@ -4675,7 +4735,196 @@ function generateFfc() {
     });
   });
 })();
-</script>
+
+// ══════════════════════════════════════════════
+// CONVERSIONES — SEXAGESIMAL ↔ RADIÁN
+// ══════════════════════════════════════════════
+
+const convQtys = {
+  s2r: { 1: 0, 2: 0 },
+  r2s: { 1: 0, 2: 0 }
+};
+
+function convToggleLevel(grp, k) {
+  var el = document.getElementById('conv-' + grp + '-lvl-' + k);
+  var isActive = el.classList.contains('active');
+  convQtys[grp][k] = isActive ? 0 : 1;
+  document.getElementById('conv-' + grp + '-lqv-' + k).textContent = convQtys[grp][k];
+  el.classList.toggle('active', !isActive);
+  convUpdateTotal();
+}
+
+function convChgLvl(grp, k, delta) {
+  convQtys[grp][k] = Math.max(0, Math.min(20, (convQtys[grp][k] || 0) + delta));
+  document.getElementById('conv-' + grp + '-lqv-' + k).textContent = convQtys[grp][k];
+  var el = document.getElementById('conv-' + grp + '-lvl-' + k);
+  if (convQtys[grp][k] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  convUpdateTotal();
+}
+
+function convUpdateTotal() {
+  var t = (convQtys.s2r[1]||0) + (convQtys.s2r[2]||0) + (convQtys.r2s[1]||0) + (convQtys.r2s[2]||0);
+  document.getElementById('conv-totalBadge').innerHTML = 'Total: <span>' + t + '</span> ejercicios';
+  document.getElementById('conv-btnGenerar').style.display = t > 0 ? 'block' : 'none';
+}
+
+// ── Helpers matemáticos ──
+
+// Ángulos enteros "bonitos" para nivel 1 sex→rad
+var CONV_DEG_EXACT = [30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360];
+
+// Fracciones de π para nivel 1 rad→sex
+var CONV_RAD_FRAC = [
+  { num:1, den:6,  deg:30  },
+  { num:1, den:4,  deg:45  },
+  { num:1, den:3,  deg:60  },
+  { num:1, den:2,  deg:90  },
+  { num:2, den:3,  deg:120 },
+  { num:3, den:4,  deg:135 },
+  { num:5, den:6,  deg:150 },
+  { num:1, den:1,  deg:180 },
+  { num:7, den:6,  deg:210 },
+  { num:5, den:4,  deg:225 },
+  { num:4, den:3,  deg:240 },
+  { num:3, den:2,  deg:270 },
+  { num:5, den:3,  deg:300 },
+  { num:7, den:4,  deg:315 },
+  { num:11,den:6,  deg:330 },
+  { num:2, den:1,  deg:360 }
+];
+
+function mcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+
+// Convierte grados decimales a grados°min'seg"
+function decToDMS(decDeg) {
+  var d = Math.floor(decDeg);
+  var mFull = (decDeg - d) * 60;
+  var m = Math.floor(Math.round(mFull * 100) / 100);
+  var s = Math.round((mFull - m) * 60);
+  if (s === 60) { s = 0; m += 1; }
+  if (m === 60) { m = 0; d += 1; }
+  return { d: d, m: m, s: s };
+}
+
+// Muestra fracción de π como HTML
+function convPiFrac(num, den) {
+  if (den === 1 && num === 1) return '&pi;';
+  if (den === 1) return num + '&pi;';
+  if (num === 1) return '<span class="frac"><span>' + '&pi;' + '</span><span>' + den + '</span></span>';
+  return '<span class="frac"><span>' + num + '&pi;' + '</span><span>' + den + '</span></span>';
+}
+
+// Genera fracción reducida de pi para un ángulo dado
+function degToRadFrac(deg) {
+  // rad = deg * π / 180 → fracción num/den * π
+  var g = mcd(deg, 180);
+  var num = deg / g;
+  var den = 180 / g;
+  return { num: num, den: den };
+}
+
+// ── Generadores de ejercicios individuales ──
+
+function convGenS2R_L1() {
+  var pool = CONV_DEG_EXACT.slice();
+  var deg = pool[Math.floor(Math.random() * pool.length)];
+  var frac = degToRadFrac(deg);
+  var radHtml = convPiFrac(frac.num, frac.den);
+  return {
+    q: deg + '°',
+    a: radHtml + ' rad'
+  };
+}
+
+function convGenS2R_L2() {
+  // Ángulo con minutos y segundos — resultado puede no ser fracción exacta de π
+  var d = 10 + Math.floor(Math.random() * 350);
+  var m = Math.floor(Math.random() * 60);
+  var s = Math.floor(Math.random() * 60);
+  var decDeg = d + m / 60 + s / 3600;
+  var radVal = decDeg * Math.PI / 180;
+  // Intentar fracción exacta: rad = decDeg*π/180 → solo si decDeg/180 es fracción simple
+  var g = mcd(Math.round(decDeg * 3600), 180 * 3600);
+  var numRaw = Math.round(decDeg * 3600) / g;
+  var denRaw = (180 * 3600) / g;
+  var isExact = (denRaw <= 36 && numRaw <= 360 && Math.abs(numRaw / denRaw * 180 - decDeg) < 0.0001);
+  var ansHtml;
+  if (isExact) {
+    ansHtml = convPiFrac(numRaw, denRaw) + ' rad';
+  } else {
+    ansHtml = radVal.toFixed(4) + ' rad';
+  }
+  return {
+    q: d + '°' + m + "'" + s + '"',
+    a: ansHtml
+  };
+}
+
+function convGenR2S_L1() {
+  var pool = CONV_RAD_FRAC.slice();
+  var item = pool[Math.floor(Math.random() * pool.length)];
+  return {
+    q: convPiFrac(item.num, item.den) + ' rad',
+    a: item.deg + '°'
+  };
+}
+
+function convGenR2S_L2() {
+  // Valores decimales: múltiplos de 0.1 entre 0.1 y 6.2
+  var vals = [];
+  for (var i = 1; i <= 62; i++) { vals.push(+(i * 0.1).toFixed(1)); }
+  var rad = vals[Math.floor(Math.random() * vals.length)];
+  var decDeg = rad * 180 / Math.PI;
+  var dms = decToDMS(decDeg);
+  var ansStr = dms.d + '°' + dms.m + "'" + dms.s + '"';
+  return {
+    q: rad + ' rad',
+    a: ansStr
+  };
+}
+
+// ── Función principal generadora ──
+
+function generateConv(returnOnly, startId) {
+  var items = [];
+  var idCount = startId || 1;
+
+  var grupos = [
+    { grp:'s2r', lvl:1, label:'Sex→Rad Nivel 1 — Grados enteros',           fn: convGenS2R_L1 },
+    { grp:'s2r', lvl:2, label:'Sex→Rad Nivel 2 — Grados, minutos y segundos', fn: convGenS2R_L2 },
+    { grp:'r2s', lvl:1, label:'Rad→Sex Nivel 1 — Fracción de π',              fn: convGenR2S_L1 },
+    { grp:'r2s', lvl:2, label:'Rad→Sex Nivel 2 — Valor decimal',              fn: convGenR2S_L2 }
+  ];
+
+  grupos.forEach(function(g) {
+    var qty = convQtys[g.grp][g.lvl] || 0;
+    for (var i = 0; i < qty; i++) {
+      var ex = g.fn();
+      items.push({ id: idCount++, lvl: g.label, q: ex.q, a: ex.a });
+    }
+  });
+
+  if (returnOnly) return items;
+
+  var inclSol = document.getElementById('chk-incluir-sol') ? document.getElementById('chk-incluir-sol').checked : true;
+
+  var html = '<h3 style="text-align:center;margin:0 0 1rem">Conversiones — Sexagesimal ↔ Radián</h3>';
+  html += '<div style="display:grid;gap:0.6rem">';
+  items.forEach(function(it) {
+    html += '<div style="padding:0.5rem 0.8rem;border-left:3px solid var(--accent);background:#f8f9ff">';
+    html += '<span style="font-weight:600;margin-right:0.5rem">' + it.id + '.</span>';
+    html += 'Convertir <strong>' + it.q + '</strong>';
+    if (inclSol) {
+      html += ' <span style="color:#555;font-size:0.85rem">→ ' + it.a + '</span>';
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+
+  document.getElementById('conv-ejercitario').innerHTML = html;
+  document.getElementById('conv-btnDownload').style.display = 'block';
+}</script>
 
 <!-- ── Opción global: incluir soluciones ── -->
 <div class="sol-opt-bar" id="sol-opt-bar">
