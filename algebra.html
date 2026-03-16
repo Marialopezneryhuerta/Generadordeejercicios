@@ -926,7 +926,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="7" id="intro-lvl-7">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(7)">7 — Lenguaje algebraico A: oración → expresión algebraica</span>
+          <span class="level-name" onclick="introToggle(7)">1 — Lenguaje algebraico A: oración → expresión algebraica</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(7,-1)">−</button>
             <span class="lq-val" id="intro-lqv-7">0</span>
@@ -936,7 +936,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="8" id="intro-lvl-8">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(8)">8 — Lenguaje algebraico B: expresión algebraica → oración</span>
+          <span class="level-name" onclick="introToggle(8)">2 — Lenguaje algebraico B: expresión algebraica → oración</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(8,-1)">−</button>
             <span class="lq-val" id="intro-lqv-8">0</span>
@@ -946,7 +946,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="1" id="intro-lvl-1">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(1)">1 — Monomios: completar tabla (coeficiente, parte literal, grado)</span>
+          <span class="level-name" onclick="introToggle(1)">3 — Monomios: completar tabla (coeficiente, parte literal, grado)</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(1,-1)">−</button>
             <span class="lq-val" id="intro-lqv-1">0</span>
@@ -956,7 +956,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="2" id="intro-lvl-2">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(2)">2 — Polinomios: clasificar (binomio, trinomio, cuatrinomio)</span>
+          <span class="level-name" onclick="introToggle(2)">4 — Polinomios: clasificar (binomio, trinomio, cuatrinomio)</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(2,-1)">−</button>
             <span class="lq-val" id="intro-lqv-2">0</span>
@@ -966,7 +966,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="3" id="intro-lvl-3">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(3)">3 — Polinomios: completar tabla (términos, variables, grado)</span>
+          <span class="level-name" onclick="introToggle(3)">5 — Polinomios: completar tabla (términos, variables, grado)</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(3,-1)">−</button>
             <span class="lq-val" id="intro-lqv-3">0</span>
@@ -976,7 +976,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="4" id="intro-lvl-4">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(4)">4 — Monomios semejantes: selección múltiple</span>
+          <span class="level-name" onclick="introToggle(4)">6 — Monomios semejantes: selección múltiple</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(4,-1)">−</button>
             <span class="lq-val" id="intro-lqv-4">0</span>
@@ -986,7 +986,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="5" id="intro-lvl-5">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(5)">5 — Ordenar polinomios (descendente / ascendente)</span>
+          <span class="level-name" onclick="introToggle(5)">7 — Ordenar polinomios (descendente / ascendente)</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(5,-1)">−</button>
             <span class="lq-val" id="intro-lqv-5">0</span>
@@ -996,7 +996,7 @@ body { padding-bottom: 2.5rem; }
 
         <div class="level-item" data-level="6" id="intro-lvl-6">
           <span class="level-dot"></span>
-          <span class="level-name" onclick="introToggle(6)">6 — Polinomio incompleto y desordenado: escribilo ordenado y completo</span>
+          <span class="level-name" onclick="introToggle(6)">8 — Polinomio incompleto y desordenado: escribilo ordenado y completo</span>
           <div class="level-qty">
             <button class="lq-btn" onclick="introQty(6,-1)">−</button>
             <span class="lq-val" id="intro-lqv-6">0</span>
@@ -4198,7 +4198,7 @@ function genAct1(n) {
 }
 
 function renderAct1(rows, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 1 — Monomios: completá la tabla</div>
+  let html = `<div class="intro-section-title">Actividad 3 — Monomios: completá la tabla</div>
   <div class="intro-table-wrap">
   <table class="intro-table">
     <thead><tr>
@@ -4244,7 +4244,7 @@ function genAct2(n) {
 }
 
 function renderAct2(items, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 2 — Polinomios: clasificá (binomio / trinomio / cuatrinomio)</div>
+  let html = `<div class="intro-section-title">Actividad 4 — Polinomios: clasificá (binomio / trinomio / cuatrinomio)</div>
   <div class="intro-classify-list">`;
   items.forEach((it,i) => {
     html += `<div class="intro-classify-item">
@@ -4278,7 +4278,7 @@ function genAct3(n) {
 }
 
 function renderAct3(rows, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 3 — Polinomios: completá la tabla</div>
+  let html = `<div class="intro-section-title">Actividad 5 — Polinomios: completá la tabla</div>
   <div class="intro-table-wrap">
   <table class="intro-table">
     <thead><tr>
@@ -4366,7 +4366,7 @@ function genAct4(n) {
 }
 
 function renderAct4(items, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 4 — Monomios semejantes: marcá el semejante al monomio dado</div>`;
+  let html = `<div class="intro-section-title">Actividad 6 — Monomios semejantes: marcá el semejante al monomio dado</div>`;
   const sols = [];
   items.forEach((it,i) => {
     const id = startIdx+i;
@@ -4421,7 +4421,7 @@ function genAct5(n) {
 }
 
 function renderAct5(items, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 5 — Ordenar polinomios</div>
+  let html = `<div class="intro-section-title">Actividad 7 — Ordenar polinomios</div>
   <div class="intro-order-list">`;
   const sols = [];
   items.forEach((it,i) => {
@@ -4501,7 +4501,7 @@ function genAct6(n) {
 }
 
 function renderAct6(items, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 6 — El polinomio está incompleto y desordenado. Escribilo ordenado y completo</div>
+  let html = `<div class="intro-section-title">Actividad 8 — El polinomio está incompleto y desordenado. Escribilo ordenado y completo</div>
   <div class="intro-order-list">`;
   const sols = [];
   items.forEach((it,i) => {
@@ -4573,7 +4573,7 @@ function genAct7(n) {
 }
 
 function renderAct7(items, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 7 — Lenguaje algebraico A: escribí la expresión algebraica correspondiente a cada oración</div>
+  let html = `<div class="intro-section-title">Actividad 1 — Lenguaje algebraico A: escribí la expresión algebraica correspondiente a cada oración</div>
   <div class="intro-order-list">`;
   const sols = [];
   items.forEach((it, i) => {
@@ -4595,7 +4595,7 @@ function genAct8(n) {
 }
 
 function renderAct8(items, startIdx) {
-  let html = `<div class="intro-section-title">Actividad 8 — Lenguaje algebraico B: describí con palabras cada expresión algebraica</div>
+  let html = `<div class="intro-section-title">Actividad 2 — Lenguaje algebraico B: describí con palabras cada expresión algebraica</div>
   <div class="intro-order-list">`;
   const sols = [];
   items.forEach((it, i) => {
