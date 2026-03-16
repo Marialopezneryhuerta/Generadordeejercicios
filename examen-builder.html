@@ -75,19 +75,54 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 .rama-icon { font-size: 1.4rem; }
 .rama-soon { font-size: 0.62rem; font-weight: 700; color: var(--muted); background: var(--bg); padding: 0.1rem 0.4rem; border-radius: 6px; display: inline-block; }
 
-/* SUBTEMA CHIPS */
-.subtema-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.subtema-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.75rem 1rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.15s; background: var(--white); }
-.subtema-item:hover { border-color: var(--accent); }
-.subtema-item.active { border-color: var(--accent); background: var(--accent-light); }
-.subtema-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border); flex-shrink: 0; transition: background 0.15s; }
-.subtema-item.active .subtema-dot { background: var(--accent); }
-.subtema-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.88rem; color: var(--muted); }
-.subtema-item.active .subtema-name { color: var(--ink); }
-.subtema-levels { display: flex; gap: 0.3rem; margin-left: auto; flex-wrap: wrap; }
-.lvl-chip { font-size: 0.62rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 10px; cursor: pointer; border: 1.5px solid var(--border); color: var(--muted); font-family: 'Nunito', sans-serif; transition: all 0.15s; }
-.lvl-chip.sel { background: var(--accent); border-color: var(--accent); color: white; }
-.lvl-chip:hover:not(.sel) { border-color: var(--accent); color: var(--accent); }
+/* GRUPOS TEMÁTICOS */
+.grupos-list { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.grupo-block { border: 2px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color 0.15s; background: var(--white); }
+.grupo-block.open { border-color: var(--exam); }
+
+.grupo-header { display: flex; align-items: center; gap: 0.7rem; padding: 0.85rem 1rem; cursor: pointer; user-select: none; transition: background 0.15s; }
+.grupo-header:hover { background: var(--bg); }
+.grupo-block.open .grupo-header { background: var(--exam-light); }
+
+.grupo-arrow { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+.grupo-block.open .grupo-arrow { transform: rotate(90deg); color: var(--exam); }
+
+.grupo-nombre { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--ink); flex: 1; }
+.grupo-block.open .grupo-nombre { color: var(--exam); }
+
+.grupo-badge { font-family: 'Nunito', sans-serif; font-size: 0.65rem; font-weight: 800; background: var(--exam); color: white; padding: 0.15rem 0.55rem; border-radius: 20px; display: none; }
+.grupo-badge.visible { display: inline-block; }
+
+.grupo-body { display: none; padding: 0.5rem 0.8rem 0.8rem; border-top: 1px solid var(--border); }
+.grupo-block.open .grupo-body { display: block; }
+
+/* FILAS DE NIVEL */
+.nivel-fila { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.5rem; border-radius: 10px; transition: background 0.12s; }
+.nivel-fila:hover { background: var(--bg); }
+.nivel-fila.tiene-ejercicios { background: #f0fdf4; }
+
+.nivel-label { flex: 1; font-family: 'Nunito', sans-serif; font-size: 0.84rem; font-weight: 700; color: var(--ink); line-height: 1.3; }
+.nivel-sub { font-size: 0.7rem; font-weight: 600; color: var(--muted); display: block; }
+
+.nivel-badge { font-family: 'Nunito', sans-serif; font-size: 0.62rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 8px; background: var(--bg); color: var(--muted); border: 1.5px solid var(--border); white-space: nowrap; }
+
+.contador-wrap { display: flex; align-items: center; gap: 0; border: 2px solid var(--border); border-radius: 10px; overflow: hidden; flex-shrink: 0; transition: border-color 0.15s; }
+.nivel-fila.tiene-ejercicios .contador-wrap { border-color: var(--green); }
+
+.cnt-btn { width: 30px; height: 30px; border: none; background: var(--bg); color: var(--muted); font-size: 1.1rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Nunito', sans-serif; transition: background 0.12s; flex-shrink: 0; line-height: 1; }
+.cnt-btn:hover { background: var(--border); color: var(--ink); }
+.cnt-btn.cnt-plus:hover { background: var(--exam-light); color: var(--exam); }
+
+.cnt-val { width: 28px; text-align: center; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 900; color: var(--ink); background: var(--white); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 2px; line-height: 30px; }
+.nivel-fila.tiene-ejercicios .cnt-val { color: var(--green); }
+
+.btn-gen-ej-wrap { margin-top: 1rem; }
+.btn-gen-summary { font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 0.5rem; min-height: 1.2rem; }
+.btn-gen-summary strong { color: var(--exam); }
+
+/* Legacy chips (mantener por si acaso) */
+.lvl-chip { display:none; }
 
 /* CAMPOS DEL TEMA */
 .field-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.9rem; }
@@ -414,8 +449,11 @@ body { padding-bottom: 2.5rem; }
       <!-- SUBTEMAS (se muestra después de elegir rama) -->
       <div class="card" id="card-subtemas" style="display:none">
         <div class="card-title" id="subtemas-title">Temas disponibles</div>
-        <div id="subtemas-list"></div>
-        <button class="btn-gen-ej" style="margin-top:1rem" onclick="generarEjerciciosTema()">🎲 Ver ejercicios</button>
+        <div class="grupos-list" id="grupos-list"></div>
+        <div class="btn-gen-ej-wrap" id="btn-gen-wrap" style="display:none">
+          <div class="btn-gen-summary" id="btn-gen-summary"></div>
+          <button class="btn-gen-ej" onclick="generarEjerciciosTema()">🎲 Generar ejercicios</button>
+        </div>
       </div>
 
       <!-- CAMPOS DEL TEMA: título + indicadores -->
@@ -1283,6 +1321,7 @@ function goScreen(id){
 }
 function iniciarExamen(){
   STATE.temas=[];STATE.temaActual={titulo:'',indicadores:[],ejercicios:[]};STATE.temaIndex=1;
+  contadores={};currentRama=null;
   renderStepBar();
   renderSidebar();
   goScreen('screen-tema');
@@ -1290,6 +1329,7 @@ function iniciarExamen(){
   document.getElementById('card-subtemas').style.display='none';
   document.getElementById('card-tema-datos').style.display='none';
   document.getElementById('card-ejercicios').style.display='none';
+  document.querySelectorAll('.rama-btn').forEach(b=>b.classList.remove('active'));
 }
 function renderStepBar(){
   const wrap=document.getElementById('step-bar-wrap');
@@ -1302,56 +1342,227 @@ function renderStepBar(){
 }
 
 // ══════════════════════════════════════════════════════════════
-// SELECCIÓN DE RAMA Y SUBTEMA
+// GRUPOS TEMÁTICOS POR RAMA
 // ══════════════════════════════════════════════════════════════
+const GRUPOS = {
+  algebra: [
+    { nombre:'Ecuaciones', ids:['ec-lin','ec-exp','ec-log'] },
+    { nombre:'Expresiones Algebraicas', ids:['intro-monop','intro-homhet','intro-probexpr'] },
+    { nombre:'Monomios', ids:['mon-suma','mon-resta','mon-mult','mon-div','mon-pot','mon-rad'] },
+    { nombre:'Polinomios', ids:['poly-suma','poly-resta','poly-multmp','poly-multpp','poly-divpm','poly-divpp','poly-resto','poly-ruffini','poly-ruffini2'] },
+    { nombre:'Productos Notables', ids:['pn-cb2e','pn-cb2f','pn-cb3e','pn-cb3f','pn-sde','pn-sdf'] },
+    { nombre:'Valor Numérico', ids:['vn-1','vn-2','vn-3'] },
+    { nombre:'Sucesiones', ids:['suc-car1','suc-car2','suc-car3','suc-rep1','suc-rep2','suc-tg1','suc-tg2','suc-prob1','suc-prob2'] },
+    { nombre:'Progresiones Aritméticas', ids:['pa-con','pa-tg','pa-suma','pa-prob'] },
+    { nombre:'Situaciones Problemáticas', ids:['sp-alg1','sp-alg2','sp-alg3'] },
+    { nombre:'Radicales', ids:['rad-exactas','rad-extraccion','rad-sumaresta','rad-multI','rad-multII','rad-multIII','rad-divI','rad-multIndices','rad-divIndices','rad-potI','rad-potII','rad-racI','rad-racII','rad-racIII','rad-racIV'] },
+  ],
+  aritmetica: [
+    { nombre:'Enteros', ids:['ent-sr','ent-mu','ent-dv','ent-po','ent-ra'] },
+    { nombre:'Racionales (Fracciones)', ids:['rac-sr','rac-mu','rac-dv','rac-po','rac-ra','rac-cs','rac-cc'] },
+    { nombre:'Raíz Cuadrada', ids:['rc-ex1','rc-ex2','rc-inex1','rc-inex2'] },
+    { nombre:'Situaciones Problemáticas', ids:['sp-arit1','sp-arit2','sp-arit3'] },
+  ],
+  trigonometria: [
+    { nombre:'Ecuaciones Trigonométricas', ids:['trig-ec'] },
+    { nombre:'Triángulos Oblicuángulos', ids:['tri-seno','tri-coseno','tri-ambas','tri-earea','tri-eperim','tri-pseno','tri-pcoseno','tri-pambas','tri-parea','tri-pperim'] },
+    { nombre:'Identidades Trigonométricas', ids:['trig-id1','trig-id2','trig-id3'] },
+    { nombre:'Fórmulas de Arco Doble', ids:['trig-fmad1','trig-fmad2'] },
+    { nombre:'Func. Trig. en Triángulo Rectángulo', ids:['trigrect-1','trigrect-2','trigrect-3','trigrect-4','trigrect-5','trigrect-6','trigrect-7','trigrect-8','trigrect-9'] },
+    { nombre:'Fórmulas Fundamentales', ids:['ffc-1','ffc-2','ffc-3'] },
+  ],
+  geometria: [
+    { nombre:'Parábolas', ids:['geom-par'] },
+    { nombre:'Circunferencia', ids:['geom-cir00','geom-cirhk'] },
+    { nombre:'Puntos', ids:['geom-pr-p1','geom-pr-p2','geom-pr-p3','geom-pr-p4','geom-pr-p5'] },
+    { nombre:'Rectas', ids:['geom-pr-r1','geom-pr-r2','geom-pr-r3','geom-pr-r4','geom-pr-r5','geom-pr-r6','geom-pr-r7','geom-pr-r8','geom-pr-r9','geom-pr-r10'] },
+  ],
+  calculo: [
+    { nombre:'Inecuaciones', ids:['ineq-lin','ineq-cuad'] },
+    { nombre:'Concepto de Función', ids:['fc-rel','fc-vdi','fc-tv','fc-diag'] },
+    { nombre:'Función Real', ids:['ra-tipo','ra-prop','ra-sit'] },
+    { nombre:'Funciones Gráficas', ids:['fg-lin','fg-cua','fg-cub'] },
+    { nombre:'Características de Funciones', ids:['car-dr','car-crec','car-mm'] },
+    { nombre:'Intervalos y Notación', ids:['ri-dib','ri-esc','not-fil'] },
+  ],
+};
+
+// contadores: { "st-id__nivel": cantidad }
+let contadores = {};
+
 function selRama(rama){
-  currentRama=rama;
+  currentRama = rama;
+  contadores = {};
   document.querySelectorAll('.rama-btn').forEach(b=>b.classList.remove('active'));
   event.currentTarget.classList.add('active');
-  const cat=CATALOG[rama];
-  if(!cat||cat.subtemas.length===0){
-    alert('Este módulo estará disponible próximamente. Elegí Álgebra por ahora.');
+  const cat = CATALOG[rama];
+  if(!cat || cat.subtemas.length === 0){
+    alert('Este módulo estará disponible próximamente.');
     return;
   }
-  const list=document.getElementById('subtemas-list');
-  document.getElementById('subtemas-title').textContent=`Temas de ${cat.label}`;
-  list.innerHTML='';
-  cat.subtemas.forEach(st=>{
-    const div=document.createElement('div');
-    div.className='subtema-item';
-    div.id='st-'+st.id;
-    div.innerHTML=`
-      <div class="subtema-dot"></div>
-      <span class="subtema-name">${st.label}</span>
-      <div class="subtema-levels">
-        ${st.niveles.map(n=>`<button class="lvl-chip${n===1?' sel':''}" data-st="${st.id}" data-lvl="${n}" onclick="selLvlChip(this)">${n}</button>`).join('')}
-      </div>`;
-    div.addEventListener('click',(e)=>{if(e.target.classList.contains('lvl-chip'))return;selSubtema(st.id);});
-    list.appendChild(div);
+  const grupos = GRUPOS[rama] || [];
+  const container = document.getElementById('grupos-list');
+  container.innerHTML = '';
+
+  grupos.forEach((grupo, gi) => {
+    const subtemas = grupo.ids.map(id => cat.subtemas.find(s => s.id === id)).filter(Boolean);
+    if(subtemas.length === 0) return;
+
+    const block = document.createElement('div');
+    block.className = 'grupo-block';
+    block.id = 'grupo-' + gi;
+
+    // Armar filas de nivel
+    let filasHTML = '';
+    subtemas.forEach(st => {
+      // Construir nombre base y descripción de nivel
+      // Si el label tiene " — ", separar en nombre + sub
+      const partes = st.label.split(' — ');
+      const nombreBase = partes[0];
+      const subLabel = partes[1] || '';
+      // Cada nivel es una fila independiente
+      st.niveles.forEach(lvl => {
+        const key = st.id + '__' + lvl;
+        const labelFila = st.niveles.length > 1
+          ? `<span class="nivel-label">${nombreBase}<span class="nivel-sub">${subLabel || 'Nivel '+lvl}</span></span><span class="nivel-badge">Niv. ${lvl}</span>`
+          : `<span class="nivel-label">${nombreBase}${subLabel ? '<span class="nivel-sub">'+subLabel+'</span>' : ''}</span>`;
+        filasHTML += `<div class="nivel-fila" id="fila-${key}">
+          ${labelFila}
+          <div class="contador-wrap">
+            <button class="cnt-btn" onclick="cambiarCnt('${key}',-1,event)">−</button>
+            <div class="cnt-val" id="cnt-${key}">0</div>
+            <button class="cnt-btn cnt-plus" onclick="cambiarCnt('${key}',1,event)">+</button>
+          </div>
+        </div>`;
+      });
+    });
+
+    block.innerHTML = `
+      <div class="grupo-header" onclick="toggleGrupo(${gi})">
+        <span class="grupo-arrow">▶</span>
+        <span class="grupo-nombre">${grupo.nombre}</span>
+        <span class="grupo-badge" id="gbadge-${gi}"></span>
+      </div>
+      <div class="grupo-body">${filasHTML}</div>`;
+    container.appendChild(block);
   });
-  document.getElementById('card-subtemas').style.display='block';
-  document.getElementById('card-tema-datos').style.display='block';
-  document.getElementById('card-ejercicios').style.display='none';
+
+  document.getElementById('subtemas-title').textContent = 'Temas de ' + cat.label;
+  document.getElementById('card-subtemas').style.display = 'block';
+  document.getElementById('btn-gen-wrap').style.display = 'none';
+  document.getElementById('card-tema-datos').style.display = 'block';
+  document.getElementById('card-ejercicios').style.display = 'none';
 }
 
-function selLvlChip(btn){
-  const stId=btn.dataset.st;
-  document.querySelectorAll(`.lvl-chip[data-st="${stId}"]`).forEach(c=>c.classList.remove('sel'));
-  btn.classList.add('sel');
-  if(currentSubtema===stId) currentLvl=parseInt(btn.dataset.lvl);
+function toggleGrupo(gi){
+  const block = document.getElementById('grupo-' + gi);
+  if(!block) return;
+  block.classList.toggle('open');
 }
 
-function selSubtema(id){
-  currentSubtema=id;
-  document.querySelectorAll('.subtema-item').forEach(i=>i.classList.remove('active'));
-  document.getElementById('st-'+id)?.classList.add('active');
-  const lvlChip=document.querySelector(`.lvl-chip[data-st="${id}"].sel`);
-  currentLvl=lvlChip?parseInt(lvlChip.dataset.lvl):1;
+function cambiarCnt(key, delta, evt){
+  evt.stopPropagation();
+  const cur = contadores[key] || 0;
+  const nuevo = Math.max(0, Math.min(20, cur + delta));
+  contadores[key] = nuevo;
+  const el = document.getElementById('cnt-' + key);
+  if(el) el.textContent = nuevo;
+  // Actualizar clase fila
+  const fila = document.getElementById('fila-' + key);
+  if(fila) fila.classList.toggle('tiene-ejercicios', nuevo > 0);
+  // Actualizar badge del grupo
+  actualizarBadgesGrupos();
+  // Mostrar/ocultar botón generar
+  actualizarBtnGenerar();
 }
+
+function actualizarBadgesGrupos(){
+  const cat = CATALOG[currentRama];
+  if(!cat) return;
+  const grupos = GRUPOS[currentRama] || [];
+  grupos.forEach((grupo, gi) => {
+    const subtemas = grupo.ids.map(id => cat.subtemas.find(s => s.id === id)).filter(Boolean);
+    let total = 0;
+    subtemas.forEach(st => {
+      st.niveles.forEach(lvl => {
+        total += contadores[st.id + '__' + lvl] || 0;
+      });
+    });
+    const badge = document.getElementById('gbadge-' + gi);
+    if(badge){
+      if(total > 0){
+        badge.textContent = total + ' ej.';
+        badge.classList.add('visible');
+      } else {
+        badge.classList.remove('visible');
+      }
+    }
+  });
+}
+
+function actualizarBtnGenerar(){
+  const total = Object.values(contadores).reduce((s, v) => s + v, 0);
+  const wrap = document.getElementById('btn-gen-wrap');
+  const summary = document.getElementById('btn-gen-summary');
+  if(total > 0){
+    wrap.style.display = 'block';
+    summary.innerHTML = 'Se van a generar <strong>' + total + ' ejercicio' + (total !== 1 ? 's' : '') + '</strong> según tu selección.';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+// Legacy stubs (no longer needed but kept to avoid errors)
+function selLvlChip(btn){}
+function selSubtema(id){}
 
 // ══════════════════════════════════════════════════════════════
-// INDICADORES
+// GENERAR EJERCICIOS
 // ══════════════════════════════════════════════════════════════
+function generarEjerciciosTema(){
+  const total = Object.values(contadores).reduce((s, v) => s + v, 0);
+  if(total === 0){ alert('Usá los botones + para indicar cuántos ejercicios querés de cada tema.'); return; }
+  const cat = CATALOG[currentRama];
+  const seen = new Set();
+  currentItems = [];
+
+  // Iterar en orden por cada key con cantidad > 0
+  for(const [key, cant] of Object.entries(contadores)){
+    if(cant === 0) continue;
+    const [stId, lvlStr] = key.split('__');
+    const lvl = parseInt(lvlStr);
+    const st = cat.subtemas.find(s => s.id === stId);
+    if(!st) continue;
+    let generados = 0;
+    let att = 0;
+    while(generados < cant && att < cant * 30){
+      att++;
+      try{
+        const item = st.gen(lvl);
+        if(!item || seen.has(item.expr)) continue;
+        seen.add(item.expr);
+        currentItems.push({...item, id: currentItems.length + 1, subtema: st.label, lvl});
+        generados++;
+      }catch(e){}
+    }
+  }
+
+  if(currentItems.length === 0){ alert('No se pudieron generar ejercicios. Intentá con otra selección.'); return; }
+
+  // Título automático con los grupos activos
+  const gruposActivos = [];
+  const grupos = GRUPOS[currentRama] || [];
+  grupos.forEach((grupo, gi) => {
+    const subtemas = (grupo.ids.map(id => cat.subtemas.find(s => s.id === id))).filter(Boolean);
+    const tieneAlgo = subtemas.some(st => st.niveles.some(lvl => (contadores[st.id+'__'+lvl]||0)>0));
+    if(tieneAlgo) gruposActivos.push(grupo.nombre);
+  });
+  const tituloAuto = gruposActivos.slice(0,2).join(' · ') + (gruposActivos.length > 2 ? ' y más' : '');
+  document.getElementById('ej-card-title').textContent = tituloAuto || 'Ejercicios generados';
+  renderEjItems();
+  document.getElementById('card-ejercicios').style.display = 'block';
+  document.getElementById('card-ejercicios').scrollIntoView({behavior:'smooth', block:'start'});
+}
 let indRows=[];
 function renderIndTable(){
   indRows=[{texto:'',pts:0},{texto:'',pts:0}];
@@ -1519,7 +1730,7 @@ function finalizarTema(){
   document.querySelectorAll('.rama-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('card-subtemas').style.display='none';
   document.getElementById('card-ejercicios').style.display='none';
-  currentRama=null;currentSubtema=null;currentItems=[];
+  currentRama=null;currentSubtema=null;currentItems=[];contadores={};
   renderIndTable();
   renderStepBar();
   renderSidebar();
