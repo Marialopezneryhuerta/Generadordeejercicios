@@ -1508,6 +1508,7 @@ body { padding-bottom: 2.5rem; }
     <div class="card">
       <div class="card-title"><span class="icon" style="background:#f0f4ff">📈</span> Tipo de ejercicio</div>
       <div class="subtype-selector" style="flex-wrap:wrap;gap:0.4rem">
+        <button class="subtype-btn" id="pa-sub-todos"     onclick="paSetSubtype('todos')">📋 Todos</button>
         <button class="subtype-btn active" id="pa-sub-conceptos"  onclick="paSetSubtype('conceptos')">📚 Conceptos</button>
         <button class="subtype-btn" id="pa-sub-tgeneral"  onclick="paSetSubtype('tgeneral')">🔢 Término general</button>
         <button class="subtype-btn" id="pa-sub-suma"      onclick="paSetSubtype('suma')">∑ Suma</button>
@@ -1704,6 +1705,170 @@ body { padding-bottom: 2.5rem; }
       <div class="ejercitario" id="pa-prob-ejercitario"></div>
       <button class="btn-download" id="pa-prob-btnDownload" onclick="downloadEjercitario('pa-prob-ejercitario','pa-problemas')" style="display:none">⬇️ Descargar PDF</button>
       <button class="btn-download-sol" id="pa-prob-btnSolAparte" onclick="downloadSolucionesAparte('pa-prob-ejercitario','pa-problemas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+    </div>
+
+    <!-- TODOS -->
+    <div id="pa-section-todos" style="display:none">
+      <div class="card">
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Conceptos</div>
+        <div class="levels">
+          <div class="level-item" id="pa-tcon-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 1 — Identificar si es PA</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosConChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-tcon-q1">0</span>
+              <button class="lq-btn" onclick="paTodosConChg(1,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tcon-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 2 — Hallar la razón</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosConChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-tcon-q2">0</span>
+              <button class="lq-btn" onclick="paTodosConChg(2,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tcon-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 3 — Clasificar la PA (creciente / decreciente / constante)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosConChg(3,-1)">−</button>
+              <span class="lq-val" id="pa-tcon-q3">0</span>
+              <button class="lq-btn" onclick="paTodosConChg(3,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tcon-lvl4">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 4 — Escribir la PA dado a₁ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosConChg(4,-1)">−</button>
+              <span class="lq-val" id="pa-tcon-q4">0</span>
+              <button class="lq-btn" onclick="paTodosConChg(4,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tcon-lvl5">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 5 — Escribir la PA dado aₙ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosConChg(5,-1)">−</button>
+              <span class="lq-val" id="pa-tcon-q5">0</span>
+              <button class="lq-btn" onclick="paTodosConChg(5,+1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Término general</div>
+        <div class="levels">
+          <div class="level-item" id="pa-ttg-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 1 — Escribir la PA dado aₙ</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosTgChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-ttg-q1">0</span>
+              <button class="lq-btn" onclick="paTodosTgChg(1,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-ttg-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 2 — Escribir la ecuación de aₙ dado a₁ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosTgChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-ttg-q2">0</span>
+              <button class="lq-btn" onclick="paTodosTgChg(2,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-ttg-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 3 — Hallar un término específico (a₂₅, a₅₀…)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosTgChg(3,-1)">−</button>
+              <span class="lq-val" id="pa-ttg-q3">0</span>
+              <button class="lq-btn" onclick="paTodosTgChg(3,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-ttg-lvl4">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 4 — Ecuación dado aₙ y r</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosTgChg(4,-1)">−</button>
+              <span class="lq-val" id="pa-ttg-q4">0</span>
+              <button class="lq-btn" onclick="paTodosTgChg(4,+1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Suma de términos</div>
+        <div class="levels">
+          <div class="level-item" id="pa-tsum-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 1 — Suma de primeros n términos</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosSumChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-tsum-q1">0</span>
+              <button class="lq-btn" onclick="paTodosSumChg(1,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tsum-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 2 — Suma de múltiplos</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosSumChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-tsum-q2">0</span>
+              <button class="lq-btn" onclick="paTodosSumChg(2,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tsum-lvl3">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 3 — Hallar la razón dada la suma</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosSumChg(3,-1)">−</button>
+              <span class="lq-val" id="pa-tsum-q3">0</span>
+              <button class="lq-btn" onclick="paTodosSumChg(3,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tsum-lvl4">
+            <span class="level-dot"></span>
+            <span class="level-name">Tipo 4 — Resolver ecuación de suma</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosSumChg(4,-1)">−</button>
+              <span class="lq-val" id="pa-tsum-q4">0</span>
+              <button class="lq-btn" onclick="paTodosSumChg(4,+1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon" style="background:#f0fdf4">📊</span> Niveles — Situaciones problemáticas</div>
+        <div class="levels">
+          <div class="level-item" id="pa-tprob-lvl1">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 1 — Contexto directo (PA en situaciones cotidianas)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosProbChg(1,-1)">−</button>
+              <span class="lq-val" id="pa-tprob-q1">0</span>
+              <button class="lq-btn" onclick="paTodosProbChg(1,+1)">+</button>
+            </div>
+          </div>
+          <div class="level-item" id="pa-tprob-lvl2">
+            <span class="level-dot"></span>
+            <span class="level-name">Nivel 2 — Problemas completos (suma + término general)</span>
+            <div class="level-qty">
+              <button class="lq-btn" onclick="paTodosProbChg(2,-1)">−</button>
+              <span class="lq-val" id="pa-tprob-q2">0</span>
+              <button class="lq-btn" onclick="paTodosProbChg(2,+1)">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="total-badge" id="pa-todos-totalBadge">Total: <span>0</span> ejercicios</div>
+      </div>
+      <button class="btn-generate" onclick="generatePATodos()">⚡ Generar ejercitario</button>
+      <div class="ejercitario" id="pa-todos-ejercitario"></div>
+      <button class="btn-download" id="pa-todos-btnDownload" onclick="downloadEjercitario('pa-todos-ejercitario','pa-progresion-aritmetica-todos')" style="display:none">⬇️ Descargar PDF</button>
+      <button class="btn-download-sol" id="pa-todos-btnSolAparte" onclick="downloadSolucionesAparte('pa-todos-ejercitario','pa-progresion-aritmetica-todos')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
     </div>
 
   </div><!-- fin panel-pa -->
@@ -7834,10 +7999,52 @@ function generateSucProblemas() {
 
 // ── Navegación de subtipos ──
 function paSetSubtype(sub) {
-  ['conceptos','tgeneral','suma','problemas'].forEach(function(s) {
+  ['conceptos','tgeneral','suma','problemas','todos'].forEach(function(s) {
     document.getElementById('pa-section-'+s).style.display = s===sub ? '' : 'none';
     document.getElementById('pa-sub-'+s).classList.toggle('active', s===sub);
   });
+}
+
+// ── Qtys (Todos — conjuntos propios para no interferir con las secciones individuales) ──
+var paTodosConQtys  = {1:0, 2:0, 3:0, 4:0, 5:0};
+var paTodosTgQtys   = {1:0, 2:0, 3:0, 4:0};
+var paTodosSumQtys  = {1:0, 2:0, 3:0, 4:0};
+var paTodosProbQtys = {1:0, 2:0};
+
+function paTodosUpdateTotal() {
+  var t = Object.values(paTodosConQtys).reduce(function(s,v){return s+v;},0) +
+          Object.values(paTodosTgQtys).reduce(function(s,v){return s+v;},0) +
+          Object.values(paTodosSumQtys).reduce(function(s,v){return s+v;},0) +
+          Object.values(paTodosProbQtys).reduce(function(s,v){return s+v;},0);
+  document.getElementById('pa-todos-totalBadge').querySelector('span').textContent = t;
+}
+function paTodosConChg(n, d) {
+  paTodosConQtys[n] = Math.max(0, (paTodosConQtys[n]||0) + d);
+  document.getElementById('pa-tcon-q'+n).textContent = paTodosConQtys[n];
+  var lvl = document.getElementById('pa-tcon-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paTodosConQtys[n] > 0);
+  paTodosUpdateTotal();
+}
+function paTodosTgChg(n, d) {
+  paTodosTgQtys[n] = Math.max(0, (paTodosTgQtys[n]||0) + d);
+  document.getElementById('pa-ttg-q'+n).textContent = paTodosTgQtys[n];
+  var lvl = document.getElementById('pa-ttg-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paTodosTgQtys[n] > 0);
+  paTodosUpdateTotal();
+}
+function paTodosSumChg(n, d) {
+  paTodosSumQtys[n] = Math.max(0, (paTodosSumQtys[n]||0) + d);
+  document.getElementById('pa-tsum-q'+n).textContent = paTodosSumQtys[n];
+  var lvl = document.getElementById('pa-tsum-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paTodosSumQtys[n] > 0);
+  paTodosUpdateTotal();
+}
+function paTodosProbChg(n, d) {
+  paTodosProbQtys[n] = Math.max(0, (paTodosProbQtys[n]||0) + d);
+  document.getElementById('pa-tprob-q'+n).textContent = paTodosProbQtys[n];
+  var lvl = document.getElementById('pa-tprob-lvl'+n);
+  if (lvl) lvl.classList.toggle('active', paTodosProbQtys[n] > 0);
+  paTodosUpdateTotal();
 }
 
 // ── Qtys (Conceptos) ──
@@ -8364,6 +8571,43 @@ function generatePaProblemas(returnOnly, startId) {
 // ════════════════════════════════════════════
 // GENERADOR PA — COMBINADO (chips multi-selección)
 // ════════════════════════════════════════════
+// ════════════════════════════════════════════
+// GENERADOR PA — TODOS (combinado)
+// ════════════════════════════════════════════
+function generatePATodos() {
+  var totalGlobal = Object.values(paTodosConQtys).reduce(function(s,v){return s+v;},0) +
+                    Object.values(paTodosTgQtys).reduce(function(s,v){return s+v;},0) +
+                    Object.values(paTodosSumQtys).reduce(function(s,v){return s+v;},0) +
+                    Object.values(paTodosProbQtys).reduce(function(s,v){return s+v;},0);
+  if (totalGlobal === 0) { alert('Agregá al menos un ejercicio usando los botones +'); return; }
+
+  // Guardar qtys originales y reemplazar temporalmente con los de Todos
+  var _con  = paConQtys;  var _tg   = paTgQtys;
+  var _sum  = paSumQtys;  var _prob = paProbQtys;
+  paConQtys  = paTodosConQtys;  paTgQtys   = paTodosTgQtys;
+  paSumQtys  = paTodosSumQtys;  paProbQtys = paTodosProbQtys;
+
+  var idCursor = 1;
+  var ejFull = ''; var solFull = '<div class="solutions-title">✓ Soluciones</div>';
+
+  var rCon  = generatePaConceptos(true, idCursor);
+  if (rCon)  { idCursor += rCon.count;  ejFull += rCon.ejHTML;  solFull += rCon.solHTML; }
+
+  var rTg   = generatePaTgeneral(true, idCursor);
+  if (rTg)   { idCursor += rTg.count;   ejFull += rTg.ejHTML;   solFull += rTg.solHTML; }
+
+  var rSum  = generatePaSuma(true, idCursor);
+  if (rSum)  { idCursor += rSum.count;  ejFull += rSum.ejHTML;  solFull += rSum.solHTML; }
+
+  var rProb = generatePaProblemas(true, idCursor);
+  if (rProb) { idCursor += rProb.count; ejFull += rProb.ejHTML; solFull += rProb.solHTML; }
+
+  // Restaurar qtys originales
+  paConQtys = _con; paTgQtys = _tg; paSumQtys = _sum; paProbQtys = _prob;
+
+  paRender('pa-todos-ejercitario', 'pa-todos-btnDownload', 'Progresión Aritmética', ejFull, solFull);
+}
+
 function generatePA() {
   // Detectar qué subtype está activo
   var activeSubBtn = document.querySelector('#panel-pa .subtype-btn.active');
