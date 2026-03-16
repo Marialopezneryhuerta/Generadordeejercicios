@@ -381,6 +381,9 @@ body.sin-soluciones .sp-sol-grid { display: none !important; }
     <button class="topic-btn" id="topic-conv" onclick="switchTopic('conv')">
       🔁 Conversiones — Sexagesimal ↔ Radián
     </button>
+    <button class="topic-btn" id="topic-arc" onclick="switchTopic('arc')">
+      📏 Longitud de Arco
+    </button>
   </div>
 
   <!-- ══════════════════════════════════════ -->
@@ -916,55 +919,140 @@ body.sin-soluciones .sp-sol-grid { display: none !important; }
 
     <!-- SEXAGESIMAL → RADIÁN -->
     <div style="font-size:0.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin:0.4rem 0 0.3rem">Sexagesimal → Radián</div>
-    <div class="level-item" id="conv-s2r-lvl-1">
-      <div class="level-header">
-        <span class="level-name" onclick="convToggleLevel('s2r',1)">Nivel 1 — Grados enteros (ej: 45°, 120°)</span>
-        <div class="lq-controls">
-          <button class="lq-btn" onclick="convChgLvl('s2r',1,-1)">−</button>
-          <span class="lq-val" id="conv-s2r-lqv-1">0</span>
-          <button class="lq-btn" onclick="convChgLvl('s2r',1,+1)">+</button>
-        </div>
+    <div class="level-item" data-level="1" id="conv-s2r-lvl-1">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="convToggleLevel('s2r',1)">Nivel 1 — Grados enteros (ej: 45°, 120°)</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="convChgLvl('s2r',1,-1)">−</button>
+        <span class="lq-val" id="conv-s2r-lqv-1">0</span>
+        <button class="lq-btn" onclick="convChgLvl('s2r',1,+1)">+</button>
       </div>
     </div>
-    <div class="level-item" id="conv-s2r-lvl-2">
-      <div class="level-header">
-        <span class="level-name" onclick="convToggleLevel('s2r',2)">Nivel 2 — Grados, minutos y segundos (ej: 32°17'18")</span>
-        <div class="lq-controls">
-          <button class="lq-btn" onclick="convChgLvl('s2r',2,-1)">−</button>
-          <span class="lq-val" id="conv-s2r-lqv-2">0</span>
-          <button class="lq-btn" onclick="convChgLvl('s2r',2,+1)">+</button>
-        </div>
+    <div class="level-item" data-level="2" id="conv-s2r-lvl-2">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="convToggleLevel('s2r',2)">Nivel 2 — Grados, minutos y segundos (ej: 32°17'18")</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="convChgLvl('s2r',2,-1)">−</button>
+        <span class="lq-val" id="conv-s2r-lqv-2">0</span>
+        <button class="lq-btn" onclick="convChgLvl('s2r',2,+1)">+</button>
       </div>
     </div>
 
     <!-- RADIÁN → SEXAGESIMAL -->
     <div style="font-size:0.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin:0.8rem 0 0.3rem">Radián → Sexagesimal</div>
-    <div class="level-item" id="conv-r2s-lvl-1">
-      <div class="level-header">
-        <span class="level-name" onclick="convToggleLevel('r2s',1)">Nivel 1 — Fracción exacta de π (ej: π/4, 2π/3)</span>
-        <div class="lq-controls">
-          <button class="lq-btn" onclick="convChgLvl('r2s',1,-1)">−</button>
-          <span class="lq-val" id="conv-r2s-lqv-1">0</span>
-          <button class="lq-btn" onclick="convChgLvl('r2s',1,+1)">+</button>
-        </div>
+    <div class="level-item" data-level="3" id="conv-r2s-lvl-1">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="convToggleLevel('r2s',1)">Nivel 1 — Fracción exacta de π (ej: π/4, 2π/3)</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="convChgLvl('r2s',1,-1)">−</button>
+        <span class="lq-val" id="conv-r2s-lqv-1">0</span>
+        <button class="lq-btn" onclick="convChgLvl('r2s',1,+1)">+</button>
       </div>
     </div>
-    <div class="level-item" id="conv-r2s-lvl-2">
-      <div class="level-header">
-        <span class="level-name" onclick="convToggleLevel('r2s',2)">Nivel 2 — Valor decimal de radianes (ej: 1.5 rad, 0.8 rad)</span>
-        <div class="lq-controls">
-          <button class="lq-btn" onclick="convChgLvl('r2s',2,-1)">−</button>
-          <span class="lq-val" id="conv-r2s-lqv-2">0</span>
-          <button class="lq-btn" onclick="convChgLvl('r2s',2,+1)">+</button>
-        </div>
+    <div class="level-item" data-level="4" id="conv-r2s-lvl-2">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="convToggleLevel('r2s',2)">Nivel 2 — Valor decimal de radianes (ej: 1.5 rad, 0.8 rad)</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="convChgLvl('r2s',2,-1)">−</button>
+        <span class="lq-val" id="conv-r2s-lqv-2">0</span>
+        <button class="lq-btn" onclick="convChgLvl('r2s',2,+1)">+</button>
       </div>
     </div>
 
     <div class="total-badge" id="conv-totalBadge">Total: <span>0</span> ejercicios</div>
-    <button class="btn-generar" id="conv-btnGenerar" onclick="generateConv()" style="display:none">Generar ejercitario</button>
+    <button class="btn-generate" onclick="generateConv()">⚡ Generar ejercitario</button>
     <div class="ejercitario" id="conv-ejercitario"></div>
     <button class="btn-download" id="conv-btnDownload" onclick="downloadEjercitario('conv-ejercitario','conversiones-trig')" style="display:none">⬇️ Descargar PDF</button>
     <button class="btn-download-sol" id="conv-btnSolAparte" onclick="downloadSolucionesAparte('conv-ejercitario','conversiones-trig')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       PANEL: LONGITUD DE ARCO
+  ═══════════════════════════════════════════════════════ -->
+  <div class="section-panel" id="panel-arc">
+    <h2 style="margin:0 0 0.5rem">📏 Longitud de Arco</h2>
+
+    <!-- EJERCICIOS -->
+    <div style="font-size:0.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin:0.4rem 0 0.3rem">Ejercicios</div>
+
+    <div class="level-item" data-level="1" id="arc-ej-lvl-1">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('ej',1)">Dado r y ángulo en grados → hallar longitud de arco</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('ej',1,-1)">−</button>
+        <span class="lq-val" id="arc-ej-lqv-1">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('ej',1,+1)">+</button>
+      </div>
+    </div>
+
+    <div class="level-item" data-level="2" id="arc-ej-lvl-2">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('ej',2)">Dado r y ángulo en radianes → hallar longitud de arco</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('ej',2,-1)">−</button>
+        <span class="lq-val" id="arc-ej-lqv-2">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('ej',2,+1)">+</button>
+      </div>
+    </div>
+
+    <div class="level-item" data-level="3" id="arc-ej-lvl-3">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('ej',3)">Dado arco y radio → hallar ángulo en radianes</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('ej',3,-1)">−</button>
+        <span class="lq-val" id="arc-ej-lqv-3">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('ej',3,+1)">+</button>
+      </div>
+    </div>
+
+    <!-- PROBLEMAS -->
+    <div style="font-size:0.8rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin:0.8rem 0 0.3rem">Problemas</div>
+
+    <div class="level-item" data-level="1" id="arc-prob-lvl-1">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('prob',1)">Péndulo — longitud y ángulo → arco recorrido</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('prob',1,-1)">−</button>
+        <span class="lq-val" id="arc-prob-lqv-1">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('prob',1,+1)">+</button>
+      </div>
+    </div>
+
+    <div class="level-item" data-level="2" id="arc-prob-lvl-2">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('prob',2)">Manecilla de reloj — longitud y minutos → arco recorrido</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('prob',2,-1)">−</button>
+        <span class="lq-val" id="arc-prob-lqv-2">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('prob',2,+1)">+</button>
+      </div>
+    </div>
+
+    <div class="level-item" data-level="3" id="arc-prob-lvl-3">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('prob',3)">Circunferencia dividida en N partes → arco AB</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('prob',3,-1)">−</button>
+        <span class="lq-val" id="arc-prob-lqv-3">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('prob',3,+1)">+</button>
+      </div>
+    </div>
+
+    <div class="level-item" data-level="4" id="arc-prob-lvl-4">
+      <span class="level-dot"></span>
+      <span class="level-name" onclick="arcToggleLevel('prob',4)">Arco de circunferencia — dado r y ángulo → hallar arco</span>
+      <div class="level-qty">
+        <button class="lq-btn" onclick="arcChgLvl('prob',4,-1)">−</button>
+        <span class="lq-val" id="arc-prob-lqv-4">0</span>
+        <button class="lq-btn" onclick="arcChgLvl('prob',4,+1)">+</button>
+      </div>
+    </div>
+
+    <div class="total-badge" id="arc-totalBadge">Total: <span>0</span> ejercicios</div>
+    <button class="btn-generate" onclick="generateArc()">⚡ Generar ejercitario</button>
+    <div class="ejercitario" id="arc-ejercitario"></div>
+    <button class="btn-download" id="arc-btnDownload" onclick="downloadEjercitario('arc-ejercitario','longitud-arco')" style="display:none">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="arc-btnSolAparte" onclick="downloadSolucionesAparte('arc-ejercitario','longitud-arco')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
   </div>
 
 </main>
@@ -4766,7 +4854,6 @@ function convChgLvl(grp, k, delta) {
 function convUpdateTotal() {
   var t = (convQtys.s2r[1]||0) + (convQtys.s2r[2]||0) + (convQtys.r2s[1]||0) + (convQtys.r2s[2]||0);
   document.getElementById('conv-totalBadge').innerHTML = 'Total: <span>' + t + '</span> ejercicios';
-  document.getElementById('conv-btnGenerar').style.display = t > 0 ? 'block' : 'none';
 }
 
 // ── Helpers matemáticos ──
@@ -4923,8 +5010,327 @@ function generateConv(returnOnly, startId) {
   html += '</div>';
 
   document.getElementById('conv-ejercitario').innerHTML = html;
+  document.getElementById('conv-ejercitario').classList.add('visible');
   document.getElementById('conv-btnDownload').style.display = 'block';
-}</script>
+}
+
+// ══════════════════════════════════════════════════════════════
+// LONGITUD DE ARCO
+// ══════════════════════════════════════════════════════════════
+
+const arcQtys = {
+  ej:   { 1: 0, 2: 0, 3: 0 },
+  prob: { 1: 0, 2: 0, 3: 0, 4: 0 }
+};
+
+function arcToggleLevel(grp, k) {
+  var el = document.getElementById('arc-' + grp + '-lvl-' + k);
+  var isActive = el.classList.contains('active');
+  arcQtys[grp][k] = isActive ? 0 : 1;
+  document.getElementById('arc-' + grp + '-lqv-' + k).textContent = arcQtys[grp][k];
+  el.classList.toggle('active', !isActive);
+  arcUpdateTotal();
+}
+
+function arcChgLvl(grp, k, delta) {
+  arcQtys[grp][k] = Math.max(0, Math.min(20, (arcQtys[grp][k] || 0) + delta));
+  document.getElementById('arc-' + grp + '-lqv-' + k).textContent = arcQtys[grp][k];
+  var el = document.getElementById('arc-' + grp + '-lvl-' + k);
+  if (arcQtys[grp][k] === 0) el.classList.remove('active');
+  else el.classList.add('active');
+  arcUpdateTotal();
+}
+
+function arcUpdateTotal() {
+  var t = (arcQtys.ej[1]||0) + (arcQtys.ej[2]||0) + (arcQtys.ej[3]||0)
+        + (arcQtys.prob[1]||0) + (arcQtys.prob[2]||0) + (arcQtys.prob[3]||0) + (arcQtys.prob[4]||0);
+  document.getElementById('arc-totalBadge').innerHTML = 'Total: <span>' + t + '</span> ejercicios';
+}
+
+// ── Datos ──
+var ARC_RADIOS_EJ = [2,3,4,5,6,7,8,9,10,12,15,20,25,30,40,50];
+var ARC_ANGULOS_DEG = [30,45,60,90,120,135,150,180,210,240,270,300];
+var ARC_ANGULOS_RAD_FRAC = [
+  { num:1, den:6,  val: Math.PI/6  },
+  { num:1, den:4,  val: Math.PI/4  },
+  { num:1, den:3,  val: Math.PI/3  },
+  { num:1, den:2,  val: Math.PI/2  },
+  { num:2, den:3,  val: 2*Math.PI/3 },
+  { num:3, den:4,  val: 3*Math.PI/4 },
+  { num:5, den:6,  val: 5*Math.PI/6 },
+  { num:1, den:1,  val: Math.PI    },
+  { num:3, den:2,  val: 3*Math.PI/2 },
+  { num:2, den:1,  val: 2*Math.PI  }
+];
+var ARC_PENDULO_DATOS = [
+  {long:20, angDeg:60}, {long:15, angDeg:45}, {long:30, angDeg:90},
+  {long:25, angDeg:30}, {long:40, angDeg:60}, {long:10, angDeg:120},
+  {long:50, angDeg:45}, {long:35, angDeg:90}, {long:18, angDeg:60}
+];
+var ARC_RELOJ_DATOS = [
+  {long:10, min:25}, {long:12, min:30}, {long:8, min:15},
+  {long:15, min:20}, {long:6,  min:45}, {long:20, min:10},
+  {long:9,  min:40}, {long:14, min:50}, {long:7,  min:35}
+];
+var ARC_CIRC_PARTES = [4, 6, 8, 10, 12, 3, 5];
+var ARC_CIRC_RADIOS = [3, 4, 5, 6, 8, 10, 12, 15, 20];
+
+// Helper: fracción de π con .frac spans
+function arcPiFrac(num, den) {
+  if (den === 1) {
+    if (num === 1) return '&pi;';
+    return num + '&pi;';
+  }
+  var numStr = (num === 1) ? '&pi;' : (num + '&pi;');
+  return '<span class="frac"><span class="num">' + numStr + '</span><span class="den">' + den + '</span></span>';
+}
+
+// Helper: pick aleatorio
+function arcPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// Helper: rotar pool sin repetir
+function arcPickNoRepeat(arr, usedSet) {
+  var filtered = arr.filter(function(x) { return !usedSet.has(JSON.stringify(x)); });
+  if (filtered.length === 0) { usedSet.clear(); filtered = arr.slice(); }
+  var item = filtered[Math.floor(Math.random() * filtered.length)];
+  usedSet.add(JSON.stringify(item));
+  return item;
+}
+
+// ── SVG helpers ──
+
+// SVG arco de circunferencia con ángulo marcado
+function arcSVG_CircArc(r_label, theta_label, isRad) {
+  return '<svg width="110" height="110" viewBox="0 0 110 110" style="display:block;margin:0.3rem 0">'
+    + '<circle cx="55" cy="55" r="38" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3"/>'
+    + '<line x1="55" y1="55" x2="93" y2="55" stroke="var(--accent)" stroke-width="1.8"/>'
+    + '<path d="M 93 55 A 38 38 0 0 0 ' + (55+38*Math.cos(-Math.PI/3)).toFixed(1) + ' ' + (55+38*Math.sin(-Math.PI/3)).toFixed(1) + '" fill="none" stroke="#e05" stroke-width="2.2"/>'
+    + '<text x="55" y="58" font-size="9" fill="#555" text-anchor="middle">O</text>'
+    + '<text x="76" y="50" font-size="8" fill="var(--accent)">r = ' + r_label + '</text>'
+    + '<text x="80" y="34" font-size="8" fill="#e05">&theta; = ' + theta_label + '</text>'
+    + '<text x="55" y="104" font-size="8" fill="#777" text-anchor="middle">s = ?</text>'
+    + '</svg>';
+}
+
+// SVG péndulo
+function arcSVG_Pendulo(long_label, ang_label) {
+  return '<svg width="100" height="110" viewBox="0 0 100 110" style="display:block;margin:0.3rem 0">'
+    + '<line x1="50" y1="8" x2="50" y2="8" stroke="#666" stroke-width="3"/>'
+    + '<circle cx="50" cy="8" r="4" fill="#888"/>'
+    + '<line x1="50" y1="8" x2="28" y2="85" stroke="var(--accent)" stroke-width="1.8"/>'
+    + '<line x1="50" y1="8" x2="72" y2="85" stroke="var(--accent)" stroke-width="1.8"/>'
+    + '<circle cx="28" cy="85" r="7" fill="#5b8"/>'
+    + '<circle cx="72" cy="85" r="7" fill="#5b8"/>'
+    + '<path d="M 28 85 A 60 60 0 0 1 72 85" fill="none" stroke="#e05" stroke-width="1.5" stroke-dasharray="3,2"/>'
+    + '<text x="50" y="100" font-size="8" fill="#e05" text-anchor="middle">s = ?</text>'
+    + '<text x="50" y="50" font-size="8" fill="var(--accent)" text-anchor="middle">L = ' + long_label + ' cm</text>'
+    + '<text x="50" y="72" font-size="8" fill="#555" text-anchor="middle">&theta; = ' + ang_label + '</text>'
+    + '</svg>';
+}
+
+// SVG reloj
+function arcSVG_Reloj(long_label, min_label) {
+  return '<svg width="100" height="100" viewBox="0 0 100 100" style="display:block;margin:0.3rem 0">'
+    + '<circle cx="50" cy="50" r="42" fill="none" stroke="#888" stroke-width="2"/>'
+    + '<circle cx="50" cy="50" r="3" fill="#444"/>'
+    + '<line x1="50" y1="50" x2="50" y2="10" stroke="var(--accent)" stroke-width="2.5"/>'
+    + '<path d="M 50 10 A 40 40 0 0 1 ' + (50+40*Math.sin(2*Math.PI*min_label/60)).toFixed(1) + ' ' + (50-40*Math.cos(2*Math.PI*min_label/60)).toFixed(1) + '" fill="none" stroke="#e05" stroke-width="2" stroke-dasharray="3,2"/>'
+    + '<text x="50" y="96" font-size="8" fill="#e05" text-anchor="middle">s = ?</text>'
+    + '<text x="50" y="60" font-size="8" fill="var(--accent)" text-anchor="middle">' + long_label + ' cm</text>'
+    + '<text x="72" y="28" font-size="7" fill="#555">' + min_label + ' min</text>'
+    + '</svg>';
+}
+
+// SVG circunferencia dividida
+function arcSVG_CircDiv(n_partes, r_label) {
+  var svgLines = '';
+  for (var i = 0; i < n_partes; i++) {
+    var ang = (2 * Math.PI * i) / n_partes;
+    var x2 = (50 + 36 * Math.cos(ang)).toFixed(1);
+    var y2 = (50 + 36 * Math.sin(ang)).toFixed(1);
+    svgLines += '<line x1="50" y1="50" x2="' + x2 + '" y2="' + y2 + '" stroke="#bbb" stroke-width="1"/>';
+  }
+  // Marcar arco AB
+  var xA = (50 + 36 * Math.cos(-Math.PI/2)).toFixed(1);
+  var yA = (50 + 36 * Math.sin(-Math.PI/2)).toFixed(1);
+  var xB = (50 + 36 * Math.cos(-Math.PI/2 + 2*Math.PI/n_partes)).toFixed(1);
+  var yB = (50 + 36 * Math.sin(-Math.PI/2 + 2*Math.PI/n_partes)).toFixed(1);
+  return '<svg width="100" height="110" viewBox="0 0 100 110" style="display:block;margin:0.3rem 0">'
+    + '<circle cx="50" cy="50" r="36" fill="none" stroke="#aaa" stroke-width="1.5"/>'
+    + svgLines
+    + '<path d="M ' + xA + ' ' + yA + ' A 36 36 0 0 1 ' + xB + ' ' + yB + '" fill="none" stroke="#e05" stroke-width="2.5"/>'
+    + '<circle cx="' + xA + '" cy="' + yA + '" r="2.5" fill="#e05"/>'
+    + '<circle cx="' + xB + '" cy="' + yB + '" r="2.5" fill="#e05"/>'
+    + '<text x="' + (parseFloat(xA)+5) + '" y="' + (parseFloat(yA)-3) + '" font-size="9" fill="#e05">A</text>'
+    + '<text x="' + (parseFloat(xB)+4) + '" y="' + (parseFloat(yB)+10) + '" font-size="9" fill="#e05">B</text>'
+    + '<text x="50" y="98" font-size="8" fill="#555" text-anchor="middle">r = ' + r_label + ' cm</text>'
+    + '</svg>';
+}
+
+// ── Generadores individuales ──
+
+// EJ-1: dado r (cm) y ángulo en grados → s = r·(θ·π/180)
+function arcGenEj1() {
+  var r = arcPick(ARC_RADIOS_EJ);
+  var deg = arcPick(ARC_ANGULOS_DEG);
+  var rad = deg * Math.PI / 180;
+  var s = r * rad;
+  var sRound = Math.round(s * 100) / 100;
+  var svg = arcSVG_CircArc(r + ' cm', deg + '°', false);
+  return {
+    svg: svg,
+    q: 'Radio r = <strong>' + r + ' cm</strong>, ángulo &theta; = <strong>' + deg + '°</strong>. Calculá la longitud del arco s.',
+    a: 's = r·&theta; = ' + r + '·(' + deg + '·&pi;/180) &asymp; <strong>' + sRound + ' cm</strong>'
+  };
+}
+
+// EJ-2: dado r (cm) y ángulo en radianes (fracción de π) → s = r·θ
+function arcGenEj2() {
+  var r = arcPick(ARC_RADIOS_EJ);
+  var frac = arcPick(ARC_ANGULOS_RAD_FRAC);
+  var s = r * frac.val;
+  var sRound = Math.round(s * 100) / 100;
+  var thetaHtml = arcPiFrac(frac.num, frac.den) + ' rad';
+  var svg = arcSVG_CircArc(r + ' cm', arcPiFrac(frac.num, frac.den), true);
+  return {
+    svg: svg,
+    q: 'Radio r = <strong>' + r + ' cm</strong>, ángulo &theta; = <strong>' + thetaHtml + '</strong>. Calculá la longitud del arco s.',
+    a: 's = r·&theta; = ' + r + '·' + thetaHtml + ' &asymp; <strong>' + sRound + ' cm</strong>'
+  };
+}
+
+// EJ-3: dado s y r → θ = s/r en radianes
+function arcGenEj3() {
+  var r = arcPick([3,4,5,6,8,10,12,15,20]);
+  var frac = arcPick(ARC_ANGULOS_RAD_FRAC);
+  var s = Math.round(r * frac.val * 100) / 100;
+  var thetaHtml = arcPiFrac(frac.num, frac.den) + ' rad';
+  return {
+    svg: '',
+    q: 'Arco s = <strong>' + s + ' cm</strong>, radio r = <strong>' + r + ' cm</strong>. Determiná el ángulo central &theta; en radianes.',
+    a: '&theta; = s/r = ' + s + '/' + r + ' = <strong>' + thetaHtml + '</strong>'
+  };
+}
+
+// PROB-1: péndulo
+function arcGenProb1() {
+  var d = arcPick(ARC_PENDULO_DATOS);
+  var rad = d.angDeg * Math.PI / 180;
+  var s = d.long * rad;
+  var sRound = Math.round(s * 100) / 100;
+  var svg = arcSVG_Pendulo(d.long, d.angDeg + '°');
+  return {
+    svg: svg,
+    q: 'Un reloj tiene un péndulo de <strong>' + d.long + ' cm</strong> de longitud. En uno de sus movimientos, sus posiciones extremas forman un ángulo de <strong>' + d.angDeg + '°</strong>. ¿Cuál es la longitud del arco que determinan los extremos del péndulo?',
+    a: 's = r·&theta; = ' + d.long + '·(' + d.angDeg + '·&pi;/180) &asymp; <strong>' + sRound + ' cm</strong>'
+  };
+}
+
+// PROB-2: manecilla de reloj
+function arcGenProb2() {
+  var d = arcPick(ARC_RELOJ_DATOS);
+  var angRad = (2 * Math.PI * d.min) / 60;
+  var s = d.long * angRad;
+  var sRound = Math.round(s * 100) / 100;
+  var svg = arcSVG_Reloj(d.long, d.min);
+  return {
+    svg: svg,
+    q: 'La manecilla del minutero de un reloj mide <strong>' + d.long + ' cm</strong>. ¿Cuál es la distancia que recorre su extremo durante <strong>' + d.min + ' minutos</strong>?',
+    a: 'En ' + d.min + ' min el minutero recorre ' + d.min + '/60 de vuelta → &theta; = 2&pi;·' + d.min + '/60. s = ' + d.long + '·&theta; &asymp; <strong>' + sRound + ' cm</strong>'
+  };
+}
+
+// PROB-3: circunferencia dividida en N partes → arco AB
+function arcGenProb3() {
+  var n = arcPick(ARC_CIRC_PARTES);
+  var r = arcPick(ARC_CIRC_RADIOS);
+  var thetaRad = 2 * Math.PI / n;
+  var s = r * thetaRad;
+  var sRound = Math.round(s * 100) / 100;
+  var thetaHtml = arcPiFrac(2, n) + ' rad';
+  var svg = arcSVG_CircDiv(n, r);
+  return {
+    svg: svg,
+    q: 'La circunferencia está dividida en <strong>' + n + ' partes iguales</strong>. El radio mide <strong>' + r + ' cm</strong>. ¿A cuánto equivale la medida del arco AB en radianes y cuál es su longitud?',
+    a: '&theta; = 2&pi;/' + n + ' = ' + thetaHtml + '. s = r·&theta; = ' + r + '·' + thetaHtml + ' &asymp; <strong>' + sRound + ' cm</strong>'
+  };
+}
+
+// PROB-4: arco de circunferencia directo (contextualizado)
+var ARC_PROB4_CONTEXTOS = [
+  { ctx: 'En una circunferencia de radio r = {R} cm, ¿cuál es la longitud de un arco que subtiende un ángulo central de {DEG}°?', tipo: 'deg' },
+  { ctx: '¿Cuál es la longitud de un arco correspondiente a un ángulo central de {DEG}° contenido en una circunferencia de {R} cm de radio?', tipo: 'deg' },
+  { ctx: '¿Qué longitud tiene un arco de circunferencia de radio {R} cm, sabiendo que el ángulo central mide {FRAC} rad?', tipo: 'rad' }
+];
+function arcGenProb4() {
+  var ctx = arcPick(ARC_PROB4_CONTEXTOS);
+  var r = arcPick(ARC_RADIOS_EJ);
+  var svg = '';
+  var q, a;
+  if (ctx.tipo === 'deg') {
+    var deg = arcPick(ARC_ANGULOS_DEG);
+    var s = Math.round(r * deg * Math.PI / 180 * 100) / 100;
+    q = ctx.ctx.replace('{R}', r).replace('{DEG}', deg);
+    q = '<strong>' + q + '</strong>';
+    a = 's = r·&theta; = ' + r + '·(' + deg + '·&pi;/180) &asymp; <strong>' + s + ' cm</strong>';
+    svg = arcSVG_CircArc(r + ' cm', deg + '°', false);
+  } else {
+    var frac = arcPick(ARC_ANGULOS_RAD_FRAC);
+    var s2 = Math.round(r * frac.val * 100) / 100;
+    var thetaHtml = arcPiFrac(frac.num, frac.den);
+    q = ctx.ctx.replace('{R}', r).replace('{FRAC}', thetaHtml + ' rad');
+    q = '<strong>' + q + '</strong>';
+    a = 's = r·&theta; = ' + r + '·' + thetaHtml + ' rad &asymp; <strong>' + s2 + ' cm</strong>';
+    svg = arcSVG_CircArc(r + ' cm', thetaHtml, true);
+  }
+  return { svg: svg, q: q, a: a };
+}
+
+// ── Render ──
+function arcRenderItem(it, inclSol) {
+  var html = '<div style="padding:0.6rem 0.8rem;border-left:3px solid var(--accent);background:#f8f9ff;margin-bottom:0.4rem">';
+  html += '<div style="font-weight:600;margin-bottom:0.3rem">' + it.id + '. ' + it.q + '</div>';
+  if (it.svg) html += it.svg;
+  if (inclSol) {
+    html += '<div style="color:#555;font-size:0.85rem;margin-top:0.3rem">Solución: ' + it.a + '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function generateArc(returnOnly, startId) {
+  var items = [];
+  var idCount = startId || 1;
+  var grupos = [
+    { grp:'ej',   lvl:1, label:'Ejercicios — r y ángulo en grados → arco',  fn: arcGenEj1 },
+    { grp:'ej',   lvl:2, label:'Ejercicios — r y ángulo en radianes → arco', fn: arcGenEj2 },
+    { grp:'ej',   lvl:3, label:'Ejercicios — arco y radio → ángulo',          fn: arcGenEj3 },
+    { grp:'prob', lvl:1, label:'Problemas — Péndulo',                          fn: arcGenProb1 },
+    { grp:'prob', lvl:2, label:'Problemas — Manecilla de reloj',               fn: arcGenProb2 },
+    { grp:'prob', lvl:3, label:'Problemas — Circunferencia dividida',          fn: arcGenProb3 },
+    { grp:'prob', lvl:4, label:'Problemas — Arco de circunferencia',           fn: arcGenProb4 }
+  ];
+  grupos.forEach(function(g) {
+    var qty = arcQtys[g.grp][g.lvl] || 0;
+    for (var i = 0; i < qty; i++) {
+      var ex = g.fn();
+      items.push({ id: idCount++, lvl: g.label, q: ex.q, a: ex.a, svg: ex.svg || '' });
+    }
+  });
+
+  if (returnOnly) return items;
+
+  var inclSol = document.getElementById('chk-incluir-sol') ? document.getElementById('chk-incluir-sol').checked : true;
+  var html = '<h3 style="text-align:center;margin:0 0 1rem">Longitud de Arco</h3>';
+  html += '<div style="display:grid;gap:0.4rem">';
+  items.forEach(function(it) { html += arcRenderItem(it, inclSol); });
+  html += '</div>';
+  document.getElementById('arc-ejercitario').innerHTML = html;
+  document.getElementById('arc-ejercitario').classList.add('visible');
+  document.getElementById('arc-btnDownload').style.display = 'block';
+}
+
+</script>
 
 <!-- ── Opción global: incluir soluciones ── -->
 <div class="sol-opt-bar" id="sol-opt-bar">

@@ -1253,6 +1253,13 @@ const CATALOG = {
       { id:'conv-s2r-2', label:'Conversiones Sex→Rad Niv.2 — Grados°min\'seg"', niveles:[2], gen:()=>eb_convGen('s2r',2) },
       { id:'conv-r2s-1', label:'Conversiones Rad→Sex Niv.1 — Fracción de π', niveles:[1], gen:()=>eb_convGen('r2s',1) },
       { id:'conv-r2s-2', label:'Conversiones Rad→Sex Niv.2 — Valor decimal', niveles:[2], gen:()=>eb_convGen('r2s',2) },
+      { id:'arc-ej-1', label:'Long. de Arco — Ej.1: r y ángulo en grados → s', niveles:[1], gen:()=>eb_arcGen('ej',1) },
+      { id:'arc-ej-2', label:'Long. de Arco — Ej.2: r y ángulo en radianes → s', niveles:[1], gen:()=>eb_arcGen('ej',2) },
+      { id:'arc-ej-3', label:'Long. de Arco — Ej.3: arco y radio → ángulo', niveles:[1], gen:()=>eb_arcGen('ej',3) },
+      { id:'arc-prob-1', label:'Long. de Arco — Prob.1: Péndulo', niveles:[1], gen:()=>eb_arcGen('prob',1) },
+      { id:'arc-prob-2', label:'Long. de Arco — Prob.2: Manecilla de reloj', niveles:[1], gen:()=>eb_arcGen('prob',2) },
+      { id:'arc-prob-3', label:'Long. de Arco — Prob.3: Circunferencia dividida', niveles:[1], gen:()=>eb_arcGen('prob',3) },
+      { id:'arc-prob-4', label:'Long. de Arco — Prob.4: Arco de circunferencia', niveles:[1], gen:()=>eb_arcGen('prob',4) },
     ]
   },
   geometria: {
@@ -1376,6 +1383,7 @@ const GRUPOS = {
     { nombre:'Func. Trig. en Triángulo Rectángulo', ids:['trigrect-1','trigrect-2','trigrect-3','trigrect-4','trigrect-5','trigrect-6','trigrect-7','trigrect-8','trigrect-9'] },
     { nombre:'Fórmulas Fundamentales', ids:['ffc-1','ffc-2','ffc-3'] },
     { nombre:'Conversiones Sex↔Rad', ids:['conv-s2r-1','conv-s2r-2','conv-r2s-1','conv-r2s-2'] },
+    { nombre:'Longitud de Arco', ids:['arc-ej-1','arc-ej-2','arc-ej-3','arc-prob-1','arc-prob-2','arc-prob-3','arc-prob-4'] },
   ],
   geometria: [
     { nombre:'Parábolas', ids:['geom-par'] },
@@ -3790,7 +3798,116 @@ function eb_convGen(grp, lvl){
   return lvl===1 ? eb_conv_R2S_L1() : eb_conv_R2S_L2();
 }
 
-// ── Números Enteros ──
+// ─── Longitud de Arco (prefijo eb_arc_) ──────────────────────────────────────
+
+var eb_ARC_RADIOS = [2,3,4,5,6,7,8,9,10,12,15,20,25,30,40,50];
+var eb_ARC_ANGULOS_DEG = [30,45,60,90,120,135,150,180,210,240,270,300];
+var eb_ARC_RAD_FRAC = [
+  {num:1,den:6,val:Math.PI/6},{num:1,den:4,val:Math.PI/4},{num:1,den:3,val:Math.PI/3},
+  {num:1,den:2,val:Math.PI/2},{num:2,den:3,val:2*Math.PI/3},{num:3,den:4,val:3*Math.PI/4},
+  {num:5,den:6,val:5*Math.PI/6},{num:1,den:1,val:Math.PI},{num:3,den:2,val:3*Math.PI/2},
+  {num:2,den:1,val:2*Math.PI}
+];
+var eb_ARC_PENDULO = [
+  {long:20,angDeg:60},{long:15,angDeg:45},{long:30,angDeg:90},
+  {long:25,angDeg:30},{long:40,angDeg:60},{long:10,angDeg:120},
+  {long:50,angDeg:45},{long:35,angDeg:90},{long:18,angDeg:60}
+];
+var eb_ARC_RELOJ = [
+  {long:10,min:25},{long:12,min:30},{long:8,min:15},
+  {long:15,min:20},{long:6,min:45},{long:20,min:10},
+  {long:9,min:40},{long:14,min:50},{long:7,min:35}
+];
+var eb_ARC_PARTES = [4,6,8,10,12,3,5];
+var eb_ARC_CIRC_RADIOS = [3,4,5,6,8,10,12,15,20];
+
+function eb_arc_mcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a;}
+function eb_arc_piFrac(num,den){
+  if(den===1){return num===1?'&pi;':num+'&pi;';}
+  var ns=(num===1)?'&pi;':(num+'&pi;');
+  return '<span class="frac"><span class="num">'+ns+'</span><span class="den">'+den+'</span></span>';
+}
+function eb_arc_pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function eb_arc_Ej1(){
+  var r=eb_arc_pick(eb_ARC_RADIOS);
+  var deg=eb_arc_pick(eb_ARC_ANGULOS_DEG);
+  var s=Math.round(r*deg*Math.PI/180*100)/100;
+  return {
+    expr:'r = '+r+' cm, &theta; = '+deg+'°',
+    sol:'s = r&middot;&theta; = '+r+'&middot;('+deg+'&middot;&pi;/180) &asymp; '+s+' cm'
+  };
+}
+function eb_arc_Ej2(){
+  var r=eb_arc_pick(eb_ARC_RADIOS);
+  var f=eb_arc_pick(eb_ARC_RAD_FRAC);
+  var s=Math.round(r*f.val*100)/100;
+  var th=eb_arc_piFrac(f.num,f.den)+' rad';
+  return {
+    expr:'r = '+r+' cm, &theta; = '+th,
+    sol:'s = r&middot;&theta; = '+r+'&middot;'+th+' &asymp; '+s+' cm'
+  };
+}
+function eb_arc_Ej3(){
+  var r=eb_arc_pick([3,4,5,6,8,10,12,15,20]);
+  var f=eb_arc_pick(eb_ARC_RAD_FRAC);
+  var s=Math.round(r*f.val*100)/100;
+  var th=eb_arc_piFrac(f.num,f.den)+' rad';
+  return {
+    expr:'s = '+s+' cm, r = '+r+' cm',
+    sol:'&theta; = s/r = '+s+'/'+r+' = '+th
+  };
+}
+function eb_arc_Prob1(){
+  var d=eb_arc_pick(eb_ARC_PENDULO);
+  var s=Math.round(d.long*d.angDeg*Math.PI/180*100)/100;
+  return {
+    expr:'Péndulo L = '+d.long+' cm, &theta; = '+d.angDeg+'°',
+    sol:'s = L&middot;&theta; &asymp; '+s+' cm'
+  };
+}
+function eb_arc_Prob2(){
+  var d=eb_arc_pick(eb_ARC_RELOJ);
+  var s=Math.round(d.long*2*Math.PI*d.min/60*100)/100;
+  return {
+    expr:'Minutero '+d.long+' cm, '+d.min+' min',
+    sol:'s &asymp; '+s+' cm'
+  };
+}
+function eb_arc_Prob3(){
+  var n=eb_arc_pick(eb_ARC_PARTES);
+  var r=eb_arc_pick(eb_ARC_CIRC_RADIOS);
+  var g=eb_arc_mcd(2,n);
+  var s=Math.round(r*2*Math.PI/n*100)/100;
+  var th=eb_arc_piFrac(2/g,n/g)+' rad';
+  return {
+    expr:'Circunf. dividida en '+n+' partes, r = '+r+' cm',
+    sol:'&theta; = '+th+', s &asymp; '+s+' cm'
+  };
+}
+function eb_arc_Prob4(){
+  var r=eb_arc_pick(eb_ARC_RADIOS);
+  var deg=eb_arc_pick(eb_ARC_ANGULOS_DEG);
+  var s=Math.round(r*deg*Math.PI/180*100)/100;
+  return {
+    expr:'Circunf. r = '+r+' cm, &aacute;ngulo central '+deg+'°',
+    sol:'s = r&middot;&theta; &asymp; '+s+' cm'
+  };
+}
+
+function eb_arcGen(grp, lvl){
+  if(grp==='ej'){
+    if(lvl===1) return eb_arc_Ej1();
+    if(lvl===2) return eb_arc_Ej2();
+    return eb_arc_Ej3();
+  }
+  if(lvl===1) return eb_arc_Prob1();
+  if(lvl===2) return eb_arc_Prob2();
+  if(lvl===3) return eb_arc_Prob3();
+  return eb_arc_Prob4();
+}
+
+
 function ent_opnd(n) { return n < 0 ? `(${n})` : `${n}`; }
 function ent_first(n) { return `${n}`; }
 function ent_sup(n) {
