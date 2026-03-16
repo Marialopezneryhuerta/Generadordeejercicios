@@ -1154,7 +1154,7 @@ STATE['sp'] = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0};
 function entRenderQty() {
   const wrap = document.getElementById('ent-qty-controls');
   if (!wrap) return;
-  const selectedChips = document.querySelectorAll('#ent-chips .chip.selected');
+  const selectedChips = document.querySelectorAll('#ent-chips .chip.selected:not(.chip-all)');
   wrap.innerHTML = '';
   if (selectedChips.length === 0) {
     wrap.innerHTML = '<p style="font-size:0.85rem;color:#8b92b1;text-align:center;padding:0.5rem 0">Seleccioná al menos una operación.</p>';
@@ -1222,7 +1222,7 @@ entRenderQty();
 // Función generadora unificada
 function generateEnteros() {
   // Recolectar ejercicios de todos los pfx/niveles activos en STATE
-  const selectedChips = document.querySelectorAll('#ent-chips .chip.selected');
+  const selectedChips = document.querySelectorAll('#ent-chips .chip.selected:not(.chip-all)');
   const activePfx = Array.from(selectedChips).map(function(c) { return c.dataset.pfx; });
   if (activePfx.length === 0) { alert('Seleccioná al menos una operación.'); return; }
 
