@@ -4881,27 +4881,18 @@ function genAct10(n) {
   let att = 0;
   while (items.length < n && att++ < n*50) {
     const nTerms = rnd(3,4);
-    const nVars = rnd(1,2);
-    const varNames = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
     const makeHomogeneo = Math.random() < 0.5;
+    // Homogéneo requiere 2 variables (con 1 sola variable no se pueden generar 3 términos distintos del mismo grado)
+    const nVars = makeHomogeneo ? 2 : rnd(1,2);
+    const varNames = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
     let terminos, tipo;
     if (makeHomogeneo) {
-      // Todos los términos tienen el mismo grado
+      // Todos los términos tienen el mismo grado — siempre 2 variables
       const gradoFijo = rnd(2,5);
       const terms = [];
       const usedParts = new Set();
       let tAtt = 0;
       while (terms.length < nTerms && tAtt++ < 200) {
-        if (nVars === 1) {
-          // Una sola variable → todos los términos son v^gradoFijo
-          if (terms.length > 0) break; // solo un exponente posible
-          const coef = (rnd(0,1)?-1:1)*rnd(1,8);
-          const v = varNames[0];
-          const partsStr = gradoFijo===1?v:`${v}${toSup(gradoFijo)}`;
-          const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
-          terms.push({coef, parts:[{v,exp:gradoFijo}], grado:gradoFijo, partsStr, coefDisp});
-          break;
-        }
         // Dos variables: distribuir exps que sumen gradoFijo
         const e1 = rnd(0, gradoFijo);
         const e2 = gradoFijo - e1;
