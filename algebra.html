@@ -4554,6 +4554,36 @@ function renderAct4(items, startIdx) {
 }
 
 // ── ACTIVIDAD 5: Ordenar polinomios ──────────────────────────
+// Combina términos que tengan el mismo exponente para `mainVar`.
+// Ej: 4a² y 2a ambos tienen x⁰ → se fusionan en un solo término (6a²... no, se elige el de mayor grado).
+// En realidad los sumamos algebraicamente y reconstruimos el término.
+function mergeByMainVar(terminos, mainVar) {
+  const map = new Map(); // key = expMainVar → términos acumulados
+  for (const t of terminos) {
+    const e = (t.parts.find(p=>p.v===mainVar)||{exp:0}).exp;
+    if (!map.has(e)) { map.set(e, []); }
+    map.get(e).push(t);
+  }
+  const merged = [];
+  for (const [, group] of map) {
+    if (group.length === 1) { merged.push(group[0]); continue; }
+    // Sumar coeficientes; mantener las partes del término con mayor grado total
+    const totalCoef = group.reduce((s,t)=>s+t.coef, 0);
+    if (totalCoef === 0) continue; // término se cancela, descartarlo
+    const base = group.reduce((best,t)=>t.grado>best.grado?t:best, group[0]);
+    const coef = totalCoef;
+    const partsStr = base.partsStr;
+    const grado = base.grado;
+    const coefDisp = (() => {
+      if (partsStr === '') return String(coef);
+      if (Math.abs(coef)===1) return coef<0?'−':'';
+      return coef<0?`−${Math.abs(coef)}`:`${coef}`;
+    })();
+    merged.push({ coef, parts: base.parts, grado, partsStr, coefDisp });
+  }
+  return merged;
+}
+
 function genAct5(n) {
   const items = [];
   const seen = new Set();
@@ -4564,13 +4594,15 @@ function genAct5(n) {
     const varNames = multiVar
       ? [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,2)
       : [[...INTRO_VARS][rnd(0,3)]];
-    const terminos = makePolinomio(nTerms, varNames, 5);
+    const mainVar = varNames[0];
+    let terminos = makePolinomio(nTerms, varNames, 5);
+    // Fusionar términos con mismo exponente de mainVar (evita ej: 4a² y 2a con x⁰ repetido)
+    if (varNames.length > 1) terminos = mergeByMainVar(terminos, mainVar);
     if (terminos.length < 3) continue;
     const str = polyStr(terminos);
     if (seen.has(str)) continue;
     seen.add(str);
 
-    const mainVar = varNames[0];
     const desc = rnd(0,1)===0;
     const sorted = sortPoly(terminos, mainVar, desc);
     const sortedStr = polyStr(sorted);
