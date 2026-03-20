@@ -328,8 +328,7 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .intro-order-num { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.3rem; }
 .intro-order-instruction { font-size: 0.8rem; color: var(--muted); font-style: italic; margin-bottom: 0.4rem; }
 .intro-order-poly { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-bottom: 0.6rem; }
-.intro-order-answer { border: none; border-bottom: 2px solid var(--border); width: 100%; font-size: 1rem; padding: 0.3rem 0; background: transparent; font-family: 'Nunito Sans', sans-serif; outline: none; color: var(--ink); }
-.intro-order-answer:focus { border-bottom-color: var(--accent); }
+.intro-order-answer { display: block; width: 100%; min-height: 1.8rem; border-bottom: 2px solid var(--border); background: transparent; }
 
 /* Soluciones */
 .intro-sol-block { margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid var(--border); }
@@ -341,7 +340,7 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 
 @media print {
   .intro-mc-block, .intro-order-item { border: 1px solid #ccc; break-inside: avoid; }
-  .intro-order-answer { border-bottom: 1px solid #999; }
+  .intro-order-answer { border-bottom: 1.5px solid #555; min-height: 2rem; }
 }
 
 /* ══════════════════════════════════════════════════
@@ -4627,7 +4626,7 @@ function renderAct5(items, startIdx) {
       <div class="intro-order-num">${id}.</div>
       <div class="intro-order-instruction">${it.instruccion}</div>
       <div class="intro-order-poly">${it.str}</div>
-      <input class="intro-order-answer" type="text" placeholder="Escribí el polinomio ordenado..." autocomplete="off">
+      <div class="intro-order-answer"></div>
     </div>`;
     sols.push({ id, sol: it.sortedStr });
   });
@@ -4707,7 +4706,7 @@ function renderAct6(items, startIdx) {
       <div class="intro-order-num">${id}.</div>
       <div class="intro-order-instruction">Escribí el polinomio ordenado y completo (puede faltar algún término):</div>
       <div class="intro-order-poly">${it.incStr}</div>
-      <input class="intro-order-answer" type="text" placeholder="Escribí el polinomio completo y ordenado..." autocomplete="off">
+      <div class="intro-order-answer"></div>
     </div>`;
     sols.push({ id, sol: it.completoStr });
   });
