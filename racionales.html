@@ -1074,7 +1074,6 @@ function generateTopic(pfx) {
   ejercicios.forEach(e=>{
     if(e.lvl!==currentLvl){
       currentLvl=e.lvl;
-      ejHTML+=`<div class="level-header">${LEVEL_LABELS[pfx][e.lvl]}</div>`;
     }
     ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space work-space-md"></div></div></div>`;
   });

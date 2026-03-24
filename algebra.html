@@ -195,7 +195,7 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 
 /* Fracciones verticales */
 .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.92em; line-height: 1.1; }
-.frac .num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; width: 100%; box-sizing: border-box; }
+.frac .num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; }
 .frac .den { padding: 1px 3px 0; text-align: center; }
 
 /* ── SITUACIONES PROBLEMÁTICAS ─────────────────────── */
@@ -2113,7 +2113,7 @@ function downloadSolucionesAparte(containerId, filename) {
     + '.sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}'
     + '.sol-val{font-weight:600}'
     + '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}'
-    + '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center;width:100%;box-sizing:border-box}'
+    + '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}'
     + '.frac .den{padding:1px 3px 0;text-align:center}'
     + '.ineq-sol{margin-top:.5rem;padding:.4rem .7rem;background:#f0f4ff;border-radius:6px;font-size:.85rem}'
     + '.intro-sol-block{margin-top:.5rem;padding:.4rem .7rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:.85rem}'
@@ -2221,7 +2221,7 @@ function getEjercitarioPDFCss() {
     '.sol-num,.intro-sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
     '.sol-val,.intro-sol-val{font-weight:600}',
     '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}',
-    '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center;width:100%;box-sizing:border-box}',
+    '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}',
     '.frac .den{padding:1px 3px 0;text-align:center}',
     '.mult-table{border-collapse:collapse;margin:8px 0 6px 0;font-size:.92rem}',
     '.mult-table td{border:1.5px solid #94a3b8;min-width:48px;height:38px;text-align:center;padding:3px 7px}',
@@ -3877,7 +3877,6 @@ function generateSP() {
   problemas.forEach(p => {
     if (p.lvl !== currentLvl) {
       currentLvl = p.lvl;
-      ejHTML += `<div class="sp-level-header">${lvlNames[p.lvl]}</div>`;
     }
     ejHTML += `<div class="sp-problem-item">
       <span class="sp-num">${p.id}.</span>
@@ -4207,7 +4206,6 @@ function generateValorNumerico() {
   ejercicios.forEach(e => {
     if (e.lvl !== currentLvl) {
       currentLvl = e.lvl;
-      ejHTML += `<div class="level-header" style="grid-column:1/-1">${levelNames[e.lvl]}</div>`;
     }
     ejHTML += `
       <div class="vn-item">
@@ -5584,7 +5582,6 @@ function generateOpMono() {
   ejercicios.forEach(e => {
     if (e.lvl !== currentLvl) {
       currentLvl = e.lvl;
-      ejHTML += `<div class="level-header">${OM_LVL_LABELS[e.lvl]}</div>`;
     }
     ejHTML += `<div class="ejercicio-item">
       <span class="ej-num">(${e.id})</span>
@@ -6185,7 +6182,6 @@ function generateOpPoly() {
     if(e.lvl!==currentLvl){
       currentLvl=e.lvl;
       const lbl=opCurrentOp==='ruffini'?OP_LVL_LABELS_RUFFINI[e.lvl]:(isEnterosOnly?'Coeficientes enteros':OP_LVL_LABELS[e.lvl]);
-      ejHTML+=`<div class="level-header">${lbl}</div>`;
     }
     if(opCurrentOp==='ruffini'&&e.tabla){
       ejHTML+=`<div class="op-poly-item op-poly-wide">
@@ -8062,7 +8058,7 @@ function generateRadicales(){
   var currentLvl=null;
   var ejHTML='<div class="ejercicios-list">';
   ejercicios.forEach(function(e){
-    if(e.lvl!==currentLvl){currentLvl=e.lvl;ejHTML+='<div class="level-header">'+e.label+'</div>';}
+    if(e.lvl!==currentLvl){currentLvl=e.lvl;}
     var cons=e.consigna?'<div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">'+e.consigna+'</div>':'';
     ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span>'+
       '<div class="ej-content">'+cons+'<div class="ej-question">'+e.expr+'</div>'+
@@ -8301,7 +8297,7 @@ function generateSucCaracteristicas() {
   var solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
 
   ejercicios.forEach(function(e) {
-    if (e.lvl !== curLvl) { curLvl = e.lvl; ejHTML += '<div class="level-header">'+lvlLabels[e.lvl]+'</div>'; }
+    if (e.lvl !== curLvl) { curLvl = e.lvl; }
     var s = e.suc;
     var termStr = s.terms + (s.nota && s.finita ? '' : (s.terms.indexOf('...')>=0 ? '' : (s.finita ? '' : ', ...')));
 
@@ -8391,7 +8387,7 @@ function generateSucRepresentacion() {
   var solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
 
   ejercicios.forEach(function(e) {
-    if (e.lvl !== curLvl) { curLvl = e.lvl; ejHTML += '<div class="level-header">'+lvlLabels[e.lvl]+'</div>'; }
+    if (e.lvl !== curLvl) { curLvl = e.lvl; }
     var s = e.suc;
     var terms = sucGetTerminos(s, 6);
 
@@ -8480,7 +8476,7 @@ function generateSucTerminoGeneral() {
   var solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
 
   ejercicios.forEach(function(e) {
-    if (e.lvl !== curLvl) { curLvl = e.lvl; ejHTML += '<div class="level-header">'+lvlLabels[e.lvl]+'</div>'; }
+    if (e.lvl !== curLvl) { curLvl = e.lvl; }
     var f = e.f;
     var t = f.terms;
 
@@ -8610,7 +8606,7 @@ function generateSucProblemas() {
   var solHTML = '<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
 
   ejercicios.forEach(function(e) {
-    if (e.lvl !== curLvl) { curLvl = e.lvl; ejHTML += '<div class="level-header">'+lvlLabels[e.lvl]+'</div>'; }
+    if (e.lvl !== curLvl) { curLvl = e.lvl; }
     var p = e.p;
     var preguntasHTML = p.preguntas.map(function(q, i) {
       return '<div style="margin-top:5px"><b>' + String.fromCharCode(97+i) + ')</b> ' + q + '</div>' +
@@ -9188,7 +9184,7 @@ function generatePaProblemas(returnOnly, startId) {
   else var solHTML = '<div class="solutions-list">';
 
   ejercicios.forEach(function(e) {
-    if (e.lvl !== curLvl) { curLvl = e.lvl; ejHTML += '<div class="level-header">'+lvlLabels[e.lvl]+'</div>'; }
+    if (e.lvl !== curLvl) { curLvl = e.lvl; }
     var p = e.p;
     var preguntasHTML = p.preguntas.map(function(q, i) {
       return '<div style="margin-top:5px"><b>'+String.fromCharCode(97+i)+')</b> '+q+'</div>' +

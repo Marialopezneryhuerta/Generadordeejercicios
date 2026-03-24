@@ -1270,7 +1270,6 @@ function generateEnteros() {
       ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].label + ' — ' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
     } else if (!multiOp && e.lvl !== lastPfx) {
       lastPfx = e.lvl;
-      ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
     }
     const wsMapEnt = { sr:null, mu:null, dv:null, po:null, ra:null, cs:'work-space-xl', cc:'work-space-xl' };
     const wsFinal = (e._pfx in wsMapEnt) ? wsMapEnt[e._pfx] : 'work-space-md';
@@ -1851,7 +1850,6 @@ function generatePropMU() {
   ejercicios.forEach(e => {
     if (e.lvl !== currentLvl) {
       currentLvl = e.lvl;
-      ejHTML += `<div class="level-header">${PROP_LEVEL_NAMES[e.lvl]}</div>`;
     }
     if (e.lvl === 2) {
       // Identificar propiedad: espacio para escribir el nombre
@@ -2226,7 +2224,6 @@ function generateTopic(pfx) {
   ejercicios.forEach(e => {
     if (e.lvl !== currentLvl) {
       currentLvl = e.lvl;
-      ejHTML += `<div class="level-header">${LEVEL_NAMES[pfx][e.lvl]}</div>`;
     }
     const wsMapTopic = { sr:null, mu:null, dv:null, po:null, ra:null, cs:'work-space-xl', cc:'work-space-xl' };
     const wsSize = (pfx in wsMapTopic) ? wsMapTopic[pfx] : 'work-space-md';
@@ -2619,7 +2616,6 @@ function generateRC() {
       var qty = RC_STATE.ex[lvl];
       if (!qty) continue;
       var labelEx = ['', 'Nivel 1 — Raíz de 2 cifras', 'Nivel 2 — Raíz de 3 cifras', 'Nivel 3 — Raíz de 4 cifras o más'][lvl];
-      ejHTML += '<div class="level-header level-sub">' + labelEx + '</div>';
       var seen = new Set();
       var count = 0, att = 0;
       while (count < qty && att < qty * 80) {
@@ -2647,7 +2643,6 @@ function generateRC() {
       var qty2 = RC_STATE.inex[lvl2];
       if (!qty2) continue;
       var labelInex = ['', 'Nivel 1 — Raíz de 2 cifras', 'Nivel 2 — Raíz de 3 cifras', 'Nivel 3 — Raíz de 4 cifras o más'][lvl2];
-      ejHTML += '<div class="level-header level-sub">' + labelInex + '</div>';
       var seen2 = new Set();
       var count2 = 0, att2 = 0;
       while (count2 < qty2 && att2 < qty2 * 80) {
@@ -3052,7 +3047,6 @@ function generateSP() {
   problemas.forEach(p => {
     if (p.lvl !== currentLvl) {
       currentLvl = p.lvl;
-      ejHTML += `<div class="level-header" style="grid-column:1/-1">${lvlLabels[p.lvl]}</div>`;
     }
     ejHTML += `<div class="sp-item">
       <span class="ej-num">${p.id}.</span>
@@ -3271,7 +3265,6 @@ function generateRacUnif() {
       ejHTML += '<div class="level-header">' + RAC_TOPIC_NAMES[e._pfx] + ' — ' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
     } else if (!multiOp && e.lvl !== lastLvl) {
       lastLvl = e.lvl;
-      ejHTML += '<div class="level-header">' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
     }
     if (wsSize) {
       ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span>' +
@@ -3547,7 +3540,7 @@ function racGenerateTopic(pfx){
   let currentLvl=null;
   let ejHTML='<div class="ejercicios-list">';
   const wsMapRT={frac:{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:null,ra:null,cs:'work-space-xl',cc:'work-space-xl'},dec:{sr:'work-space-4',mu:'work-space-md',dv:'work-space-md',po:'work-space-8',ra:null,cs:'work-space-xl',cc:'work-space-xl'},both:{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:'work-space-md',ra:'work-space-md',cs:'work-space-xl',cc:'work-space-xl'}};
-  ejercicios.forEach(e=>{if(e.lvl!==currentLvl){currentLvl=e.lvl;ejHTML+=`<div class="level-header">${racGetLabel(pfx,e.lvl)}</div>`;}const wsRT=(wsMapRT[currentMode]||wsMapRT['frac'])[pfx];if(wsRT){ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsRT}"></div></div></div>`;}else{ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div></div></div>`;}});
+  ejercicios.forEach(e=>{if(e.lvl!==currentLvl){currentLvl=e.lvl;}const wsRT=(wsMapRT[currentMode]||wsMapRT['frac'])[pfx];if(wsRT){ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsRT}"></div></div></div>`;}else{ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div></div></div>`;}});
   ejHTML+='</div>';
   let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
   ejercicios.forEach(e=>{solHTML+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}</div></div>`;});
