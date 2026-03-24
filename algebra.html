@@ -195,7 +195,7 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 
 /* Fracciones verticales */
 .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 2px; font-size: 0.92em; line-height: 1.1; }
-.frac .num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; }
+.frac .num { border-bottom: 1.5px solid currentColor; padding: 0 3px 1px; text-align: center; width: 100%; box-sizing: border-box; }
 .frac .den { padding: 1px 3px 0; text-align: center; }
 
 /* ── SITUACIONES PROBLEMÁTICAS ─────────────────────── */
@@ -328,7 +328,8 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .intro-order-num { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.3rem; }
 .intro-order-instruction { font-size: 0.8rem; color: var(--muted); font-style: italic; margin-bottom: 0.4rem; }
 .intro-order-poly { font-size: 1.05rem; font-weight: 600; color: var(--ink); margin-bottom: 0.6rem; }
-.intro-order-answer { display: block; width: 100%; min-height: 1.8rem; border-bottom: 2px solid var(--border); background: transparent; }
+.intro-order-answer { border: none; border-bottom: 2px solid var(--border); width: 100%; font-size: 1rem; padding: 0.3rem 0; background: transparent; font-family: 'Nunito Sans', sans-serif; outline: none; color: var(--ink); }
+.intro-order-answer:focus { border-bottom-color: var(--accent); }
 
 /* Soluciones */
 .intro-sol-block { margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid var(--border); }
@@ -340,7 +341,7 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 
 @media print {
   .intro-mc-block, .intro-order-item { border: 1px solid #ccc; break-inside: avoid; }
-  .intro-order-answer { border-bottom: 1.5px solid #555; min-height: 2rem; }
+  .intro-order-answer { border-bottom: 1px solid #999; }
 }
 
 /* ══════════════════════════════════════════════════
@@ -1294,6 +1295,7 @@ body { padding-bottom: 2.5rem; }
         <button class="subtype-btn"        id="rad-op-racIV"     onclick="radSetOp('racIV')">Rac. IV (trinomio)</button>
         <button class="subtype-btn"        id="rad-op-propiedades" onclick="radSetOp('propiedades')" style="background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;font-weight:700">📐 Aplicación de Propiedades</button>
         <button class="subtype-btn"        id="rad-op-polRaiz"    onclick="radSetOp('polRaiz')" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;font-weight:700">🔢 Raíz de polinomio</button>
+        <button class="subtype-btn"        id="rad-op-expFrac"    onclick="radSetOp('expFrac')" style="background:linear-gradient(135deg,#b45309,#f59e0b);color:#fff;border:none;font-weight:700">🔣 Exponentes Fraccionarios</button>
       </div>
     </div>
 
@@ -2111,7 +2113,7 @@ function downloadSolucionesAparte(containerId, filename) {
     + '.sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}'
     + '.sol-val{font-weight:600}'
     + '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}'
-    + '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}'
+    + '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center;width:100%;box-sizing:border-box}'
     + '.frac .den{padding:1px 3px 0;text-align:center}'
     + '.ineq-sol{margin-top:.5rem;padding:.4rem .7rem;background:#f0f4ff;border-radius:6px;font-size:.85rem}'
     + '.intro-sol-block{margin-top:.5rem;padding:.4rem .7rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;font-size:.85rem}'
@@ -2219,7 +2221,7 @@ function getEjercitarioPDFCss() {
     '.sol-num,.intro-sol-num{font-weight:800;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
     '.sol-val,.intro-sol-val{font-weight:600}',
     '.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px;font-size:.92em;line-height:1.1}',
-    '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center}',
+    '.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px 1px;text-align:center;width:100%;box-sizing:border-box}',
     '.frac .den{padding:1px 3px 0;text-align:center}',
     '.mult-table{border-collapse:collapse;margin:8px 0 6px 0;font-size:.92rem}',
     '.mult-table td{border:1.5px solid #94a3b8;min-width:48px;height:38px;text-align:center;padding:3px 7px}',
@@ -4553,36 +4555,6 @@ function renderAct4(items, startIdx) {
 }
 
 // ── ACTIVIDAD 5: Ordenar polinomios ──────────────────────────
-// Combina términos que tengan el mismo exponente para `mainVar`.
-// Ej: 4a² y 2a ambos tienen x⁰ → se fusionan en un solo término (6a²... no, se elige el de mayor grado).
-// En realidad los sumamos algebraicamente y reconstruimos el término.
-function mergeByMainVar(terminos, mainVar) {
-  const map = new Map(); // key = expMainVar → términos acumulados
-  for (const t of terminos) {
-    const e = (t.parts.find(p=>p.v===mainVar)||{exp:0}).exp;
-    if (!map.has(e)) { map.set(e, []); }
-    map.get(e).push(t);
-  }
-  const merged = [];
-  for (const [, group] of map) {
-    if (group.length === 1) { merged.push(group[0]); continue; }
-    // Sumar coeficientes; mantener las partes del término con mayor grado total
-    const totalCoef = group.reduce((s,t)=>s+t.coef, 0);
-    if (totalCoef === 0) continue; // término se cancela, descartarlo
-    const base = group.reduce((best,t)=>t.grado>best.grado?t:best, group[0]);
-    const coef = totalCoef;
-    const partsStr = base.partsStr;
-    const grado = base.grado;
-    const coefDisp = (() => {
-      if (partsStr === '') return String(coef);
-      if (Math.abs(coef)===1) return coef<0?'−':'';
-      return coef<0?`−${Math.abs(coef)}`:`${coef}`;
-    })();
-    merged.push({ coef, parts: base.parts, grado, partsStr, coefDisp });
-  }
-  return merged;
-}
-
 function genAct5(n) {
   const items = [];
   const seen = new Set();
@@ -4593,15 +4565,13 @@ function genAct5(n) {
     const varNames = multiVar
       ? [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,2)
       : [[...INTRO_VARS][rnd(0,3)]];
-    const mainVar = varNames[0];
-    let terminos = makePolinomio(nTerms, varNames, 5);
-    // Fusionar términos con mismo exponente de mainVar (evita ej: 4a² y 2a con x⁰ repetido)
-    if (varNames.length > 1) terminos = mergeByMainVar(terminos, mainVar);
+    const terminos = makePolinomio(nTerms, varNames, 5);
     if (terminos.length < 3) continue;
     const str = polyStr(terminos);
     if (seen.has(str)) continue;
     seen.add(str);
 
+    const mainVar = varNames[0];
     const desc = rnd(0,1)===0;
     const sorted = sortPoly(terminos, mainVar, desc);
     const sortedStr = polyStr(sorted);
@@ -4626,7 +4596,7 @@ function renderAct5(items, startIdx) {
       <div class="intro-order-num">${id}.</div>
       <div class="intro-order-instruction">${it.instruccion}</div>
       <div class="intro-order-poly">${it.str}</div>
-      <div class="intro-order-answer"></div>
+      <input class="intro-order-answer" type="text" placeholder="Escribí el polinomio ordenado..." autocomplete="off">
     </div>`;
     sols.push({ id, sol: it.sortedStr });
   });
@@ -4706,7 +4676,7 @@ function renderAct6(items, startIdx) {
       <div class="intro-order-num">${id}.</div>
       <div class="intro-order-instruction">Escribí el polinomio ordenado y completo (puede faltar algún término):</div>
       <div class="intro-order-poly">${it.incStr}</div>
-      <div class="intro-order-answer"></div>
+      <input class="intro-order-answer" type="text" placeholder="Escribí el polinomio completo y ordenado..." autocomplete="off">
     </div>`;
     sols.push({ id, sol: it.completoStr });
   });
@@ -4881,18 +4851,27 @@ function genAct10(n) {
   let att = 0;
   while (items.length < n && att++ < n*50) {
     const nTerms = rnd(3,4);
-    const makeHomogeneo = Math.random() < 0.5;
-    // Homogéneo requiere 2 variables (con 1 sola variable no se pueden generar 3 términos distintos del mismo grado)
-    const nVars = makeHomogeneo ? 2 : rnd(1,2);
+    const nVars = rnd(1,2);
     const varNames = [...INTRO_VARS].sort(()=>Math.random()-0.5).slice(0,nVars);
+    const makeHomogeneo = Math.random() < 0.5;
     let terminos, tipo;
     if (makeHomogeneo) {
-      // Todos los términos tienen el mismo grado — siempre 2 variables
+      // Todos los términos tienen el mismo grado
       const gradoFijo = rnd(2,5);
       const terms = [];
       const usedParts = new Set();
       let tAtt = 0;
       while (terms.length < nTerms && tAtt++ < 200) {
+        if (nVars === 1) {
+          // Una sola variable → todos los términos son v^gradoFijo
+          if (terms.length > 0) break; // solo un exponente posible
+          const coef = (rnd(0,1)?-1:1)*rnd(1,8);
+          const v = varNames[0];
+          const partsStr = gradoFijo===1?v:`${v}${toSup(gradoFijo)}`;
+          const coefDisp = Math.abs(coef)===1?(coef<0?'−':''):(coef<0?`−${Math.abs(coef)}`:`${coef}`);
+          terms.push({coef, parts:[{v,exp:gradoFijo}], grado:gradoFijo, partsStr, coefDisp});
+          break;
+        }
         // Dos variables: distribuir exps que sumen gradoFijo
         const e1 = rnd(0, gradoFijo);
         const e2 = gradoFijo - e1;
@@ -6518,6 +6497,7 @@ const RAD_NIVELES = {
   racIV:       ['Nivel único — Enteros'],
   propiedades: ['Nivel 1 — Reducir a forma más simple', 'Nivel 2 — Calcular el valor de x', 'Nivel 3 — Resolver aplicando propiedades'],
   polRaiz:     ['Nivel 1 — √ trinomio cuadrado perfecto', 'Nivel 2 — √ cuadrado de binomio con coeficientes', 'Nivel 3 — ∛ cubo perfecto de binomio'],
+  expFrac:     ['Nivel 1 — Radical → exponente fraccionario', 'Nivel 2 — Potencia → forma radical', 'Nivel 3 — Simplificar (producto/cociente de raíces)', 'Nivel 4 — Sin numerador literal', 'Nivel 5 — Con signo radical y exp. positivos', 'Nivel 6 — Con exponentes positivos', 'Nivel 7 — Con signo radical y racionalizar'],
 };
 
 const RAD_TITLES = {
@@ -6540,6 +6520,7 @@ const RAD_TITLES = {
   racIV:       'Radicales',
   propiedades: 'Radicales',
   polRaiz:     'Radicales',
+  expFrac:     'Exponentes Fraccionarios',
 };
 
 let radCurrentOp = 'exactas';
@@ -7394,6 +7375,359 @@ function radGenPolRaiz3(){
   return{expr:expr,sol:sol,consigna:'Factorizá como cubo perfecto de binomio y extraé del radical cúbico'};
 }
 
+
+// ══════════════════════════════════════════════════════════════
+// EXPONENTES FRACCIONARIOS — generadores ef_
+// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+// EXPONENTES FRACCIONARIOS — 7 niveles
+// Helpers locales: ef_frac(p,q), ef_rad(idx,base,exp), ef_pot(base,p,q)
+// ══════════════════════════════════════════════════════════════
+
+// Helper: fracción renderizada como <span class="frac">
+function ef_frac(p, q) {
+  const g = gcd(Math.abs(p), Math.abs(q));
+  const sn = p / g, sd = q / g;
+  if (sd === 1) return String(sn);
+  const neg = sn < 0 ? '-' : '';
+  return neg + '<span class="frac"><span class="num">' + Math.abs(sn) + '</span><span class="den">' + sd + '</span></span>';
+}
+
+// Helper: potencia con exponente fraccionario: base^(p/q)
+// Ej: ef_pot('x', 3, 4) → x<sup><span class="frac">...</span></sup>
+function ef_pot(base, p, q) {
+  if (q === 1) return base + '<sup>' + p + '</sup>';
+  return base + '<sup>' + ef_frac(p, q) + '</sup>';
+}
+
+// Helper: radical con índice, base literal/num, y exponente del radicando
+// ef_rad(4, 'x', 3) → ⁴√(x³)
+// ef_rad(2, 'x', 1) → √x
+function ef_rad(idx, base, exp) {
+  const pre = idx === 2 ? '√' : '<sup>' + idx + '</sup>√';
+  const inner = exp === 1 ? base : base + '<sup>' + exp + '</sup>';
+  // si hay exponente de base numérica múltiple, mostrar con over-line
+  return pre + '<span style="text-decoration:overline;padding:0 1px">' + inner + '</span>';
+}
+
+// Helper: radical de producto de dos variables con exponentes
+// ef_rad2(3, 'x', 2, 'y', 1) → ³√(x²y)
+function ef_rad2(idx, b1, e1, b2, e2) {
+  const pre = idx === 2 ? '√' : '<sup>' + idx + '</sup>√';
+  const p1 = e1 === 1 ? b1 : b1 + '<sup>' + e1 + '</sup>';
+  const p2 = e2 === 1 ? b2 : b2 + '<sup>' + e2 + '</sup>';
+  return pre + '<span style="text-decoration:overline;padding:0 1px">' + p1 + p2 + '</span>';
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 1 — Expresar radical como potencia con exponente fraccionario
+// Dado: ⁿ√(aᵐ)  →  alumno escribe: a^(m/n)
+// ─────────────────────────────────────────────────────────────
+function efGen1() {
+  const vars = ['x', 'y', 'a', 'b', 'm', 'n'];
+  const numBases = [2, 3, 5, 6, 7];
+  const useNum = Math.random() < 0.4;
+  const base = useNum ? numBases[rnd(0, 4)] : vars[rnd(0, 5)];
+  const idx = rnd(2, 5);          // índice del radical (n)
+  const exp = rnd(1, idx - 1);    // exponente del radicando (m), m < n para que no simplifique fácil
+  // algunos casos con exp > idx también son válidos
+  const m = Math.random() < 0.5 ? exp : rnd(1, 6);
+  const [sn, sd] = simplify(m, idx);
+  const expr = ef_rad(idx, String(base), m);
+  const sol = ef_pot(String(base), sn, sd);
+  return { expr, sol, consigna: 'Expresá con exponente fraccionario' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 2 — Potencia → forma radical  a^(p/q) → ᵍ√(aᵖ)
+// ─────────────────────────────────────────────────────────────
+function efGen2() {
+  const vars = ['x', 'y', 'a', 'b', 'm'];
+  const numBases = [2, 3, 5, 23, '0.5'];
+  const useNum = Math.random() < 0.45;
+  const base = useNum ? numBases[rnd(0, 4)] : vars[rnd(0, 4)];
+  // denoms pequeños: 2,3,4,5,6
+  const denoms = [2, 3, 4, 5, 6];
+  const q = denoms[rnd(0, 4)];
+  const p = rnd(1, q + 2);
+  // evitar p/q entero
+  const [sn, sd] = simplify(p, q);
+  if (sd === 1) return efGen2();
+  const expr = ef_pot(String(base), sn, sd);
+  const sol = ef_rad(sd, String(base), sn);
+  return { expr, sol, consigna: 'Expresá en forma de radical' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 3 — Simplificar producto/cociente de raíces → exponente fraccionario
+// Tipos: √a · ³√a², ³√a² · ³√a, √a · √a², √a³ / √a
+// ─────────────────────────────────────────────────────────────
+function efGen3() {
+  const vars = ['x', 'y', 'a', 'b'];
+  const v = vars[rnd(0, 3)];
+  const type = rnd(0, 5);
+
+  if (type === 0) {
+    // √v · ³√v² = v^(1/2) · v^(2/3) = v^(7/6)
+    const [sn, sd] = simplify(1 * 3 + 2 * 2, 6); // 3+4=7, den=6
+    const expr = ef_rad(2, v, 1) + ' · ' + ef_rad(3, v, 2);
+    const sol = ef_pot(v, sn, sd);
+    return { expr, sol, consigna: 'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 1) {
+    // ³√v · ³√v² = v^(3/3)=v
+    const expr = ef_rad(3, v, 1) + ' · ' + ef_rad(3, v, 2);
+    const sol = v;
+    return { expr, sol, consigna: 'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 2) {
+    // √v · ⁴√v³ = v^(1/2+3/4) = v^(5/4)
+    const [sn, sd] = simplify(2 + 3, 4);
+    const expr = ef_rad(2, v, 1) + ' · ' + ef_rad(4, v, 3);
+    const sol = ef_pot(v, sn, sd);
+    return { expr, sol, consigna: 'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 3) {
+    // √v³ ÷ √v = v^(3/2-1/2)=v^1=v
+    const expr = ef_rad(2, v, 3) + ' ÷ ' + ef_rad(2, v, 1);
+    return { expr, sol: v, consigna: 'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 4) {
+    // ⁴√v³ ÷ ⁴√v = v^(2/4)=v^(1/2)
+    const [sn, sd] = simplify(2, 4);
+    const expr = ef_rad(4, v, 3) + ' ÷ ' + ef_rad(4, v, 1);
+    const sol = ef_pot(v, sn, sd);
+    return { expr, sol, consigna: 'Simplificá y expresá con exponente fraccionario' };
+  }
+  // type === 5: √v² · ⁴√v = v^(1+1/4)=v^(5/4)
+  const [sn, sd] = simplify(5, 4);
+  const expr = ef_rad(2, v, 2) + ' · ' + ef_rad(4, v, 1);
+  const sol = ef_pot(v, sn, sd);
+  return { expr, sol, consigna: 'Simplificá y expresá con exponente fraccionario' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 4 — Expresar sin numerador literal y simplificar
+// Ejemplo: a⁻³/b² → 1/(a³b²);  x⁻³·y^(3/2) / x⁻² → y^(3/2)/x
+// ─────────────────────────────────────────────────────────────
+function efGen4() {
+  const vars = [['x','y'],['a','b'],['m','n']];
+  const [v1, v2] = vars[rnd(0, 2)];
+  const type = rnd(0, 4);
+
+  function negExpHTML(v, p, q) {
+    // renderiza v^(-p/q)
+    const fracPart = q === 1 ? String(p) : '<span class="frac"><span class="num">' + p + '</span><span class="den">' + q + '</span></span>';
+    return v + '<sup>-' + fracPart + '</sup>';
+  }
+
+  if (type === 0) {
+    // a⁻³/b²  → 1/(a³b²)
+    const p = rnd(2, 4), q = rnd(2, 4);
+    if (p === q) return efGen4();
+    const expr = '<span class="frac"><span class="num">' + negExpHTML(v1, p, 1) + '</span><span class="den">' + v2 + '<sup>' + q + '</sup></span></span>';
+    const sol = '<span class="frac"><span class="num">1</span><span class="den">' + v1 + '<sup>' + p + '</sup>' + v2 + '<sup>' + q + '</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá sin numerador literal' };
+  }
+  if (type === 1) {
+    // 2x²/y³  →  2/(x⁻²y³)  but actual: show a^(-3)b^(1/2) → b^(1/2)/a³
+    const p = rnd(2, 4);
+    const [fp, fq] = [rnd(1, 3), rnd(2, 4)];
+    if (fp >= fq) return efGen4();
+    const [sfp, sfq] = simplify(fp, fq);
+    const expr = negExpHTML(v1, p, 1) + ' · ' + ef_pot(v2, sfp, sfq);
+    const sol = '<span class="frac"><span class="num">' + ef_pot(v2, sfp, sfq) + '</span><span class="den">' + v1 + '<sup>' + p + '</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá sin numerador literal' };
+  }
+  if (type === 2) {
+    // a⁻³b^(1/2)/a → 1/(a⁴b^(-1/2)) → b^(1/2)/a⁴
+    const p = rnd(2, 3);
+    const [sfp, sfq] = simplify(1, 2);
+    const expr = '<span class="frac"><span class="num">' + negExpHTML(v1, p, 1) + ef_pot(v2, sfp, sfq) + '</span><span class="den">' + v1 + '</span></span>';
+    const sol = '<span class="frac"><span class="num">' + ef_pot(v2, sfp, sfq) + '</span><span class="den">' + v1 + '<sup>' + (p + 1) + '</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá sin numerador literal' };
+  }
+  if (type === 3) {
+    // x^(-3)·y^(-1/2) → 1/(x³·y^(1/2))
+    const p = rnd(2, 4);
+    const [sfp, sfq] = simplify(1, rnd(2, 3));
+    const expr = negExpHTML(v1, p, 1) + ' · ' + negExpHTML(v2, sfp, sfq);
+    const sol = '<span class="frac"><span class="num">1</span><span class="den">' + v1 + '<sup>' + p + '</sup> · ' + ef_pot(v2, sfp, sfq) + '</span></span>';
+    return { expr, sol, consigna: 'Expresá sin numerador literal' };
+  }
+  // type 4: a^(-3)·b^(1/2) / a^(-1) → b^(1/2)/a²
+  const p1 = rnd(2, 4), p2 = rnd(1, 2);
+  const [sfp, sfq] = simplify(1, 2);
+  const expr = '<span class="frac"><span class="num">' + negExpHTML(v1, p1, 1) + ' · ' + ef_pot(v2, sfp, sfq) + '</span><span class="den">' + negExpHTML(v1, p2, 1) + '</span></span>';
+  const netExp = p1 - p2;
+  const sol = '<span class="frac"><span class="num">' + ef_pot(v2, sfp, sfq) + '</span><span class="den">' + v1 + '<sup>' + netExp + '</sup></span></span>';
+  return { expr, sol, consigna: 'Expresá sin numerador literal' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 5 — Expresar con signo radical y exponentes positivos simplificados
+// Ejemplo: x^(3/5) → ⁵√x³;  xy^(3/2) → x·√y³
+// ─────────────────────────────────────────────────────────────
+function efGen5() {
+  const vars = [['x','y'],['a','b'],['m','n']];
+  const [v1, v2] = vars[rnd(0, 2)];
+  const type = rnd(0, 4);
+
+  if (type === 0) {
+    // x^(3/5) → ⁵√x³
+    const p = rnd(2, 4), q = rnd(3, 6);
+    if (p >= q) return efGen5();
+    const [sp, sq] = simplify(p, q);
+    if (sq === 1) return efGen5();
+    const expr = ef_pot(v1, sp, sq);
+    const sol = ef_rad(sq, v1, sp);
+    return { expr, sol, consigna: 'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  if (type === 1) {
+    // xy^(3/2) → x·√y³
+    const p = rnd(2, 4), q = rnd(2, 3);
+    if (p === q) return efGen5();
+    const [sp, sq] = simplify(p, q);
+    const expr = v1 + ' · ' + ef_pot(v2, sp, sq);
+    const sol = sq === 1 ? v1 + ' · ' + v2 + (sp > 1 ? '<sup>' + sp + '</sup>' : '') : v1 + ' · ' + ef_rad(sq, v2, sp);
+    return { expr, sol, consigna: 'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  if (type === 2) {
+    // x^(-3/2)·y^(-3/2) → 1/√(x³y³)
+    const p = rnd(1, 3), q = rnd(2, 4);
+    if (p >= q) return efGen5();
+    const [sp, sq] = simplify(p, q);
+    if (sq === 1) return efGen5();
+    // expr: x^(-sp/sq) y^(-sp/sq)
+    const negFrac = '<span class="frac"><span class="num">-' + sp + '</span><span class="den">' + sq + '</span></span>';
+    const expr = v1 + '<sup>' + negFrac + '</sup> · ' + v2 + '<sup>' + negFrac + '</sup>';
+    const sol = '<span class="frac"><span class="num">1</span><span class="den">' + ef_rad2(sq, v1, sp, v2, sp) + '</span></span>';
+    return { expr, sol, consigna: 'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  if (type === 3) {
+    // x^(-3)y^(-1/2) → 1/(x³√y)
+    const p1 = rnd(2, 4);
+    const [sp, sq] = [1, 2];
+    const negFracHalf = '<span class="frac"><span class="num">-1</span><span class="den">2</span></span>';
+    const expr = v1 + '<sup>-' + p1 + '</sup> · ' + v2 + '<sup>' + negFracHalf + '</sup>';
+    const sol = '<span class="frac"><span class="num">1</span><span class="den">' + v1 + '<sup>' + p1 + '</sup> · ' + ef_rad(2, v2, 1) + '</span></span>';
+    return { expr, sol, consigna: 'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  // type 4: frac with neg exps: x^(-3)y^(-1/2) / x^(3/2) → 1/(x^(9/2)√y)
+  const p1 = rnd(2, 3);
+  const [sp, sq] = simplify(p1 * 2 + 3, 2); // x total exp = p1+3/2
+  const negFracHalf = '<span class="frac"><span class="num">-1</span><span class="den">2</span></span>';
+  const expr = '<span class="frac"><span class="num">' + v1 + '<sup>-' + p1 + '</sup> · ' + v2 + '<sup>' + negFracHalf + '</sup></span><span class="den">' + ef_pot(v1, 3, 2) + '</span></span>';
+  const sol = '<span class="frac"><span class="num">1</span><span class="den">' + ef_pot(v1, sp, sq) + ' · ' + ef_rad(2, v2, 1) + '</span></span>';
+  return { expr, sol, consigna: 'Expresá con signo radical y exponentes positivos simplificados' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 6 — Expresar con exponentes positivos y simplificar
+// Ejemplo: a²b⁻³ → a²/b³;  3/(x⁻¹y^(-3/2)) → 3xy^(3/2)
+// ─────────────────────────────────────────────────────────────
+function efGen6() {
+  const vars = [['x','y'],['a','b'],['m','n']];
+  const [v1, v2] = vars[rnd(0, 2)];
+  const type = rnd(0, 4);
+
+  function negExpHTML(v, p, q) {
+    const fracPart = q === 1 ? String(p) : '<span class="frac"><span class="num">' + p + '</span><span class="den">' + q + '</span></span>';
+    return v + '<sup>-' + fracPart + '</sup>';
+  }
+
+  if (type === 0) {
+    // a²b⁻³ → a²/b³
+    const p1 = rnd(2, 4), p2 = rnd(2, 4);
+    const expr = v1 + '<sup>' + p1 + '</sup> · ' + negExpHTML(v2, p2, 1);
+    const sol = '<span class="frac"><span class="num">' + v1 + '<sup>' + p1 + '</sup></span><span class="den">' + v2 + '<sup>' + p2 + '</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá con exponentes positivos y simplificá' };
+  }
+  if (type === 1) {
+    // x⁻⁴·y^(3/2) → y^(3/2)/x⁴
+    const p1 = rnd(2, 4);
+    const [sp, sq] = simplify(rnd(1, 3), rnd(2, 4));
+    if (sq === 1) return efGen6();
+    const expr = negExpHTML(v1, p1, 1) + ' · ' + ef_pot(v2, sp, sq);
+    const sol = '<span class="frac"><span class="num">' + ef_pot(v2, sp, sq) + '</span><span class="den">' + v1 + '<sup>' + p1 + '</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá con exponentes positivos y simplificá' };
+  }
+  if (type === 2) {
+    // 3/(x⁻¹·y^(-3/2)) → 3xy^(3/2)
+    const k = rnd(2, 5);
+    const [sp, sq] = simplify(3, 2);
+    const expr = '<span class="frac"><span class="num">' + k + '</span><span class="den">' + negExpHTML(v1, 1, 1) + ' · ' + negExpHTML(v2, sp, sq) + '</span></span>';
+    const sol = k + v1 + ' · ' + ef_pot(v2, sp, sq);
+    return { expr, sol, consigna: 'Expresá con exponentes positivos y simplificá' };
+  }
+  if (type === 3) {
+    // x^(-4)·y^(3/2) / x^(-1) → y^(3/2)/x³
+    const p1 = rnd(3, 5), p2 = rnd(1, 2);
+    const [sp, sq] = simplify(3, 2);
+    const expr = '<span class="frac"><span class="num">' + negExpHTML(v1, p1, 1) + ' · ' + ef_pot(v2, sp, sq) + '</span><span class="den">' + negExpHTML(v1, p2, 1) + '</span></span>';
+    const sol = '<span class="frac"><span class="num">' + ef_pot(v2, sp, sq) + '</span><span class="den">' + v1 + '<sup>' + (p1 - p2) + '</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá con exponentes positivos y simplificá' };
+  }
+  // type 4: 2a^(-2)b^(-3) / a^(-4)c^(-1) → 2a²c/b³
+  const k = rnd(2, 4), p1 = rnd(2, 3), p2 = rnd(3, 5), p3 = rnd(2, 4), p4 = rnd(1, 2);
+  const [v3] = [['x','y','z'],['a','b','c']][rnd(0,1)];
+  const netA = p3 - p1;
+  if (netA <= 0) return efGen6();
+  const expr = '<span class="frac"><span class="num">' + k + negExpHTML(v1, p1, 1) + negExpHTML(v2, p2, 1) + '</span><span class="den">' + negExpHTML(v1, p3, 1) + negExpHTML(v3 || 'c', p4, 1) + '</span></span>';
+  const sol = '<span class="frac"><span class="num">' + k + v1 + '<sup>' + netA + '</sup>' + (v3 || 'c') + '<sup>' + p4 + '</sup></span><span class="den">' + v2 + '<sup>' + p2 + '</sup></span></span>';
+  return { expr, sol, consigna: 'Expresá con exponentes positivos y simplificá' };
+}
+
+// ─────────────────────────────────────────────────────────────
+// NIVEL 7 — Expresar con signo radical y racionalizar
+// Ejemplo: x^(-3/5) → ⁵√x² / x;  x^(-1/2)·y^(-3/2) → √(xy) / xy²
+// ─────────────────────────────────────────────────────────────
+function efGen7() {
+  const vars = [['x','y'],['a','b'],['m','n']];
+  const [v1, v2] = vars[rnd(0, 2)];
+  const type = rnd(0, 4);
+
+  if (type === 0) {
+    // x^(-3/5) → ⁵√x² / x  (racionalizar: mult num y den por ⁵√x²)
+    // x^(-3/5) = 1/x^(3/5) = x^(2/5)/x = ⁵√x²/x
+    const expr = ef_pot(v1, -3, 5).replace('-3', '<span class="frac"><span class="num">-3</span><span class="den">5</span></span>').replace(v1 + '<sup>', v1 + '<sup>');
+    // simpler: just render the negative fractional exponent directly
+    const negFrac = '<span class="frac"><span class="num">-3</span><span class="den">5</span></span>';
+    const exprClean = v1 + '<sup>' + negFrac + '</sup>';
+    const sol = '<span class="frac"><span class="num">' + ef_rad(5, v1, 2) + '</span><span class="den">' + v1 + '</span></span>';
+    return { expr: exprClean, sol, consigna: 'Expresá con signo radical y racionalizá' };
+  }
+  if (type === 1) {
+    // x^(-1/2)·y^(-3/2) → √(xy)/(xy²)
+    const negHalf = '<span class="frac"><span class="num">-1</span><span class="den">2</span></span>';
+    const neg3half = '<span class="frac"><span class="num">-3</span><span class="den">2</span></span>';
+    const expr = v1 + '<sup>' + negHalf + '</sup> · ' + v2 + '<sup>' + neg3half + '</sup>';
+    const sol = '<span class="frac"><span class="num">' + ef_rad2(2, v1, 1, v2, 1) + '</span><span class="den">' + v1 + v2 + '<sup>2</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá con signo radical y racionalizá' };
+  }
+  if (type === 2) {
+    // x^(-3/2)·y^(-3/2) / x → √(xy)/(x²y²)
+    const neg3half = '<span class="frac"><span class="num">-3</span><span class="den">2</span></span>';
+    const expr = '<span class="frac"><span class="num">' + v1 + '<sup>' + neg3half + '</sup> · ' + v2 + '<sup>' + neg3half + '</sup></span><span class="den">' + v1 + '</span></span>';
+    const sol = '<span class="frac"><span class="num">' + ef_rad2(2, v1, 1, v2, 1) + '</span><span class="den">' + v1 + '<sup>2</sup>' + v2 + '<sup>2</sup></span></span>';
+    return { expr, sol, consigna: 'Expresá con signo radical y racionalizá' };
+  }
+  if (type === 3) {
+    // x^(-3/2)·y^(-1/2) / x^(3/2) → √(xy)/(x³y)
+    const neg3half = '<span class="frac"><span class="num">-3</span><span class="den">2</span></span>';
+    const negHalf = '<span class="frac"><span class="num">-1</span><span class="den">2</span></span>';
+    const expr = '<span class="frac"><span class="num">' + v1 + '<sup>' + neg3half + '</sup> · ' + v2 + '<sup>' + negHalf + '</sup></span><span class="den">' + ef_pot(v1, 3, 2) + '</span></span>';
+    const sol = '<span class="frac"><span class="num">' + ef_rad2(2, v1, 1, v2, 1) + '</span><span class="den">' + v1 + '<sup>3</sup>' + v2 + '</span></span>';
+    return { expr, sol, consigna: 'Expresá con signo radical y racionalizá' };
+  }
+  // type 4: x^(-3/5) / x → ⁵√x²/x²
+  const negFrac = '<span class="frac"><span class="num">-3</span><span class="den">5</span></span>';
+  const expr = '<span class="frac"><span class="num">' + v1 + '<sup>' + negFrac + '</sup></span><span class="den">' + v1 + '</span></span>';
+  // x^(-3/5)/x = x^(-3/5-1) = x^(-8/5) → rationalize: x^(2/5)/x² = ⁵√x²/x²
+  const sol = '<span class="frac"><span class="num">' + ef_rad(5, v1, 2) + '</span><span class="den">' + v1 + '<sup>2</sup></span></span>';
+  return { expr, sol, consigna: 'Expresá con signo radical y racionalizá' };
+}
+
 const RAD_GENS={
   exactas:radGenExactas,extraccion:radGenExtraccion,intro:radGenIntro,
   sumaresta:radGenSumaResta,multI:radGenMultI,multII:radGenMultII,
@@ -7412,7 +7746,296 @@ const RAD_GENS={
     if(lvl===2) return radGenPolRaiz2();
     return radGenPolRaiz3();
   }
+  ,expFrac:function(lvl){
+    if(lvl===1) return efGen1();
+    if(lvl===2) return efGen2();
+    if(lvl===3) return efGen3();
+    if(lvl===4) return efGen4();
+    if(lvl===5) return efGen5();
+    if(lvl===6) return efGen6();
+    return efGen7();
+  }
 };
+
+
+// ══════════════════════════════════════════════════════════════
+// EXPONENTES FRACCIONARIOS — 7 niveles
+// ══════════════════════════════════════════════════════════════
+
+function ef_frac(p, q) {
+  var g = gcd(Math.abs(p), Math.abs(q));
+  var sn = p / g, sd = q / g;
+  if (sd === 1) return String(sn);
+  var neg = sn < 0 ? '-' : '';
+  return neg + '<span class="frac"><span class="num">' + Math.abs(sn) + '</span><span class="den">' + sd + '</span></span>';
+}
+
+function ef_pot(base, p, q) {
+  if (q === 1) {
+    if (p === 1) return base;
+    return base + '<sup>' + p + '</sup>';
+  }
+  return base + '<sup>' + ef_frac(p, q) + '</sup>';
+}
+
+function ef_rad(idx, base, exp) {
+  var pre = idx === 2 ? '&radic;' : '<sup>' + idx + '</sup>&radic;';
+  var inner = exp === 1 ? base : base + '<sup>' + exp + '</sup>';
+  return pre + '<span style="text-decoration:overline;padding:0 1px">' + inner + '</span>';
+}
+
+function ef_rad2(idx, b1, e1, b2, e2) {
+  var pre = idx === 2 ? '&radic;' : '<sup>' + idx + '</sup>&radic;';
+  var p1 = e1 === 1 ? b1 : b1 + '<sup>' + e1 + '</sup>';
+  var p2 = e2 === 1 ? b2 : b2 + '<sup>' + e2 + '</sup>';
+  return pre + '<span style="text-decoration:overline;padding:0 1px">' + p1 + p2 + '</span>';
+}
+
+function ef_negFrac(p, q) {
+  if (q === 1) return '-' + p;
+  return '<span class="frac"><span class="num">-' + p + '</span><span class="den">' + q + '</span></span>';
+}
+
+function ef_negExp(v, p, q) {
+  return v + '<sup>' + ef_negFrac(p, q) + '</sup>';
+}
+
+// NIVEL 1: ⁿ√(aᵐ) → a^(m/n)
+function efGen1() {
+  var varsBases = ['x','y','a','b','m'];
+  var numBases = [2, 3, 5, 6, 7];
+  var useNum = Math.random() < 0.4;
+  var base = useNum ? String(numBases[rnd(0,4)]) : varsBases[rnd(0,4)];
+  var idx = rnd(2, 5);
+  var m = rnd(1, 7);
+  var g = gcd(m, idx); var sn = m/g, sd = idx/g;
+  var expr = ef_rad(idx, base, m);
+  var sol = ef_pot(base, sn, sd);
+  return { expr: expr, sol: sol, consigna: 'Expresá con exponente fraccionario' };
+}
+
+// NIVEL 2: a^(p/q) → ᵍ√(aᵖ)
+function efGen2() {
+  var varsBases = ['x','y','a','b','m'];
+  var numBases = [2, 3, 5, 23, 7];
+  var useNum = Math.random() < 0.4;
+  var base = useNum ? String(numBases[rnd(0,4)]) : varsBases[rnd(0,4)];
+  var denoms = [2, 3, 4, 5, 6];
+  var q = denoms[rnd(0,4)];
+  var p = rnd(1, q + 2);
+  var g = gcd(p, q); var sn = p/g, sd = q/g;
+  if (sd === 1) return efGen2();
+  var expr = ef_pot(base, sn, sd);
+  var sol = ef_rad(sd, base, sn);
+  return { expr: expr, sol: sol, consigna: 'Expresá en forma de radical' };
+}
+
+// NIVEL 3: producto/cociente de raíces → exponente fraccionario
+function efGen3() {
+  var vars = ['x','y','a','b'];
+  var v = vars[rnd(0,3)];
+  var type = rnd(0, 5);
+  var sn, sd, g, expr, sol;
+  if (type === 0) {
+    // √v · ³√v² → v^(7/6)
+    g = gcd(7,6); sn=7/g; sd=6/g;
+    expr = ef_rad(2,v,1) + ' &middot; ' + ef_rad(3,v,2);
+    sol = ef_pot(v, sn, sd);
+    return { expr:expr, sol:sol, consigna:'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 1) {
+    // ³√v · ³√v² → v
+    expr = ef_rad(3,v,1) + ' &middot; ' + ef_rad(3,v,2);
+    return { expr:expr, sol:v, consigna:'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 2) {
+    // √v · ⁴√v³ → v^(5/4)
+    g = gcd(5,4); sn=5/g; sd=4/g;
+    expr = ef_rad(2,v,1) + ' &middot; ' + ef_rad(4,v,3);
+    sol = ef_pot(v, sn, sd);
+    return { expr:expr, sol:sol, consigna:'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 3) {
+    // √v³ ÷ √v → v
+    expr = ef_rad(2,v,3) + ' &divide; ' + ef_rad(2,v,1);
+    return { expr:expr, sol:v, consigna:'Simplificá y expresá con exponente fraccionario' };
+  }
+  if (type === 4) {
+    // ⁴√v³ ÷ ⁴√v → v^(1/2)
+    g = gcd(2,4); sn=2/g; sd=4/g;
+    expr = ef_rad(4,v,3) + ' &divide; ' + ef_rad(4,v,1);
+    sol = ef_pot(v, sn, sd);
+    return { expr:expr, sol:sol, consigna:'Simplificá y expresá con exponente fraccionario' };
+  }
+  // type 5: √v² · ⁴√v → v^(5/4)
+  g = gcd(5,4); sn=5/g; sd=4/g;
+  expr = ef_rad(2,v,2) + ' &middot; ' + ef_rad(4,v,1);
+  sol = ef_pot(v, sn, sd);
+  return { expr:expr, sol:sol, consigna:'Simplificá y expresá con exponente fraccionario' };
+}
+
+// NIVEL 4: sin numerador literal
+function efGen4() {
+  var pares = [['x','y'],['a','b'],['m','n']];
+  var par = pares[rnd(0,2)]; var v1=par[0], v2=par[1];
+  var type = rnd(0, 3);
+  var p, q, p1, p2, fp, fq, g, sfp, sfq, expr, sol;
+  if (type === 0) {
+    // v1^(-p) / v2^q → 1/(v1^p · v2^q)
+    p = rnd(2,4); q = rnd(2,4);
+    expr = '<span class="frac"><span class="num">' + ef_negExp(v1,p,1) + '</span><span class="den">' + v2 + '<sup>' + q + '</sup></span></span>';
+    sol = '<span class="frac"><span class="num">1</span><span class="den">' + v1 + '<sup>' + p + '</sup>' + v2 + '<sup>' + q + '</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá sin numerador literal' };
+  }
+  if (type === 1) {
+    // v1^(-p) · v2^(fp/fq) → v2^(fp/fq) / v1^p
+    p = rnd(2,4); fp = rnd(1,3); fq = rnd(2,4);
+    if (fp >= fq) return efGen4();
+    g = gcd(fp,fq); sfp=fp/g; sfq=fq/g;
+    if (sfq === 1) return efGen4();
+    expr = ef_negExp(v1,p,1) + ' &middot; ' + ef_pot(v2,sfp,sfq);
+    sol = '<span class="frac"><span class="num">' + ef_pot(v2,sfp,sfq) + '</span><span class="den">' + v1 + '<sup>' + p + '</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá sin numerador literal' };
+  }
+  if (type === 2) {
+    // v1^(-p)·v2^(1/2) / v1 → v2^(1/2)/v1^(p+1)
+    p = rnd(2,3);
+    expr = '<span class="frac"><span class="num">' + ef_negExp(v1,p,1) + ' &middot; ' + ef_pot(v2,1,2) + '</span><span class="den">' + v1 + '</span></span>';
+    sol = '<span class="frac"><span class="num">' + ef_pot(v2,1,2) + '</span><span class="den">' + v1 + '<sup>' + (p+1) + '</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá sin numerador literal' };
+  }
+  // type 3: v1^(-p1)·v2^(1/2) / v1^(-p2) → v2^(1/2)/v1^(p1-p2)
+  p1 = rnd(3,5); p2 = rnd(1,2);
+  if (p1 <= p2) return efGen4();
+  expr = '<span class="frac"><span class="num">' + ef_negExp(v1,p1,1) + ' &middot; ' + ef_pot(v2,1,2) + '</span><span class="den">' + ef_negExp(v1,p2,1) + '</span></span>';
+  sol = '<span class="frac"><span class="num">' + ef_pot(v2,1,2) + '</span><span class="den">' + v1 + '<sup>' + (p1-p2) + '</sup></span></span>';
+  return { expr:expr, sol:sol, consigna:'Expresá sin numerador literal' };
+}
+
+// NIVEL 5: con signo radical y exponentes positivos
+function efGen5() {
+  var pares = [['x','y'],['a','b'],['m','n']];
+  var par = pares[rnd(0,2)]; var v1=par[0], v2=par[1];
+  var type = rnd(0, 4);
+  var p, q, g, sp, sq, expr, sol;
+  if (type === 0) {
+    // v1^(p/q) → ᵍ√v1ᵖ
+    q = rnd(3,6); p = rnd(1,q-1);
+    g = gcd(p,q); sp=p/g; sq=q/g;
+    if (sq === 1) return efGen5();
+    expr = ef_pot(v1,sp,sq);
+    sol = ef_rad(sq,v1,sp);
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  if (type === 1) {
+    // v1 · v2^(p/q) → v1 · ᵍ√v2ᵖ
+    q = rnd(2,4); p = rnd(1,q+1);
+    g = gcd(p,q); sp=p/g; sq=q/g;
+    if (sq === 1) return efGen5();
+    expr = v1 + ' &middot; ' + ef_pot(v2,sp,sq);
+    sol = v1 + ' &middot; ' + ef_rad(sq,v2,sp);
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  if (type === 2) {
+    // v1^(-p/q) · v2^(-p/q) → 1/ᵍ√(v1ᵖv2ᵖ)
+    q = rnd(2,4); p = rnd(1,q-1);
+    if (p >= q) return efGen5();
+    g = gcd(p,q); sp=p/g; sq=q/g;
+    if (sq === 1) return efGen5();
+    expr = ef_negExp(v1,sp,sq) + ' &middot; ' + ef_negExp(v2,sp,sq);
+    sol = '<span class="frac"><span class="num">1</span><span class="den">' + ef_rad2(sq,v1,sp,v2,sp) + '</span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  if (type === 3) {
+    // v1^(-p) · v2^(-1/2) → 1/(v1^p · √v2)
+    p = rnd(2,4);
+    expr = ef_negExp(v1,p,1) + ' &middot; ' + ef_negExp(v2,1,2);
+    sol = '<span class="frac"><span class="num">1</span><span class="den">' + v1 + '<sup>' + p + '</sup> &middot; ' + ef_rad(2,v2,1) + '</span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y exponentes positivos simplificados' };
+  }
+  // type 4: v1^(p/q) · v2^(-1/2) → ᵍ√v1ᵖ/√v2
+  q = rnd(3,5); p = rnd(1,q-1);
+  g = gcd(p,q); sp=p/g; sq=q/g;
+  if (sq === 1) return efGen5();
+  expr = ef_pot(v1,sp,sq) + ' &middot; ' + ef_negExp(v2,1,2);
+  sol = '<span class="frac"><span class="num">' + ef_rad(sq,v1,sp) + '</span><span class="den">' + ef_rad(2,v2,1) + '</span></span>';
+  return { expr:expr, sol:sol, consigna:'Expresá con signo radical y exponentes positivos simplificados' };
+}
+
+// NIVEL 6: con exponentes positivos y simplificar
+function efGen6() {
+  var pares = [['x','y'],['a','b'],['m','n']];
+  var par = pares[rnd(0,2)]; var v1=par[0], v2=par[1];
+  var type = rnd(0, 3);
+  var p, p1, p2, fp, fq, g, sfp, sfq, k, net, expr, sol;
+  if (type === 0) {
+    // v1^p · v2^(-q) → v1^p/v2^q
+    p = rnd(2,4); var q2 = rnd(2,4);
+    expr = ef_pot(v1,p,1) + ' &middot; ' + ef_negExp(v2,q2,1);
+    sol = '<span class="frac"><span class="num">' + ef_pot(v1,p,1) + '</span><span class="den">' + v2 + '<sup>' + q2 + '</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con exponentes positivos y simplificá' };
+  }
+  if (type === 1) {
+    // v1^(-p) · v2^(fp/fq) → v2^(fp/fq)/v1^p
+    p = rnd(2,4); fp = rnd(1,3); fq = rnd(2,4);
+    if (fp >= fq) return efGen6();
+    g = gcd(fp,fq); sfp=fp/g; sfq=fq/g;
+    if (sfq === 1) return efGen6();
+    expr = ef_negExp(v1,p,1) + ' &middot; ' + ef_pot(v2,sfp,sfq);
+    sol = '<span class="frac"><span class="num">' + ef_pot(v2,sfp,sfq) + '</span><span class="den">' + v1 + '<sup>' + p + '</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con exponentes positivos y simplificá' };
+  }
+  if (type === 2) {
+    // k/(v1^(-1)·v2^(-3/2)) → k·v1·v2^(3/2)
+    k = rnd(2,5);
+    expr = '<span class="frac"><span class="num">' + k + '</span><span class="den">' + ef_negExp(v1,1,1) + ' &middot; ' + ef_negExp(v2,3,2) + '</span></span>';
+    sol = k + v1 + ' &middot; ' + ef_pot(v2,3,2);
+    return { expr:expr, sol:sol, consigna:'Expresá con exponentes positivos y simplificá' };
+  }
+  // type 3: v1^(-p1)·v2^(3/2) / v1^(-p2) → v2^(3/2)/v1^(p1-p2)
+  p1 = rnd(3,5); p2 = rnd(1,2);
+  if (p1 <= p2) return efGen6();
+  net = p1 - p2;
+  expr = '<span class="frac"><span class="num">' + ef_negExp(v1,p1,1) + ' &middot; ' + ef_pot(v2,3,2) + '</span><span class="den">' + ef_negExp(v1,p2,1) + '</span></span>';
+  sol = '<span class="frac"><span class="num">' + ef_pot(v2,3,2) + '</span><span class="den">' + v1 + '<sup>' + net + '</sup></span></span>';
+  return { expr:expr, sol:sol, consigna:'Expresá con exponentes positivos y simplificá' };
+}
+
+// NIVEL 7: con signo radical y racionalizar
+function efGen7() {
+  var pares = [['x','y'],['a','b'],['m','n']];
+  var par = pares[rnd(0,2)]; var v1=par[0], v2=par[1];
+  var type = rnd(0, 4);
+  var expr, sol;
+  if (type === 0) {
+    // v1^(-3/5) → ⁵√v1² / v1
+    expr = ef_negExp(v1,3,5);
+    sol = '<span class="frac"><span class="num">' + ef_rad(5,v1,2) + '</span><span class="den">' + v1 + '</span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y racionalizá' };
+  }
+  if (type === 1) {
+    // v1^(-1/2)·v2^(-3/2) → √(v1·v2)/(v1·v2²)
+    expr = ef_negExp(v1,1,2) + ' &middot; ' + ef_negExp(v2,3,2);
+    sol = '<span class="frac"><span class="num">' + ef_rad2(2,v1,1,v2,1) + '</span><span class="den">' + v1 + v2 + '<sup>2</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y racionalizá' };
+  }
+  if (type === 2) {
+    // v1^(-3/2)·v2^(-3/2) → √(v1·v2)/(v1²·v2²)  [mult x v1^(1/2)·v2^(1/2)]
+    expr = ef_negExp(v1,3,2) + ' &middot; ' + ef_negExp(v2,3,2);
+    sol = '<span class="frac"><span class="num">' + ef_rad2(2,v1,1,v2,1) + '</span><span class="den">' + v1 + '<sup>2</sup>' + v2 + '<sup>2</sup></span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y racionalizá' };
+  }
+  if (type === 3) {
+    // v1^(-3/2)·v2^(-1/2) / v1^(3/2) → √(v1·v2)/(v1³·v2)
+    expr = '<span class="frac"><span class="num">' + ef_negExp(v1,3,2) + ' &middot; ' + ef_negExp(v2,1,2) + '</span><span class="den">' + ef_pot(v1,3,2) + '</span></span>';
+    sol = '<span class="frac"><span class="num">' + ef_rad2(2,v1,1,v2,1) + '</span><span class="den">' + v1 + '<sup>3</sup>' + v2 + '</span></span>';
+    return { expr:expr, sol:sol, consigna:'Expresá con signo radical y racionalizá' };
+  }
+  // type 4: v1^(-3/5)/v1 → ⁵√v1²/v1²
+  expr = '<span class="frac"><span class="num">' + ef_negExp(v1,3,5) + '</span><span class="den">' + v1 + '</span></span>';
+  sol = '<span class="frac"><span class="num">' + ef_rad(5,v1,2) + '</span><span class="den">' + v1 + '<sup>2</sup></span></span>';
+  return { expr:expr, sol:sol, consigna:'Expresá con signo radical y racionalizá' };
+}
 
 function generateRadicales(){
   var op=radCurrentOp;
@@ -7443,7 +8066,7 @@ function generateRadicales(){
     var cons=e.consigna?'<div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">'+e.consigna+'</div>':'';
     ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span>'+
       '<div class="ej-content">'+cons+'<div class="ej-question">'+e.expr+'</div>'+
-      '<div class="work-space '+({'exactas':'work-space-sm','extraccion':'work-space-md','intro':'work-space-sm','sumaresta':'work-space-md','multI':'work-space-md','multII':'work-space-lg','multIII':'work-space-lg','divI':'work-space-md','multIndices':'work-space-lg','divIndices':'work-space-lg','potI':'work-space-md','potII':'work-space-lg','radrad':'work-space-lg','racI':'work-space-lg','racII':'work-space-lg','racIII':'work-space-xl','racIV':'work-space-xl','propiedades':'work-space-lg','polRaiz':'work-space-lg'}[op]||'work-space-lg')+'"></div></div></div>';
+      '<div class="work-space '+({'exactas':'work-space-sm','extraccion':'work-space-md','intro':'work-space-sm','sumaresta':'work-space-md','multI':'work-space-md','multII':'work-space-lg','multIII':'work-space-lg','divI':'work-space-md','multIndices':'work-space-lg','divIndices':'work-space-lg','potI':'work-space-md','potII':'work-space-lg','radrad':'work-space-lg','racI':'work-space-lg','racII':'work-space-lg','racIII':'work-space-xl','racIV':'work-space-xl','propiedades':'work-space-lg','polRaiz':'work-space-lg','expFrac':'work-space-lg'}[op]||'work-space-lg')+'"></div></div></div>';
   });
   ejHTML+='</div>';
   var solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';

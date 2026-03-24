@@ -2731,12 +2731,15 @@ function generateTriangulos() {
         <span>Nombre: ____________________________</span>
         <span>Curso: _____________ Fecha: _____________</span>
       </div>
+      ${indGetTablaHTML('ind-filas')}
     </div>
     ${ejHTML}
     ${solHTML}
   `;
-  el.style.display = 'block';
+  el.classList.add('visible');
   document.getElementById('tri-btnDownload').style.display = 'block';
+  document.getElementById('tri-btnSolAparte').style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 
