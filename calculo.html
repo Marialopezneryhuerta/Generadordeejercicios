@@ -2968,7 +2968,7 @@ function generarNOT() {
   let html = '';
   html += '<div class="ej-header">';
   html += '<div class="ej-title">Intervalos</div>';
-  html += '<div class="ej-meta"><span>Cálculo</span><span>' + fecha + '</span></div>';
+  html += '<div class="ej-meta"></div>';
   html += '<div class="ej-data-row"><span>Nombre: ___________________________</span><span>Curso: ______________</span><span>Fecha: ______________</span></div>';
   if (indTabla) html += indTabla;
   html += '</div>';
@@ -3258,9 +3258,7 @@ function generarINEQ() {
 
   let ejHtml = '';
   ejercicios.forEach((ej, idx) => {
-    const tag = niveles.length > 1
-      ? '<span class="ineq-nivel-tag">' + INEQ_LABEL[ej.nivel] + '<\/span>'
-      : '';
+    const tag = '';
     ejHtml +=
       '<div class="ineq-item">' +
         '<div class="ineq-num">' + (idx + 1) + '.<\/div>' +
@@ -3283,10 +3281,7 @@ function generarINEQ() {
   ejDiv.innerHTML =
     '<div class="ej-header">' +
       '<div class="ej-title">Inecuaciones<\/div>' +
-      '<div class="ej-meta">' +
-        '<span>📚 Cálculo<\/span><span>📅 ' + fecha + '<\/span>' +
-        '<span>🔢 ' + titulosNiv + '<\/span><span>📝 ' + total + ' ejercicios<\/span>' +
-      '<\/div>' +
+      '<div class="ej-meta"><\/div>' +
       '<div class="ej-data-row">' +
         '<span>Nombre: ___________________________<\/span>' +
         '<span>Curso: ___________<\/span><span>Fecha: ___________<\/span>' +
@@ -3466,9 +3461,7 @@ function generarINEQC() {
 
   let ejHtml = '';
   ejercicios.forEach(function(ej, idx) {
-    const tag = niveles.length > 1
-      ? '<span class="ineq-nivel-tag">' + INEQC_LABEL[ej.nivel] + '<\/span>'
-      : '';
+    const tag = '';
 
     // Hint de factorización para N2 en la solución
     const factHint = (ej.nivel === 2)
@@ -3499,10 +3492,7 @@ function generarINEQC() {
   ejDiv.innerHTML =
     '<div class="ej-header">' +
       '<div class="ej-title">Inecuaciones<\/div>' +
-      '<div class="ej-meta">' +
-        '<span>📚 Cálculo<\/span><span>📅 ' + fecha + '<\/span>' +
-        '<span>🔢 ' + titulosNiv + '<\/span><span>📝 ' + total + ' ejercicios<\/span>' +
-      '<\/div>' +
+      '<div class="ej-meta"><\/div>' +
       '<div class="ej-data-row">' +
         '<span>Nombre: ___________________________<\/span>' +
         '<span>Curso: ___________<\/span><span>Fecha: ___________<\/span>' +
