@@ -11,7 +11,7 @@
   </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de ejercitarios — Generador de Ejercitarios</title>
+<title>Generador de ejercitarios — Generador de Ejercitarios v110</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,6 +29,7 @@ body {
   color: var(--ink);
   font-family: 'Nunito Sans', sans-serif;
   min-height: 100vh;
+  padding-bottom: 3rem;
 }
 
 /* NAV */
@@ -50,17 +51,37 @@ nav {
 }
 .nav-logo span { color: var(--ink); }
 nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
+.nav-copyright {
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  margin-left: auto;
+}
+.btn-suscribite {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.45rem 1.1rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-suscribite:hover { background: #3a58e0; transform: translateY(-1px); }
 
 /* HERO */
 .hero {
   background: linear-gradient(135deg, #4f6ef7 0%, #7c3aed 100%);
   color: white;
-  padding: 4rem 2rem 3rem;
+  padding: 3rem 2rem 2.5rem;
   text-align: center;
   position: relative;
   overflow: hidden;
 }
-
 .hero::before {
   content: '';
   position: absolute;
@@ -77,19 +98,17 @@ nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
   border-radius: 50%;
   background: rgba(255,255,255,0.04);
 }
-
 .hero h1 {
   font-family: 'Nunito', sans-serif;
-  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-size: clamp(1.8rem, 5vw, 3rem);
   font-weight: 900;
   letter-spacing: -0.03em;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
   position: relative;
   z-index: 1;
 }
-
 .hero p {
-  font-size: 1.05rem;
+  font-size: 1rem;
   opacity: 0.88;
   max-width: 500px;
   margin: 0 auto;
@@ -98,13 +117,137 @@ nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
   line-height: 1.6;
 }
 
-/* MAIN */
+/* ── LANDING: solo chips, centrado verticalmente ── */
+.landing {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem 5rem;
+}
+.landing-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 1.4rem;
+  text-align: center;
+}
+
+/* ── MODO CHIPS (los 3 botones grandes) ── */
+.modo-wrap {
+  width: 100%;
+  max-width: 820px;
+}
+.modo-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+}
+@media (max-width: 640px) {
+  .modo-chips { grid-template-columns: 1fr; }
+}
+
+.modo-chip {
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 1.6rem 1.4rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(79,110,247,0.04);
+}
+.modo-chip::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--chip-color);
+  border-radius: 18px 18px 0 0;
+  transition: height 0.2s;
+}
+.modo-chip:hover {
+  border-color: var(--chip-color);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+}
+.modo-chip:hover::before { height: 6px; }
+.modo-chip.activo {
+  border-color: var(--chip-color);
+  background: var(--chip-bg);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+}
+.modo-chip.activo::before { height: 5px; }
+
+.chip-icono {
+  font-size: 2rem;
+  line-height: 1;
+}
+.chip-titulo {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.25;
+}
+.chip-desc {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.chip-arrow {
+  margin-top: auto;
+  font-size: 1.1rem;
+  color: var(--chip-color);
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.modo-chip:hover .chip-arrow { opacity: 1; transform: translateX(3px); }
+
+/* ── PANEL AREAS ── */
+.panel-areas-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0.8rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.btn-volver {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 0.35rem 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-volver:hover { border-color: var(--accent); color: var(--accent); }
+.panel-areas-titulo {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+/* ── MAIN ── */
 main {
   max-width: 960px;
   margin: 0 auto;
-  padding: 3rem 1.5rem 5rem;
+  padding: 2rem 1.5rem 3rem;
 }
-
 .section-title {
   font-family: 'Nunito', sans-serif;
   font-size: 0.72rem;
@@ -115,7 +258,7 @@ main {
   margin-bottom: 1.5rem;
 }
 
-/* GRID */
+/* GRID de áreas */
 .branches-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -137,8 +280,8 @@ main {
   box-shadow: 0 2px 12px rgba(79,110,247,0.04);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
-
 .branch-card::before {
   content: '';
   position: absolute;
@@ -148,28 +291,20 @@ main {
   border-radius: 18px 18px 0 0;
   transition: height 0.2s;
 }
-
 .branch-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 28px rgba(79,110,247,0.12);
   border-color: var(--card-color, var(--border));
 }
-
 .branch-card:hover::before { height: 6px; }
-
 .branch-card.disabled {
   opacity: 0.55;
   cursor: default;
   pointer-events: none;
 }
 
-.card-icon {
-  font-size: 2.2rem;
-  line-height: 1;
-}
-
+.card-icon { font-size: 2.2rem; line-height: 1; }
 .card-body { flex: 1; }
-
 .card-title {
   font-family: 'Nunito', sans-serif;
   font-size: 1.1rem;
@@ -177,20 +312,13 @@ main {
   letter-spacing: -0.01em;
   margin-bottom: 0.3rem;
 }
-
-.card-desc {
-  font-size: 0.82rem;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
+.card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
 .card-topics {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
   margin-top: 0.6rem;
 }
-
 .topic-tag {
   font-family: 'Nunito', sans-serif;
   font-size: 0.7rem;
@@ -200,14 +328,12 @@ main {
   background: var(--tag-bg, #f0f4ff);
   color: var(--tag-color, var(--muted));
 }
-
 .card-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-top: 0.4rem;
 }
-
 .card-status {
   font-family: 'Nunito', sans-serif;
   font-size: 0.7rem;
@@ -215,79 +341,266 @@ main {
   padding: 0.25rem 0.7rem;
   border-radius: 20px;
 }
-
-.status-ready {
-  background: #f0fdf4;
-  color: #16a34a;
-}
-
-.status-soon {
-  background: #f9f9f9;
-  color: #aaa;
-}
-
+.status-ready { background: #f0fdf4; color: #16a34a; }
+.status-soon  { background: #f9f9f9; color: #aaa; }
 .card-arrow {
   font-size: 1.1rem;
   color: var(--card-color, var(--muted));
   transition: transform 0.2s;
 }
-
 .branch-card:hover .card-arrow { transform: translateX(4px); }
 
-/* FOOTER */
-footer {
+/* ── PANEL EXAMEN-BUILDER (chip 3) ── */
+#panel-examen {
+  display: none;
   text-align: center;
-  padding: 2rem;
-  font-size: 0.78rem;
-  color: var(--muted);
-  border-top: 1px solid var(--border);
+  padding: 3rem 1rem;
 }
-
-.site-footer {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--white, #fff);
-  border-top: 1px solid var(--border, #e8eaf0);
-  text-align: center;
-  font-size: 0.72rem;
-  color: var(--muted, #8b92b1);
-  padding: 0.4rem 1rem;
-  z-index: 5;
-  pointer-events: auto;
-  letter-spacing: 0.01em;
-}
-.nav-copyright {
-  font-size: 0.7rem;
-  color: var(--muted, #8b92b1);
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-.btn-suscribite {
-  margin-left: auto;
-  background: var(--accent);
+#panel-examen.visible { display: block; }
+.examen-goto-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
   color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 0.45rem 1.1rem;
+  text-decoration: none;
+  padding: 1.1rem 2.5rem;
+  border-radius: 50px;
   font-family: 'Nunito', sans-serif;
-  font-weight: 700;
-  font-size: 0.82rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.2s, transform 0.1s;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 6px 24px rgba(14,165,233,0.3);
+  transition: all 0.2s;
 }
-.btn-suscribite:hover { background: #3a58e0; transform: translateY(-1px); }
-
-.btn-feedback {
+.examen-goto-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(14,165,233,0.4);
+}
+.examen-desc {
+  margin-top: 1.2rem;
+  font-size: 0.88rem;
   color: var(--muted);
-  font-size: 0.78rem;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* ── MODAL DE INDICADORES ── */
+#modal-ind {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,29,46,0.6);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+#modal-ind.abierto { display: flex; }
+
+.modal-ind-box {
+  background: white;
+  border-radius: 20px;
+  width: 95%;
+  max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 48px rgba(79,110,247,0.2);
+  overflow: hidden;
+}
+.modal-ind-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.modal-ind-header h2 {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--ink);
+  flex: 1;
+}
+.modal-ind-area-badge {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  background: var(--badge-bg, #f0f4ff);
+  color: var(--badge-color, var(--accent));
+}
+.modal-ind-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+.modal-ind-cerrar:hover { color: var(--ink); }
+
+.modal-ind-body {
+  padding: 1.2rem 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Indicadores predefinidos */
+.ind-sugeridos-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 0.7rem;
+}
+.ind-sugeridos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
+}
+.ind-sug-chip {
+  background: #f0f4ff;
+  color: #4f6ef7;
+  border: 1.5px solid #c7d2fe;
+  border-radius: 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.3rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ind-sug-chip:hover { background: #4f6ef7; color: white; border-color: #4f6ef7; }
+.ind-sug-chip.usado { opacity: 0.4; cursor: default; pointer-events: none; }
+
+/* Filas de indicadores */
+.ind-filas-wrap { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.8rem; }
+.ind-fila {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.ind-fila-num {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--muted);
+  min-width: 1.2rem;
+  text-align: right;
+}
+.ind-fila input[type="text"] {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.82rem;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.ind-fila input[type="text"]:focus { border-color: var(--accent); }
+.ind-fila input[type="number"] {
+  width: 68px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.5rem;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.ind-fila input[type="number"]:focus { border-color: var(--accent); }
+.ind-fila-pts-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  white-space: nowrap;
+}
+.ind-btn-remove {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.2rem;
   transition: color 0.15s;
 }
-.btn-feedback:hover { color: var(--accent); }
+.ind-btn-remove:hover { color: #ef4444; }
 
-/* MODAL SUSCRIPCIÓN */
+.ind-btn-add {
+  background: none;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  width: 100%;
+}
+.ind-btn-add:hover { border-color: var(--accent); color: var(--accent); }
+
+.ind-hint {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 0.8rem;
+  line-height: 1.5;
+}
+
+.modal-ind-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.7rem;
+  justify-content: flex-end;
+}
+.btn-cancelar-ind {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-cancelar-ind:hover { border-color: var(--ink); color: var(--ink); }
+.btn-ir-ind {
+  background: var(--area-color, var(--accent));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn-ir-ind:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* ── MODAL SUSCRIPCIÓN ── */
 #modal-suscripcion {
   display: none;
   position: fixed;
@@ -337,7 +650,28 @@ footer {
   width: 100%;
   min-height: 460px;
 }
-body { padding-bottom: 2.5rem; }
+
+/* FOOTER */
+.site-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 0.4rem 1rem;
+  z-index: 5;
+  letter-spacing: 0.01em;
+}
+.btn-feedback {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+.btn-feedback:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -360,185 +694,416 @@ body { padding-bottom: 2.5rem; }
   </div>
 </div>
 
-<div class="hero">
-  <h1>📐 Generador de ejercitarios</h1>
-  <p>Generá ejercitarios personalizados para cada rama de la matemática. Elegí el tema, el nivel y la cantidad — listo para imprimir.</p>
-</div>
-
-<main>
-  <div class="section-title">Elegí una rama</div>
-
-  <div class="branches-grid">
-
-    <!-- ARITMÉTICA -->
-    <a class="branch-card" href="aritmetica.html"
-       style="--card-color:#f97316; --tag-bg:#fff7ed; --tag-color:#c2510a">
-      <div class="card-icon">🔢</div>
-      <div class="card-body">
-        <div class="card-title">Aritmética</div>
-        <div class="card-desc">Operaciones con números enteros y racionales (fracciones y decimales, incluidos periódicos).</div>
-        <div class="card-topics">
-          <span class="topic-tag">Números Enteros</span>
-          <span class="topic-tag">Fracciones</span>
-          <span class="topic-tag">Decimales</span>
-          <span class="topic-tag">Combinadas</span>
-        </div>
+<!-- MODAL DE INDICADORES (Chip 2) -->
+<div id="modal-ind">
+  <div class="modal-ind-box">
+    <div class="modal-ind-header">
+      <span id="modal-ind-icono" style="font-size:1.5rem">📐</span>
+      <h2 id="modal-ind-titulo">Álgebra — Indicadores</h2>
+      <span class="modal-ind-area-badge" id="modal-ind-badge">Área</span>
+      <button class="modal-ind-cerrar" onclick="cerrarModalInd()">✕</button>
+    </div>
+    <div class="modal-ind-body">
+      <div class="ind-sugeridos-label">Sugerencias rápidas</div>
+      <div class="ind-sugeridos" id="ind-sugeridos-chips">
+        <!-- chips generados por JS -->
       </div>
-      <div class="card-footer">
-        <span class="card-status status-active">Disponible</span>
-        <span class="card-arrow">→</span>
+      <div class="ind-sugeridos-label">Indicadores y puntaje</div>
+      <div class="ind-filas-wrap" id="ind-modal-filas">
+        <!-- filas generadas por JS -->
       </div>
-    </a>
-
-    <!-- ÁLGEBRA -->
-    <a class="branch-card" href="algebra.html"
-       style="--card-color:#4f6ef7; --tag-bg:#eef1ff; --tag-color:#3451c7">
-      <div class="card-icon">✏️</div>
-      <div class="card-body">
-        <div class="card-title">Álgebra</div>
-        <div class="card-desc">Ecuaciones, inecuaciones, sistemas y expresiones algebraicas.</div>
-        <div class="card-topics">
-          <span class="topic-tag">Ec. lineales</span>
-          <span class="topic-tag">Sistemas</span>
-          <span class="topic-tag">Factorización</span>
-          <span class="topic-tag">Polinomios</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-ready">✓ Disponible</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- GEOMETRÍA -->
-    <a class="branch-card disabled" href="geometria.html"
-       style="--card-color:#22c55e; --tag-bg:#f0fdf4; --tag-color:#15803d">
-      <div class="card-icon">📐</div>
-      <div class="card-body">
-        <div class="card-title">Geometría</div>
-        <div class="card-desc">Perímetros, áreas, volúmenes y propiedades de figuras.</div>
-        <div class="card-topics">
-          <span class="topic-tag">Áreas</span>
-          <span class="topic-tag">Perímetros</span>
-          <span class="topic-tag">Volúmenes</span>
-          <span class="topic-tag">Ángulos</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-soon">Próximamente</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- TRIGONOMETRÍA -->
-    <a class="branch-card" href="trigonometria.html"
-       style="--card-color:#ec4899; --tag-bg:#fdf2f8; --tag-color:#be185d">
-      <div class="card-icon">📐</div>
-      <div class="card-body">
-        <div class="card-title">Trigonometría</div>
-        <div class="card-desc">Ecuaciones trigonométricas, identidades y resolución de triángulos.</div>
-        <div class="card-topics">
-          <span class="topic-tag">Ec. trigonométricas</span>
-          <span class="topic-tag">Identidades</span>
-          <span class="topic-tag">Triángulos</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-ready">✓ Disponible</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- GEOMETRÍA ANALÍTICA -->
-    <a class="branch-card" href="geometria-analitica.html"
-       style="--card-color:#a855f7; --tag-bg:#faf5ff; --tag-color:#7e22ce">
-      <div class="card-icon">📈</div>
-      <div class="card-body">
-        <div class="card-title">Geometría Analítica</div>
-        <div class="card-desc">Rectas, cónicas y lugares geométricos en el plano cartesiano.</div>
-        <div class="card-topics">
-          <span class="topic-tag">Parábola</span>
-          <span class="topic-tag">Circunferencia</span>
-          <span class="topic-tag">Rectas</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-ready">✓ Disponible</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- ESTADÍSTICA -->
-    <a class="branch-card disabled" href="estadistica.html"
-       style="--card-color:#06b6d4; --tag-bg:#f0fdff; --tag-color:#0e7490">
-      <div class="card-icon">📊</div>
-      <div class="card-body">
-        <div class="card-title">Estadística y Probabilidad</div>
-        <div class="card-desc">Medidas de tendencia central, dispersión y probabilidades.</div>
-        <div class="card-topics">
-          <span class="topic-tag">Media / Mediana</span>
-          <span class="topic-tag">Varianza</span>
-          <span class="topic-tag">Probabilidad</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-soon">Próximamente</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- CÁLCULO -->
-    <a class="branch-card" href="calculo.html"
-       style="--card-color:#ef4444; --tag-bg:#fff5f5; --tag-color:#b91c1c">
-      <div class="card-icon">∫</div>
-      <div class="card-body">
-        <div class="card-title">Cálculo</div>
-        <div class="card-desc">Funciones: concepto, diagramas, tabla de valores y ley de formación.</div>
-        <div class="card-topics">
-          <span class="topic-tag">¿Es función?</span>
-          <span class="topic-tag">Diagramas</span>
-          <span class="topic-tag">Tabla de valores</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-soon">Próximamente</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
-    <!-- CONSTRUCTOR DE EXÁMENES -->
-    <a class="branch-card" href="examen-builder.html"
-       style="--card-color:#0ea5e9; --tag-bg:#f0f9ff; --tag-color:#0369a1; grid-column: 1 / -1; background: linear-gradient(135deg, #f0f9ff 0%, #fff 60%);">
-      <div class="card-icon">📋</div>
-      <div class="card-body">
-        <div class="card-title">Constructor de Exámenes <span style="font-size:0.65rem;background:#0ea5e9;color:white;padding:0.2rem 0.6rem;border-radius:20px;font-family:'Nunito',sans-serif;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;vertical-align:middle;margin-left:0.4rem">✦ Nuevo</span></div>
-        <div class="card-desc">Armá exámenes personalizados eligiendo ejercicio por ejercicio. Elige tema, nivel y dificultad — revisá la resolución antes de incluirlo. Genera dos PDFs: uno para el alumno y uno con soluciones para el docente.</div>
-        <div class="card-topics">
-          <span class="topic-tag">Álgebra</span>
-          <span class="topic-tag">Aritmética</span>
-          <span class="topic-tag">Trigonometría</span>
-          <span class="topic-tag">Geometría Analítica</span>
-          <span class="topic-tag">Cálculo</span>
-          <span class="topic-tag">Racionales</span>
-        </div>
-      </div>
-      <div class="card-footer">
-        <span class="card-status status-ready">✓ Disponible</span>
-        <span class="card-arrow">→</span>
-      </div>
-    </a>
-
+      <button class="ind-btn-add" onclick="indModalAgregar()">+ Agregar indicador</button>
+      <div class="ind-hint">Los indicadores aparecerán en el ejercitario impreso, antes de los ejercicios. El puntaje es opcional.</div>
+    </div>
+    <div class="modal-ind-footer">
+      <button class="btn-cancelar-ind" onclick="cerrarModalInd()">Cancelar</button>
+      <button class="btn-ir-ind" id="btn-ir-modulo" onclick="irAlModulo()">
+        Ir al módulo →
+      </button>
+    </div>
   </div>
-</main>
-
-<div style="text-align:center; padding: 2rem 1rem 3.5rem;">
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener" style="display:inline-block; background:#4361ee; color:white; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.95rem; padding:0.7rem 1.8rem; border-radius:24px; text-decoration:none; letter-spacing:0.02em;">💬 ENVIANOS TU FEEDBACK</a>
 </div>
 
-<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta · <a class="btn-feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener">💬 feedback y aportes</a></div>
+<!-- ── LANDING: 3 chips centrados ── -->
+<div class="landing" id="landing">
+  <div class="landing-label">¿Qué querés generar?</div>
+  <div class="modo-wrap">
+    <div class="modo-chips">
+
+      <button class="modo-chip" id="chip-1"
+        style="--chip-color:#4f6ef7; --chip-bg:#f0f4ff;"
+        onclick="seleccionarChip(1)">
+        <span class="chip-icono">📄</span>
+        <span class="chip-titulo">Ejercitario Clásico</span>
+        <span class="chip-desc">Ejercicios con encabezado de nombre, curso y fecha. Simple y listo para imprimir.</span>
+        <span class="chip-arrow">→</span>
+      </button>
+
+      <button class="modo-chip" id="chip-2"
+        style="--chip-color:#7c3aed; --chip-bg:#faf5ff;"
+        onclick="seleccionarChip(2)">
+        <span class="chip-icono">🎯</span>
+        <span class="chip-titulo">Ejercitario con Capacidades e Indicadores</span>
+        <span class="chip-desc">Incluye tabla de capacidades e indicadores de logro antes de los ejercicios.</span>
+        <span class="chip-arrow">→</span>
+      </button>
+
+      <button class="modo-chip" id="chip-3"
+        style="--chip-color:#0ea5e9; --chip-bg:#f0f9ff;"
+        onclick="seleccionarChip(3)">
+        <span class="chip-icono">📋</span>
+        <span class="chip-titulo">Generador de Exámenes</span>
+        <span class="chip-desc">Armá exámenes eligiendo ejercicio por ejercicio, con soluciones para el docente.</span>
+        <span class="chip-arrow">→</span>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── PANEL DE ÁREAS (aparece al elegir chip 1 o 2) ── -->
+<div id="panel-areas" style="display:none">
+  <div class="panel-areas-header">
+    <button class="btn-volver" onclick="volver()">← Volver</button>
+    <span class="panel-areas-titulo" id="areas-titulo"></span>
+  </div>
+  <main>
+    <div class="section-title">Elegí un área</div>
+    <div class="branches-grid" id="branches-grid"></div>
+  </main>
+  <div style="text-align:center; padding: 1.5rem 1rem 3.5rem;">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener"
+       style="display:inline-block; background:#4361ee; color:white; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.95rem; padding:0.7rem 1.8rem; border-radius:24px; text-decoration:none; letter-spacing:0.02em;">
+      💬 ENVIANOS TU FEEDBACK
+    </a>
+  </div>
+</div>
+
+<div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta ·
+  <a class="btn-feedback" href="https://docs.google.com/forms/d/e/1FAIpQLSfIhkSSZpKgQha-_ywwciQFsJTzdZL1ZEED6POVBhV7iKJ-mQ/viewform" target="_blank" rel="noopener">💬 feedback y aportes</a>
+</div>
+
 <script>
-document.getElementById('modal-suscripcion').addEventListener('click', function(e){
-  if(e.target === this) this.classList.remove('abierto');
+// ══════════════════════════════════════════════════════
+// DATOS DE ÁREAS
+// ══════════════════════════════════════════════════════
+const AREAS = [
+  {
+    id: 'aritmetica',
+    href: 'aritmetica.html',
+    icono: '🔢',
+    titulo: 'Aritmética',
+    desc: 'Operaciones con números enteros y racionales (fracciones y decimales, incluidos periódicos).',
+    tags: ['Números Enteros','Fracciones','Decimales','Combinadas'],
+    color: '#f97316', tagBg: '#fff7ed', tagColor: '#c2510a',
+    disponible: true,
+    indicadoresPropios: [
+      'Aplica las reglas de los números enteros correctamente',
+      'Opera con fracciones de distinto denominador',
+      'Simplifica correctamente el resultado',
+      'Ordena números racionales en la recta numérica'
+    ]
+  },
+  {
+    id: 'algebra',
+    href: 'algebra.html',
+    icono: '✏️',
+    titulo: 'Álgebra',
+    desc: 'Ecuaciones, inecuaciones, sistemas y expresiones algebraicas.',
+    tags: ['Ec. lineales','Sistemas','Factorización','Polinomios'],
+    color: '#4f6ef7', tagBg: '#eef1ff', tagColor: '#3451c7',
+    disponible: true,
+    indicadoresPropios: [
+      'Plantea correctamente la ecuación a partir del enunciado',
+      'Aplica las propiedades de igualdad',
+      'Verifica la solución en la ecuación original',
+      'Factoriza expresiones algebraicas correctamente'
+    ]
+  },
+  {
+    id: 'geometria',
+    href: 'geometria.html',
+    icono: '📐',
+    titulo: 'Geometría',
+    desc: 'Perímetros, áreas, volúmenes y propiedades de figuras.',
+    tags: ['Áreas','Perímetros','Volúmenes','Ángulos'],
+    color: '#22c55e', tagBg: '#f0fdf4', tagColor: '#15803d',
+    disponible: false,
+    indicadoresPropios: []
+  },
+  {
+    id: 'trigonometria',
+    href: 'trigonometria.html',
+    icono: '📐',
+    titulo: 'Trigonometría',
+    desc: 'Ecuaciones trigonométricas, identidades y resolución de triángulos.',
+    tags: ['Ec. trigonométricas','Identidades','Triángulos'],
+    color: '#ec4899', tagBg: '#fdf2f8', tagColor: '#be185d',
+    disponible: true,
+    indicadoresPropios: [
+      'Identifica las razones trigonométricas en el triángulo rectángulo',
+      'Aplica las identidades trigonométricas fundamentales',
+      'Convierte correctamente entre grados y radianes',
+      'Resuelve triángulos oblicuángulos usando la ley de senos/cosenos'
+    ]
+  },
+  {
+    id: 'geometria-analitica',
+    href: 'geometria-analitica.html',
+    icono: '📈',
+    titulo: 'Geometría Analítica',
+    desc: 'Rectas, cónicas y lugares geométricos en el plano cartesiano.',
+    tags: ['Parábola','Circunferencia','Rectas'],
+    color: '#a855f7', tagBg: '#faf5ff', tagColor: '#7e22ce',
+    disponible: true,
+    indicadoresPropios: [
+      'Determina la ecuación de una recta a partir de dos puntos',
+      'Identifica los elementos de la parábola a partir de su ecuación',
+      'Halla el centro y radio de una circunferencia',
+      'Representa correctamente las cónicas en el plano cartesiano'
+    ]
+  },
+  {
+    id: 'estadistica',
+    href: 'estadistica.html',
+    icono: '📊',
+    titulo: 'Estadística y Probabilidad',
+    desc: 'Medidas de tendencia central, dispersión y probabilidades.',
+    tags: ['Media / Mediana','Varianza','Probabilidad'],
+    color: '#06b6d4', tagBg: '#f0fdff', tagColor: '#0e7490',
+    disponible: false,
+    indicadoresPropios: []
+  },
+  {
+    id: 'calculo',
+    href: 'calculo.html',
+    icono: '∫',
+    titulo: 'Cálculo',
+    desc: 'Funciones: concepto, diagramas, tabla de valores y ley de formación.',
+    tags: ['¿Es función?','Diagramas','Tabla de valores'],
+    color: '#ef4444', tagBg: '#fff5f5', tagColor: '#b91c1c',
+    disponible: true,
+    indicadoresPropios: [
+      'Determina si una relación es función justificando la respuesta',
+      'Construye correctamente el diagrama sagital',
+      'Obtiene la tabla de valores para una función dada',
+      'Deduce la ley de formación a partir de una tabla de valores'
+    ]
+  },
+  {
+    id: 'racionales',
+    href: 'racionales.html',
+    icono: '➗',
+    titulo: 'Racionales Algebraicos',
+    desc: 'Operaciones con expresiones racionales algebraicas.',
+    tags: ['Simplificación','Suma / Resta','Multiplicación','División'],
+    color: '#10b981', tagBg: '#ecfdf5', tagColor: '#065f46',
+    disponible: true,
+    indicadoresPropios: [
+      'Simplifica expresiones racionales factorizando correctamente',
+      'Halla el mínimo común múltiplo de denominadores algebraicos',
+      'Suma fracciones algebraicas con distinto denominador',
+      'Multiplica y divide expresiones racionales'
+    ]
+  }
+];
+
+// Indicadores generales (aparecen en todas las áreas)
+const IND_GENERALES = [
+  'Escribe la respuesta correcta',
+  'Presenta ordenadamente el desarrollo',
+  'Justifica cada paso del procedimiento',
+  'Utiliza la notación matemática correcta',
+  'Resuelve sin calculadora',
+];
+
+// ══════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════
+let modoActivo = 0;
+let areaDestino = null;
+
+// ══════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════════════════
+function seleccionarChip(n) {
+  modoActivo = n;
+
+  if (n === 3) {
+    // Chip 3: ir directo al constructor de exámenes
+    window.location.href = 'examen-builder.html';
+    return;
+  }
+
+  // Chips 1 y 2: mostrar panel de áreas
+  document.getElementById('landing').style.display = 'none';
+  const panel = document.getElementById('panel-areas');
+  panel.style.display = 'block';
+
+  const titulos = {
+    1: '📄 Ejercitario Clásico — Elegí un área',
+    2: '🎯 Ejercitario con Indicadores — Elegí un área'
+  };
+  document.getElementById('areas-titulo').textContent = titulos[n];
+
+  renderCards();
+}
+
+function volver() {
+  document.getElementById('panel-areas').style.display = 'none';
+  document.getElementById('landing').style.display = 'flex';
+  modoActivo = 0;
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER DE CARDS
+// ══════════════════════════════════════════════════════
+function renderCards() {
+  const grid = document.getElementById('branches-grid');
+  grid.innerHTML = AREAS.map(area => {
+    const dis = !area.disponible ? ' disabled' : '';
+    const estado = area.disponible
+      ? '<span class="card-status status-ready">✓ Disponible</span>'
+      : '<span class="card-status status-soon">Próximamente</span>';
+    const tags = area.tags.map(t => `<span class="topic-tag">${t}</span>`).join('');
+
+    // En chip 1: link directo. En chip 2: abre modal
+    let hrefAttr, clickAttr;
+    if (!area.disponible) {
+      hrefAttr = 'href="#"'; clickAttr = 'onclick="return false;"';
+    } else if (modoActivo === 2) {
+      hrefAttr = 'href="#"'; clickAttr = `onclick="abrirModalInd('${area.id}'); return false;"`;
+    } else {
+      hrefAttr = 'href="#"'; clickAttr = `onclick="localStorage.setItem('ejInd_modo','1'); window.location.href='${area.href}'; return false;"`;
+    }
+
+    return `
+      <a class="branch-card${dis}" ${hrefAttr} ${clickAttr}
+         style="--card-color:${area.color}; --tag-bg:${area.tagBg}; --tag-color:${area.tagColor}">
+        <div class="card-icon">${area.icono}</div>
+        <div class="card-body">
+          <div class="card-title">${area.titulo}</div>
+          <div class="card-desc">${area.desc}</div>
+          <div class="card-topics">${tags}</div>
+        </div>
+        <div class="card-footer">
+          ${estado}
+          <span class="card-arrow">→</span>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// MODAL DE INDICADORES
+// ══════════════════════════════════════════════════════
+function abrirModalInd(areaId) {
+  const area = AREAS.find(a => a.id === areaId);
+  if (!area) return;
+  areaDestino = area;
+
+  // Header
+  document.getElementById('modal-ind-icono').textContent = area.icono;
+  document.getElementById('modal-ind-titulo').textContent = area.titulo + ' — Indicadores';
+  document.getElementById('modal-ind-badge').textContent = area.titulo;
+  document.getElementById('modal-ind-badge').style.cssText =
+    `background:${area.tagBg}; color:${area.color}`;
+  document.getElementById('btn-ir-modulo').style.background = area.color;
+
+  // Chips de sugerencias: generales + propios del área
+  const sugeridos = [...IND_GENERALES, ...area.indicadoresPropios];
+  const chipsHtml = sugeridos.map(s =>
+    `<button class="ind-sug-chip" onclick="usarSugerido(this, '${s.replace(/'/g,"&#39;")}')">${s}</button>`
+  ).join('');
+  document.getElementById('ind-sugeridos-chips').innerHTML = chipsHtml;
+
+  // Filas vacías iniciales
+  const filas = document.getElementById('ind-modal-filas');
+  filas.innerHTML = '';
+  indModalAgregar();
+  indModalAgregar();
+
+  document.getElementById('modal-ind').classList.add('abierto');
+}
+
+function cerrarModalInd() {
+  document.getElementById('modal-ind').classList.remove('abierto');
+  areaDestino = null;
+}
+
+function indModalAgregar() {
+  const wrap = document.getElementById('ind-modal-filas');
+  if (wrap.children.length >= 8) return;
+  const idx = wrap.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'ind-fila';
+  row.innerHTML = `
+    <span class="ind-fila-num">${idx}</span>
+    <input type="text" placeholder="Indicador ${idx}" maxlength="140">
+    <input type="number" placeholder="pts" min="1" max="999">
+    <span class="ind-fila-pts-label">pts</span>
+    <button class="ind-btn-remove" title="Quitar" onclick="this.parentElement.remove(); renumerarFilas()">✕</button>`;
+  wrap.appendChild(row);
+}
+
+function renumerarFilas() {
+  const filas = document.querySelectorAll('#ind-modal-filas .ind-fila');
+  filas.forEach((f, i) => {
+    f.querySelector('.ind-fila-num').textContent = i + 1;
+    f.querySelector('input[type="text"]').placeholder = 'Indicador ' + (i + 1);
+  });
+}
+
+function usarSugerido(btn, texto) {
+  // Buscar primer campo vacío
+  const inputs = document.querySelectorAll('#ind-modal-filas .ind-fila input[type="text"]');
+  let puesto = false;
+  for (const inp of inputs) {
+    if (!inp.value.trim()) {
+      inp.value = texto;
+      inp.focus();
+      puesto = true;
+      break;
+    }
+  }
+  if (!puesto) {
+    indModalAgregar();
+    // Esperar un tick y poner el valor
+    setTimeout(() => {
+      const todos = document.querySelectorAll('#ind-modal-filas .ind-fila input[type="text"]');
+      todos[todos.length - 1].value = texto;
+    }, 10);
+  }
+  btn.classList.add('usado');
+}
+
+function irAlModulo() {
+  if (!areaDestino) return;
+
+  // Recoger indicadores del modal
+  const filas = [];
+  document.querySelectorAll('#ind-modal-filas .ind-fila').forEach(row => {
+    const texto = row.querySelector('input[type="text"]').value.trim();
+    const pts = row.querySelector('input[type="number"]').value.trim();
+    if (texto) filas.push({ texto, pts: pts || '' });
+  });
+
+  // Guardar en localStorage
+  localStorage.setItem('ejInd_datos', JSON.stringify(filas));
+  localStorage.setItem('ejInd_modo', '2');
+
+  // Navegar al módulo
+  window.location.href = areaDestino.href;
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+document.getElementById('modal-suscripcion').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('abierto');
+});
+document.getElementById('modal-ind').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModalInd();
 });
 </script>
 </body>

@@ -3822,5 +3822,79 @@ document.addEventListener('DOMContentLoaded', function() {
 
   <div class="print-footer">© 2026 Maria Lopez Nery Huerta</div>
 <div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
+<script>
+/* ── CHIP 2: mostrar indicadores en primer + / CHIP 1: ocultar widget ── */
+(function() {
+  var modo = localStorage.getItem('ejInd_modo');
+
+  // Chip 1: ocultar el widget de indicadores completamente
+  if (modo === '1') {
+    localStorage.removeItem('ejInd_modo');
+    var widget = document.getElementById('ind-widget');
+    if (widget) {
+      widget.style.display = 'none';
+      // Sobreescribir las funciones que lo muestran para que no aparezca
+      window._indWidgetBloqueado = true;
+    }
+    // Parchear indInicializar y cualquier llamada que lo muestre
+    var _origShow = HTMLElement.prototype.style;
+    document.addEventListener('DOMContentLoaded', function() {
+      var w = document.getElementById('ind-widget');
+      if (w) w.style.setProperty('display', 'none', 'important');
+    });
+    // Observer para mantenerlo oculto si algo lo muestra
+    var obs = new MutationObserver(function() {
+      var w = document.getElementById('ind-widget');
+      if (w && w.style.display !== 'none') w.style.display = 'none';
+    });
+    obs.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['style'] });
+    return;
+  }
+
+  // Chip 2: mostrar widget en el primer +
+  if (modo !== '2') return;
+  var datos;
+  try { datos = JSON.parse(localStorage.getItem('ejInd_datos') || '[]'); } catch(e) { datos = []; }
+
+  var mostrado = false;
+  function mostrarWidget() {
+    if (mostrado) return;
+    mostrado = true;
+    localStorage.removeItem('ejInd_modo');
+    localStorage.removeItem('ejInd_datos');
+
+    var widget = document.getElementById('ind-widget');
+    if (!widget) return;
+    widget.style.display = 'block';
+
+    if (datos && datos.length > 0) {
+      var wrap = document.getElementById('ind-filas');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      datos.forEach(function(f) {
+        var row = document.createElement('div');
+        row.className = 'ind-row';
+        row.innerHTML =
+          '<input class="ind-input-texto" type="text" maxlength="120" value="' + f.texto.replace(/"/g, '&quot;') + '">' +
+          '<input class="ind-input-pts" type="number" placeholder="pts" min="1" max="999" value="' + (f.pts || '') + '">' +
+          '<button class="ind-btn-remove" title="Quitar" onclick="this.parentElement.remove()">&#x2715;</button>';
+        wrap.appendChild(row);
+      });
+    } else {
+      if (typeof indInicializar === 'function') indInicializar('ind-filas');
+    }
+    setTimeout(function() { widget.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 80);
+  }
+
+  document.addEventListener('click', function handler(e) {
+    var btn = e.target.closest('.lq-btn');
+    if (!btn) return;
+    if (btn.textContent.trim() !== '+') return;
+    mostrarWidget();
+    document.removeEventListener('click', handler);
+  }, true);
+})();
+</script>
+
 </body>
 </html>
