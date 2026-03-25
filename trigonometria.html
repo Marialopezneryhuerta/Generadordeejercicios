@@ -1137,6 +1137,38 @@ function convGetCapacidadHTML() {
   '</div>';
 }
 
+
+function trigGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Formula y resuelve problemas de la vida real con funciones trigon\u00e9tricas.' +
+      '<ul>' +
+        '<li>Funciones y cofunciones trigon\u00e9tricas</li>' +
+        '<li>F\u00f3rmulas fundamentales y derivadas</li>' +
+        '<li>Valores de \u00e1ngulos notables</li>' +
+        '<li>Signos y reducci\u00f3n al primer cuadrante</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+function triOblGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Formula y resuelve problemas con tri\u00e1ngulos oblicu\u00e1ngulos.' +
+      '<ul>' +
+        '<li>Teorema del seno</li>' +
+        '<li>Teorema del coseno</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
 const CAP_PRINT_CSS =
   '  .cap-box { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\n' +
   '  .cap-box-header { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }\n' +
@@ -2760,6 +2792,7 @@ function generateTriangulos() {
         <span>Nombre: ____________________________</span>
         <span>Curso: _____________ Fecha: _____________</span>
       </div>
+      ${triOblGetCapacidadHTML()}
       ${indGetTablaHTML('ind-filas')}
     </div>
     ${ejHTML}
@@ -4263,8 +4296,17 @@ function generateTrigrect() {
     'Nivel 9 — Dos Triángulos'
   ];
 
-  let html = '<div class="ej-header"><div class="ej-title">Funciones Trig. en el Triángulo Rectángulo</div>' +
-    '<div class="ej-meta">Fecha: _________________ &nbsp;&nbsp; Nombre: _________________________________</div></div>';
+  let html = '<div class="ej-header">' +
+    '<div class="ej-title">Funciones Trig. en el Triángulo Rectángulo</div>' +
+    '<div class="ej-meta"></div>' +
+    '<div class="ej-data-row">' +
+    '<span>Nombre: ____________________________</span>' +
+    '<span>Curso: _____________</span>' +
+    '<span>Fecha: _____________</span>' +
+    '</div>' +
+    trigGetCapacidadHTML() +
+    indGetTablaHTML('ind-filas') +
+    '</div>';
 
   let ejNum = 1;
   const trSoluciones = [];
@@ -4816,6 +4858,7 @@ function generateFfc() {
     '<span>Curso: _____________</span>' +
     '<span>Fecha: _____________</span>' +
     '</div>' +
+    trigGetCapacidadHTML() +
     indGetTablaHTML('ind-filas') +
     '</div>' +
     ejHTML + solHTML;
