@@ -8062,7 +8062,7 @@ function generateRadicales(){
     var cons=e.consigna?'<div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">'+e.consigna+'</div>':'';
     ejHTML+='<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+'</span>'+
       '<div class="ej-content">'+cons+'<div class="ej-question">'+e.expr+'</div>'+
-      '<div class="work-space '+({'exactas':'work-space-sm','extraccion':'work-space-md','intro':'work-space-sm','sumaresta':'work-space-md','multI':'work-space-md','multII':'work-space-lg','multIII':'work-space-lg','divI':'work-space-md','multIndices':'work-space-lg','divIndices':'work-space-lg','potI':'work-space-md','potII':'work-space-lg','radrad':'work-space-lg','racI':'work-space-lg','racII':'work-space-lg','racIII':'work-space-xl','racIV':'work-space-xl','propiedades':'work-space-lg','polRaiz':'work-space-lg','expFrac':'work-space-lg'}[op]||'work-space-lg')+'"></div></div></div>';
+      '<div class="work-space '+(op==='expFrac'?(e.lvl<=2?'work-space-sm':e.lvl===3?'work-space-md':'work-space-lg'):({'exactas':'work-space-sm','extraccion':'work-space-md','intro':'work-space-sm','sumaresta':'work-space-md','multI':'work-space-md','multII':'work-space-lg','multIII':'work-space-lg','divI':'work-space-md','multIndices':'work-space-lg','divIndices':'work-space-lg','potI':'work-space-md','potII':'work-space-lg','radrad':'work-space-lg','racI':'work-space-lg','racII':'work-space-lg','racIII':'work-space-xl','racIV':'work-space-xl','propiedades':'work-space-lg','polRaiz':'work-space-lg'}[op]||'work-space-lg'))+'"></div></div></div>';
   });
   ejHTML+='</div>';
   var solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
