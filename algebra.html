@@ -538,6 +538,26 @@ body[data-hide-sol] .sol-opt-bar { display: none !important; }
   white-space: nowrap;
 }
 body { padding-bottom: 2.5rem; }
+
+/* ── Inecuaciones ── */
+.ineq-section { margin-bottom: 2.5rem; }
+.ineq-section-title { font-size: 0.72rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.12em; color: #8b92b1; padding: 0.4rem 0; margin-bottom: 1.2rem; border-bottom: 2px solid #dde2f0; }
+.ineq-consigna { font-size: 0.95rem; font-weight: 600; color: #1a1d2e; margin-bottom: 1.2rem; line-height: 1.5; }
+.ineq-list { display: flex; flex-direction: column; gap: 1.1rem; margin-bottom: 1rem; }
+.ineq-item { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.9rem 1rem; border: 1px solid #e5e7eb; border-radius: 10px; break-inside: avoid; }
+.ineq-num { font-weight: 700; font-size: 1rem; color: #4f6ef7; min-width: 1.8rem; padding-top: 0.1rem; }
+.ineq-body { flex: 1; }
+.ineq-enunciado { font-size: 1rem; line-height: 1.6; margin-bottom: 0.5rem; }
+.ineq-blank-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; flex-wrap: wrap; }
+.ineq-blank-label { font-size: 0.82rem; color: #8b92b1; }
+.ineq-blank-line { display: inline-block; min-width: 160px; border-bottom: 1.5px solid #bbb; height: 1.1em; }
+.ineq-nivel-tag { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #7c3aed; background: #f5f3ff; border-radius: 5px; padding: 0.1rem 0.45rem; margin-left: 0.4rem; vertical-align: middle; }
+.ineq-sol { border-top: 1px dashed #ccc; padding-top: 0.5rem; margin-top: 0.5rem; }
+.ineq-sol-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: #aaa; font-weight: bold; margin-bottom: 0.3rem; }
+.ineq-sol-val { font-size: 0.9rem; color: #059669; font-weight: 700; }
+/* ── Inecuaciones cuadráticas (reutiliza clases .ineq-*) ── */
+.ineqc-work { margin-top: 0.6rem; min-height: 80px; border: 1px dashed #d1d5db; border-radius: 6px; padding: 0.4rem 0.6rem; background: #fafafa; }
+.ineqc-work-label { font-size: 0.75rem; color: #bbb; font-style: italic; }
 </style>
 </head>
 <body>
@@ -597,6 +617,12 @@ body { padding-bottom: 2.5rem; }
     </button>
     <button class="topic-btn" style="opacity:0.45;cursor:default;pointer-events:none">
       ✂️ Factorización <span class="soon">pronto</span>
+    </button>
+    <button class="topic-btn" id="topic-ineq" onclick="switchTopic('ineq')">
+      📐 Inecuaciones Lineales
+    </button>
+    <button class="topic-btn" id="topic-ineqc" onclick="switchTopic('ineqc')">
+      📐 Inecuaciones Cuadráticas
     </button>
   </div>
 
@@ -1873,6 +1899,65 @@ body { padding-bottom: 2.5rem; }
     </div>
 
   </div><!-- fin panel-pa -->
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- PANEL: INECUACIONES LINEALES          -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="section-panel" id="panel-ineq">
+
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:#fdf4ff">📐</div> Nivel de dificultad</div>
+      <div class="chips" id="ineq-chips">
+        <button class="chip selected" data-id="ineq-n1" onclick="toggleChipINEQ(this)">Nivel 1 — Sin paréntesis</button>
+        <button class="chip selected" data-id="ineq-n2" onclick="toggleChipINEQ(this)">Nivel 2 — Con paréntesis</button>
+        <button class="chip selected" data-id="ineq-n3" onclick="toggleChipINEQ(this)">Nivel 3 — Con fracciones</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:#f0fdf4">🔢</div> Cantidad de ejercicios por nivel</div>
+      <div id="ineq-qty-controls"></div>
+    </div>
+
+    <div class="card">
+      <button class="btn-generate" onclick="generarINEQ()">✨ Generar ejercitario</button>
+    </div>
+
+    <div id="ineq-ejercitario" class="ejercitario">
+      <!-- generado por JS -->
+    </div>
+    <button class="btn-download" id="ineq-btnDownload" onclick="downloadEjercitario('ineq-ejercitario','inecuaciones-lineales')" style="display:none">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="ineq-btnSolAparte" onclick="downloadSolucionesAparte('ineq-ejercitario', 'inecuaciones-lineales')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- PANEL: INECUACIONES CUADRÁTICAS                  -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="section-panel" id="panel-ineqc">
+
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:#fdf4ff">📐</div> Nivel de dificultad</div>
+      <div class="chips" id="ineqc-chips">
+        <button class="chip selected" data-id="ineqc-n1" onclick="toggleChipINEQC(this)">Nivel 1 — Ya factorizada</button>
+        <button class="chip selected" data-id="ineqc-n2" onclick="toggleChipINEQC(this)">Nivel 2 — El alumno factoriza</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon" style="background:#f0fdf4">🔢</div> Cantidad de ejercicios por nivel</div>
+      <div id="ineqc-qty-controls"></div>
+    </div>
+
+    <div class="card">
+      <button class="btn-generate" onclick="generarINEQC()">✨ Generar ejercitario</button>
+    </div>
+
+    <div id="ineqc-ejercitario" class="ejercitario">
+      <!-- generado por JS -->
+    </div>
+    <button class="btn-download" id="ineqc-btnDownload" onclick="downloadEjercitario('ineqc-ejercitario','inecuaciones-cuadraticas')" style="display:none">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="ineqc-btnSolAparte" onclick="downloadSolucionesAparte('ineqc-ejercitario', 'inecuaciones-cuadraticas')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+  </div>
 
 
 <script>
@@ -9420,6 +9505,450 @@ document.addEventListener('DOMContentLoaded', function() {
     document.removeEventListener('click', handler);
   }, true);
 })();
+
+
+// ══════════════════════════════════════════════════
+//  INECUACIONES LINEALES
+// ══════════════════════════════════════════════════
+
+const INEQ_QTY  = { 1: 5, 2: 5, 3: 5 };
+const INEQ_LABEL = { 1: 'Nivel 1 — Sin paréntesis', 2: 'Nivel 2 — Con paréntesis', 3: 'Nivel 3 — Con fracciones' };
+
+function toggleChipINEQ(btn) {
+  btn.classList.toggle('selected');
+  ineqRenderQty();
+}
+
+function ineqRenderQty() {
+  const wrap = document.getElementById('ineq-qty-controls');
+  const chips = document.querySelectorAll('#ineq-chips .chip.selected');
+  if (chips.length === 0) {
+    wrap.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Seleccioná al menos un nivel.</p>';
+    return;
+  }
+  let html = '';
+  chips.forEach(ch => {
+    const n = parseInt(ch.dataset.id.replace('ineq-n', ''));
+    html += '<div class="qty-row">' +
+      '<span class="qty-label">' + INEQ_LABEL[n] + ':<\/span>' +
+      '<button class="qty-btn" onclick="ineqChangeQty(' + n + ',-1)">−<\/button>' +
+      '<span class="qty-val" id="ineq-qv-' + n + '">' + INEQ_QTY[n] + '<\/span>' +
+      '<button class="qty-btn" onclick="ineqChangeQty(' + n + ',1)">+<\/button>' +
+    '<\/div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function ineqChangeQty(n, delta) {
+  INEQ_QTY[n] = Math.max(1, Math.min(20, INEQ_QTY[n] + delta));
+  const el = document.getElementById('ineq-qv-' + n);
+  if (el) el.textContent = INEQ_QTY[n];
+}
+
+ineqRenderQty();
+
+function ineqGcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+
+function ineqFracHtml(n, d) {
+  const g = ineqGcd(Math.abs(n), Math.abs(d));
+  let sn = n / g, sd = d / g;
+  if (sd < 0) { sn = -sn; sd = -sd; }
+  return '<span class="frac"><span class="num">' + sn + '<\/span><span class="den">' + sd + '<\/span><\/span>';
+}
+
+function ineqFracTxt(n, d) {
+  if (d === 1) return String(n);
+  const g = ineqGcd(Math.abs(n), Math.abs(d));
+  let sn = n / g, sd = d / g;
+  if (sd < 0) { sn = -sn; sd = -sd; }
+  return sn + '/' + sd;
+}
+
+function ineqRndNoMult(q, maxFactor) {
+  let p;
+  do { p = rndNZ(1, q * maxFactor); } while (p % q === 0);
+  return p;
+}
+
+function ineqOpInv(op) { return op === '>' ? '<' : op === '>=' ? '<=' : op === '<' ? '>' : '>='; }
+function ineqOpHtml(op) { return op === '>=' ? '≥' : op === '<=' ? '≤' : op; }
+
+function ineqResolver(a, b, op) {
+  let opFinal = a < 0 ? ineqOpInv(op) : op;
+  let numVal = -b, denVal = a;
+  const g = ineqGcd(Math.abs(numVal), Math.abs(denVal));
+  numVal = numVal / g; denVal = denVal / g;
+  if (denVal < 0) { numVal = -numVal; denVal = -denVal; }
+  const valStr = ineqFracTxt(numVal, denVal);
+  let intervalo;
+  if      (opFinal === '<')  intervalo = '(−∞, '  + valStr + ')';
+  else if (opFinal === '<=') intervalo = '(−∞, '  + valStr + ']';
+  else if (opFinal === '>')  intervalo = '(' + valStr + ', +∞)';
+  else                       intervalo = '[' + valStr + ', +∞)';
+  return { intervalo };
+}
+
+function ineqLadoHtml(cx, k, isPrimero) {
+  let parts = [];
+  if (cx !== 0) {
+    let s;
+    if      (cx ===  1) s = (isPrimero ? '' : '+ ') + 'x';
+    else if (cx === -1) s = (isPrimero ? '−' : '− ') + 'x';
+    else if (cx  >  0)  s = (isPrimero ? '' : '+ ') + cx + 'x';
+    else                s = (isPrimero ? '−' : '− ') + Math.abs(cx) + 'x';
+    parts.push(s);
+    isPrimero = false;
+  }
+  if (k !== 0) {
+    let s;
+    if (k > 0) s = (isPrimero ? '' : '+ ') + k;
+    else       s = (isPrimero ? '−' : '− ') + Math.abs(k);
+    parts.push(s);
+  }
+  return parts.length === 0 ? '0' : parts.join(' ');
+}
+
+function ineqGenN1() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = ineqOpHtml(op);
+  let c1, c2, a;
+  do { c1 = rndNZ(-5, 5); c2 = rnd(-4, 4); a = c1 - c2; } while (a === 0);
+  const k1 = rnd(-9, 9);
+  const k2 = rnd(-9, 9);
+  const b  = k1 - k2;
+  const enunciadoHtml = ineqLadoHtml(c1, k1, true) + ' ' + opH + ' ' + ineqLadoHtml(c2, k2, true);
+  const { intervalo } = ineqResolver(a, b, op);
+  return { enunciadoHtml, intervalo, nivel: 1 };
+}
+
+function ineqGenN2() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = ineqOpHtml(op);
+  const tipo = rnd(0, 2);
+  let enunciadoHtml, a, b;
+
+  if (tipo === 0) {
+    const aCoef = rndNZ(-4, 4);
+    const p     = rndNZ(-6, 6);
+    let cCoef;
+    do { cCoef = rnd(-4, 4); a = aCoef - cCoef; } while (a === 0);
+    const k = rnd(-8, 8);
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const lhs = (aCoef === 1 ? '' : aCoef === -1 ? '−' : String(aCoef)) + '(x' + pSign + ')';
+    enunciadoHtml = lhs + ' ' + opH + ' ' + ineqLadoHtml(cCoef, k, true);
+    b = aCoef * p - k;
+
+  } else if (tipo === 1) {
+    let aCoef, bCoef;
+    do { aCoef = rndNZ(-4, 4); bCoef = rnd(-4, 4); a = aCoef - bCoef; } while (a === 0);
+    const p = rndNZ(-5, 5);
+    const q = rnd(-7, 7);
+    const r = rndNZ(-5, 5);
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const rSign = r > 0 ? ' + ' + r : ' − ' + Math.abs(r);
+    const lhs = (aCoef === 1 ? '' : aCoef === -1 ? '−' : String(aCoef)) + '(x' + pSign + ')' +
+                (q === 0 ? '' : q > 0 ? ' + ' + q : ' − ' + Math.abs(q));
+    const rhsParen = (bCoef === 1 ? '' : bCoef === -1 ? '−' : String(bCoef)) + '(x' + rSign + ')';
+    enunciadoHtml = lhs + ' ' + opH + ' ' + rhsParen;
+    b = (aCoef * p + q) - bCoef * r;
+
+  } else {
+    const aCoef = rndNZ(2, 4);
+    const bCoef = rndNZ(-3, 3);
+    const p     = rndNZ(-6, 6);
+    const cCoef = rndNZ(1, 4);
+    let dCoef;
+    do { dCoef = rnd(-4, 4); a = aCoef * bCoef - cCoef - dCoef; } while (a === 0);
+    const k = rnd(-8, 8);
+    const innerX = bCoef === 1 ? 'x' : bCoef === -1 ? '−x' : bCoef > 0 ? bCoef + 'x' : '−' + Math.abs(bCoef) + 'x';
+    const innerK = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    enunciadoHtml = aCoef + '(' + innerX + innerK + ') − ' + (cCoef === 1 ? 'x' : cCoef + 'x') + ' ' + opH + ' ' + ineqLadoHtml(dCoef, k, true);
+    b = aCoef * p - k;
+  }
+
+  const { intervalo } = ineqResolver(a, b, op);
+  return { enunciadoHtml, intervalo, nivel: 2 };
+}
+
+function ineqGenN3() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = ineqOpHtml(op);
+  const tipo = rnd(0, 3);
+  let enunciadoHtml, a_int, b_int;
+
+  if (tipo === 0) {
+    const q = rnd(2, 5);
+    const p = ineqRndNoMult(q, 4);
+    let c;
+    do { c = rnd(-3, 4); a_int = p - c * q; } while (a_int === 0);
+    const k1 = rnd(-7, 7), k2 = rnd(-7, 7);
+    b_int = (k1 - k2) * q;
+    const k1sign = k1 === 0 ? '' : (k1 > 0 ? ' + ' + k1 : ' − ' + Math.abs(k1));
+    enunciadoHtml = ineqFracHtml(p, q) + 'x' + k1sign + ' ' + opH + ' ' + ineqLadoHtml(c, k2, true);
+
+  } else if (tipo === 1) {
+    const s = rnd(2, 5);
+    const r = ineqRndNoMult(s, 3);
+    let aCoef, cCoef;
+    do { aCoef = rndNZ(-4, 4); cCoef = rnd(-3, 3); a_int = (aCoef - cCoef) * s; } while (a_int === 0);
+    const p = rndNZ(-5, 5), k = rnd(-7, 7);
+    b_int = (aCoef * p - k) * s + r;
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const lhsParen = (aCoef === 1 ? '' : aCoef === -1 ? '−' : String(aCoef)) + '(x' + pSign + ')';
+    enunciadoHtml = lhsParen + ' + ' + ineqFracHtml(r, s) + ' ' + opH + ' ' + ineqLadoHtml(cCoef, k, true);
+
+  } else if (tipo === 2) {
+    const q = rnd(2, 5);
+    const p = ineqRndNoMult(q, 3);
+    let c;
+    do { c = rnd(-3, 4); a_int = p - c * q; } while (a_int === 0);
+    const r = rndNZ(-5, 5), k = rnd(-7, 7);
+    b_int = p * r - k * q;
+    const rSign = r > 0 ? ' + ' + r : ' − ' + Math.abs(r);
+    enunciadoHtml = ineqFracHtml(p, q) + '(x' + rSign + ') ' + opH + ' ' + ineqLadoHtml(c, k, true);
+
+  } else {
+    const s = rnd(2, 5);
+    const r = ineqRndNoMult(s, 3);
+    let aCoef, cCoef;
+    do { aCoef = rndNZ(1, 4); cCoef = rnd(-3, 4); a_int = aCoef * s + r - cCoef * s; } while (a_int === 0);
+    const p = rndNZ(-5, 5), k = rnd(-7, 7);
+    b_int = (aCoef * p - k) * s;
+    const pSign = p > 0 ? ' + ' + p : ' − ' + Math.abs(p);
+    const lhsParen = (aCoef === 1 ? '' : String(aCoef)) + '(x' + pSign + ')';
+    enunciadoHtml = lhsParen + ' + ' + ineqFracHtml(r, s) + 'x ' + opH + ' ' + ineqLadoHtml(cCoef, k, true);
+  }
+
+  const { intervalo } = ineqResolver(a_int, b_int, op);
+  return { enunciadoHtml, intervalo, nivel: 3 };
+}
+
+function generarINEQ() {
+  const chips = document.querySelectorAll('#ineq-chips .chip.selected');
+  if (chips.length === 0) { alert('Seleccioná al menos un nivel.'); return; }
+  const niveles = Array.from(chips).map(c => parseInt(c.dataset.id.replace('ineq-n', '')));
+  const gens    = { 1: ineqGenN1, 2: ineqGenN2, 3: ineqGenN3 };
+
+  const ejercicios = [];
+  niveles.forEach(n => {
+    for (let i = 0; i < INEQ_QTY[n]; i++) ejercicios.push(gens[n]());
+  });
+  if (niveles.length > 1) shuffle(ejercicios);
+
+  const indHTML = indGetTablaHTML('ind-filas');
+
+  let ejHtml = '';
+  ejercicios.forEach((ej, idx) => {
+    ejHtml +=
+      '<div class="ineq-item">' +
+        '<div class="ineq-num">' + (idx + 1) + '.<\/div>' +
+        '<div class="ineq-body">' +
+          '<div class="ineq-enunciado">' + ej.enunciadoHtml + '<\/div>' +
+          '<div class="ineq-blank-row">' +
+            '<span class="ineq-blank-label">Notación de intervalo:<\/span>' +
+            '<span class="ineq-blank-line"><\/span>' +
+          '<\/div>' +
+          '<div class="ineq-sol">' +
+            '<div class="ineq-sol-label">Solución<\/div>' +
+            '<div class="ineq-sol-val">' + ej.intervalo + '<\/div>' +
+          '<\/div>' +
+        '<\/div>' +
+      '<\/div>';
+  });
+
+  const titulosNiv = niveles.sort().map(n => INEQ_LABEL[n]).join(' · ');
+  const ejDiv = document.getElementById('ineq-ejercitario');
+  ejDiv.innerHTML =
+    '<div class="ej-header">' +
+      '<div class="ej-title">Inecuaciones<\/div>' +
+      '<div class="ej-meta"><\/div>' +
+      '<div class="ej-data-row">' +
+        '<span>Nombre: ___________________________<\/span>' +
+        '<span>Curso: ___________<\/span><span>Fecha: ___________<\/span>' +
+      '<\/div>' +
+    '<\/div>' +
+    indHTML +
+    '<div class="ineq-section">' +
+      '<div class="ineq-section-title">Inecuaciones<\/div>' +
+      '<div class="ineq-consigna">Resolvé las siguientes inecuaciones lineales y expresá el resultado en notación de intervalo.<\/div>' +
+      '<div class="ineq-list">' + ejHtml + '<\/div>' +
+    '<\/div>' +
+    '<div class="ej-copyright">' + COPYRIGHT_TXT + '<\/div>';
+
+  ejDiv.classList.add('visible');
+  document.getElementById('ineq-btnDownload').style.display = 'block';
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// INECUACIONES CUADRÁTICAS
+// ══════════════════════════════════════════════════════════════
+
+const INEQC_QTY   = { 1: 5, 2: 5 };
+const INEQC_LABEL = { 1: 'Nivel 1 — Ya factorizada', 2: 'Nivel 2 — El alumno factoriza' };
+
+function toggleChipINEQC(btn) {
+  btn.classList.toggle('selected');
+  ineqcRenderQty();
+}
+
+function ineqcRenderQty() {
+  const wrap  = document.getElementById('ineqc-qty-controls');
+  const chips = document.querySelectorAll('#ineqc-chips .chip.selected');
+  wrap.innerHTML = '';
+  chips.forEach(function(ch) {
+    const n = parseInt(ch.dataset.id.replace('ineqc-n', ''));
+    const row = document.createElement('div');
+    row.className = 'qty-row';
+    row.innerHTML =
+      '<span class="qty-label">' + INEQC_LABEL[n] + ':<\/span>' +
+      '<button class="qty-btn" onclick="ineqcChangeQty(' + n + ',-1)">&#8722;<\/button>' +
+      '<span class="qty-val" id="ineqc-qv-' + n + '">' + INEQC_QTY[n] + '<\/span>' +
+      '<button class="qty-btn" onclick="ineqcChangeQty(' + n + ',1)">+<\/button>';
+    wrap.appendChild(row);
+  });
+}
+
+function ineqcChangeQty(n, delta) {
+  INEQC_QTY[n] = Math.max(1, Math.min(20, INEQC_QTY[n] + delta));
+  const el = document.getElementById('ineqc-qv-' + n);
+  if (el) el.textContent = INEQC_QTY[n];
+}
+
+ineqcRenderQty();
+
+function ineqcResolver(r1, r2, op) {
+  const s1 = String(r1), s2 = String(r2);
+  if (op === '>') {
+    if (r1 === r2) return '∅ ∪ {' + s1 + '} — raíz doble, no solución abierta';
+    return '(−∞, ' + s1 + ') ∪ (' + s2 + ', +∞)';
+  } else if (op === '>=') {
+    if (r1 === r2) return '{' + s1 + '}';
+    return '(−∞, ' + s1 + '] ∪ [' + s2 + ', +∞)';
+  } else if (op === '<') {
+    if (r1 === r2) return '∅';
+    return '(' + s1 + ', ' + s2 + ')';
+  } else {
+    if (r1 === r2) return '{' + s1 + '}';
+    return '[' + s1 + ', ' + s2 + ']';
+  }
+}
+
+function ineqcSignStr(coef, isFirst) {
+  if (isFirst) {
+    if (coef === 1) return 'x';
+    if (coef === -1) return '−x';
+    if (coef < 0) return '−' + Math.abs(coef) + 'x';
+    return coef + 'x';
+  } else {
+    if (coef === 0) return '';
+    const sign = coef > 0 ? ' + ' : ' − ';
+    return sign + Math.abs(coef);
+  }
+}
+
+function ineqcGenN1() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = ineqOpHtml(op);
+  let r1, r2;
+  do { r1 = rnd(-9, 9); r2 = rnd(-9, 9); } while (r1 === r2);
+  const lo = Math.min(r1, r2), hi = Math.max(r1, r2);
+  function factorStr(r) {
+    if (r === 0) return 'x';
+    const sign = r < 0 ? ' + ' : ' − ';
+    return '(x' + sign + Math.abs(r) + ')';
+  }
+  const enunciadoHtml = factorStr(r1) + factorStr(r2) + ' ' + opH + ' 0';
+  const intervalo = ineqcResolver(lo, hi, op);
+  return { enunciadoHtml, intervalo, nivel: 1 };
+}
+
+function ineqcGenN2() {
+  const ops = ['<', '<=', '>', '>='];
+  const op  = ops[rnd(0, 3)];
+  const opH = ineqOpHtml(op);
+  let r1, r2;
+  do { r1 = rnd(-9, 9); r2 = rnd(-9, 9); } while (r1 === r2);
+  const lo = Math.min(r1, r2), hi = Math.max(r1, r2);
+  const b = -(r1 + r2);
+  const c = r1 * r2;
+  let enunciadoHtml = 'x²';
+  if (b !== 0) {
+    if (b === 1)       enunciadoHtml += ' + x';
+    else if (b === -1) enunciadoHtml += ' − x';
+    else               enunciadoHtml += (b > 0 ? ' + ' : ' − ') + Math.abs(b) + 'x';
+  }
+  if (c !== 0) {
+    enunciadoHtml += (c > 0 ? ' + ' : ' − ') + Math.abs(c);
+  }
+  enunciadoHtml += ' ' + opH + ' 0';
+  const intervalo = ineqcResolver(lo, hi, op);
+  return { enunciadoHtml, intervalo, nivel: 2, r1: lo, r2: hi };
+}
+
+function generarINEQC() {
+  const chips = document.querySelectorAll('#ineqc-chips .chip.selected');
+  if (chips.length === 0) { alert('Seleccioná al menos un nivel.'); return; }
+  const niveles = Array.from(chips).map(function(c) { return parseInt(c.dataset.id.replace('ineqc-n', '')); });
+  const gens    = { 1: ineqcGenN1, 2: ineqcGenN2 };
+
+  const ejercicios = [];
+  niveles.forEach(function(n) {
+    for (let i = 0; i < INEQC_QTY[n]; i++) ejercicios.push(gens[n]());
+  });
+  if (niveles.length > 1) shuffle(ejercicios);
+
+  const indHTML = indGetTablaHTML('ind-filas');
+
+  let ejHtml = '';
+  ejercicios.forEach(function(ej, idx) {
+    const factHint = (ej.nivel === 2)
+      ? '<div style="font-size:0.8rem;color:#8b92b1;margin-top:0.2rem;">Factores: (x ' + (ej.r1 <= 0 ? '+ ' + Math.abs(ej.r1) : '− ' + ej.r1) + ')(x ' + (ej.r2 <= 0 ? '+ ' + Math.abs(ej.r2) : '− ' + ej.r2) + ')<\/div>'
+      : '';
+    ejHtml +=
+      '<div class="ineq-item">' +
+        '<div class="ineq-num">' + (idx + 1) + '.<\/div>' +
+        '<div class="ineq-body">' +
+          '<div class="ineq-enunciado">' + ej.enunciadoHtml + '<\/div>' +
+          '<div class="ineqc-work"><span class="ineqc-work-label">Desarrollo:<\/span><\/div>' +
+          '<div class="ineq-blank-row">' +
+            '<span class="ineq-blank-label">Notación de intervalo:<\/span>' +
+            '<span class="ineq-blank-line"><\/span>' +
+          '<\/div>' +
+          '<div class="ineq-sol">' +
+            '<div class="ineq-sol-label">Solución<\/div>' +
+            factHint +
+            '<div class="ineq-sol-val">' + ej.intervalo + '<\/div>' +
+          '<\/div>' +
+        '<\/div>' +
+      '<\/div>';
+  });
+
+  const ejDiv = document.getElementById('ineqc-ejercitario');
+  ejDiv.innerHTML =
+    '<div class="ej-header">' +
+      '<div class="ej-title">Inecuaciones<\/div>' +
+      '<div class="ej-meta"><\/div>' +
+      '<div class="ej-data-row">' +
+        '<span>Nombre: ___________________________<\/span>' +
+        '<span>Curso: ___________<\/span><span>Fecha: ___________<\/span>' +
+      '<\/div>' +
+    '<\/div>' +
+    indHTML +
+    '<div class="ineq-section">' +
+      '<div class="ineq-section-title">Inecuaciones<\/div>' +
+      '<div class="ineq-consigna">Resolvé las siguientes inecuaciones cuadráticas y expresá el resultado en notación de intervalo.<\/div>' +
+      '<div class="ineq-list">' + ejHtml + '<\/div>' +
+    '<\/div>' +
+    '<div class="ej-copyright">' + COPYRIGHT_TXT + '<\/div>';
+
+  ejDiv.classList.add('visible');
+  document.getElementById('ineqc-btnDownload').style.display = 'block';
+}
 </script>
 
 </body>

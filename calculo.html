@@ -260,6 +260,14 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .ind-table tr:last-child td { border-bottom: none; }
 .ind-table-wrap { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }
 
+/* ── CUADRO CAPACIDAD ── */
+.cap-box { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }
+.cap-box-header { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.cap-box-body { padding: 0.45rem 0.6rem; font-size: 0.82rem; line-height: 1.5; }
+.cap-box-body ul { margin: 0.25rem 0 0 1.2rem; padding: 0; }
+.cap-box-body ul li { margin-bottom: 0.15rem; }
+.cap-box-body ul ul { margin-top: 0.1rem; }
+
 /* ── Ocultar soluciones al imprimir si el checkbox está desmarcado ── */
 body[data-hide-sol] .soluciones-section,
 body[data-hide-sol] .sol-section,
@@ -717,6 +725,38 @@ function indGetTablaHTML(containerId) {
   const rows = filas.map(f => `<tr><td>${f.texto}</td><td>${f.pts}</td></tr>`).join('');
   return `<div class="ind-table-wrap"><table class="ind-table"><thead><tr><th>Indicadores</th><th>Puntaje</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
+function fcGetCapacidadHTML() {
+  const widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Interpreta las principales características de una función a partir de su expresión analítica y su representación gráfica.' +
+      '<ul>' +
+        '<li>Concepto de función</li>' +
+        '<li>Representación analítica:' +
+          '<ul>' +
+            '<li>Polinómicas (lineales, cuadráticas y cúbicas)</li>' +
+            '<li>Exponenciales</li>' +
+            '<li>Logarítmicas</li>' +
+            '<li>Trigonométricas</li>' +
+            '<li>Módulo y parte entera</li>' +
+          '</ul>' +
+        '</li>' +
+        '<li>Gráfico de una función</li>' +
+        '<li>Características: dominio, rango, intervalos, crecimiento, extremos, paridad, continuidad</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
+const CAP_PRINT_CSS =
+  '  .cap-box { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\n' +
+  '  .cap-box-header { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }\n' +
+  '  .cap-box-body { padding: 0.45rem 0.6rem; font-size: 0.82rem; line-height: 1.5; }\n' +
+  '  .cap-box-body ul { margin: 0.25rem 0 0 1.2rem; padding: 0; }\n' +
+  '  .cap-box-body ul li { margin-bottom: 0.15rem; }\n';
+
 const IND_PRINT_CSS =
   '  .ind-table-wrap { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\n' +
   '  .ind-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }\n' +
@@ -1171,6 +1211,7 @@ function generarFC() {
       <span>Curso: _______________</span>
       <span>Fecha: _______________</span>
     </div>
+    ${fcGetCapacidadHTML()}
     ${indGetTablaHTML('ind-filas')}
   </div>`;
 
@@ -1712,6 +1753,7 @@ function generarRA() {
       <span>Curso: _______________</span>
       <span>Fecha: _______________</span>
     </div>
+    ${fcGetCapacidadHTML()}
     ${indGetTablaHTML('ind-filas')}
   </div>`;
 
@@ -2212,6 +2254,7 @@ function generarCAR() {
       <span>Curso: _______________</span>
       <span>Fecha: _______________</span>
     </div>
+    ${fcGetCapacidadHTML()}
     ${indGetTablaHTML('ind-filas')}
   </div>`;
 
@@ -2606,6 +2649,7 @@ function generarFG() {
       <span>Curso: _______________</span>
       <span>Fecha: _______________</span>
     </div>
+    ${fcGetCapacidadHTML()}
     ${indGetTablaHTML('ind-filas')}
   </div>`;
 
@@ -2751,6 +2795,7 @@ function generarRI() {
   html += `<div class="ej-header">
     <div class="ej-title">Funciones</div>
     <div class="ej-meta"><span>Módulo: Cálculo</span></div>
+    ${fcGetCapacidadHTML()}
     ${tablaInd}
     <div class="ej-data-row">
       <span>Nombre: ___________________________</span>
@@ -2970,6 +3015,8 @@ function generarNOT() {
   html += '<div class="ej-title">Intervalos</div>';
   html += '<div class="ej-meta"></div>';
   html += '<div class="ej-data-row"><span>Nombre: ___________________________</span><span>Curso: ______________</span><span>Fecha: ______________</span></div>';
+  const capNot = fcGetCapacidadHTML();
+  if (capNot) html += capNot;
   if (indTabla) html += indTabla;
   html += '</div>';
 
@@ -3286,6 +3333,7 @@ function generarINEQ() {
         '<span>Nombre: ___________________________<\/span>' +
         '<span>Curso: ___________<\/span><span>Fecha: ___________<\/span>' +
       '<\/div>' +
+      (fcGetCapacidadHTML() || '') +
     '<\/div>' +
     indHTML +
     '<div class="ineq-section">' +
@@ -3497,6 +3545,7 @@ function generarINEQC() {
         '<span>Nombre: ___________________________<\/span>' +
         '<span>Curso: ___________<\/span><span>Fecha: ___________<\/span>' +
       '<\/div>' +
+      (fcGetCapacidadHTML() || '') +
     '<\/div>' +
     indHTML +
     '<div class="ineq-section">' +
@@ -3741,7 +3790,8 @@ function getEjercitarioPDFCss() {
     '.ej-equation{font-family:Georgia,serif;font-size:1.05rem;font-weight:bold;margin:.4rem 0}',
     '.ej-steps{font-size:.88rem;color:#555;margin-top:.3rem;line-height:1.7}',
     '.tri-item{margin-bottom:1.5rem;page-break-inside:avoid}',
-    IND_PRINT_CSS
+    IND_PRINT_CSS,
+    CAP_PRINT_CSS
   ].join('');
 }
 function ejGenerarPDF(wrapper, filename) { /* no longer used */ }
