@@ -582,11 +582,6 @@ body { padding-bottom: 2.5rem; }
           </div>
 
           <div class="field-group field-full">
-            <label>Capacidades y/o contenidos</label>
-            <textarea id="h-caps" placeholder="Ej: Formula y resuelve problemas referidos al cálculo de ecuaciones lineales..."></textarea>
-          </div>
-
-          <div class="field-group field-full">
             <label>Indicaciones para el alumno</label>
             <div class="fmt-bar">
               <button class="fmt-btn" id="fmt-ind-b" title="Negrita" onclick="toggleFmtInd('bold')"><b>B</b></button>
@@ -1413,6 +1408,17 @@ function eb_getCapacidadHTML(tema) {
     if (caps.length > 0) return caps.join('');
   }
 
+  if (rama === 'geometria') {
+    var usaPR = ids.some(function(id){ return /^geom-pr-/.test(id); });
+    if (usaPR) return capBox(
+      'Formula y resuelve problemas referidos a situaciones de la vida real, que impliquen el cálculo de:',
+      ['Distancia entre dos puntos',
+       'Punto medio',
+       'Pendiente y ángulo de inclinación',
+       'Paralelismo y perpendicularidad']
+    );
+  }
+
   return ''; // otras ramas: sin cap-box
 }
 
@@ -1875,7 +1881,6 @@ function buildDocHTML(){
   const fecha=document.getElementById('h-fecha').value;
   const curso=document.getElementById('h-curso').value;
   const exig=document.getElementById('h-exig').value;
-  const caps=document.getElementById('h-caps').value;
   const indicaciones=document.getElementById('h-indicaciones').innerHTML;
   const total=STATE.temas.reduce((s,t)=>s+(t.indicadores?t.indicadores.reduce((ss,r)=>ss+(r.pts||0),0):0),0);
   const logoHTML=STATE.logoSrc?`<img class="exam-logo" src="${STATE.logoSrc}" alt="Logo">`:'';
@@ -1965,7 +1970,6 @@ function buildDocHTML(){
       </div>
       ${exig?`<div class="exam-nivel-exig">El nivel de exigencia es del ${exig}%</div>`:''}
       ${indicaciones?`<div class="exam-indicaciones"><span class="ind-label">Indicaciones</span>${indicaciones}</div>`:''}
-      ${caps?`<div class="exam-caps"><strong>Capacidades y/o contenidos:</strong>${caps}</div>`:''}
       <div class="exam-alumno-row">
         <div class="exam-field-line">Nombre y Apellido</div>
       </div>
