@@ -596,6 +596,7 @@ body { padding-bottom: 2.5rem; }
         <label class="check-item"><input type="checkbox" id="chk-r8" onchange="rectasUpdateTotal()"><span>Ecuación de la recta que pasa por dos puntos</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgR('r8',-1)">−</button><span class="qty-val" id="qr-r8">0</span><button class="qty-btn" onclick="chgR('r8',1)">+</button></div></label>
         <label class="check-item"><input type="checkbox" id="chk-r9" onchange="rectasUpdateTotal()"><span>Perímetro de polígonos (triángulos y cuadriláteros)</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgR('r9',-1)">−</button><span class="qty-val" id="qr-r9">0</span><button class="qty-btn" onclick="chgR('r9',1)">+</button></div></label>
         <label class="check-item"><input type="checkbox" id="chk-r10" onchange="rectasUpdateTotal()"><span>Mediana relativa de un triángulo</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgR('r10',-1)">−</button><span class="qty-val" id="qr-r10">0</span><button class="qty-btn" onclick="chgR('r10',1)">+</button></div></label>
+        <label class="check-item"><input type="checkbox" id="chk-r11" onchange="rectasUpdateTotal()"><span>Ángulo entre dos rectas</span><div class="qty-ctrl"><button class="qty-btn" onclick="chgR('r11',-1)">−</button><span class="qty-val" id="qr-r11">0</span><button class="qty-btn" onclick="chgR('r11',1)">+</button></div></label>
       </div>
 
       <div class="total-badge" id="rectas-totalBadge" style="margin-top:1rem">Total: <span>0</span> ejercicios</div>
@@ -678,10 +679,10 @@ function gaGetCapacidadHTML() {
     '<div class="cap-box-body">' +
       'Formula y resuelve problemas referidos a situaciones de la vida real, que impliquen el cálculo de:' +
       '<ul>' +
-        '<li>Distancia entre dos puntos</li>' +
-        '<li>Punto medio</li>' +
-        '<li>Pendiente y ángulo de inclinación</li>' +
-        '<li>Paralelismo y perpendicularidad</li>' +
+        '<li>Distancia entre dos puntos.</li>' +
+        '<li>Punto medio de un segmento.</li>' +
+        '<li>Pendiente y ángulo de inclinación.</li>' +
+        '<li>Paralelismo y perpendicularidad de dos o más rectas.</li>' +
       '</ul>' +
     '</div>' +
   '</div>';
@@ -695,10 +696,24 @@ function gaGetCapacidadRectasHTML() {
     '<div class="cap-box-body">' +
       'Resuelve situaciones problemáticas que requieran de la utilización de las ecuaciones de la recta.' +
       '<ul>' +
-        '<li>Ecuación de la recta: general o implícita, explícita, segmentaria, ecuación punto pendiente</li>' +
-        '<li>Representación gráfica de la recta. Puntos de intersección con los ejes coordenados</li>' +
-        '<li>Intersección entre rectas</li>' +
-        '<li>Mediana relativa</li>' +
+        '<li>Ecuación de la recta: general o implícita, explícita, segmentaria, ecuación punto – pendiente.</li>' +
+        '<li>Representación gráfica de la recta. Puntos de intersección con los ejes coordenados.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
+function gaGetCapacidadAnguloAreaDistHTML() {
+  const widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Resuelve situaciones problemáticas en las que se determinan:' +
+      '<ul>' +
+        '<li>Ángulo entre dos rectas.</li>' +
+        '<li>Distancia de un punto a una recta.</li>' +
+        '<li>Área de un polígono a partir de las coordenadas de sus vértices.</li>' +
       '</ul>' +
     '</div>' +
   '</div>';
@@ -2182,7 +2197,7 @@ function generateCircunferencia() {
 // ═══════════════════════════════════════════
 // PUNTOS Y RECTAS
 // ═══════════════════════════════════════════
-const REC_KEYS = ['p1','p2','p3','p4','p5','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10'];
+const REC_KEYS = ['p1','p2','p3','p4','p5','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11'];
 const recQtys = {};
 REC_KEYS.forEach(k => recQtys[k] = k === 'p1' || k === 'p2' ? 0 : 0);
 
@@ -2642,10 +2657,43 @@ function recGen_r10() {
 }
 
 
+function recGen_r11() {
+  // Ángulo entre dos rectas: tan(θ) = |(m1 - m2)/(1 + m1*m2)|
+  const m1 = rnd(-4, 4); if (m1 === 0) return recGen_r11();
+  let m2;
+  do { m2 = rnd(-4, 4); } while (m2 === 0 || m2 === m1 || 1 + m1*m2 === 0);
+  // Puntos base para graficar
+  const p1 = rndPt(-3, 3), p2 = rndPt(-3, 3);
+  const tanTheta = Math.abs((m1 - m2) / (1 + m1 * m2));
+  const thetaDeg = Math.atan(tanTheta) * 180 / Math.PI;
+  const [n1, d1] = slopeAsFrac(m1);
+  const [n2, d2] = slopeAsFrac(m2);
+  const slope1Str = d1 === 1 ? `${n1}` : `${n1}/${d1}`;
+  const slope2Str = d2 === 1 ? `${n2}` : `${n2}/${d2}`;
+  // Ecuaciones: y = m(x - px) + py → Ax + By + C = 0
+  const A1 = m1, B1 = -1, C1 = p1[1] - m1 * p1[0];
+  const A2 = m2, B2 = -1, C2 = p2[1] - m2 * p2[0];
+  const eq1 = formatLineEq(A1, B1, C1);
+  const eq2 = formatLineEq(A2, B2, C2);
+  const graph = makeAxesSVG([p1, p2], (toSVG) =>
+    drawLine(toSVG, m1, p1[0], p1[1], '#f97316') +
+    drawLine(toSVG, m2, p2[0], p2[1], '#4f6ef7') +
+    drawPts(toSVG, [p1], ['P'], '#f97316') +
+    drawPts(toSVG, [p2], ['Q'], '#4f6ef7')
+  );
+  return {
+    expr: `Determiná el ángulo agudo que forman las rectas:<br>L₁: ${eq1} &nbsp;&nbsp; L₂: ${eq2}`,
+    sol: `tan(θ) = |( ${slope1Str} − ${slope2Str} ) / ( 1 + ${slope1Str}·${slope2Str} )| ≈ ${fmtN(tanTheta)} → θ ≈ ${fmtN(thetaDeg)}°`,
+    graph,
+    tema: 'Ángulo entre dos rectas'
+  };
+}
+
 const REC_GENS = {
   p1: recGen_p1, p2: recGen_p2, p3: recGen_p3, p4: recGen_p4, p5: recGen_p5,
   r1: recGen_r1, r2: recGen_r2, r3: recGen_r3, r4: recGen_r4, r5: recGen_r5,
-  r6: recGen_r6, r7: recGen_r7, r8: recGen_r8, r9: recGen_r9, r10: recGen_r10
+  r6: recGen_r6, r7: recGen_r7, r8: recGen_r8, r9: recGen_r9, r10: recGen_r10,
+  r11: recGen_r11
 };
 
 function generateRectas() {
@@ -2700,8 +2748,9 @@ function generateRectas() {
         <span>Nombre: ____________________________</span>
         <span>Curso: _____________ Fecha: _____________</span>
       </div>
-      ${['p1','p2','p3','p4','p5','r4'].some(k => recQtys[k] > 0) ? gaGetCapacidadHTML() : ''}
-      ${['r1','r2','r3','r5','r6','r7','r8','r9','r10'].some(k => recQtys[k] > 0) ? gaGetCapacidadRectasHTML() : ''}
+      ${['p1','p2','p3','p4','p5','r4','r9'].some(k => recQtys[k] > 0) ? gaGetCapacidadHTML() : ''}
+      ${['r1','r2','r3','r5','r8','r10'].some(k => recQtys[k] > 0) ? gaGetCapacidadRectasHTML() : ''}
+      ${['r6','r7','r11'].some(k => recQtys[k] > 0) ? gaGetCapacidadAnguloAreaDistHTML() : ''}
       ${indGetTablaHTML('ind-filas')}
     </div>
     ${ejHTML}

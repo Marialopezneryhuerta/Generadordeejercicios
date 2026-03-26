@@ -1306,6 +1306,7 @@ const CATALOG = {
       { id:'geom-pr-r8', label:'Rectas — Ecuación de la recta por dos puntos', niveles:[1], gen:()=>eb_PRgen('r8') },
       { id:'geom-pr-r9', label:'Rectas — Perímetro de polígonos', niveles:[1], gen:()=>eb_PRgen('r9') },
       { id:'geom-pr-r10', label:'Rectas — Mediana relativa de un triángulo', niveles:[1], gen:()=>eb_PRgen('r10') },
+      { id:'geom-pr-r11', label:'Rectas — Ángulo entre dos rectas', niveles:[1], gen:()=>eb_PRgen('r11') },
     ]
   },
   calculo: {
@@ -1372,11 +1373,11 @@ function eb_getCapacidadHTML(tema) {
 
   if (rama === 'calculo') {
     return capBox(
-      'Analiza y representa funciones en el plano cartesiano.',
-      ['Concepto de funci\u00f3n y variable dependiente/independiente',
-       'Tipos de funciones reales (lineal, cuadr\u00e1tica, c\u00fabica)',
-       'Caracter\u00edsticas: dominio, rango, crecimiento, m\u00e1ximos/m\u00ednimos',
-       'Inecuaciones lineales y cuadr\u00e1ticas']
+      'Interpreta las principales características de una función a partir de su expresión analítica y su representación gráfica.',
+      ['Concepto de función.',
+       'Representación analítica de funciones: polinómicas (lineales, cuadráticas y cúbicas), exponenciales, logarítmicas, trigonométricas, módulo y parte entera.',
+       'Gráfico de una función.',
+       'Características de una función: dominio, rango o recorrido, intervalos, crecimiento, extremos, paridad, continuidad.']
     );
   }
 
@@ -1391,40 +1392,45 @@ function eb_getCapacidadHTML(tema) {
     // Si varios → mostrar la más abarcadora o combinar
     var caps = [];
     if (usaTriObl) caps.push(capBox(
-      'Formula y resuelve problemas con tri\u00e1ngulos oblicu\u00e1ngulos.',
-      ['Teorema del seno', 'Teorema del coseno']
+      'Formula y resuelve problemas que involucren la utilización de triángulos oblicuángulos.',
+      ['Teorema del seno.', 'Teorema del coseno.']
     ));
     if (usaTR || usaFFC) caps.push(capBox(
-      'Formula y resuelve problemas de la vida real con funciones trigonom\u00e9tricas.',
-      ['Funciones y cofunciones trigonom\u00e9tricas',
-       'F\u00f3rmulas fundamentales y derivadas',
-       'Valores de \u00e1ngulos notables',
-       'Signos y reducci\u00f3n al primer cuadrante']
+      'Formula y resuelve problemas referidos a situaciones de la vida real, en los que se utilicen funciones trigonométricas y/o relaciones entre las mismas en el triángulo rectángulo.',
+      ['Funciones y cofunciones trigonométricas.',
+       'Fórmulas trigonométricas fundamentales y derivadas.',
+       'Valores de las funciones trigonométricas de ángulos notables.',
+       'Signos de las funciones trigonométricas en la reducción de ángulos al primer cuadrante.']
     ));
     if (usaConvArc) caps.push(capBox(
-      'Utiliza la relaci\u00f3n entre sistemas de medidas de \u00e1ngulos.',
-      ['Sistema sexagesimal', 'Sistema circular (radi\u00e1n)']
+      'Utiliza la relación existente entre los sistemas de medidas de ángulos según se requiera.',
+      ['Sistema sexagesimal.', 'Sistema circular o radián.']
     ));
     if (caps.length > 0) return caps.join('');
   }
 
   if (rama === 'geometria') {
-    var usaPuntos = ids.some(function(id){ return /^geom-pr-p/.test(id) || id === 'geom-pr-r4'; });
-    var usaRectas = ids.some(function(id){ return /^geom-pr-r/.test(id) && id !== 'geom-pr-r4'; });
+    var usaPuntos = ids.some(function(id){ return /^geom-pr-p/.test(id) || id === 'geom-pr-r4' || id === 'geom-pr-r9'; });
+    var usaRectas = ids.some(function(id){ return /^geom-pr-r/.test(id) && id !== 'geom-pr-r4' && id !== 'geom-pr-r9' && id !== 'geom-pr-r6' && id !== 'geom-pr-r7' && id !== 'geom-pr-r11'; });
+    var usaAnguloAreaDist = ids.some(function(id){ return id === 'geom-pr-r6' || id === 'geom-pr-r7' || id === 'geom-pr-r11'; });
     var result = '';
     if (usaPuntos) result += capBox(
       'Formula y resuelve problemas referidos a situaciones de la vida real, que impliquen el cálculo de:',
-      ['Distancia entre dos puntos',
-       'Punto medio',
-       'Pendiente y ángulo de inclinación',
-       'Paralelismo y perpendicularidad']
+      ['Distancia entre dos puntos.',
+       'Punto medio de un segmento.',
+       'Pendiente y ángulo de inclinación.',
+       'Paralelismo y perpendicularidad de dos o más rectas.']
     );
     if (usaRectas) result += capBox(
       'Resuelve situaciones problemáticas que requieran de la utilización de las ecuaciones de la recta.',
-      ['Ecuación de la recta: general o implícita, explícita, segmentaria, ecuación punto pendiente',
-       'Representación gráfica de la recta. Puntos de intersección con los ejes coordenados',
-       'Intersección entre rectas',
-       'Mediana relativa']
+      ['Ecuación de la recta: general o implícita, explícita, segmentaria, ecuación punto – pendiente.',
+       'Representación gráfica de la recta. Puntos de intersección con los ejes coordenados.']
+    );
+    if (usaAnguloAreaDist) result += capBox(
+      'Resuelve situaciones problemáticas en las que se determinan:',
+      ['Ángulo entre dos rectas.',
+       'Distancia de un punto a una recta.',
+       'Área de un polígono a partir de las coordenadas de sus vértices.']
     );
     if (result) return result;
   }
@@ -1490,7 +1496,7 @@ const GRUPOS = {
     { nombre:'Parábolas', ids:['geom-par'] },
     { nombre:'Circunferencia', ids:['geom-cir00','geom-cirhk'] },
     { nombre:'Puntos', ids:['geom-pr-p1','geom-pr-p2','geom-pr-p3','geom-pr-p4','geom-pr-p5'] },
-    { nombre:'Rectas', ids:['geom-pr-r1','geom-pr-r2','geom-pr-r3','geom-pr-r4','geom-pr-r5','geom-pr-r6','geom-pr-r7','geom-pr-r8','geom-pr-r9','geom-pr-r10'] },
+    { nombre:'Rectas', ids:['geom-pr-r1','geom-pr-r2','geom-pr-r3','geom-pr-r4','geom-pr-r5','geom-pr-r6','geom-pr-r7','geom-pr-r8','geom-pr-r9','geom-pr-r10','geom-pr-r11'] },
   ],
   calculo: [
     { nombre:'Inecuaciones', ids:['ineq-lin','ineq-cuad'] },
@@ -5667,8 +5673,10 @@ function eb_PR_r8(){const p1=eb_PR_rndPt(-7,7);const p2=eb_PR_rndPt(-7,7);if(p1[
 function eb_PR_r9(){const isQuad=rnd(0,1);let pts,name;if(!isQuad){pts=[eb_PR_rndPt(-6,6),eb_PR_rndPt(-6,6),eb_PR_rndPt(-6,6)];name='triángulo';}else{const cx=rnd(-3,3);const cy=rnd(-3,3);const r=rnd(2,5);pts=[[cx+r,cy],[cx,cy+r],[cx-r,cy],[cx,cy-r]];name='cuadrilátero';}const perim=eb_PR_polygonPerim(pts);const ptsStr=pts.map(function(p,i){return String.fromCharCode(65+i)+'('+p[0]+','+p[1]+')';}).join(', ');const graph=eb_PR_makeAxesSVG(pts,function(toSVG){return eb_PR_drawPolygon(toSVG,pts)+eb_PR_drawPts(toSVG,pts,pts.map(function(_,i){return String.fromCharCode(65+i);}));});return{expr:'Hallá el perímetro del '+name+' de vértices: '+ptsStr+'. Graficá.',sol:'Perímetro ≈ '+eb_PR_fmtN(perim)+' u',graph:graph,tema:'Perímetro de polígonos'};}
 function eb_PR_r10(){const A=eb_PR_rndPt(-6,6);const B=eb_PR_rndPt(-6,6);const C=eb_PR_rndPt(-6,6);if(A[0]===B[0]&&A[1]===B[1])return eb_PR_r10();const vertex=['A','B','C'][rnd(0,2)];let vPt,opp1,opp2,oppLabel;if(vertex==='A'){vPt=A;opp1=B;opp2=C;oppLabel='BC';}else if(vertex==='B'){vPt=B;opp1=A;opp2=C;oppLabel='AC';}else{vPt=C;opp1=A;opp2=B;oppLabel='AB';}const Mx=(opp1[0]+opp2[0])/2;const My=(opp1[1]+opp2[1])/2;if(!Number.isInteger(Mx)||!Number.isInteger(My))return eb_PR_r10();const medLen=eb_PR_dist(vPt,[Mx,My]);let eqMed;if(vPt[0]===Mx){eqMed='x = '+Mx;}else{const mm=eb_PR_slope(vPt,[Mx,My]);eqMed=eb_PR_lineExplicit(vPt[0],vPt[1],mm);}const M=[Mx,My];const graph=eb_PR_makeAxesSVG([A,B,C,M],function(toSVG){return eb_PR_drawPolygon(toSVG,[A,B,C],'rgba(79,110,247,0.06)','#4f6ef7')+eb_PR_drawSegment(toSVG,vPt,M,'#22c55e')+eb_PR_drawPts(toSVG,[A,B,C],['A','B','C'],'#4f6ef7')+eb_PR_drawPts(toSVG,[M],['M'],'#22c55e');});return{expr:'En el triángulo ABC con A('+A[0]+','+A[1]+'), B('+B[0]+','+B[1]+'), C('+C[0]+','+C[1]+').<br>Hallá la ecuación y longitud de la mediana relativa al lado '+oppLabel+'. Graficá.',sol:'M'+oppLabel+' = ('+Mx+','+My+') | Ecuación: '+eqMed+' | Longitud ≈ '+eb_PR_fmtN(medLen)+' u',graph:graph,tema:'Mediana relativa'};}
 
+function eb_PR_r11(){var m1=rnd(-4,4);if(m1===0)return eb_PR_r11();var m2;do{m2=rnd(-4,4);}while(m2===0||m2===m1||1+m1*m2===0);var p1=eb_PR_rndPt(-3,3);var p2=eb_PR_rndPt(-3,3);var tanTheta=Math.abs((m1-m2)/(1+m1*m2));var thetaDeg=Math.atan(tanTheta)*180/Math.PI;var nd1=eb_PR_slopeAsFrac(m1);var nd2=eb_PR_slopeAsFrac(m2);var slope1Str=nd1[1]===1?String(nd1[0]):(nd1[0]+'/'+nd1[1]);var slope2Str=nd2[1]===1?String(nd2[0]):(nd2[0]+'/'+nd2[1]);var A1=m1;var B1=-1;var C1=p1[1]-m1*p1[0];var A2=m2;var B2=-1;var C2=p2[1]-m2*p2[0];var eq1=eb_PR_formatLineEq(A1,B1,C1);var eq2=eb_PR_formatLineEq(A2,B2,C2);var graph=eb_PR_makeAxesSVG([p1,p2],function(toSVG){return eb_PR_drawLine(toSVG,m1,p1[0],p1[1],'#f97316')+eb_PR_drawLine(toSVG,m2,p2[0],p2[1],'#4f6ef7')+eb_PR_drawPts(toSVG,[p1],['P'],'#f97316')+eb_PR_drawPts(toSVG,[p2],['Q'],'#4f6ef7');});return{expr:'Determiná el ángulo agudo que forman las rectas:<br>L₁: '+eq1+' &nbsp;&nbsp; L₂: '+eq2,sol:'tan(θ) = |( '+slope1Str+' − '+slope2Str+' ) / ( 1 + '+slope1Str+'·'+slope2Str+' )| ≈ '+eb_PR_fmtN(tanTheta)+' → θ ≈ '+eb_PR_fmtN(thetaDeg)+'°',graph:graph,tema:'Ángulo entre dos rectas'};}
+
 // ─── Dispatcher del CATALOG ───
-const EB_PR_GENS={p1:eb_PR_p1,p2:eb_PR_p2,p3:eb_PR_p3,p4:eb_PR_p4,p5:eb_PR_p5,r1:eb_PR_r1,r2:eb_PR_r2,r3:eb_PR_r3,r4:eb_PR_r4,r5:eb_PR_r5,r6:eb_PR_r6,r7:eb_PR_r7,r8:eb_PR_r8,r9:eb_PR_r9,r10:eb_PR_r10};
+const EB_PR_GENS={p1:eb_PR_p1,p2:eb_PR_p2,p3:eb_PR_p3,p4:eb_PR_p4,p5:eb_PR_p5,r1:eb_PR_r1,r2:eb_PR_r2,r3:eb_PR_r3,r4:eb_PR_r4,r5:eb_PR_r5,r6:eb_PR_r6,r7:eb_PR_r7,r8:eb_PR_r8,r9:eb_PR_r9,r10:eb_PR_r10,r11:eb_PR_r11};
 function eb_PRgen(key){
   try{
     const fn=EB_PR_GENS[key];
