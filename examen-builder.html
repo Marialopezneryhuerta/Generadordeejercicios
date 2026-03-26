@@ -1409,14 +1409,24 @@ function eb_getCapacidadHTML(tema) {
   }
 
   if (rama === 'geometria') {
-    var usaPR = ids.some(function(id){ return /^geom-pr-/.test(id); });
-    if (usaPR) return capBox(
+    var usaPuntos = ids.some(function(id){ return /^geom-pr-p/.test(id) || id === 'geom-pr-r4'; });
+    var usaRectas = ids.some(function(id){ return /^geom-pr-r/.test(id) && id !== 'geom-pr-r4'; });
+    var result = '';
+    if (usaPuntos) result += capBox(
       'Formula y resuelve problemas referidos a situaciones de la vida real, que impliquen el cálculo de:',
       ['Distancia entre dos puntos',
        'Punto medio',
        'Pendiente y ángulo de inclinación',
        'Paralelismo y perpendicularidad']
     );
+    if (usaRectas) result += capBox(
+      'Resuelve situaciones problemáticas que requieran de la utilización de las ecuaciones de la recta.',
+      ['Ecuación de la recta: general o implícita, explícita, segmentaria, ecuación punto pendiente',
+       'Representación gráfica de la recta. Puntos de intersección con los ejes coordenados',
+       'Intersección entre rectas',
+       'Mediana relativa']
+    );
+    if (result) return result;
   }
 
   return ''; // otras ramas: sin cap-box

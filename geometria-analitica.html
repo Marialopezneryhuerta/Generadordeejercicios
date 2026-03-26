@@ -687,6 +687,23 @@ function gaGetCapacidadHTML() {
   '</div>';
 }
 
+function gaGetCapacidadRectasHTML() {
+  const widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Resuelve situaciones problemáticas que requieran de la utilización de las ecuaciones de la recta.' +
+      '<ul>' +
+        '<li>Ecuación de la recta: general o implícita, explícita, segmentaria, ecuación punto pendiente</li>' +
+        '<li>Representación gráfica de la recta. Puntos de intersección con los ejes coordenados</li>' +
+        '<li>Intersección entre rectas</li>' +
+        '<li>Mediana relativa</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
 const CAP_PRINT_CSS =
   '  .cap-box { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\\n' +
   '  .cap-box-header { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }\\n' +
@@ -2683,7 +2700,8 @@ function generateRectas() {
         <span>Nombre: ____________________________</span>
         <span>Curso: _____________ Fecha: _____________</span>
       </div>
-      ${gaGetCapacidadHTML()}
+      ${['p1','p2','p3','p4','p5','r4'].some(k => recQtys[k] > 0) ? gaGetCapacidadHTML() : ''}
+      ${['r1','r2','r3','r5','r6','r7','r8','r9','r10'].some(k => recQtys[k] > 0) ? gaGetCapacidadRectasHTML() : ''}
       ${indGetTablaHTML('ind-filas')}
     </div>
     ${ejHTML}
