@@ -2146,6 +2146,21 @@ const CAP_PRINT_CSS =
   '  .cap-box-body ul { margin: 0.25rem 0 0 1.2rem; padding: 0; }\n' +
   '  .cap-box-body ul li { margin-bottom: 0.15rem; }\n';
 
+function introGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Utiliza el vocabulario y la notaci\u00f3n algebraicos adecuados al contexto. Reconoce la utilidad de los procedimientos algebraicos para la obtenci\u00f3n de soluciones adecuadas al contexto.' +
+      '<ul>' +
+        '<li>Utiliza el vocabulario y la notaci\u00f3n algebraicos adecuados al contexto.</li>' +
+        '<li>Reconoce la utilidad de los procedimientos algebraicos para la obtenci\u00f3n de soluciones adecuadas al contexto.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
 function eqIdGetCapacidadHTML() {
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
@@ -5351,6 +5366,7 @@ function generateIntro() {
         <span>Nombre: ____________________________</span>
         <span>Curso: _____________ &nbsp; Fecha: _____________</span>
       </div>
+      ${introGetCapacidadHTML()}
       ${indGetTablaHTML('ind-filas')}
     </div>
     ${allHTML}

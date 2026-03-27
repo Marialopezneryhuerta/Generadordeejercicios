@@ -3087,7 +3087,7 @@ function generateSP() {
 const RAC_TOPICS = [
   { id:'sr', icon:'➕', color:'#f0fdf4', desc:['Mismo denominador','Distinto denominador','Expresiones mixtas + simplificación'], descDec:['Dos decimales exactos','Hasta 4 decimales exactos','Decimal exacto + periódico'] },
   { id:'mu', icon:'✖', color:'#fff7ed', desc:['2 factores','3 factores','4+ factores, potencias de fracción'] },
-  { id:'dv', icon:'➗', color:'#faf5ff', desc:['División exacta (resultado fracción simple)','División encadenada','Divisiones con expresiones mixtas'] },
+  { id:'dv', icon:'➗', color:'#faf5ff', desc:['División entre propias, impropias y enteros','División entre fracciones mixtas','Combinadas (mezcla de niveles 1 y 2)'] },
   { id:'po', icon:'🔺', color:'#fdf2f8', desc:['Potencia simple (exp. entero positivo)','Producto/cociente misma base','Potencia de fracción al cuadrado/cubo'], descDec:['Base decimal con signo, exp. 2 o 3','Propiedades: mult. y div. igual base','Potencia de potencia (aⁿ)ᵐ'] },
   { id:'ra', icon:'√',  color:'#eef1ff', desc:['Raíz cuadrada de fracción perfecta','Raíz de fracción con simplificación','Operaciones con radicales de fracciones'] },
   { id:'cs', icon:'🔣', color:'#fff7ed', desc:['Fracciones propias simples + decimales exactos','Fracciones impropias + decimales periódicos','Números mixtos + todo mezclado'] },
@@ -3097,7 +3097,7 @@ const RAC_LEVEL_LABELS = {
   sr:{1:'Nivel 1 — Mismo denom.',2:'Nivel 2 — Distinto denom.',3:'Nivel 3 — Expresiones mixtas'},
   srDec:{1:'Nivel 1 — Dos decimales exactos',2:'Nivel 2 — Hasta 4 decimales exactos',3:'Nivel 3 — Exacto + periódico'},
   mu:{1:'Nivel 1 — 2 factores',2:'Nivel 2 — 3 factores',3:'Nivel 3 — 4+ factores'},
-  dv:{1:'Nivel 1 — División exacta',2:'Nivel 2 — División encadenada',3:'Nivel 3 — Expresiones mixtas'},
+  dv:{1:'Nivel 1 — Propias, impropias y enteros',2:'Nivel 2 — Fracciones mixtas',3:'Nivel 3 — Combinadas'},
   po:{1:'Nivel 1 — Potencia simple',2:'Nivel 2 — Misma base',3:'Nivel 3 — Potencia de fracción'},
   poDec:{1:'Nivel 1 — Potencia simple (con negativos)',2:'Nivel 2 — Propiedades: mult. y div. igual base',3:'Nivel 3 — Potencia de potencia'},
   ra:{1:'Nivel 1 — Raíz cuadrada exacta',2:'Nivel 2 — Simplificación',3:'Nivel 3 — Operaciones'},
@@ -3459,10 +3459,50 @@ function rac_genSR(lvl){
   const ra=randRat(true),rb=randRat(true),rc=randRat(false);const op1=rnd(0,1)?'+':'−',op2=rnd(0,1)?'+':'−';const r1=op1==='+'?addF(ra.f,rb.f):subF(ra.f,rb.f);const resF=op2==='+'?addF(r1,rc.f):subF(r1,rc.f);return{expr:`${ra.disp} ${op1} ${rb.disp} ${op2} ${rc.disp} =`,sol:solFrac(resF),lvl};
 }
 function rac_genMU(lvl){const n=lvl===1?2:lvl===2?3:rnd(4,5);const rats=Array.from({length:n},()=>randRat(lvl===3));const resF=rats.reduce((acc,r)=>mulF(acc,r.f),mkF(1,1));return{expr:rats.map(r=>r.disp).join(' · ')+' =',sol:solFrac(resF),lvl};}
+// Genera una fraccion propia o impropia (sin parte entera) o un entero
+function dvRandSimple(){
+  var tipo=rnd(0,2);
+  if(tipo===0){// propia: n < d
+    var d=rnd(2,9);var n=rnd(1,d-1);var neg=rnd(0,2)===0;var f=mkF(neg?-n:n,d);return{disp:fracStr(f),f};}
+  if(tipo===1){// impropia: n > d
+    var d2=rnd(2,8);var n2=rnd(d2+1,d2*3);var neg2=rnd(0,2)===0;var f2=mkF(neg2?-n2:n2,d2);return{disp:fracStr(f2),f:f2};}
+  // entero
+  var e=rnd(2,9);var neg3=rnd(0,2)===0;var fe=mkF(neg3?-e:e,1);return{disp:String(neg3?-e:e),f:fe};
+}
+// Genera una fraccion mixta con parte entera (ej: 2 3/5)
+function dvRandMixta(){
+  var whole=rnd(1,4);var d=rnd(2,7);var n=rnd(1,d-1);var neg=rnd(0,2)===0;
+  var totalN=whole*d+n;var f=mkF(neg?-totalN:totalN,d);
+  var fracPart=mkF(n,d);
+  return{disp:mixedDisp(neg?-whole:whole,fracPart),f};
+}
 function rac_genDV(lvl){
-  if(lvl===1){const a=randRat(false),b=randPosRat();if(b.f.n===0)return rac_genDV(lvl);return{expr:`${a.disp} ÷ ${b.disp} =`,sol:solFrac(divF(a.f,b.f)),lvl};}
-  if(lvl===2){const a=randRat(false),b=randPosRat(),c=randPosRat();if(b.f.n===0||c.f.n===0)return rac_genDV(lvl);return{expr:`${a.disp} ÷ ${b.disp} ÷ ${c.disp} =`,sol:solFrac(divF(divF(a.f,b.f),c.f)),lvl};}
-  const a=randRat(true),b=randRat(false),c=randPosRat();if(c.f.n===0)return rac_genDV(lvl);return{expr:`(${a.disp} + ${b.disp}) ÷ ${c.disp} =`,sol:solFrac(divF(addF(a.f,b.f),c.f)),lvl};
+  // Nivel 1: solo propias, impropias y enteros
+  if(lvl===1){
+    var a=dvRandSimple(),b=dvRandSimple();
+    if(b.f.n===0)return rac_genDV(lvl);
+    return{expr:a.disp+' \u00f7 '+b.disp+' =',sol:solFrac(divF(a.f,b.f)),lvl};
+  }
+  // Nivel 2: al menos una mixta en cada division
+  if(lvl===2){
+    var useMixA=rnd(0,1);
+    var a2=useMixA?dvRandMixta():dvRandSimple();
+    var b2=(!useMixA||rnd(0,1))?dvRandMixta():dvRandSimple();
+    if(b2.f.n===0)return rac_genDV(lvl);
+    return{expr:a2.disp+' \u00f7 '+b2.disp+' =',sol:solFrac(divF(a2.f,b2.f)),lvl};
+  }
+  // Nivel 3: combinadas — mezcla libre de simples y mixtas
+  var pool3=[dvRandSimple,dvRandMixta];
+  var a3=pool3[rnd(0,1)]();
+  var b3=pool3[rnd(0,1)]();
+  if(b3.f.n===0)return rac_genDV(lvl);
+  // a veces cadena de 3
+  if(rnd(0,1)){
+    var c3=pool3[rnd(0,1)]();
+    if(c3.f.n===0)return rac_genDV(lvl);
+    return{expr:a3.disp+' \u00f7 '+b3.disp+' \u00f7 '+c3.disp+' =',sol:solFrac(divF(divF(a3.f,b3.f),c3.f)),lvl};
+  }
+  return{expr:a3.disp+' \u00f7 '+b3.disp+' =',sol:solFrac(divF(a3.f,b3.f)),lvl};
 }
 // Generador de Potenciación de DECIMALES (modo dec)
 // N1: base decimal con signo (pos o neg), exponente 2 o 3

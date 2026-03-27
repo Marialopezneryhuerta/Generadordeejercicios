@@ -1434,7 +1434,13 @@ function eb_getCapacidadHTML(tema) {
     var usaSuc   = ids.some(function(id){ return /^suc-/.test(id); });
     var usaPa    = ids.some(function(id){ return /^pa-/.test(id); });
     var usaRad   = ids.some(function(id){ return /^rad-/.test(id) || /^ef-/.test(id); });
+    var usaIntro = ids.some(function(id){ return /^intro-/.test(id); });
     var result = '';
+    if (usaIntro) result += capBox(
+      'Utiliza el vocabulario y la notación algebraicos adecuados al contexto. Reconoce la utilidad de los procedimientos algebraicos para la obtención de soluciones adecuadas al contexto.',
+      ['Utiliza el vocabulario y la notación algebraicos adecuados al contexto.',
+       'Reconoce la utilidad de los procedimientos algebraicos para la obtención de soluciones adecuadas al contexto.']
+    );
     if (usaEcExp || usaEcLog) result += capBox(
       'Resuelve situaciones en las que intervienen identidades y ecuaciones.',
       ['Identidades trigonométricas.',
