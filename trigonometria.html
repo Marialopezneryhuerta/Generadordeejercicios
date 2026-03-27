@@ -1138,6 +1138,22 @@ function convGetCapacidadHTML() {
 }
 
 
+function fmGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Aplica fórmulas trigonométricas en el cálculo de funciones trigonométricas de distintos valores de ángulos.' +
+      '<ul>' +
+        '<li>Seno, coseno y tangente de la suma y diferencia de ángulos.</li>' +
+        '<li>Seno, coseno y tangente del doble de un ángulo.</li>' +
+        '<li>Seno, coseno y tangente de la mitad de un ángulo.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
 function trigGetCapacidadHTML() {
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
@@ -1164,6 +1180,23 @@ function triOblGetCapacidadHTML() {
       '<ul>' +
         '<li>Teorema del seno.</li>' +
         '<li>Teorema del coseno.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
+function eqIdGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Resuelve situaciones en las que intervienen identidades y ecuaciones.' +
+      '<ul>' +
+        '<li>Identidades trigonométricas.</li>' +
+        '<li>Ecuaciones trigonométricas.</li>' +
+        '<li>Ecuaciones exponenciales.</li>' +
+        '<li>Ecuaciones logarítmicas.</li>' +
       '</ul>' +
     '</div>' +
   '</div>';
@@ -1230,6 +1263,7 @@ function renderEjercitario(ejercicios, containerId, titulo) {
         <span>Curso: ____________</span>
         <span>Fecha: ____________</span>
       </div>
+      ${eqIdGetCapacidadHTML()}
       ${indGetTablaHTML('ind-filas')}
     </div>
     <div class="ejercicios-grid">${exprHTML}</div>
@@ -3168,6 +3202,7 @@ function generateFormulas() {
         <span>Curso: _____________</span>
         <span>Fecha: _____________</span>
       </div>
+      ${fmGetCapacidadHTML()}
     </div>
     ${ejHTML}
     ${solHTML}
@@ -3449,6 +3484,7 @@ function generateFormulasRad() {
         <span>Curso: _____________</span>
         <span>Fecha: _____________</span>
       </div>
+      ${fmGetCapacidadHTML()}
     </div>
     ${ejHTML}
     ${solHTML}
@@ -3733,6 +3769,7 @@ function renderIdentidades(ejercicios, containerId, titulo) {
         '<span>Curso: ____________</span>' +
         '<span>Fecha: ____________</span>' +
       '</div>' +
+      eqIdGetCapacidadHTML() +
       indGetTablaHTML('ind-filas') +
     '</div>' +
     '<div class="ejercicios-grid" style="grid-template-columns:1fr">' + exprHTML + '</div>' +

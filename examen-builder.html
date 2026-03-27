@@ -1258,6 +1258,8 @@ const CATALOG = {
       { id:'trig-id1', label:'Identidades Trigonométricas Niv.1', niveles:[1], gen:()=>eb_idGen(1) },
       { id:'trig-id2', label:'Identidades Trigonométricas Niv.2', niveles:[2], gen:()=>eb_idGen(2) },
       { id:'trig-id3', label:'Identidades Trigonométricas Niv.3', niveles:[3], gen:()=>eb_idGen(3) },
+      { id:'trig-fmsd1', label:'Fórmulas: Suma/Diferencia Niv.1', niveles:[1], gen:()=>eb_fmSdGen(1) },
+      { id:'trig-fmsd2', label:'Fórmulas: Suma/Diferencia Niv.2', niveles:[2], gen:()=>eb_fmSdGen(2) },
       { id:'trig-fmad1', label:'Fórmulas: Arco Doble Niv.1', niveles:[1], gen:()=>eb_fmAdGen(1) },
       { id:'trig-fmad2', label:'Fórmulas: Arco Doble Niv.2', niveles:[2], gen:()=>eb_fmAdGen(2) },
       { id:'trigrect-1', label:'Func.Trig.Rect. Niv.1 — Tres lados dados', niveles:[1], gen:()=>eb_TR_gen(1) },
@@ -1387,10 +1389,20 @@ function eb_getCapacidadHTML(tema) {
     var usaTR      = ids.some(function(id){ return /^trigrect-/.test(id); });
     var usaFFC     = ids.some(function(id){ return /^ffc-/.test(id); });
     var usaConvArc = ids.some(function(id){ return /^conv-|^arc-/.test(id); });
+    var usaFmSD    = ids.some(function(id){ return /^trig-fmsd/.test(id); });
+    var usaFmAD    = ids.some(function(id){ return /^trig-fmad/.test(id); });
+    var usaTrigEC  = ids.some(function(id){ return id === 'trig-ec'; });
+    var usaTrigID  = ids.some(function(id){ return /^trig-id/.test(id); });
 
     // Si solo un grupo tiene capacidad → mostrar esa capacidad
     // Si varios → mostrar la más abarcadora o combinar
     var caps = [];
+    if (usaFmSD || usaFmAD) caps.push(capBox(
+      'Aplica fórmulas trigonométricas en el cálculo de funciones trigonométricas de distintos valores de ángulos.',
+      ['Seno, coseno y tangente de la suma y diferencia de ángulos.',
+       'Seno, coseno y tangente del doble de un ángulo.',
+       'Seno, coseno y tangente de la mitad de un ángulo.']
+    ));
     if (usaTriObl) caps.push(capBox(
       'Formula y resuelve problemas que involucren la utilización de triángulos oblicuángulos.',
       ['Teorema del seno.', 'Teorema del coseno.']
@@ -1406,7 +1418,55 @@ function eb_getCapacidadHTML(tema) {
       'Utiliza la relación existente entre los sistemas de medidas de ángulos según se requiera.',
       ['Sistema sexagesimal.', 'Sistema circular o radián.']
     ));
+    if (usaTrigEC || usaTrigID) caps.push(capBox(
+      'Resuelve situaciones en las que intervienen identidades y ecuaciones.',
+      ['Identidades trigonométricas.',
+       'Ecuaciones trigonométricas.',
+       'Ecuaciones exponenciales.',
+       'Ecuaciones logarítmicas.']
+    ));
     if (caps.length > 0) return caps.join('');
+  }
+
+  if (rama === 'algebra') {
+    var usaEcExp = ids.some(function(id){ return /^ec-exp/.test(id); });
+    var usaEcLog = ids.some(function(id){ return id === 'ec-log'; });
+    var usaSuc   = ids.some(function(id){ return /^suc-/.test(id); });
+    var usaPa    = ids.some(function(id){ return /^pa-/.test(id); });
+    var usaRad   = ids.some(function(id){ return /^rad-/.test(id) || /^ef-/.test(id); });
+    var result = '';
+    if (usaEcExp || usaEcLog) result += capBox(
+      'Resuelve situaciones en las que intervienen identidades y ecuaciones.',
+      ['Identidades trigonométricas.',
+       'Ecuaciones trigonométricas.',
+       'Ecuaciones exponenciales.',
+       'Ecuaciones logarítmicas.']
+    );
+    if (usaSuc) result += capBox(
+      'Analiza sucesiones presentes en conjuntos estudiados.',
+      ['Sucesión. Concepto.',
+       'Clasificación: Creciente, decreciente, constante.',
+       'Término general.']
+    );
+    if (usaPa) result += capBox(
+      'Formula y resuelve situaciones problemáticas donde se apliquen conceptos de progresiones aritméticas y geométricas.',
+      ['Término n \u2013 ésimo.',
+       'Número de términos.',
+       'Razón.',
+       'Primer término.',
+       'Suma de \u201cn\u201d términos.']
+    );
+    if (usaRad) result += capBox(
+      'Aplica algoritmos y propiedades de las operaciones con radicales con expresiones algebraicas.',
+      ['Radicales con expresiones algebraicas: concepto, elementos. Propiedades. Signos de las raíces de una cantidad.',
+       'Expresiones algebraicas con exponentes fraccionarios.',
+       'Radicales semejantes.',
+       'Introducción y extracción de factores de un radical.',
+       'Reducción al mínimo común índice.',
+       'Algoritmos de las operaciones con radicales (del mismo índice y de índices diferentes) con expresiones algebraicas: adición, sustracción, multiplicación, división y potenciación.',
+       'Expresiones conjugadas. Racionalización denominadores (monomio y binomio).']
+    );
+    if (result) return result;
   }
 
   if (rama === 'geometria') {
@@ -1486,6 +1546,7 @@ const GRUPOS = {
     { nombre:'Ecuaciones Trigonométricas', ids:['trig-ec'] },
     { nombre:'Triángulos Oblicuángulos', ids:['tri-seno','tri-coseno','tri-ambas','tri-earea','tri-eperim','tri-pseno','tri-pcoseno','tri-pambas','tri-parea','tri-pperim'] },
     { nombre:'Identidades Trigonométricas', ids:['trig-id1','trig-id2','trig-id3'] },
+    { nombre:'Fórmulas: Suma y Diferencia', ids:['trig-fmsd1','trig-fmsd2'] },
     { nombre:'Fórmulas de Arco Doble', ids:['trig-fmad1','trig-fmad2'] },
     { nombre:'Func. Trig. en Triángulo Rectángulo', ids:['trigrect-1','trigrect-2','trigrect-3','trigrect-4','trigrect-5','trigrect-6','trigrect-7','trigrect-8','trigrect-9'] },
     { nombre:'Fórmulas Fundamentales', ids:['ffc-1','ffc-2','ffc-3'] },
@@ -3025,6 +3086,91 @@ function eb_idGen(lvl) {
     const item = idGenFromBank((banks[lvl] || banks[1])());
     if (!item) return null;
     return { ...item, steps: ['Verificar la identidad transformando un miembro hasta obtener el otro'] };
+  } catch(e) { return null; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FÓRMULAS: SUMA Y DIFERENCIA DE ÁNGULOS
+// ═══════════════════════════════════════════════════════════════════
+
+const SD_NOTABLE = {
+   0: { s: '0',       c: '1'       },
+  30: { s: '1/2',     c: '\u221a3/2'    },
+  45: { s: '\u221a2/2',    c: '\u221a2/2'    },
+  60: { s: '\u221a3/2',    c: '1/2'     },
+  90: { s: '1',       c: '0'       },
+};
+
+const SD_ANGULOS = [
+  { ang: 75,  descomp: [{ a:30, b:45, op:'+' }, { a:45, b:30, op:'+' }] },
+  { ang: 105, descomp: [{ a:60, b:45, op:'+' }, { a:45, b:60, op:'+' }] },
+  { ang: 15,  descomp: [{ a:45, b:30, op:'-' }, { a:60, b:45, op:'-' }] },
+];
+
+function eb_sdSenExact(deg) { return SD_NOTABLE[deg] ? SD_NOTABLE[deg].s : null; }
+function eb_sdCosExact(deg) { return SD_NOTABLE[deg] ? SD_NOTABLE[deg].c : null; }
+
+// ── SUMA Y DIFERENCIA — NIVEL 1: ángulos notables (ej. 75°=45°+30°) ──
+function fmGenSD1() {
+  const entry = SD_ANGULOS[rnd(0, SD_ANGULOS.length - 1)];
+  const func = rnd(0, 1) === 0 ? 'sen' : 'cos';
+  const { ang, descomp } = entry;
+  const { a, b, op } = descomp[rnd(0, descomp.length - 1)];
+  const sA = eb_sdSenExact(a), cA = eb_sdCosExact(a);
+  const sB = eb_sdSenExact(b), cB = eb_sdCosExact(b);
+  const opSign = op === '+' ? '+' : '\u2212';
+  const otrasStr = descomp.map(d => `${d.a}\u00b0${d.op === '+' ? '+' : '\u2212'}${d.b}\u00b0`).join(' \u00f3 ');
+  let expansion, sub, resultado;
+  if (func === 'sen') {
+    expansion = `sen(${a}\u00b0)\u00b7cos(${b}\u00b0) ${opSign} cos(${a}\u00b0)\u00b7sen(${b}\u00b0)`;
+    sub       = `${sA}\u00b7${cB} ${opSign} ${cA}\u00b7${sB}`;
+    resultado = SD_NOTABLE[ang] ? SD_NOTABLE[ang].s : sub;
+    return {
+      expr: `Calculá <strong>sen(${ang}\u00b0)</strong> descomponiendo el ángulo en dos ángulos notables y aplicando la fórmula de suma/diferencia.`,
+      sol:  `sen(${ang}\u00b0) = sen(${a}\u00b0${opSign}${b}\u00b0) = ${expansion} = ${sub} = ${resultado}`
+    };
+  } else {
+    const signCos = op === '+' ? '\u2212' : '+';
+    expansion = `cos(${a}\u00b0)\u00b7cos(${b}\u00b0) ${signCos} sen(${a}\u00b0)\u00b7sen(${b}\u00b0)`;
+    sub       = `${cA}\u00b7${cB} ${signCos} ${sA}\u00b7${sB}`;
+    resultado = SD_NOTABLE[ang] ? SD_NOTABLE[ang].c : sub;
+    return {
+      expr: `Calculá <strong>cos(${ang}\u00b0)</strong> descomponiendo el ángulo en dos ángulos notables y aplicando la fórmula de suma/diferencia.`,
+      sol:  `cos(${ang}\u00b0) = cos(${a}\u00b0${opSign}${b}\u00b0) = ${expansion} = ${sub} = ${resultado}`
+    };
+  }
+}
+
+// ── SUMA Y DIFERENCIA — NIVEL 2: ángulo notable ± x, expandir y simplificar ──
+function fmGenSD2() {
+  const notableAngs = [30, 45, 60, 90];
+  const a = notableAngs[rnd(0, notableAngs.length - 1)];
+  const op = rnd(0, 1) === 0 ? '+' : '\u2212';
+  const func = rnd(0, 1) === 0 ? 'sen' : 'cos';
+  const sA = eb_sdSenExact(a), cA = eb_sdCosExact(a);
+  const opSign = op;
+  const opSignInv = op === '+' ? '\u2212' : '+';
+  let expansion, simplified;
+  if (func === 'sen') {
+    expansion = `sen(${a}\u00b0)\u00b7cos(<em>x</em>) ${opSign} cos(${a}\u00b0)\u00b7sen(<em>x</em>)`;
+    simplified = `${sA}\u00b7cos(<em>x</em>) ${opSign} ${cA}\u00b7sen(<em>x</em>)`;
+    if (a === 90) { simplified = op === '+' ? `cos(<em>x</em>)` : `cos(<em>x</em>)`; }
+  } else {
+    expansion = `cos(${a}\u00b0)\u00b7cos(<em>x</em>) ${opSignInv} sen(${a}\u00b0)\u00b7sen(<em>x</em>)`;
+    simplified = `${cA}\u00b7cos(<em>x</em>) ${opSignInv} ${sA}\u00b7sen(<em>x</em>)`;
+    if (a === 90) { simplified = op === '+' ? `\u2212sen(<em>x</em>)` : `sen(<em>x</em>)`; }
+  }
+  return {
+    expr: `Expandí y simplificá: <strong>${func}(${a}\u00b0${op}<em>x</em>)</strong>`,
+    sol:  `${func}(${a}\u00b0${op}<em>x</em>) = ${expansion} = ${simplified}`
+  };
+}
+
+function eb_fmSdGen(lvl) {
+  try {
+    const item = lvl === 2 ? fmGenSD2() : fmGenSD1();
+    if (!item) return null;
+    return { ...item, steps: ['Identificar la fórmula de suma/diferencia aplicable', 'Sustituir los valores de ángulos notables', 'Simplificar'] };
   } catch(e) { return null; }
 }
 

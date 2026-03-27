@@ -486,6 +486,11 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
   overflow: hidden;
   margin-top: 0.8rem;
 }
+.cap-box { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }
+.cap-box-header { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.cap-box-body { padding: 0.45rem 0.6rem; font-size: 0.82rem; line-height: 1.5; }
+.cap-box-body ul { margin: 0.25rem 0 0 1.2rem; padding: 0; }
+.cap-box-body ul li { margin-bottom: 0.15rem; }
 
 /* ── Ocultar soluciones al imprimir si el checkbox está desmarcado ── */
 body[data-hide-sol] .soluciones-section,
@@ -2045,6 +2050,7 @@ function renderEjercitario(ejercicios, containerId, titulo) {
 
   const el = document.getElementById(containerId);
   const indTabla = indGetTablaHTML('ind-filas');
+  const capHTML = (titulo.includes('Exponencial') || titulo.includes('Logarítm')) ? eqIdGetCapacidadHTML() : '';
   el.innerHTML = `
     <div class="ej-header">
       <div class="ej-title">${titulo}</div>
@@ -2054,6 +2060,7 @@ function renderEjercitario(ejercicios, containerId, titulo) {
         <span>Curso: ____________</span>
         <span>Fecha: ____________</span>
       </div>
+      ${capHTML}
       ${indTabla}
     </div>
     <div class="ejercicios-grid">${exprHTML}</div>
@@ -2132,7 +2139,83 @@ const IND_PRINT_CSS =
   '  .ind-table td:last-child { text-align: center; font-weight: 700; }\n' +
   '  .ind-table tr:last-child td { border-bottom: none; }\n';
 
+const CAP_PRINT_CSS =
+  '  .cap-box { border: 1.5px solid #1a1a2e; border-radius: 6px; overflow: hidden; margin-top: 0.8rem; }\n' +
+  '  .cap-box-header { background: #1a1a2e; color: white; padding: 0.35rem 0.6rem; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }\n' +
+  '  .cap-box-body { padding: 0.45rem 0.6rem; font-size: 0.82rem; line-height: 1.5; }\n' +
+  '  .cap-box-body ul { margin: 0.25rem 0 0 1.2rem; padding: 0; }\n' +
+  '  .cap-box-body ul li { margin-bottom: 0.15rem; }\n';
 
+function eqIdGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Resuelve situaciones en las que intervienen identidades y ecuaciones.' +
+      '<ul>' +
+        '<li>Identidades trigonométricas.</li>' +
+        '<li>Ecuaciones trigonométricas.</li>' +
+        '<li>Ecuaciones exponenciales.</li>' +
+        '<li>Ecuaciones logarítmicas.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
+function sucGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Analiza sucesiones presentes en conjuntos estudiados.' +
+      '<ul>' +
+        '<li>Sucesión. Concepto.</li>' +
+        '<li>Clasificación: Creciente, decreciente, constante.</li>' +
+        '<li>Término general.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
+function paGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Formula y resuelve situaciones problem\u00e1ticas donde se apliquen conceptos de progresiones aritm\u00e9ticas y geom\u00e9tricas.' +
+      '<ul>' +
+        '<li>T\u00e9rmino n \u2013 \u00e9simo.</li>' +
+        '<li>N\u00famero de t\u00e9rminos.</li>' +
+        '<li>Raz\u00f3n.</li>' +
+        '<li>Primer t\u00e9rmino.</li>' +
+        '<li>Suma de \u201cn\u201d t\u00e9rminos.</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
+
+function radGetCapacidadHTML() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return '';
+  return '<div class="cap-box">' +
+    '<div class="cap-box-header">Capacidad</div>' +
+    '<div class="cap-box-body">' +
+      'Aplica algoritmos y propiedades de las operaciones con radicales con expresiones algebraicas.' +
+      '<ul>' +
+        '<li>Radicales con expresiones algebraicas: concepto, elementos. Propiedades. Signos de las ra\u00edces de una cantidad.</li>' +
+        '<li>Expresiones algebraicas con exponentes fraccionarios.</li>' +
+        '<li>Radicales semejantes.</li>' +
+        '<li>Introducci\u00f3n y extracci\u00f3n de factores de un radical.</li>' +
+        '<li>Reducci\u00f3n al m\u00ednimo com\u00fan \u00edndice.</li>' +
+        '<li>Algoritmos de las operaciones con radicales (del mismo \u00edndice y de \u00edndices diferentes) con expresiones algebraicas: adici\u00f3n, sustracci\u00f3n, multiplicaci\u00f3n, divisi\u00f3n y potenciaci\u00f3n.</li>' +
+        '<li>Expresiones conjugadas. Racionalizaci\u00f3n denominadores (monomio y binomio).</li>' +
+      '</ul>' +
+    '</div>' +
+  '</div>';
+}
 
 // ── Recopilar nodos de solución para la hoja aparte ──────────────────────────
 function collectSolutionNodes(container) {
@@ -2363,7 +2446,8 @@ function getEjercitarioPDFCss() {
     '.ej-equation{font-family:Georgia,serif;font-size:1.05rem;font-weight:bold;margin:.4rem 0}',
     '.ej-steps{font-size:.88rem;color:#555;margin-top:.3rem;line-height:1.7}',
     '.tri-item{margin-bottom:1.5rem;page-break-inside:avoid}',
-    IND_PRINT_CSS
+    IND_PRINT_CSS,
+    CAP_PRINT_CSS
   ].join('');
 }
 function ejGenerarPDF(wrapper, filename) { /* no longer used */ }
@@ -8160,7 +8244,10 @@ function generateRadicales(){
     '<div class="ej-title">'+RAD_TITLES[op]+'</div>'+
     '<div class="ej-meta"></div>'+
     '<div class="ej-data-row"><span>Nombre: ____________________________</span>'+
-    '<span>Curso: _____________  Fecha: _____________</span></div></div>'+
+    '<span>Curso: _____________  Fecha: _____________</span></div>'+
+    radGetCapacidadHTML()+
+    indGetTablaHTML('ind-filas')+
+    '</div>'+
     ejHTML+solHTML;
   el.classList.add('visible');
   document.getElementById('rad-btnDownload').style.display='block';
@@ -8302,8 +8389,20 @@ function sucEncabezado(titulo, total) {
     '<div class="ej-title">' + titulo + '</div>' +
     '<div class="ej-meta"></div>' +
     '<div class="ej-data-row"><span>Nombre: ____________________________</span>' +
-    '<span>Curso: _____________&nbsp;&nbsp;Fecha: _____________</span></div></div>';
+    '<span>Curso: _____________&nbsp;&nbsp;Fecha: _____________</span></div>' +
+    sucGetCapacidadHTML() +
+    '</div>';
 }
+function paEncabezado(titulo) {
+  return '<div class="ej-header">' +
+    '<div class="ej-title">' + titulo + '</div>' +
+    '<div class="ej-meta"></div>' +
+    '<div class="ej-data-row"><span>Nombre: ____________________________</span>' +
+    '<span>Curso: _____________&nbsp;&nbsp;Fecha: _____________</span></div>' +
+    paGetCapacidadHTML() +
+    '</div>';
+}
+
 function sucRender(containerId, downloadBtnId, titulo, ejHTML, solHTML) {
   var el = document.getElementById(containerId);
   el.innerHTML = sucEncabezado(titulo, '') + ejHTML + solHTML +
@@ -8820,8 +8919,8 @@ function paProbChg(n, d) {
 // ── Render helper ──
 function paRender(containerId, downloadBtnId, titulo, ejHTML, solHTML) {
   var el = document.getElementById(containerId);
-  el.innerHTML = sucEncabezado(titulo, '') + ejHTML + solHTML +
-    '<div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  el.innerHTML = paEncabezado(titulo) + ejHTML + solHTML +
+    '<div class="ej-copyright">\u00a9 2026 Maria Lopez Nery Huerta</div>';
   el.classList.add('visible');
   document.getElementById(downloadBtnId).style.display = 'block';
   el.scrollIntoView({behavior:'smooth', block:'start'});
