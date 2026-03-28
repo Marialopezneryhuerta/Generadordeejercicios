@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { createUser, findByEmail, findById } = require("../store/usersStore");
+const { createUserUnique, findByEmail, findById } = require("../store/usersStore");
 const { authRequired } = require("../middleware/auth");
 
 const router = express.Router();
@@ -57,17 +57,16 @@ router.post("/register", async (req, res) => {
     return res.status(400).json({ error: "El password debe tener al menos 8 caracteres" });
   }
 
-  const existing = await findByEmail(email);
-  if (existing) {
-    return res.status(409).json({ error: "Ya existe una cuenta con ese email" });
-  }
-
   const passwordHash = await bcrypt.hash(password, 12);
-  const user = await createUser({
+  const result = await createUserUnique({
     name: name.trim(),
     email: email.trim(),
     passwordHash
   });
+  if (!result.created) {
+    return res.status(409).json({ error: "Ya existe una cuenta con ese email" });
+  }
+  const user = result.user;
 
   const token = signToken(user);
   res.cookie(COOKIE_NAME, token, cookieOptions());

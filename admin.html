@@ -128,6 +128,23 @@
       flex-wrap: wrap;
     }
 
+    .topbar-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-soft {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
     .total {
       font-size: 0.86rem;
       font-weight: 700;
@@ -196,7 +213,10 @@
 
       <div class="topbar">
         <span class="total" id="total">Total: 0</span>
-        <a href="/index.html">Volver al inicio</a>
+        <div class="topbar-actions">
+          <button class="btn-soft" id="btn-dedupe" type="button">Limpiar duplicados</button>
+          <a href="/index.html">Volver al inicio</a>
+        </div>
       </div>
 
       <div class="table-wrap">
@@ -225,6 +245,7 @@
     const statusEl = document.getElementById("status");
     const totalEl = document.getElementById("total");
     const bodyEl = document.getElementById("users-body");
+    const btnDedupe = document.getElementById("btn-dedupe");
     let users = [];
 
     function setStatus(type, text) {
@@ -290,6 +311,31 @@
         users = data.users || [];
         renderRows();
         setStatus("ok", "Usuarios cargados correctamente.");
+      } catch (error) {
+        setStatus("error", error.message);
+      }
+    });
+
+    btnDedupe.addEventListener("click", async () => {
+      clearStatus();
+      const adminKey = keyInput.value.trim();
+      if (!adminKey) {
+        setStatus("error", "Escribi tu clave admin primero.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/admin/users/deduplicate", {
+          method: "POST",
+          headers: { "x-admin-key": adminKey }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.error || "No se pudo limpiar duplicados.");
+        }
+
+        setStatus("ok", "Duplicados eliminados: " + data.removed + ".");
+        btnLoad.click();
       } catch (error) {
         setStatus("error", error.message);
       }

@@ -250,7 +250,13 @@
     document.getElementById("form-register").addEventListener("submit", async (event) => {
       event.preventDefault();
       clearStatus();
-      const formData = new FormData(event.currentTarget);
+      const form = event.currentTarget;
+      const submitBtn = form.querySelector("button[type='submit']");
+      if (submitBtn.disabled) return;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creando...";
+
+      const formData = new FormData(form);
       const payload = Object.fromEntries(formData.entries());
 
       try {
@@ -258,6 +264,9 @@
         setStatus("ok", "Cuenta creada. Bienvenida/o, " + data.user.name + ".");
       } catch (error) {
         setStatus("error", error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Crear cuenta";
       }
     });
 

@@ -4,6 +4,7 @@ const crypto = require("node:crypto");
 
 const DATA_DIR = path.resolve(__dirname, "..", "..", "data");
 const USERS_FILE = path.join(DATA_DIR, "users.json");
+let writeQueue = Promise.resolve();
 
 async function ensureStorage() {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -61,9 +62,72 @@ async function listUsers() {
   return users;
 }
 
+function withWriteLock(task) {
+  const run = writeQueue.then(task);
+  writeQueue = run.catch(() => {});
+  return run;
+}
+
+async function createUserUnique({ name, email, passwordHash }) {
+  return withWriteLock(async () => {
+    const users = await readUsers();
+    const normalizedEmail = email.toLowerCase();
+    const existing = users.find((user) => user.email.toLowerCase() === normalizedEmail);
+
+    if (existing) {
+      return { created: false, user: existing };
+    }
+
+    const now = new Date().toISOString();
+    const newUser = {
+      id: crypto.randomUUID(),
+      name,
+      email: normalizedEmail,
+      passwordHash,
+      role: "user",
+      subscriptionStatus: "free",
+      createdAt: now,
+      updatedAt: now
+    };
+
+    users.push(newUser);
+    await writeUsers(users);
+
+    return { created: true, user: newUser };
+  });
+}
+
+async function deduplicateUsersByEmail() {
+  return withWriteLock(async () => {
+    const users = await readUsers();
+    const map = new Map();
+    let removed = 0;
+
+    // Conserva el usuario mas antiguo por email.
+    const sorted = [...users].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    for (const user of sorted) {
+      const key = user.email.toLowerCase();
+      if (!map.has(key)) {
+        map.set(key, user);
+      } else {
+        removed += 1;
+      }
+    }
+
+    const deduped = Array.from(map.values());
+    if (removed > 0) {
+      await writeUsers(deduped);
+    }
+
+    return { removed, total: deduped.length };
+  });
+}
+
 module.exports = {
   findByEmail,
   findById,
   createUser,
-  listUsers
+  listUsers,
+  createUserUnique,
+  deduplicateUsersByEmail
 };

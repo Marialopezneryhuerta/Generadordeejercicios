@@ -4,7 +4,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth");
-const { listUsers } = require("./store/usersStore");
+const { listUsers, deduplicateUsersByEmail } = require("./store/usersStore");
 
 dotenv.config();
 
@@ -51,6 +51,19 @@ app.get("/api/admin/users", async (req, res) => {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return res.status(200).json({ users: safeUsers, total: safeUsers.length });
+});
+
+app.post("/api/admin/users/deduplicate", async (req, res) => {
+  if (!adminKey) {
+    return res.status(503).json({ error: "ADMIN_DASHBOARD_KEY no configurada en el servidor" });
+  }
+
+  if (req.headers["x-admin-key"] !== adminKey) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  const result = await deduplicateUsersByEmail();
+  return res.status(200).json(result);
 });
 
 app.use(express.static(rootDir));

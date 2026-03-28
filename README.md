@@ -54,6 +54,7 @@ Servidor en:
 - `GET /api/auth/me`
 - `POST /api/auth/logout`
 - `GET /api/admin/users` (requiere header `x-admin-key`)
+- `POST /api/admin/users/deduplicate` (requiere header `x-admin-key`)
 - `GET /api/health`
 
 ## Nota de arquitectura
