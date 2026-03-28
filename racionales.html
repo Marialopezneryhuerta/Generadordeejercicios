@@ -373,9 +373,16 @@ function switchTopic(t) {
   document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('topic-' + t).classList.add('active');
-  document.getElementById('panel-' + t).classList.add('active');
-  const widget = document.getElementById('ind-widget');
-  if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+  var panel = document.getElementById('panel-' + t);
+  panel.classList.add('active');
+  // Mover widget de indicadores justo antes del primer btn-generate del panel activo
+  var widget = document.getElementById('ind-widget');
+  if (widget) {
+    var firstBtn = panel.querySelector('.btn-generate');
+    if (firstBtn) firstBtn.parentNode.insertBefore(widget, firstBtn);
+    widget.style.display = 'block';
+    indInicializar('ind-filas');
+  }
 }
 
 const STATE = {};
@@ -431,6 +438,18 @@ function indInicializar(containerId) {
   if (!wrap || wrap.children.length > 0) return;
   indAgregar(containerId);
   indAgregar(containerId);
+}
+
+// Mueve el widget antes del primer btn-generate del panel activo y lo muestra
+function indMoverYMostrar() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget) return;
+  var panelActivo = document.querySelector('.section-panel.active');
+  if (panelActivo) {
+    var firstBtn = panelActivo.querySelector('.btn-generate');
+    if (firstBtn) firstBtn.parentNode.insertBefore(widget, firstBtn);
+  }
+  widget.style.display = 'block';
 }
 function indGetTablaHTML(containerId) {
   const wrap = document.getElementById(containerId);
@@ -1342,10 +1361,12 @@ function downloadEj(containerId, filename) {
   downloadEjercitario(containerId, filename);
 }
 
-  // Mostrar widget al cargar
+  // Posicionar widget en el panel activo inicial
   (function() {
     const widget = document.getElementById('ind-widget');
-    if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+    if (widget && widget.style.display !== 'none') {
+      if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+    }
   })();
 
 
@@ -1444,7 +1465,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var widget = document.getElementById('ind-widget');
     if (!widget) return;
-    widget.style.display = 'block';
+    if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+    else widget.style.display = 'block';
 
     if (datos && datos.length > 0) {
       var wrap = document.getElementById('ind-filas');
@@ -1475,5 +1497,14 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
+
+<script>
+/* Posicionar ind-widget en el panel activo inicial (Chip 2 acceso directo) */
+document.addEventListener('DOMContentLoaded', function() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return;
+  if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+});
+</script>
 </body>
 </html>

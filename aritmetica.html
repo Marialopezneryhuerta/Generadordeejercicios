@@ -1318,9 +1318,22 @@ function toggleTopic(t) {
   const wrap = document.getElementById('ent-generar-todo-wrap');
   if (wrap) wrap.style.display = activos.length > 1 ? 'block' : 'none';
 
-  // Mostrar widget de indicadores si hay al menos uno activo
+  // Mover widget de indicadores: si hay un solo panel activo, va antes de su btn-generate
+  // Si hay varios activos, va antes del "Generar todo"
   const widget = document.getElementById('ind-widget');
-  if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+  if (widget) {
+    const activosAhora = document.querySelectorAll('#enteros-section .topic-btn.active');
+    if (activosAhora.length === 1) {
+      const panelActivo = document.getElementById('panel-' + activosAhora[0].id.replace('topic-', ''));
+      const firstBtn = panelActivo ? panelActivo.querySelector('.btn-generate') : null;
+      if (firstBtn) firstBtn.parentNode.insertBefore(widget, firstBtn);
+    } else {
+      const wrapTodo = document.getElementById('ent-generar-todo-wrap');
+      if (wrapTodo) wrapTodo.parentNode.insertBefore(widget, wrapTodo);
+    }
+    widget.style.display = 'block';
+    indInicializar('ind-filas');
+  }
 }
 
 function generarTodoEnteros() {
@@ -1367,6 +1380,18 @@ function indInicializar(containerId) {
   if (!wrap || wrap.children.length > 0) return;
   indAgregar(containerId);
   indAgregar(containerId);
+}
+
+// Mueve el widget antes del primer btn-generate del panel activo y lo muestra
+function indMoverYMostrar() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget) return;
+  var panelActivo = document.querySelector('.section-panel.active');
+  if (panelActivo) {
+    var firstBtn = panelActivo.querySelector('.btn-generate');
+    if (firstBtn) firstBtn.parentNode.insertBefore(widget, firstBtn);
+  }
+  widget.style.display = 'block';
 }
 function indGetTablaHTML(containerId) {
   const wrap = document.getElementById(containerId);
@@ -3597,10 +3622,12 @@ function racDownloadEj(containerId,filename){
 }
 
 
-  // Mostrar widget al cargar (panel mixto está activo por defecto)
+  // Posicionar widget en el panel activo inicial
   (function() {
     const widget = document.getElementById('ind-widget');
-    if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+    if (widget && widget.style.display !== 'none') {
+      if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+    }
   })();
 
 
@@ -3699,7 +3726,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var widget = document.getElementById('ind-widget');
     if (!widget) return;
-    widget.style.display = 'block';
+    if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+    else widget.style.display = 'block';
 
     if (datos && datos.length > 0) {
       var wrap = document.getElementById('ind-filas');
@@ -3730,5 +3758,14 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 
+
+<script>
+/* Posicionar ind-widget en el panel activo inicial (Chip 2 acceso directo) */
+document.addEventListener('DOMContentLoaded', function() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return;
+  if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+});
+</script>
 </body>
 </html>

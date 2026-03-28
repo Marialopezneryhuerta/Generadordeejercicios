@@ -1068,10 +1068,16 @@ function switchTopic(topic) {
   document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('topic-' + topic).classList.add('active');
-  document.getElementById('panel-' + topic).classList.add('active');
-  // Mostrar widget de indicadores al activar cualquier panel
-  const widget = document.getElementById('ind-widget');
-  if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+  var panel = document.getElementById('panel-' + topic);
+  panel.classList.add('active');
+  // Mover widget de indicadores justo antes del primer btn-generate del panel activo
+  var widget = document.getElementById('ind-widget');
+  if (widget) {
+    var firstBtn = panel.querySelector('.btn-generate');
+    if (firstBtn) firstBtn.parentNode.insertBefore(widget, firstBtn);
+    widget.style.display = 'block';
+    indInicializar('ind-filas');
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1108,6 +1114,18 @@ function indInicializar(containerId) {
   if (!wrap || wrap.children.length > 0) return;
   indAgregar(containerId);
   indAgregar(containerId);
+}
+
+// Mueve el widget antes del primer btn-generate del panel activo y lo muestra
+function indMoverYMostrar() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget) return;
+  var panelActivo = document.querySelector('.section-panel.active');
+  if (panelActivo) {
+    var firstBtn = panelActivo.querySelector('.btn-generate');
+    if (firstBtn) firstBtn.parentNode.insertBefore(widget, firstBtn);
+  }
+  widget.style.display = 'block';
 }
 function indGetTablaHTML(containerId) {
   const wrap = document.getElementById(containerId);
@@ -3495,10 +3513,12 @@ function generateFormulasRad() {
 }
 
 
-  // Mostrar widget al cargar (el primer panel ya está activo)
+  // Posicionar widget en el panel activo inicial
   (function() {
     const widget = document.getElementById('ind-widget');
-    if (widget) { widget.style.display = 'block'; indInicializar('ind-filas'); }
+    if (widget && widget.style.display !== 'none') {
+      if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+    }
   })();
 
 
@@ -5497,7 +5517,8 @@ function generateArc(returnOnly, startId) {
 
     var widget = document.getElementById('ind-widget');
     if (!widget) return;
-    widget.style.display = 'block';
+    if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+    else widget.style.display = 'block';
 
     if (datos && datos.length > 0) {
       var wrap = document.getElementById('ind-filas');
@@ -5528,5 +5549,14 @@ function generateArc(returnOnly, startId) {
 })();
 </script>
 
+
+<script>
+/* Posicionar ind-widget en el panel activo inicial (Chip 2 acceso directo) */
+document.addEventListener('DOMContentLoaded', function() {
+  var widget = document.getElementById('ind-widget');
+  if (!widget || widget.style.display === 'none') return;
+  if (typeof indMoverYMostrar === 'function') indMoverYMostrar();
+});
+</script>
 </body>
 </html>
