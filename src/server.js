@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth");
 const { listUsers, deduplicateUsersByEmail } = require("./store/usersStore");
+const { addUsageEvent, getUsageSummary } = require("./store/usageStore");
 
 dotenv.config();
 
@@ -28,6 +29,12 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.post("/api/usage/track", async (req, res) => {
+  const { rama, tema, niveles, sourcePath, isLoggedIn } = req.body ?? {};
+  await addUsageEvent({ rama, tema, niveles, sourcePath, isLoggedIn });
+  return res.status(200).json({ ok: true });
+});
+
 
 app.get("/api/admin/users", async (req, res) => {
   if (!adminKey) {
@@ -57,6 +64,18 @@ app.post("/api/admin/users/deduplicate", async (req, res) => {
   if (!adminKey) {
     return res.status(503).json({ error: "ADMIN_DASHBOARD_KEY no configurada en el servidor" });
   }
+app.get("/api/admin/usage-summary", async (req, res) => {
+  if (!adminKey) {
+    return res.status(503).json({ error: "ADMIN_DASHBOARD_KEY no configurada en el servidor" });
+  }
+
+  if (req.headers["x-admin-key"] !== adminKey) {
+    return res.status(401).json({ error: "No autorizado" });
+  }
+
+  const data = await getUsageSummary();
+  return res.status(200).json(data);
+});
 
   if (req.headers["x-admin-key"] !== adminKey) {
     return res.status(401).json({ error: "No autorizado" });
