@@ -216,18 +216,22 @@
       statusEl.textContent = "";
     }
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        tabs.forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-
-        const key = tab.dataset.tab;
-        Object.keys(panels).forEach((panelKey) => {
-          panels[panelKey].classList.toggle("active", panelKey === key);
-        });
-        clearStatus();
+    function activateTab(key) {
+      tabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === key));
+      Object.keys(panels).forEach((panelKey) => {
+        panels[panelKey].classList.toggle("active", panelKey === key);
       });
+      clearStatus();
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => activateTab(tab.dataset.tab));
     });
+
+    const initialTab = new URLSearchParams(window.location.search).get("tab");
+    if (initialTab === "register" || initialTab === "login") {
+      activateTab(initialTab);
+    }
 
     async function postJson(url, payload) {
       const response = await fetch(url, {

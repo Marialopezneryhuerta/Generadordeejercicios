@@ -72,6 +72,17 @@ nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
   transition: background 0.2s, transform 0.1s;
 }
 .btn-suscribite:hover { background: #3a58e0; transform: translateY(-1px); }
+.auth-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-login {
+  background: white;
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+}
+.btn-login:hover { background: #eef2ff; }
 
 /* HERO */
 .hero {
@@ -721,7 +732,10 @@ main {
   <div class="nav-logo">Generador de <span>ejercitarios</span></div>
   <p>Generador de ejercitarios de matemáticas</p>
   <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
-  <button class="btn-suscribite" onclick="window.location.href='auth.html'">Iniciar sesion</button>
+  <div class="auth-actions">
+    <button class="btn-suscribite btn-login" onclick="window.location.href='https://generador-de-ejercitarios.onrender.com/auth.html?tab=login'">Iniciar sesion</button>
+    <button class="btn-suscribite" onclick="window.location.href='https://generador-de-ejercitarios.onrender.com/auth.html?tab=register'">Registrarse</button>
+  </div>
 </nav>
 
 <!-- MODAL SUSCRIPCIÓN -->
