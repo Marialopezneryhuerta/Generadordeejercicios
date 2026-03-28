@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso | Generador v132</title>
+  <style>
+    :root {
+      --bg: #f0f4ff;
+      --card: #ffffff;
+      --ink: #1a1d2e;
+      --muted: #6b7280;
+      --border: #dde2f0;
+      --accent: #4f6ef7;
+      --accent-dark: #3a58e0;
+      --ok-bg: #ecfdf5;
+      --ok-ink: #065f46;
+      --err-bg: #fef2f2;
+      --err-ink: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Nunito Sans", Arial, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top right, #dbeafe 0%, var(--bg) 42%);
+      display: grid;
+      place-items: center;
+      padding: 1.2rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(79, 110, 247, 0.08);
+      padding: 1.2rem;
+    }
+
+    h1 {
+      margin: 0 0 0.3rem;
+      font-size: 1.35rem;
+    }
+
+    p {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      padding: 0.5rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    form {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    label {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    input {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    button[type="submit"] {
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      padding: 0.7rem 0.85rem;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover { background: var(--accent-dark); }
+
+    .status {
+      margin-top: 0.85rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      display: none;
+    }
+
+    .status.ok {
+      display: block;
+      background: var(--ok-bg);
+      color: var(--ok-ink);
+    }
+
+    .status.error {
+      display: block;
+      background: var(--err-bg);
+      color: var(--err-ink);
+    }
+
+    .footer-actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .ghost-btn {
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.7rem;
+      border-radius: 8px;
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <section class="card">
+    <h1>Acceso de usuarios</h1>
+    <p>Registro e inicio de sesion para el backend de Generador v132.</p>
+
+    <div class="tabs">
+      <button class="tab active" type="button" data-tab="login">Iniciar sesion</button>
+      <button class="tab" type="button" data-tab="register">Crear cuenta</button>
+    </div>
+
+    <div id="panel-login" class="panel active">
+      <form id="form-login">
+        <label>Email
+          <input type="email" name="email" required />
+        </label>
+        <label>Password
+          <input type="password" name="password" minlength="8" required />
+        </label>
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+
+    <div id="panel-register" class="panel">
+      <form id="form-register">
+        <label>Nombre
+          <input type="text" name="name" minlength="2" required />
+        </label>
+        <label>Email
+          <input type="email" name="email" required />
+        </label>
+        <label>Password
+          <input type="password" name="password" minlength="8" required />
+        </label>
+        <button type="submit">Crear cuenta</button>
+      </form>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div class="footer-actions">
+      <button class="ghost-btn" id="btn-me" type="button">Ver mi sesion</button>
+      <button class="ghost-btn" id="btn-logout" type="button">Cerrar sesion</button>
+      <a class="ghost-btn" href="./index.html">Volver al inicio</a>
+    </div>
+  </section>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    const panels = {
+      login: document.getElementById("panel-login"),
+      register: document.getElementById("panel-register")
+    };
+    const statusEl = document.getElementById("status");
+
+    function setStatus(kind, text) {
+      statusEl.className = "status " + kind;
+      statusEl.textContent = text;
+    }
+
+    function clearStatus() {
+      statusEl.className = "status";
+      statusEl.textContent = "";
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        const key = tab.dataset.tab;
+        Object.keys(panels).forEach((panelKey) => {
+          panels[panelKey].classList.toggle("active", panelKey === key);
+        });
+        clearStatus();
+      });
+    });
+
+    async function postJson(url, payload) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "Error al procesar la solicitud");
+      }
+      return data;
+    }
+
+    document.getElementById("form-register").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus();
+      const formData = new FormData(event.currentTarget);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const data = await postJson("/api/auth/register", payload);
+        setStatus("ok", "Cuenta creada. Bienvenida/o, " + data.user.name + ".");
+      } catch (error) {
+        setStatus("error", error.message);
+      }
+    });
+
+    document.getElementById("form-login").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus();
+      const formData = new FormData(event.currentTarget);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const data = await postJson("/api/auth/login", payload);
+        setStatus("ok", "Sesion iniciada para " + data.user.email + ".");
+      } catch (error) {
+        setStatus("error", error.message);
+      }
+    });
+
+    document.getElementById("btn-me").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        const response = await fetch("/api/auth/me");
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "No autenticado");
+        setStatus("ok", "Sesión activa: " + data.user.name + " (" + data.user.email + ")");
+      } catch (error) {
+        setStatus("error", error.message);
+      }
+    });
+
+    document.getElementById("btn-logout").addEventListener("click", async () => {
+      clearStatus();
+      try {
+        await postJson("/api/auth/logout", {});
+        setStatus("ok", "Sesion cerrada.");
+      } catch (error) {
+        setStatus("error", error.message);
+      }
+    });
+  </script>
+</body>
+</html>
