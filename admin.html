@@ -160,6 +160,14 @@
       margin-top: 0.8rem;
     }
 
+    .section-title {
+      margin-top: 1.2rem;
+      margin-bottom: 0.4rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #1f2937;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -235,6 +243,28 @@
           </tbody>
         </table>
       </div>
+
+      <div class="section-title">Uso de ejercitarios (rama, tema y niveles)</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rama</th>
+              <th>Tema</th>
+              <th>Nivel 1</th>
+              <th>Nivel 2</th>
+              <th>Nivel 3</th>
+              <th>Nivel 4</th>
+              <th>Nivel 5</th>
+              <th>Total ejercicios</th>
+              <th>Generaciones</th>
+            </tr>
+          </thead>
+          <tbody id="usage-body">
+            <tr><td colspan="9">Todavia no se cargaron estadisticas.</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
   </main>
 
@@ -245,8 +275,10 @@
     const statusEl = document.getElementById("status");
     const totalEl = document.getElementById("total");
     const bodyEl = document.getElementById("users-body");
+    const usageBodyEl = document.getElementById("usage-body");
     const btnDedupe = document.getElementById("btn-dedupe");
     let users = [];
+    let usageRows = [];
 
     function setStatus(type, text) {
       statusEl.className = "status " + type;
@@ -291,6 +323,35 @@
       }).join("");
     }
 
+    function renderUsageRows() {
+      const term = searchInput.value.trim().toLowerCase();
+      const filtered = usageRows.filter((row) => {
+        if (!term) return true;
+        return row.rama.toLowerCase().includes(term) || row.tema.toLowerCase().includes(term);
+      });
+
+      if (!filtered.length) {
+        usageBodyEl.innerHTML = '<tr><td colspan="9">No hay datos de uso para ese filtro.</td></tr>';
+        return;
+      }
+
+      usageBodyEl.innerHTML = filtered.map((row) => {
+        return (
+          "<tr>" +
+          "<td>" + row.rama + "</td>" +
+          "<td>" + row.tema + "</td>" +
+          "<td>" + row.nivel1 + "</td>" +
+          "<td>" + row.nivel2 + "</td>" +
+          "<td>" + row.nivel3 + "</td>" +
+          "<td>" + row.nivel4 + "</td>" +
+          "<td>" + row.nivel5 + "</td>" +
+          "<td><strong>" + row.totalEjercicios + "</strong></td>" +
+          "<td>" + row.totalGeneraciones + "</td>" +
+          "</tr>"
+        );
+      }).join("");
+    }
+
     btnLoad.addEventListener("click", async () => {
       clearStatus();
       const adminKey = keyInput.value.trim();
@@ -310,7 +371,17 @@
 
         users = data.users || [];
         renderRows();
-        setStatus("ok", "Usuarios cargados correctamente.");
+        const usageRes = await fetch("/api/admin/usage-summary", {
+          headers: { "x-admin-key": adminKey }
+        });
+        const usageData = await usageRes.json().catch(() => ({}));
+        if (!usageRes.ok) {
+          throw new Error(usageData.error || "No se pudo cargar estadisticas.");
+        }
+        usageRows = usageData.rows || [];
+        renderUsageRows();
+
+        setStatus("ok", "Usuarios y estadisticas cargados correctamente.");
       } catch (error) {
         setStatus("error", error.message);
       }
@@ -341,7 +412,10 @@
       }
     });
 
-    searchInput.addEventListener("input", renderRows);
+    searchInput.addEventListener("input", () => {
+      renderRows();
+      renderUsageRows();
+    });
   </script>
 </body>
 </html>

@@ -46,6 +46,82 @@
     return true;
   }
 
+  function textOf(el) {
+    return (el?.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function inferRama() {
+    const h1 = document.querySelector(".hero h1");
+    if (h1 && textOf(h1)) return textOf(h1);
+    const file = (window.location.pathname.split("/").pop() || "sin-rama").replace(".html", "");
+    return file;
+  }
+
+  function inferTema(button) {
+    const panel = button.closest(".section-panel, [id$='-section'], [id^='panel-']") || document.body;
+    const active = panel.querySelector(".topic-btn.active, .subtype-btn.active");
+    if (active && textOf(active)) return textOf(active);
+
+    const localCardTitle = button.closest(".card")?.querySelector(".card-title");
+    if (localCardTitle && textOf(localCardTitle)) return textOf(localCardTitle);
+
+    if (panel.id) return panel.id;
+    return "tema-general";
+  }
+
+  function visible(el) {
+    return !!(el && (el.offsetParent || el.getClientRects().length));
+  }
+
+  function inferNiveles(button) {
+    const panel = button.closest(".section-panel, [id$='-section'], [id^='panel-']") || document.body;
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+    // 1) Estructura explicita data-level + lq-val (la mas comun en tus modulos)
+    const levelItems = Array.from(panel.querySelectorAll(".level-item[data-level]")).filter(visible);
+    for (const item of levelItems) {
+      const level = Number(item.getAttribute("data-level"));
+      if (!(level >= 1 && level <= 5)) continue;
+      const valNode = item.querySelector(".lq-val");
+      const val = Number((valNode?.textContent || "0").trim());
+      if (Number.isFinite(val) && val > 0) counts[level] += val;
+    }
+
+    // 2) Fallback por id (co-lqv-1, lin-lqv-3, etc.)
+    const nodes = Array.from(panel.querySelectorAll("[id*='lqv-']")).filter(visible);
+    for (const node of nodes) {
+      const match = (node.id || "").match(/lqv-(\d+)/i);
+      if (!match) continue;
+      const level = Number(match[1]);
+      if (!(level >= 1 && level <= 5)) continue;
+      const val = Number((node.textContent || "0").trim());
+      if (Number.isFinite(val) && val > 0) counts[level] = Math.max(counts[level], val);
+    }
+
+    return counts;
+  }
+
+  async function trackUsage(button, loggedIn) {
+    const payload = {
+      rama: inferRama(),
+      tema: inferTema(button),
+      niveles: inferNiveles(button),
+      sourcePath: window.location.pathname,
+      isLoggedIn: !!loggedIn
+    };
+
+    try {
+      await fetch("/api/usage/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true
+      });
+    } catch {
+      // No bloquear la generacion si falla el tracking.
+    }
+  }
+
   document.addEventListener(
     "click",
     async function (event) {
@@ -60,8 +136,11 @@
       event.preventDefault();
       event.stopImmediatePropagation();
 
-      const ok = await canGenerateNow();
+      const loggedIn = await isLoggedIn();
+      const ok = loggedIn || (await canGenerateNow());
       if (!ok) return;
+
+      trackUsage(button, loggedIn);
 
       button.dataset.authBypass = "1";
       button.click();
