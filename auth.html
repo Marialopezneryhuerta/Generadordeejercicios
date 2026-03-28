@@ -205,6 +205,7 @@
       register: document.getElementById("panel-register")
     };
     const statusEl = document.getElementById("status");
+    const nextUrl = new URLSearchParams(window.location.search).get("next");
 
     function setStatus(kind, text) {
       statusEl.className = "status " + kind;
@@ -262,6 +263,7 @@
       try {
         const data = await postJson("/api/auth/register", payload);
         setStatus("ok", "Cuenta creada. Bienvenida/o, " + data.user.name + ".");
+        if (nextUrl) setTimeout(() => { window.location.href = nextUrl; }, 500);
       } catch (error) {
         setStatus("error", error.message);
       } finally {
@@ -279,6 +281,7 @@
       try {
         const data = await postJson("/api/auth/login", payload);
         setStatus("ok", "Sesion iniciada para " + data.user.email + ".");
+        if (nextUrl) setTimeout(() => { window.location.href = nextUrl; }, 500);
       } catch (error) {
         setStatus("error", error.message);
       }
