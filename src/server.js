@@ -12,7 +12,7 @@ if (!process.env.JWT_SECRET) {
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
-const rootDir = path.resolve(__dirname, "..", "..");
+const rootDir = path.resolve(__dirname, "..");
 
 app.use(express.json());
 app.use(cookieParser());
