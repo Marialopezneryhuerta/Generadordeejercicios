@@ -2,6 +2,7 @@
   const FREE_LIMIT = 3;
   const STORAGE_KEY = "ej_guest_generate_count";
   const LOGIN_URL = "https://generador-de-ejercitarios.onrender.com/auth.html?tab=login";
+  const APP_ORIGIN = "https://generador-de-ejercitarios.onrender.com";
 
   let mePromise = null;
 
@@ -25,7 +26,8 @@
   }
 
   function redirectToLogin() {
-    const next = encodeURIComponent(window.location.href);
+    const nextPath = window.location.pathname + window.location.search + window.location.hash;
+    const next = encodeURIComponent(APP_ORIGIN + nextPath);
     window.location.href = LOGIN_URL + "&next=" + next;
   }
 
