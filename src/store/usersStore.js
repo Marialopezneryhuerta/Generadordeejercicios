@@ -56,8 +56,14 @@ async function createUser({ name, email, passwordHash }) {
   return newUser;
 }
 
+async function listUsers() {
+  const users = await readUsers();
+  return users;
+}
+
 module.exports = {
   findByEmail,
   findById,
-  createUser
+  createUser,
+  listUsers
 };

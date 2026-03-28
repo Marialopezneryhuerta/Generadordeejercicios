@@ -7,6 +7,7 @@ Este backend agrega:
 - Sesion con cookie JWT (`httpOnly`)
 - Endpoint para consultar usuario autenticado
 - Logout
+- Endpoint admin para listar usuarios (`x-admin-key`)
 
 ## 1) Instalar dependencias
 
@@ -31,6 +32,7 @@ Copy-Item .env.example .env
 ```
 
 Asegurate de definir un `JWT_SECRET` largo y privado.
+Tambien defini `ADMIN_DASHBOARD_KEY` (clave privada para ver panel admin).
 
 ## 3) Ejecutar
 
@@ -43,6 +45,7 @@ Servidor en:
 - `http://localhost:3000`
 - Frontend principal: `http://localhost:3000/index.html`
 - Acceso usuarios: `http://localhost:3000/auth.html`
+- Panel admin: `http://localhost:3000/admin.html`
 
 ## Endpoints
 
@@ -50,6 +53,7 @@ Servidor en:
 - `POST /api/auth/login`
 - `GET /api/auth/me`
 - `POST /api/auth/logout`
+- `GET /api/admin/users` (requiere header `x-admin-key`)
 - `GET /api/health`
 
 ## Nota de arquitectura

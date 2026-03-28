@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Usuarios | Generador de ejercitarios</title>
+  <style>
+    :root {
+      --bg: #f6f8ff;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --border: #dbe3f4;
+      --accent: #3155e7;
+      --accent-soft: #ecf2ff;
+      --ok-bg: #ecfdf5;
+      --ok-ink: #065f46;
+      --err-bg: #fef2f2;
+      --err-ink: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      background: linear-gradient(180deg, #edf2ff 0%, var(--bg) 100%);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 1.1rem;
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 8px 22px rgba(49, 85, 231, 0.07);
+      padding: 1rem;
+    }
+
+    h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.45rem;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .controls {
+      display: grid;
+      gap: 0.7rem;
+      grid-template-columns: 1fr 1fr auto;
+    }
+
+    @media (max-width: 760px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      display: grid;
+      gap: 0.3rem;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    input {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem 0.7rem;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.65rem 0.95rem;
+      cursor: pointer;
+      align-self: end;
+    }
+
+    button:hover { opacity: 0.92; }
+
+    .status {
+      display: none;
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.86rem;
+      margin-top: 0.8rem;
+    }
+
+    .status.ok {
+      display: block;
+      background: var(--ok-bg);
+      color: var(--ok-ink);
+    }
+
+    .status.error {
+      display: block;
+      background: var(--err-bg);
+      color: var(--err-ink);
+    }
+
+    .topbar {
+      margin-top: 0.9rem;
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .total {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid #d4defd;
+      border-radius: 999px;
+      padding: 0.3rem 0.7rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 0.8rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 0.4rem;
+      font-size: 0.85rem;
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tag {
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      font-weight: 700;
+      font-size: 0.72rem;
+      display: inline-block;
+      border: 1px solid var(--border);
+      color: #374151;
+      background: #f9fafb;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1>Panel Admin · Usuarios</h1>
+      <p class="sub">Vista simple para dueña del sitio. No muestra contraseñas.</p>
+
+      <div class="controls">
+        <label>Clave Admin (ADMIN_DASHBOARD_KEY)
+          <input id="admin-key" type="password" autocomplete="off" placeholder="Tu clave privada" />
+        </label>
+        <label>Buscar (nombre o email)
+          <input id="search" type="text" placeholder="Ej: maria o @gmail.com" />
+        </label>
+        <button id="btn-load" type="button">Cargar usuarios</button>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <div class="topbar">
+        <span class="total" id="total">Total: 0</span>
+        <a href="/index.html">Volver al inicio</a>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Suscripcion</th>
+              <th>Registro</th>
+            </tr>
+          </thead>
+          <tbody id="users-body">
+            <tr><td colspan="5">Todavia no se cargaron datos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const keyInput = document.getElementById("admin-key");
+    const searchInput = document.getElementById("search");
+    const btnLoad = document.getElementById("btn-load");
+    const statusEl = document.getElementById("status");
+    const totalEl = document.getElementById("total");
+    const bodyEl = document.getElementById("users-body");
+    let users = [];
+
+    function setStatus(type, text) {
+      statusEl.className = "status " + type;
+      statusEl.textContent = text;
+    }
+
+    function clearStatus() {
+      statusEl.className = "status";
+      statusEl.textContent = "";
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "-";
+      return d.toLocaleString("es-PY");
+    }
+
+    function renderRows() {
+      const term = searchInput.value.trim().toLowerCase();
+      const filtered = users.filter((u) => {
+        if (!term) return true;
+        return u.name.toLowerCase().includes(term) || u.email.toLowerCase().includes(term);
+      });
+
+      totalEl.textContent = "Total: " + filtered.length;
+
+      if (!filtered.length) {
+        bodyEl.innerHTML = '<tr><td colspan="5">No hay usuarios para ese filtro.</td></tr>';
+        return;
+      }
+
+      bodyEl.innerHTML = filtered.map((u) => {
+        return (
+          "<tr>" +
+          "<td>" + u.name + "</td>" +
+          "<td>" + u.email + "</td>" +
+          "<td><span class='tag'>" + u.role + "</span></td>" +
+          "<td><span class='tag'>" + u.subscriptionStatus + "</span></td>" +
+          "<td>" + formatDate(u.createdAt) + "</td>" +
+          "</tr>"
+        );
+      }).join("");
+    }
+
+    btnLoad.addEventListener("click", async () => {
+      clearStatus();
+      const adminKey = keyInput.value.trim();
+      if (!adminKey) {
+        setStatus("error", "Escribi tu clave admin primero.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/admin/users", {
+          headers: { "x-admin-key": adminKey }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.error || "No se pudo cargar la lista.");
+        }
+
+        users = data.users || [];
+        renderRows();
+        setStatus("ok", "Usuarios cargados correctamente.");
+      } catch (error) {
+        setStatus("error", error.message);
+      }
+    });
+
+    searchInput.addEventListener("input", renderRows);
+  </script>
+</body>
+</html>
