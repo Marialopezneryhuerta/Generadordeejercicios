@@ -1,5 +1,6 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
+const { supabase, isSupabaseEnabled } = require("./supabaseClient");
 
 const DATA_DIR = path.resolve(__dirname, "..", "..", "data");
 const USAGE_FILE = path.join(DATA_DIR, "usage-events.json");
@@ -33,6 +34,19 @@ function withWriteLock(task) {
 }
 
 async function addUsageEvent(event) {
+  if (isSupabaseEnabled) {
+    const payload = {
+      rama: event.rama || "sin-rama",
+      tema: event.tema || "sin-tema",
+      niveles: event.niveles || {},
+      source_path: event.sourcePath || "",
+      is_logged_in: !!event.isLoggedIn
+    };
+    const { error } = await supabase.from("usage_events").insert(payload);
+    if (error) throw error;
+    return { ok: true };
+  }
+
   return withWriteLock(async () => {
     const events = await readEvents();
     const now = new Date().toISOString();
@@ -50,7 +64,21 @@ async function addUsageEvent(event) {
 }
 
 async function getUsageSummary() {
+  if (isSupabaseEnabled) {
+    const { data, error } = await supabase
+      .from("usage_events")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return aggregateUsage(data || []);
+  }
+
   const events = await readEvents();
+  return aggregateUsage(events);
+}
+
+function aggregateUsage(events) {
   const map = new Map();
 
   for (const ev of events) {

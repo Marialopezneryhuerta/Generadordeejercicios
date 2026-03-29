@@ -88,7 +88,7 @@ app.get("/api/admin/usage-summary", async (req, res) => {
 
 app.use(express.static(rootDir));
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   // eslint-disable-next-line no-console
-  console.log(`Servidor listo en http://localhost:${PORT}`);
+  console.log(`Servidor listo en puerto ${PORT}`);
 });
