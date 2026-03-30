@@ -83,7 +83,4 @@ app.get("/api/admin/usage-summary", async (req, res) => {
 
 app.use(express.static(rootDir));
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor listo en puerto ${PORT}`);
-  console.log(`Modo almacenamiento: ${isSupabaseEnabled ? "supabase" : "file"}`);
-});
+app.listen(PORT, "0.0
