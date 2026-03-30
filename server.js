@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth");
 const { listUsers, deduplicateUsersByEmail } = require("./store/usersStore");
 const { addUsageEvent, getUsageSummary } = require("./store/usageStore");
+const { isSupabaseEnabled, checkSupabaseConnection } = require("./store/supabaseClient");
 
 dotenv.config();
 
@@ -25,7 +26,16 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/api/health", (_req, res) => {
-  res.status(200).json({ ok: true, service: "generador-v132-backend" });
+  res.status(200).json({
+    ok: true,
+    service: "generador-v132-backend",
+    storageMode: isSupabaseEnabled ? "supabase" : "file"
+  });
+});
+
+app.get("/api/health/storage", async (_req, res) => {
+  const status = await checkSupabaseConnection();
+  return res.status(200).json(status);
 });
 
 app.use("/api/auth", authRoutes);
@@ -91,4 +101,6 @@ app.use(express.static(rootDir));
 app.listen(PORT, "0.0.0.0", () => {
   // eslint-disable-next-line no-console
   console.log(`Servidor listo en puerto ${PORT}`);
+  // eslint-disable-next-line no-console
+  console.log(`Modo almacenamiento: ${isSupabaseEnabled ? "supabase" : "file"}`);
 });
