@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { createUser, findByEmail, findById } = require("../store/usersStore");
+const { createUserUnique, findByEmail, findById } = require("../store/usersStore");
 const { authRequired } = require("../middleware/auth");
 
 const router = express.Router();
@@ -39,63 +39,73 @@ function toSafeUser(user) {
 }
 
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body ?? {};
+  try {
+    const { name, email, password } = req.body ?? {};
 
-  if (!name || !email || !password) {
-    return res.status(400).json({ error: "Completa nombre, email y password" });
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "Completa nombre, email y password" });
+    }
+
+    if (name.trim().length < 2) {
+      return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres" });
+    }
+
+    if (!EMAIL_REGEX.test(email)) {
+      return res.status(400).json({ error: "Email invalido" });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: "El password debe tener al menos 8 caracteres" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const result = await createUserUnique({
+      name: name.trim(),
+      email: email.trim(),
+      passwordHash
+    });
+
+    if (!result.created) {
+      return res.status(409).json({ error: "Ya existe una cuenta con ese email" });
+    }
+
+    const user = result.user;
+    const token = signToken(user);
+    res.cookie(COOKIE_NAME, token, cookieOptions());
+
+    return res.status(201).json({ user: toSafeUser(user) });
+  } catch (error) {
+    console.error("REGISTER ERROR:", error);
+    return res.status(500).json({ error: `No se pudo crear la cuenta: ${error.message || "error interno"}` });
   }
-
-  if (name.trim().length < 2) {
-    return res.status(400).json({ error: "El nombre debe tener al menos 2 caracteres" });
-  }
-
-  if (!EMAIL_REGEX.test(email)) {
-    return res.status(400).json({ error: "Email invalido" });
-  }
-
-  if (password.length < 8) {
-    return res.status(400).json({ error: "El password debe tener al menos 8 caracteres" });
-  }
-
-  const existing = await findByEmail(email);
-  if (existing) {
-    return res.status(409).json({ error: "Ya existe una cuenta con ese email" });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-  const user = await createUser({
-    name: name.trim(),
-    email: email.trim(),
-    passwordHash
-  });
-
-  const token = signToken(user);
-  res.cookie(COOKIE_NAME, token, cookieOptions());
-
-  return res.status(201).json({ user: toSafeUser(user) });
 });
 
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body ?? {};
+  try {
+    const { email, password } = req.body ?? {};
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Completa email y password" });
+    if (!email || !password) {
+      return res.status(400).json({ error: "Completa email y password" });
+    }
+
+    const user = await findByEmail(email.trim());
+    if (!user) {
+      return res.status(401).json({ error: "Credenciales invalidas" });
+    }
+
+    const ok = await bcrypt.compare(password, user.passwordHash);
+    if (!ok) {
+      return res.status(401).json({ error: "Credenciales invalidas" });
+    }
+
+    const token = signToken(user);
+    res.cookie(COOKIE_NAME, token, cookieOptions());
+
+    return res.status(200).json({ user: toSafeUser(user) });
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+    return res.status(500).json({ error: `No se pudo iniciar sesion: ${error.message || "error interno"}` });
   }
-
-  const user = await findByEmail(email.trim());
-  if (!user) {
-    return res.status(401).json({ error: "Credenciales invalidas" });
-  }
-
-  const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) {
-    return res.status(401).json({ error: "Credenciales invalidas" });
-  }
-
-  const token = signToken(user);
-  res.cookie(COOKIE_NAME, token, cookieOptions());
-
-  return res.status(200).json({ user: toSafeUser(user) });
 });
 
 router.post("/logout", (req, res) => {
@@ -104,13 +114,18 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", authRequired, async (req, res) => {
-  const user = await findById(req.auth.sub);
+  try {
+    const user = await findById(req.auth.sub);
 
-  if (!user) {
-    return res.status(404).json({ error: "Usuario no encontrado" });
+    if (!user) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    return res.status(200).json({ user: toSafeUser(user) });
+  } catch (error) {
+    console.error("ME ERROR:", error);
+    return res.status(500).json({ error: `No se pudo validar sesion: ${error.message || "error interno"}` });
   }
-
-  return res.status(200).json({ user: toSafeUser(user) });
 });
 
 module.exports = router;
