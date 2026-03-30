@@ -27,6 +27,9 @@ app.use(cookieParser());
 app.get("/api/health", (_req, res) => {
   res.status(200).json({ ok: true, service: "generador-v132-backend" });
 });
+app.get("/api/ping-v2", (_req, res) => {
+  res.status(200).json({ ok: true, version: "v2-supabase-check" });
+});
 
 app.use("/api/auth", authRoutes);
 
