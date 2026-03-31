@@ -1,18 +1,24 @@
-const { createClient } = require("@supabase/supabase-js");
+let createClientFn = null;
+
+try {
+  ({ createClient: createClientFn } = require("@supabase/supabase-js"));
+} catch (_err) {
+  createClientFn = null;
+}
 
 const url = process.env.SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const enabled = Boolean(url && serviceKey);
-const client = enabled ? createClient(url, serviceKey, { auth: { persistSession: false } }) : null;
+const enabled = Boolean(createClientFn && url && serviceKey);
+const client = enabled ? createClientFn(url, serviceKey, { auth: { persistSession: false } }) : null;
 
 async function checkSupabaseConnection() {
-  if (!enabled) {
-    return {
-      enabled: false,
-      ok: false,
-      reason: "missing_env"
-    };
+  if (!createClientFn) {
+    return { enabled: false, ok: false, reason: "module_missing" };
+  }
+
+  if (!url || !serviceKey) {
+    return { enabled: false, ok: false, reason: "missing_env" };
   }
 
   try {
@@ -29,11 +35,7 @@ async function checkSupabaseConnection() {
       };
     }
 
-    return {
-      enabled: true,
-      ok: true,
-      usersCount: count ?? 0
-    };
+    return { enabled: true, ok: true, usersCount: count ?? 0 };
   } catch (error) {
     return {
       enabled: true,
