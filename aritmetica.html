@@ -104,7 +104,8 @@ main { max-width: 820px; margin: 0 auto; padding: 2rem 1rem 4rem; display: grid;
 .sol-subtitle { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #7c3aed; margin: 0.6rem 0 0.2rem; }
 .ejercicios-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 2rem; margin-bottom: 2rem; }
 .ejercicios-list .level-header { grid-column: 1 / -1; }
-.ejercicio-item { display: flex; gap: 0.6rem; align-items: baseline; padding: 0.5rem 0; border-bottom: 1px solid #f5f5fa; }
+.ejercicio-item { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.5rem 0; border-bottom: 1px solid #f5f5fa; }
+.ej-content { flex: 1; min-width: 0; }
 .ej-num { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 0.85rem; color: var(--muted); min-width: 1.4rem; flex-shrink: 0; }
 .ej-question { font-size: 1rem; line-height: 1.5; }
 .solutions-title { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); padding-top: 1.5rem; border-top: 2px solid var(--border); margin-bottom: 0.8rem; grid-column: 1 / -1; }
