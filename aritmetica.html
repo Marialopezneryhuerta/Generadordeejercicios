@@ -3341,7 +3341,7 @@ function generateRacUnif() {
   const multiOp = activePfx.length > 1;
   const opNames = activePfx.map(function(p) { return RAC_TOPIC_NAMES[p]; }).join(', ');
 
-  let lastPfx = null, lastLvl = null;
+  let lastPfx = null, lastLvl = null, lastInstruction = null;
   let ejHTML = '<div class="ejercicios-list">';
   ejercicios.forEach(function(e) {
     const wsMapRac = {
@@ -3350,11 +3350,15 @@ function generateRacUnif() {
       both: { sr:'work-space-md', mu:'work-space-md', dv:'work-space-md', po:'work-space-md',   ra:'work-space-md', cs:'work-space-xl', cc:'work-space-xl' }
     };
     const wsSize = (wsMapRac[currentMode] || wsMapRac['frac'])[e._pfx];
-    if (multiOp && e._pfx !== lastPfx) {
-      lastPfx = e._pfx; lastLvl = null;
-      ejHTML += '<div class="level-header">' + RAC_TOPIC_NAMES[e._pfx] + ' — ' + racGetLabel(e._pfx, e.lvl) + '<\/div>';
-    } else if (!multiOp && e.lvl !== lastLvl) {
+    const instruction = getExerciseInstruction(e._pfx, e.lvl) || racGetLabel(e._pfx, e.lvl);
+    const changedGroup = multiOp
+      ? (e._pfx !== lastPfx || instruction !== lastInstruction)
+      : (instruction !== lastInstruction);
+    if (changedGroup) {
+      lastPfx = e._pfx;
       lastLvl = e.lvl;
+      lastInstruction = instruction;
+      ejHTML += '<div class="level-header">' + instruction + '<\/div>';
     }
     if (wsSize) {
       ejHTML += '<div class="ejercicio-item"><span class="ej-num">'+'('+e.id+')'+' <\/span>' +
@@ -3668,9 +3672,10 @@ function racGenerateTopic(pfx){
   const modeLabel=currentMode==='frac'?'Solo fracciones':currentMode==='dec'?'Solo decimales':'Fracciones y decimales';
   const fecha=new Date().toLocaleDateString('es-AR',{day:'numeric',month:'long',year:'numeric'});
   let currentLvl=null;
+  let lastInstruction=null;
   let ejHTML='<div class="ejercicios-list">';
   const wsMapRT={frac:{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:null,ra:null,cs:'work-space-xl',cc:'work-space-xl'},dec:{sr:'work-space-4',mu:'work-space-md',dv:'work-space-md',po:'work-space-8',ra:null,cs:'work-space-xl',cc:'work-space-xl'},both:{sr:'work-space-md',mu:'work-space-md',dv:'work-space-md',po:'work-space-md',ra:'work-space-md',cs:'work-space-xl',cc:'work-space-xl'}};
-  ejercicios.forEach(e=>{if(e.lvl!==currentLvl){currentLvl=e.lvl;}const wsRT=(wsMapRT[currentMode]||wsMapRT['frac'])[pfx];if(wsRT){ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsRT}"></div></div></div>`;}else{ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div></div></div>`;}});
+  ejercicios.forEach(e=>{const instruction=getExerciseInstruction(pfx,e.lvl)||racGetLabel(pfx,e.lvl);if(instruction!==lastInstruction){currentLvl=e.lvl;lastInstruction=instruction;ejHTML+=`<div class="level-header">${instruction}</div>`;}const wsRT=(wsMapRT[currentMode]||wsMapRT['frac'])[pfx];if(wsRT){ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div><div class="work-space ${wsRT}"></div></div></div>`;}else{ejHTML+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.expr}</div></div></div>`;}});
   ejHTML+='</div>';
   let solHTML='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
   ejercicios.forEach(e=>{solHTML+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}</div></div>`;});
