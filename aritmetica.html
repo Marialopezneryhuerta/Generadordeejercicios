@@ -991,7 +991,7 @@ function generateCO() {
   // ── Bloque 1: Situaciones ──────────────────────────────
   if (q1 > 0) {
     ejHTML += '<div class="level-header">Bloque 1 — Situaciones con enteros</div>';
-    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Expresá cada situación con un número entero positivo o negativo.</p>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Expresa con números enteros positivos o negativos las cantidades dadas.</p>';
     const pool = shuffleArr(CO_SITUACIONES).slice(0, q1);
     pool.forEach(s => {
       numEj++;
@@ -1012,7 +1012,7 @@ function generateCO() {
   // ── Bloque 2: Recta numérica ───────────────────────────
   if (q2 > 0) {
     ejHTML += '<div class="level-header">Bloque 2 — Completar la recta numérica</div>';
-    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Escribí en cada casilla el número entero que corresponde.</p>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Completa la recta numérica.</p>';
     for (let i = 0; i < q2; i++) {
       numEj++;
       const recta = coGenerateRecta();
@@ -1029,7 +1029,7 @@ function generateCO() {
   // ── Bloque 3: Comparar ────────────────────────────────
   if (q3 > 0) {
     ejHTML += '<div class="level-header">Bloque 3 — Comparar números</div>';
-    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Escribí &gt;, &lt; o = entre cada par de números.</p>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Escribe el signo &lt; o &gt; entre los siguientes pares de números.</p>';
     const pares = coGenPares(q3);
     pares.forEach(p => {
       numEj++;
@@ -1046,7 +1046,7 @@ function generateCO() {
   // ── Bloque 4: Verdadero o Falso ────────────────────────
   if (q4 > 0) {
     ejHTML += '<div class="level-header">Bloque 4 — Verdadero o Falso</div>';
-    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Indicá si cada afirmación es verdadera (V) o falsa (F). Justificá las falsas.</p>';
+    ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Escribe verdadero o falso en cada caso. Justifica las falsas.</p>';
     const vfPool = shuffleArr(CO_VF).slice(0, q4);
     vfPool.forEach(v => {
       numEj++;
@@ -1137,7 +1137,7 @@ function generateMix(){
 const ENT_OPS = {
   sr: { label: '➕ Suma y Resta',          levels: { 1:'Nivel 1 — Corto (2 términos)', 2:'Nivel 2 — Medio (3-4 términos)', 3:'Nivel 3 — Largo (5-6 términos)' } },
   mu: { label: '✖ Multiplicación',          levels: { 1:'Nivel 1 — 2 factores', 2:'Nivel 2 — 3 factores', 3:'Nivel 3 — 4 o más factores', 4:'Nivel 4 — Múltiplo de', 5:'Nivel 5 — Factor faltante', 6:'Nivel 6 — Pares de factores', 7:'Nivel 7 — Cuadro de productos' } },
-  dv: { label: '➗ División',               levels: { 1:'Nivel 1 — División exacta', 2:'Nivel 2 — Con resto', 3:'Nivel 3 — Cadena de divisiones' } },
+  dv: { label: '➗ División',               levels: { 1:'Nivel 1 — División exacta', 2:'Nivel 2 — Con resto' } },
   po: { label: '🔺 Potenciación',           levels: { 1:'Nivel 1 — Potencia simple', 2:'Nivel 2 — Misma base', 3:'Nivel 3 — Potencia de potencia' } },
   ra: { label: '√ Radicación',              levels: { 1:'Nivel 1 — Raíz cuadrada', 2:'Nivel 2 — Raíz cúbica y potencias', 3:'Nivel 3 — Combinadas con radicales' } },
   cs: { label: '🔣 Comb. sin agrup.',       levels: { 1:'Nivel 1 — +/−/·', 2:'Nivel 2 — + División y potencias', 3:'Nivel 3 — + Raíces' } },
@@ -1875,6 +1875,11 @@ function generatePropMU() {
   ejercicios.forEach(e => {
     if (e.lvl !== currentLvl) {
       currentLvl = e.lvl;
+      ejHTML += `<div class="level-header">${PROP_LEVEL_NAMES[e.lvl]}</div>`;
+      const instruction = e.lvl === 1
+        ? 'Aplica la propiedad distributiva y calcula.'
+        : 'Escribe la propiedad que corresponde a cada igualdad.';
+      ejHTML += `<p style="font-size:0.88rem;color:#444;margin:4px 0 10px;grid-column:1 / -1">${instruction}</p>`;
     }
     if (e.lvl === 2) {
       // Identificar propiedad: espacio para escribir el nombre
@@ -2202,7 +2207,7 @@ const LEVEL_NAMES = {
   sr:{1:'Nivel 1 — Corto',2:'Nivel 2 — Medio',3:'Nivel 3 — Largo'},
   mu:{1:'Nivel 1 — 2 factores',2:'Nivel 2 — 3 factores',3:'Nivel 3 — 4+ factores',
       4:'Nivel 4 — Múltiplo de',5:'Nivel 5 — Factor faltante (____)',6:'Nivel 6 — Pares de factores posibles',7:'Nivel 7 — Cuadro de productos'},
-  dv:{1:'Nivel 1 — Exacta',2:'Nivel 2 — Con resto',3:'Nivel 3 — Cadena'},
+  dv:{1:'Nivel 1 — Exacta',2:'Nivel 2 — Con resto'},
   po:{1:'Nivel 1 — Simple',2:'Nivel 2 — Misma base',3:'Nivel 3 — Potencia de potencia'},
   ra:{1:'Nivel 1 — Raíz cuadrada',2:'Nivel 2 — Cúbica y potencias',3:'Nivel 3 — Combinadas'},
   cs:{1:'Nivel 1 — Suma/resta/mult.',2:'Nivel 2 — + División y potencias',3:'Nivel 3 — + Raíces'},
@@ -2210,6 +2215,50 @@ const LEVEL_NAMES = {
   sp:{1:'Nivel 1 — Suma y Resta',2:'Nivel 2 — Multiplicación',3:'Nivel 3 — División',
       4:'Nivel 4 — Potenciación',5:'Nivel 5 — Radicación',6:'Nivel 6 — Varias operaciones'}
 };
+
+function getExerciseInstruction(pfx, lvl) {
+  const instructions = {
+    sr: {
+      1: 'Calcula las siguientes sumas y restas.',
+      2: 'Calcula las siguientes sumas y restas.',
+      3: 'Calcula las siguientes sumas y restas.'
+    },
+    mu: {
+      1: 'Calcula.',
+      2: 'Calcula.',
+      3: 'Calcula.',
+      4: 'Resuelve.',
+      5: 'Encuentra el factor faltante.',
+      6: 'Escribe dos pares de posibles factores que cumplan las consignas dadas.',
+      7: 'Completa el cuadro hallando el producto en cada caso.'
+    },
+    dv: {
+      1: 'Efectúa las siguientes divisiones.',
+      2: 'Efectúa las siguientes divisiones.'
+    },
+    po: {
+      1: 'Calcula.',
+      2: 'Aplica las propiedades de la potenciación y calcula.',
+      3: 'Aplica las propiedades de la potenciación y calcula.'
+    },
+    ra: {
+      1: 'Halla las raíces cuadradas.',
+      2: 'Calcula.',
+      3: 'Resuelve.'
+    },
+    cs: {
+      1: 'Resuelve las operaciones combinadas.',
+      2: 'Resuelve las operaciones combinadas.',
+      3: 'Resuelve las operaciones combinadas.'
+    },
+    cc: {
+      1: 'Resuelve las operaciones combinadas.',
+      2: 'Resuelve las operaciones combinadas.',
+      3: 'Resuelve las operaciones combinadas.'
+    }
+  };
+  return instructions[pfx] && instructions[pfx][lvl] ? instructions[pfx][lvl] : '';
+}
 
 // ═══════════════════════════════════════════
 // RENDER
@@ -2249,6 +2298,13 @@ function generateTopic(pfx) {
   ejercicios.forEach(e => {
     if (e.lvl !== currentLvl) {
       currentLvl = e.lvl;
+      if (LEVEL_NAMES[pfx] && LEVEL_NAMES[pfx][e.lvl]) {
+        ejHTML += `<div class="level-header">${LEVEL_NAMES[pfx][e.lvl]}</div>`;
+      }
+      const instruction = getExerciseInstruction(pfx, e.lvl);
+      if (instruction) {
+        ejHTML += `<p style="font-size:0.88rem;color:#444;margin:4px 0 10px;grid-column:1 / -1">${instruction}</p>`;
+      }
     }
     const wsMapTopic = { sr:null, mu:null, dv:null, po:null, ra:null, cs:'work-space-xl', cc:'work-space-xl' };
     const wsSize = (pfx in wsMapTopic) ? wsMapTopic[pfx] : 'work-space-md';
@@ -2436,7 +2492,7 @@ function generatePC() {
       ejHTML += `<div class="ej-item">
         <div class="ej-num">${ejNum}</div>
         <div>
-          <p style="margin:0 0 6px;font-size:0.9rem">Ubica los siguientes puntos en el plano cartesiano:</p>
+          <p style="margin:0 0 6px;font-size:0.9rem">Ubica los siguientes puntos en el plano.</p>
           ${tabla}
           ${pcSVGEmpty(SIZE)}
         </div>
@@ -2469,7 +2525,7 @@ function generatePC() {
       ejHTML += `<div class="ej-item">
         <div class="ej-num">${ejNum}</div>
         <div>
-          <p style="margin:0 0 8px;font-size:0.9rem">Escribí las coordenadas de cada punto indicado en el plano:</p>
+          <p style="margin:0 0 8px;font-size:0.9rem">Escribe las coordenadas del gráfico.</p>
           <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
             ${pcSVGWithPoints(pts, labels, SIZE)}
             ${tablaAlumno}
@@ -3072,6 +3128,8 @@ function generateSP() {
   problemas.forEach(p => {
     if (p.lvl !== currentLvl) {
       currentLvl = p.lvl;
+      ejHTML += `<div class="level-header">${lvlLabels[p.lvl]}</div>`;
+      ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px">Resuelve los siguientes problemas.</p>';
     }
     ejHTML += `<div class="sp-item">
       <span class="ej-num">${p.id}.</span>
