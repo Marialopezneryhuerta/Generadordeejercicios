@@ -1263,13 +1263,27 @@ function generateEnteros() {
   // Agrupar por operación si hay más de una
   const multiOp = activePfx.length > 1;
   let lastPfx = null;
+  let lastLvl = null;
   let ejHTML = '<div class="ejercicios-list">';
   ejercicios.forEach(function(e) {
-    if (multiOp && e._pfx !== lastPfx) {
+    const changedGroup = multiOp
+      ? (e._pfx !== lastPfx || e.lvl !== lastLvl)
+      : (e.lvl !== lastLvl);
+
+    if (changedGroup) {
       lastPfx = e._pfx;
-      ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].label + ' — ' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
-    } else if (!multiOp && e.lvl !== lastPfx) {
-      lastPfx = e.lvl;
+      lastLvl = e.lvl;
+
+      if (multiOp) {
+        ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].label + ' — ' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
+      } else {
+        ejHTML += '<div class="level-header">' + ENT_OPS[e._pfx].levels[e.lvl] + '<\/div>';
+      }
+
+      const instruction = getExerciseInstruction(e._pfx, e.lvl);
+      if (instruction) {
+        ejHTML += '<p style="font-size:0.88rem;color:#444;margin:4px 0 10px;grid-column:1 / -1">' + instruction + '<\/p>';
+      }
     }
     const wsMapEnt = { sr:null, mu:null, dv:null, po:null, ra:null, cs:'work-space-xl', cc:'work-space-xl' };
     const wsFinal = (e._pfx in wsMapEnt) ? wsMapEnt[e._pfx] : 'work-space-md';
