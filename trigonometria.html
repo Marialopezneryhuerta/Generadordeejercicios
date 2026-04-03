@@ -1240,6 +1240,54 @@ function rndNZ(a, b) { let v; do { v = rnd(a, b); } while (v === 0); return v; }
 function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
 function simplify(n, d) { if (d < 0) { n = -n; d = -d; } const g = gcd(Math.abs(n), d); return [n/g, d/g]; }
 
+// Estima cuánta cuadrícula necesita cada ejercicio para ahorrar hojas
+// sin dejar ejercicios "apretados".
+function estimateWorkspaceClass(input) {
+  const expr = String((input && (input.expr || input.text || input.enunciado)) || "");
+  const sol = String((input && input.sol) || "");
+  const level = Number((input && (input.level || input.lvl)) || 1);
+  const min = String((input && input.min) || "xs");
+
+  const plain = (expr + " " + sol)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&[a-zA-Z0-9#]+;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const exprLen = plain.length;
+  const trigCount = (plain.match(/\b(sen|cos|tg|cotg|sec|cosec)\b/gi) || []).length;
+  const fracCount = (expr.match(/frac|\/|\\sqrt|√|sup|\^|&minus;|&middot;/gi) || []).length;
+  const parenCount = (expr.match(/[()]/g) || []).length;
+
+  let score = 0;
+  if (exprLen > 55) score += 1;
+  if (exprLen > 95) score += 1;
+  if (exprLen > 140) score += 1;
+  if (trigCount >= 4) score += 1;
+  if (trigCount >= 7) score += 1;
+  if (fracCount >= 2) score += 1;
+  if (fracCount >= 5) score += 1;
+  if (parenCount >= 6) score += 1;
+  if (sol.length > 110) score += 1;
+  if (level >= 3) score += 1;
+
+  // Modo más compacto para ahorrar papel.
+  score = Math.max(0, score - 1);
+
+  let size = "xs";
+  if (score <= 0) size = "xs";
+  else if (score === 1) size = "sm";
+  else if (score === 2) size = "md";
+  else if (score === 3) size = "lg";
+  else if (score === 4) size = "xl";
+  else size = "xxl";
+
+  const order = { xs: 0, sm: 1, md: 2, lg: 3, xl: 4, xxl: 5 };
+  if ((order[size] ?? 0) < (order[min] ?? 0)) size = min;
+
+  return "work-space-" + size;
+}
+
 function renderEjercitario(ejercicios, containerId, titulo) {
   const levelNames_lin = ['','Solo números naturales','Números enteros','Fracciones','Paréntesis','Fracciones + paréntesis'];
   const levelNames_exp = ['','Igualar bases directamente','Exponente lineal (ax+b) y fracciones invertidas','Factor común (x+1, x−1)'];
@@ -1264,7 +1312,8 @@ function renderEjercitario(ejercicios, containerId, titulo) {
       currentLevel = e.level;
       header = `<div style="grid-column:1/-1;font-size:0.68rem;color:#aaa;text-transform:uppercase;letter-spacing:0.08em;padding-top:0.6rem;border-top:1px dashed #ddd;margin-top:0.4rem">Nivel ${e.level} — ${levelNames[e.level]}</div>`;
     }
-    return header + `<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><span class="ej-expr">${e.expr}</span><div class="work-space work-space-lg"></div></div></div>`;
+    const ws = estimateWorkspaceClass({ expr: e.expr, sol: e.sol, level: e.level, min: 'sm' });
+    return header + `<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><span class="ej-expr">${e.expr}</span><div class="work-space ${ws}"></div></div></div>`;
   }).join('');
 
   const solHTML = ejercicios.map(e =>
@@ -1462,10 +1511,10 @@ function getEjercitarioPDFCss() {
     '.ej-data-row{margin-bottom:1.4rem}',
     '.ej-header{border-bottom:2px solid #dde2f0;padding-bottom:1rem;margin-bottom:1.8rem}',
     '.level-header,.sp-level-header,.sol-title,.fc-section-title,.ri-section-title,.not-section-title,.ineq-section-title,.ineqc-section-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding:.3rem 0;margin-top:.8rem;border-bottom:1px dashed #dde2f0;display:block}',
-    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem;margin-bottom:2rem}',
-    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start}',
+    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr;gap:.5rem 0;margin-bottom:2rem}',
+    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start;break-inside:avoid-page;page-break-inside:avoid}',
     '.ej-num,.sp-num{font-weight:900;font-size:.82rem;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
-    '.ej-content{flex:1;min-width:0}',
+    '.ej-content{flex:1;min-width:0;break-inside:avoid-page;page-break-inside:avoid}',
     '.ej-question,.ej-expr{font-size:.97rem;line-height:1.55}',
     '.soluciones-section,.sol-section{margin-top:1rem;padding:.5rem .8rem;background:#f9fafb;border-radius:6px}',
     '.solutions-title,.sol-title,.sp-sol-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding-top:1.4rem;border-top:2px solid #dde2f0;margin-bottom:.8rem;margin-top:2rem;display:block}',
@@ -3198,7 +3247,7 @@ function generateFormulas() {
       <span class="ej-num">(${e.id})</span>
       <div class="ej-content">
         <span class="ej-expr">${e.expr}</span>
-        <div class="work-space work-space-lg"></div>
+        <div class="work-space ${estimateWorkspaceClass({ expr: e.expr, sol: e.sol, level: 2, min: 'sm' })}"></div>
       </div>
     </div>`;
   });
@@ -3480,7 +3529,7 @@ function generateFormulasRad() {
       <span class="ej-num">(${e.id})</span>
       <div class="ej-content">
         <span class="ej-expr">${e.expr}</span>
-        <div class="work-space work-space-lg"></div>
+        <div class="work-space ${estimateWorkspaceClass({ expr: e.expr, sol: e.sol, level: 2, min: 'sm' })}"></div>
       </div>
     </div>`;
   });
@@ -3773,7 +3822,7 @@ function renderIdentidades(ejercicios, containerId, titulo) {
             '<div class="ident-expr">' + e.expr + '</div>' +
           '</div>' +
         '</div>' +
-        '<div class="work-space work-space-xl"></div>' +
+        '<div class="work-space ' + estimateWorkspaceClass({ expr: e.expr, sol: e.sol, level: e.level, min: 'md' }) + '"></div>' +
       '</div>';
   }).join('');
   const solHTML = ejercicios.map(e =>
@@ -4380,7 +4429,7 @@ function generateTrigrect() {
       html += '<span class="ej-num">(' + n + ')</span>';
       if (item.svg) html += item.svg;
       html += '<div class="ej-enun">' + item.enunciado + '</div>';
-      html += '<div class="work-space work-space-md"></div>';
+      html += '<div class="work-space ' + estimateWorkspaceClass({ enunciado: item.enunciado, sol: item.sol, lvl: lvl, min: 'sm' }) + '"></div>';
       html += '</div>';
       trSoluciones.push({ n: n, sol: item.sol || '' });
     }
@@ -4894,7 +4943,7 @@ function generateFfc() {
     ejHTML += '<div class="ej-item">' +
       '<span class="ej-num">(' + e.id + ')</span>' +
       '<div class="ej-enun">' + e.expr + '</div>' +
-      '<div class="work-space work-space-lg"></div>' +
+      '<div class="work-space ' + estimateWorkspaceClass({ expr: e.expr, sol: e.sol, lvl: e.lvl, min: 'sm' }) + '"></div>' +
       '</div>';
   });
   ejHTML += '</div>';
