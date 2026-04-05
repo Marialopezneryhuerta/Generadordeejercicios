@@ -1805,7 +1805,7 @@ function renderEjItems(){
     div.className='ej-item'+(yaAgregado?' agregado':'');
     div.innerHTML=`
       <div class="ej-item-top">
-        <div class="ej-expr-wrap">${item.expr}${item.graphHtmlQuestion||item.graphHtml||''}</div>
+        <div class="ej-expr-wrap">${item.expr}${item.graphHtmlQuestion !== undefined ? item.graphHtmlQuestion : (item.graphHtml||'')}</div>
         <div class="ej-item-actions">
           ${yaAgregado
             ?`<span class="ej-agregado-badge">✓ Agregado</span>`
@@ -2004,7 +2004,7 @@ function buildDocHTML(){
           <div class="doc-ej-block">
             <div class="doc-ej">
               <span class="doc-ej-num">(${n})</span>
-              <span class="doc-ej-expr">${ej.expr}${ej.graphHtmlQuestion||ej.graphHtml||''}</span>
+              <span class="doc-ej-expr">${ej.expr}${ej.graphHtmlQuestion !== undefined ? ej.graphHtmlQuestion : (ej.graphHtml||'')}</span>
             </div>
             ${ej.tabla||''}
             ${svgGrid}
@@ -2023,7 +2023,7 @@ function buildDocHTML(){
       ${tema.ejercicios.map(ej=>`
         <div class="sol-item">
           <div class="sol-item-num">Ejercicio (${ejNum++})</div>
-          <div class="sol-item-expr">${ej.expr}${ej.graphHtmlSol||ej.graphHtml||''}</div>
+          <div class="sol-item-expr">${ej.expr}${ej.graphHtmlSol !== undefined ? ej.graphHtmlSol : (ej.graphHtml||'')}</div>
           ${ej.tablaKey||''}
           ${(ej.steps||[]).map((s,i)=>`<div class="sol-step"><span class="sol-sn">${i+1}.</span><span>${s}</span></div>`).join('')}
           <div class="sol-final">✓ ${ej.sol}</div>
