@@ -922,10 +922,10 @@ function getEjercitarioPDFCss() {
     '.ej-data-row{margin-bottom:1.4rem}',
     '.ej-header{border-bottom:2px solid #dde2f0;padding-bottom:1rem;margin-bottom:1.8rem}',
     '.level-header,.sp-level-header,.sol-title,.fc-section-title,.ri-section-title,.not-section-title,.ineq-section-title,.ineqc-section-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding:.3rem 0;margin-top:.8rem;border-bottom:1px dashed #dde2f0;display:block}',
-    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem;margin-bottom:2rem}',
-    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start}',
+    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr;gap:.5rem 0;margin-bottom:2rem}',
+    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start;break-inside:avoid-page;page-break-inside:avoid}',
     '.ej-num,.sp-num{font-weight:900;font-size:.82rem;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
-    '.ej-content{flex:1;min-width:0}',
+    '.ej-content{flex:1;min-width:0;break-inside:avoid-page;page-break-inside:avoid}',
     '.ej-question,.ej-expr{font-size:.97rem;line-height:1.55}',
     '.soluciones-section,.sol-section{margin-top:1rem;padding:.5rem .8rem;background:#f9fafb;border-radius:6px}',
     '.solutions-title,.sol-title,.sp-sol-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding-top:1.4rem;border-top:2px solid #dde2f0;margin-bottom:.8rem;margin-top:2rem;display:block}',
@@ -2739,11 +2739,18 @@ function generateRectas() {
   const fecha = new Date().toLocaleDateString('es-AR', { day:'numeric', month:'long', year:'numeric' });
   let ejHTML = '<div class="ejercicios-list">';
   ejercicios.forEach(e => {
+    const graphInQuestion = e.showGraphInQuestion && e.graph
+      ? `<div class="ej-graph">${e.graph}</div>`
+      : '';
+    const needsGraphWorkspace = e.tema === 'Distancia entre dos puntos' || e.tema === 'Punto medio';
+    const graphWorkspace = needsGraphWorkspace ? '<div class="work-space work-space-xxl"></div>' : '';
     ejHTML += `<div class="ejercicio-item">
       <span class="ej-num">(${e.id})</span>
       <div class="ej-content">
         <div style="font-family:'Nunito',sans-serif;font-size:0.65rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem">${e.tema}</div>
         <div class="ej-question">${e.expr}</div>
+        ${graphInQuestion}
+        ${graphWorkspace}
       </div>
     </div>`;
   });
