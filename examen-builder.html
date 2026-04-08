@@ -487,7 +487,7 @@ body { padding-bottom: 2.5rem; }
             <button class="fmt-btn" id="fmt-i" title="Cursiva" onclick="toggleFmt('italic')"><i>I</i></button>
             <button class="fmt-btn" id="fmt-u" title="Subrayado" onclick="toggleFmt('underline')"><u>U</u></button>
           </div>
-          <div id="titulo-tema-input" contenteditable="true" style="border:2px solid var(--border);border-radius:10px;padding:0.6rem 0.9rem;font-family:'Nunito Sans',sans-serif;font-size:0.92rem;min-height:40px;outline:none;transition:border-color 0.15s" onfocus="this.style.borderColor='var(--exam)'" onblur="this.style.borderColor='var(--border)'">Resolvé los siguientes ejercicios</div>
+          <div id="titulo-tema-input" contenteditable="true" style="border:2px solid var(--border);border-radius:10px;padding:0.6rem 0.9rem;font-family:'Nunito Sans',sans-serif;font-size:0.92rem;min-height:40px;outline:none;transition:border-color 0.15s" onfocus="this.style.borderColor='var(--exam)'" onblur="this.style.borderColor='var(--border)'">Resuelve.</div>
         </div>
         <div class="field-group">
           <label>Indicadores de logro y ponderación</label>
@@ -1968,7 +1968,7 @@ function finalizarTema(){
   STATE.temaActual={titulo:'',indicadores:[],ejercicios:[]};
   STATE.temaIndex++;
   // Reset UI
-  document.getElementById('titulo-tema-input').innerHTML='Resolvé los siguientes ejercicios';
+  document.getElementById('titulo-tema-input').innerHTML='Resuelve.';
   document.querySelectorAll('.rama-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('card-subtemas').style.display='none';
   document.getElementById('card-ejercicios').style.display='none';
