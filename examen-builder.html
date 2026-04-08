@@ -153,6 +153,12 @@ nav { background: var(--white); border-bottom: 1px solid var(--border); padding:
 .ind-del:hover { color: var(--red); }
 .btn-add-ind { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; background: none; border: 1.5px dashed var(--border); color: var(--muted); padding: 0.4rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.15s; margin-top: 0.5rem; }
 .btn-add-ind:hover { border-color: var(--exam); color: var(--exam); }
+.ind-suger-wrap { margin-top: 0.7rem; }
+.ind-suger-title { font-family: 'Nunito', sans-serif; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.45rem; }
+.ind-suger-list { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.ind-suger-btn { font-family: 'Nunito Sans', sans-serif; font-size: 0.78rem; color: var(--ink); background: var(--bg); border: 1.5px solid var(--border); border-radius: 999px; padding: 0.4rem 0.75rem; cursor: pointer; transition: all 0.15s; text-align: left; }
+.ind-suger-btn:hover { border-color: var(--exam); color: var(--exam); background: var(--exam-light); }
+.ind-suger-empty { font-size: 0.78rem; color: var(--muted); }
 .ind-pts-total { font-family: 'Nunito', sans-serif; font-size: 0.8rem; font-weight: 800; color: var(--exam); margin-top: 0.5rem; text-align: right; }
 
 /* BTN GENERAR EJERCICIOS */
@@ -490,6 +496,12 @@ body { padding-bottom: 2.5rem; }
             <tbody id="ind-tbody"></tbody>
           </table>
           <button class="btn-add-ind" onclick="addIndicador()">+ Agregar indicador</button>
+          <div class="ind-suger-wrap">
+            <div class="ind-suger-title">Sugerencias</div>
+            <div class="ind-suger-list" id="ind-suger-list">
+              <span class="ind-suger-empty">Generá ejercicios para ver indicadores sugeridos según el tema.</span>
+            </div>
+          </div>
           <div class="ind-pts-total" id="ind-pts-total">Total: 0 pts.</div>
         </div>
       </div>
@@ -1579,6 +1591,17 @@ const GRUPOS = {
   ],
 };
 
+const INDICADORES_SUGERIDOS = {
+  'ec-lin': [
+    'Resuelve correctamente ecuaciones con números naturales.',
+    'Resuelve correctamente ecuaciones con números enteros.',
+    'Resuelve correctamente ecuaciones con fracciones.',
+    'Resuelve correctamente ecuaciones que incluyen signos de agrupación.',
+    'Obtiene la respuesta correcta.',
+    'Verifica correctamente la solución obtenida.'
+  ]
+};
+
 // contadores: { "st-id__nivel": cantidad }
 let contadores = {};
 
@@ -1745,6 +1768,7 @@ function generarEjerciciosTema(){
   // Guardar IDs de subtemas usados (para capacidad MEC)
   STATE.temaActual.subtemasUsados = Object.entries(contadores)
     .filter(([,v])=>v>0).map(([k])=>k.split('__')[0]);
+  renderIndicadoresSugeridos(STATE.temaActual.subtemasUsados);
 
   // Título automático con los grupos activos
   const gruposActivos = [];
@@ -1761,9 +1785,52 @@ function generarEjerciciosTema(){
   document.getElementById('card-ejercicios').scrollIntoView({behavior:'smooth', block:'start'});
 }
 let indRows=[];
+function indRowsVacios(){
+  return indRows.every(r => !String(r.texto || '').trim() && !(r.pts || 0));
+}
+function getIndicadoresSugeridos(ids){
+  const seen = new Set();
+  const rows = [];
+  ids.forEach(id => {
+    (INDICADORES_SUGERIDOS[id] || []).forEach(texto => {
+      if(seen.has(texto)) return;
+      seen.add(texto);
+      rows.push({texto:texto, pts:0});
+    });
+  });
+  return rows;
+}
+function renderIndicadoresSugeridos(ids){
+  const sugeridos = getIndicadoresSugeridos(ids);
+  const wrap = document.getElementById('ind-suger-list');
+  if(!wrap) return;
+  if(!sugeridos.length){
+    wrap.innerHTML = '<span class="ind-suger-empty">No hay sugerencias disponibles para esta selección todavía.</span>';
+    return;
+  }
+  wrap.innerHTML = sugeridos.map(function(row){
+    const txt = row.texto.replace(/"/g,'&quot;');
+    return '<button class="ind-suger-btn" onclick="addIndicadorSugerido(&quot;'+txt+'&quot;)">'+row.texto+'</button>';
+  }).join('');
+}
+function addIndicadorSugerido(texto){
+  const limpio = String(texto || '').trim();
+  if(!limpio) return;
+  const existe = indRows.some(r => String(r.texto || '').trim() === limpio);
+  if(existe) return;
+  if(indRowsVacios()){
+    indRows = [{texto:limpio, pts:0}];
+  } else if(indRows.length < 8){
+    indRows.push({texto:limpio, pts:0});
+  } else {
+    return;
+  }
+  renderIndRows();
+}
 function renderIndTable(){
   indRows=[{texto:'',pts:0},{texto:'',pts:0}];
   renderIndRows();
+  renderIndicadoresSugeridos([]);
 }
 function renderIndRows(){
   const tbody=document.getElementById('ind-tbody');
