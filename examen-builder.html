@@ -1819,9 +1819,9 @@ function addIndicadorSugerido(texto){
   const existe = indRows.some(r => String(r.texto || '').trim() === limpio);
   if(existe) return;
   if(indRowsVacios()){
-    indRows = [{texto:limpio, pts:0}];
+    indRows = [{texto:limpio, pts:1}];
   } else if(indRows.length < 8){
-    indRows.push({texto:limpio, pts:0});
+    indRows.push({texto:limpio, pts:1});
   } else {
     return;
   }
