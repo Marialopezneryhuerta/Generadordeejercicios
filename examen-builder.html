@@ -538,27 +538,32 @@ body { padding-bottom: 2.5rem; }
 
           <div class="field-group field-full">
             <label>Nombre del colegio / institución</label>
-            <input type="text" id="h-nombre" placeholder="Ej: Colegio Campoalto">
+            <input type="text" id="h-nombre" list="hist-h-nombre" placeholder="Ej: Colegio Campoalto">
+            <datalist id="hist-h-nombre"></datalist>
           </div>
 
           <div class="field-group">
             <label>Departamento / área</label>
-            <input type="text" id="h-depto" placeholder="Ej: Departamento de Evaluación">
+            <input type="text" id="h-depto" list="hist-h-depto" placeholder="Ej: Departamento de Evaluación">
+            <datalist id="hist-h-depto"></datalist>
           </div>
 
           <div class="field-group">
             <label>Nivel / ciclo</label>
-            <input type="text" id="h-nivel" placeholder="Ej: Tercer Ciclo y Nivel Medio">
+            <input type="text" id="h-nivel" list="hist-h-nivel" placeholder="Ej: Tercer Ciclo y Nivel Medio">
+            <datalist id="hist-h-nivel"></datalist>
           </div>
 
           <div class="field-group">
             <label>Docente</label>
-            <input type="text" id="h-docente" placeholder="Nombre del docente">
+            <input type="text" id="h-docente" list="hist-h-docente" placeholder="Nombre del docente">
+            <datalist id="hist-h-docente"></datalist>
           </div>
 
           <div class="field-group">
             <label>Asignatura</label>
-            <input type="text" id="h-asig" placeholder="Ej: Matemática" value="Matemática">
+            <input type="text" id="h-asig" list="hist-h-asig" placeholder="Ej: Matemática" value="Matemática">
+            <datalist id="hist-h-asig"></datalist>
           </div>
 
           <div class="field-group">
@@ -568,17 +573,18 @@ body { padding-bottom: 2.5rem; }
 
           <div class="field-group">
             <label>Curso / Grado</label>
-            <input type="text" id="h-curso" placeholder="Ej: Primer Curso &quot;CS&quot; Fila 1">
+            <input type="text" id="h-curso" list="hist-h-curso" placeholder="Ej: Primer Curso &quot;CS&quot; Fila 1">
+            <datalist id="hist-h-curso"></datalist>
           </div>
 
           <div class="field-group field-full">
             <label>Tipo de examen</label>
             <div class="tipo-chips" id="tipo-chips">
-              <button class="tipo-chip sel" onclick="selTipo(this,'Evaluación de Proceso')">Proceso</button>
-              <button class="tipo-chip" onclick="selTipo(this,'Evaluación de Cierre')">Cierre</button>
-              <button class="tipo-chip" onclick="selTipo(this,'Evaluación de Cierre de Etapa')">Cierre de Etapa</button>
-              <button class="tipo-chip" onclick="selTipo(this,'Prueba Diagnóstica')">Diagnóstico</button>
-              <button class="tipo-chip" onclick="selTipo(this,'Recuperación')">Recuperación</button>
+              <button class="tipo-chip sel" data-tipo="Evaluación de Proceso" onclick="selTipo(this,'Evaluación de Proceso')">Proceso</button>
+              <button class="tipo-chip" data-tipo="Evaluación de Cierre" onclick="selTipo(this,'Evaluación de Cierre')">Cierre</button>
+              <button class="tipo-chip" data-tipo="Evaluación de Cierre de Etapa" onclick="selTipo(this,'Evaluación de Cierre de Etapa')">Cierre de Etapa</button>
+              <button class="tipo-chip" data-tipo="Prueba Diagnóstica" onclick="selTipo(this,'Prueba Diagnóstica')">Diagnóstico</button>
+              <button class="tipo-chip" data-tipo="Recuperación" onclick="selTipo(this,'Recuperación')">Recuperación</button>
             </div>
           </div>
 
@@ -1998,10 +2004,97 @@ function irAEncabezado(){
 // ══════════════════════════════════════════════════════════════
 // ENCABEZADO
 // ══════════════════════════════════════════════════════════════
+const EB_HDR_STORAGE_KEY = 'exam_builder_header_prefs_v1';
+const EB_HDR_HISTORY_FIELDS = ['h-nombre','h-depto','h-nivel','h-docente','h-asig','h-curso'];
+const EB_HDR_VALUE_FIELDS = ['h-nombre','h-depto','h-nivel','h-docente','h-asig','h-curso','h-exig','h-fecha'];
+
+function ebHdrReadPrefs(){
+  try{
+    return JSON.parse(localStorage.getItem(EB_HDR_STORAGE_KEY) || '{}') || {};
+  }catch(e){
+    return {};
+  }
+}
+function ebHdrWritePrefs(data){
+  try{
+    localStorage.setItem(EB_HDR_STORAGE_KEY, JSON.stringify(data));
+  }catch(e){}
+}
+function ebHdrRenderHistory(history){
+  EB_HDR_HISTORY_FIELDS.forEach(function(id){
+    const list = document.getElementById('hist-' + id);
+    if(!list) return;
+    list.innerHTML = ((history && history[id]) || []).map(function(v){
+      return '<option value="' + String(v).replace(/"/g,'&quot;') + '"></option>';
+    }).join('');
+  });
+}
+function ebHdrApplyTipo(tipo){
+  if(!tipo) return;
+  const btn = Array.from(document.querySelectorAll('.tipo-chip')).find(function(b){
+    return b.dataset.tipo === tipo;
+  });
+  if(btn) selTipo(btn, tipo, true);
+}
+function ebHdrSave(){
+  const prev = ebHdrReadPrefs();
+  const data = {
+    values: Object.assign({}, prev.values || {}),
+    history: Object.assign({}, prev.history || {}),
+    tipoExamen: STATE.tipoExamen || prev.tipoExamen || 'Evaluación de Proceso',
+    indicaciones: document.getElementById('h-indicaciones') ? document.getElementById('h-indicaciones').innerHTML : (prev.indicaciones || '')
+  };
+  EB_HDR_VALUE_FIELDS.forEach(function(id){
+    const el = document.getElementById(id);
+    if(el) data.values[id] = el.value || '';
+  });
+  EB_HDR_HISTORY_FIELDS.forEach(function(id){
+    const val = (data.values[id] || '').trim();
+    const arr = Array.isArray(data.history[id]) ? data.history[id] : [];
+    if(val){
+      data.history[id] = [val].concat(arr.filter(function(x){ return x !== val; })).slice(0,8);
+    } else {
+      data.history[id] = arr.slice(0,8);
+    }
+  });
+  ebHdrWritePrefs(data);
+  ebHdrRenderHistory(data.history);
+}
+function ebHdrLoad(){
+  const data = ebHdrReadPrefs();
+  const values = data.values || {};
+  EB_HDR_VALUE_FIELDS.forEach(function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(values[id] !== undefined && values[id] !== '') el.value = values[id];
+  });
+  if(document.getElementById('h-indicaciones') && data.indicaciones){
+    document.getElementById('h-indicaciones').innerHTML = data.indicaciones;
+  }
+  ebHdrRenderHistory(data.history || {});
+  ebHdrApplyTipo(data.tipoExamen);
+}
+function ebHdrInit(){
+  EB_HDR_VALUE_FIELDS.forEach(function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', ebHdrSave);
+    el.addEventListener('change', ebHdrSave);
+    el.addEventListener('blur', ebHdrSave);
+  });
+  const indic = document.getElementById('h-indicaciones');
+  if(indic){
+    indic.addEventListener('input', ebHdrSave);
+    indic.addEventListener('blur', ebHdrSave);
+  }
+  ebHdrLoad();
+}
+
 function selTipo(btn,tipo){
   document.querySelectorAll('.tipo-chip').forEach(b=>b.classList.remove('sel'));
   btn.classList.add('sel');
   STATE.tipoExamen=tipo;
+  ebHdrSave();
 }
 function handleLogo(input){
   if(!input.files[0])return;
@@ -8750,6 +8843,7 @@ function eb_notFilaGen(){
     return{expr:'Completá las notaciones faltantes:<br>'+row,sol:'Intervalo: '+notI+' | Desigualdad: '+notD+' | Conjunto: '+notC+' | Tipo: '+d.nombre};
   }catch(e){return null;}
 }
+ebHdrInit();
 </script>
 <div class="site-footer">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</div>
 </body>
