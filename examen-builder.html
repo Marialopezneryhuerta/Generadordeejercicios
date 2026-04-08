@@ -536,6 +536,10 @@ body { padding-bottom: 2.5rem; }
               <img id="logo-preview" alt="Logo">
               <p id="logo-text">📷 <span>Subir logo</span> · PNG, JPG o SVG</p>
             </div>
+            <div style="margin-top:0.8rem;display:flex;gap:0.6rem;flex-wrap:wrap">
+              <button class="btn-hdr-save" onclick="ebHdrSaveManual()">Guardar datos</button>
+              <button class="btn-hdr-save" onclick="ebHdrLoadManual()">Cargar datos guardados</button>
+            </div>
           </div>
 
           <div class="field-group field-full">
@@ -615,8 +619,6 @@ body { padding-bottom: 2.5rem; }
 
         </div>
         <div style="margin-top:1.2rem;display:flex;gap:0.8rem;flex-wrap:wrap">
-          <button class="btn-hdr-save" onclick="ebHdrSaveManual()">Guardar datos</button>
-          <button class="btn-hdr-save" onclick="ebHdrLoadManual()">Cargar datos guardados</button>
           <button onclick="abrirPreview()" style="flex:1;min-width:160px;font-family:'Nunito',sans-serif;font-size:0.95rem;font-weight:800;background:linear-gradient(135deg,#0ea5e9,#4f6ef7);color:white;border:none;padding:0.9rem;border-radius:12px;cursor:pointer;box-shadow:0 3px 14px rgba(14,165,233,0.3);transition:all 0.2s" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">👁 Vista previa del examen</button>
           <button onclick="goScreen('screen-tema')" style="font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:700;background:var(--white);color:var(--ink);border:2px solid var(--border);padding:0.9rem 1.2rem;border-radius:12px;cursor:pointer">← Volver a ejercicios</button>
         </div>
