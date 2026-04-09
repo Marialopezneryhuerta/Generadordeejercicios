@@ -716,6 +716,7 @@ function indGetTablaHTML(containerId) {
 }
 
 function gaGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   const widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -733,6 +734,7 @@ function gaGetCapacidadHTML() {
 }
 
 function gaGetCapacidadRectasHTML() {
+  if (!window._ejModoConIndicadores) return '';
   const widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -748,6 +750,7 @@ function gaGetCapacidadRectasHTML() {
 }
 
 function gaGetCapacidadAnguloAreaDistHTML() {
+  if (!window._ejModoConIndicadores) return '';
   const widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -2893,6 +2896,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ── CHIP 2: mostrar indicadores en primer + / CHIP 1: ocultar widget ── */
 (function() {
   var modo = localStorage.getItem('ejInd_modo');
+  window._ejModoConIndicadores = (modo === '2');
 
   // Chip 1: ocultar el widget de indicadores completamente
   if (modo === '1') {

@@ -767,6 +767,7 @@ function indGetTablaHTML(containerId) {
   return `<div class="ind-table-wrap"><table class="ind-table"><thead><tr><th>Indicadores</th><th>Puntaje</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function fcGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   const widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -3918,6 +3919,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ── CHIP 2: mostrar indicadores en primer + / CHIP 1: ocultar widget ── */
 (function() {
   var modo = localStorage.getItem('ejInd_modo');
+  window._ejModoConIndicadores = (modo === '2');
 
   // Chip 1: ocultar el widget de indicadores completamente
   if (modo === '1') {

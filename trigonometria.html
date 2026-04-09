@@ -1174,6 +1174,7 @@ function indGetTablaHTML(containerId) {
   return `<div class="ind-table-wrap"><table class="ind-table"><thead><tr><th>Indicadores</th><th>Puntaje</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 function convGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -1190,6 +1191,7 @@ function convGetCapacidadHTML() {
 
 
 function fmGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -1206,6 +1208,7 @@ function fmGetCapacidadHTML() {
 }
 
 function trigGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -1222,6 +1225,7 @@ function trigGetCapacidadHTML() {
   '</div>';
 }
 function triOblGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -1237,6 +1241,7 @@ function triOblGetCapacidadHTML() {
 }
 
 function eqIdGetCapacidadHTML() {
+  if (!window._ejModoConIndicadores) return '';
   var widget = document.getElementById('ind-widget');
   if (!widget || widget.style.display === 'none') return '';
   return '<div class="cap-box">' +
@@ -5567,6 +5572,7 @@ function generateArc(returnOnly, startId) {
 /* ── CHIP 2: mostrar indicadores en primer + / CHIP 1: ocultar widget ── */
 (function() {
   var modo = localStorage.getItem('ejInd_modo');
+  window._ejModoConIndicadores = (modo === '2');
 
   // Chip 1: ocultar el widget de indicadores completamente
   if (modo === '1') {
