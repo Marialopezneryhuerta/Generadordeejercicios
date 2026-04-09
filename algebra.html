@@ -4225,16 +4225,13 @@ function vnGen2() {
 
   const valMap = { a: aVal, b: bVal, c: cVal };
 
-  // Tipo de expresión: rotamos entre varios patrones
-  const type = rnd(0, 5);
+  // Favorece patrones con raíces, potencias y fracciones para diferenciarlo del nivel 1
+  const typePool = [1, 2, 3, 4, 5, 1, 3, 4, 5];
+  const type = typePool[rnd(0, typePool.length - 1)];
 
   let expr, result;
 
-  if (type === 0) {
-    // a² + b·c
-    result = aVal*aVal + bVal*cVal;
-    expr = `a² + b·c`;
-  } else if (type === 1) {
+  if (type === 1) {
     // √a + b/c  (fracción)
     const sqA = Math.sqrt(aVal);
     result = sqA + bVal/cVal; // puede no ser entero — lo mostramos como fracción
@@ -4288,86 +4285,80 @@ function vnGen2() {
 // ── Generador Nivel 3 ──
 // 2-4 variables, valores fraccionarios, todas las operaciones
 function vnGen3() {
-  const nVars = rnd(2, 4);
-  const varNames = ['x', 'y', 'z', 'w'].slice(0, nVars);
-
-  // Valores fraccionarios simples
+  const vars = ['x', 'y', 'z', 'w'];
+  const sqrtPool = [1, 4, 9, 16, 25, 36, 49, 64];
   const fracPool = [
-    {n:1,d:2}, {n:1,d:3}, {n:2,d:3}, {n:1,d:4}, {n:3,d:4},
-    {n:-1,d:2}, {n:-1,d:3}, {n:-2,d:3}, {n:2,d:5}, {n:3,d:5},
-    {n:-3,d:4}, {n:1,d:5}, {n:-2,d:5}
+    {n:1,d:2}, {n:2,d:3}, {n:3,d:4}, {n:4,d:5},
+    {n:-1,d:2}, {n:-2,d:3}, {n:5,d:2}, {n:3,d:2}
   ];
-  const vals = varNames.map(() => fracPool[rnd(0, fracPool.length-1)]);
-  const valMap = {};
-  varNames.forEach((v, i) => valMap[v] = vals[i]);
-
-  const type = rnd(0, 4);
-  let expr, resN, resD;
-
-  // Helpers de aritmética fraccionaria
+  const pickFrac = () => fracPool[rnd(0, fracPool.length - 1)];
+  const pickSqrt = () => sqrtPool[rnd(0, sqrtPool.length - 1)];
+  const fmtRoot = v => `√<span style="text-decoration:overline">${v}</span>`;
+  const fmtPow2 = v => `${v}²`;
+  const fmtPow3 = v => `${v}³`;
+  const fracHtml = (num, den) => `<span class="frac"><span class="num">${num}</span><span class="den">${den}</span></span>`;
+  const numToHtml = (n, d=1) => {
+    if (d === 1) return String(n);
+    return `<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+  };
   const addFrac = (n1,d1,n2,d2) => { const g = vnGcd(d1,d2); const lcd = d1/g*d2; return vnSimplify(n1*(lcd/d1)+n2*(lcd/d2), lcd); };
+  const subFrac = (n1,d1,n2,d2) => addFrac(n1,d1,-n2,d2);
   const mulFrac = (n1,d1,n2,d2) => vnSimplify(n1*n2, d1*d2);
   const divFrac = (n1,d1,n2,d2) => vnSimplify(n1*d2, d1*n2);
-  const subFrac = (n1,d1,n2,d2) => addFrac(n1,d1,-n2,d2);
 
-  if (type === 0 && nVars >= 2) {
-    // x + y
-    const [x, y] = [valMap[varNames[0]], valMap[varNames[1]]];
-    [resN, resD] = addFrac(x.n, x.d, y.n, y.d);
-    expr = `${varNames[0]} + ${varNames[1]}`;
-  } else if (type === 1 && nVars >= 2) {
-    // x · y + z (si hay 3)
-    const [x, y] = [valMap[varNames[0]], valMap[varNames[1]]];
-    const [mn, md] = mulFrac(x.n, x.d, y.n, y.d);
-    if (nVars >= 3) {
-      const z = valMap[varNames[2]];
-      [resN, resD] = addFrac(mn, md, z.n, z.d);
-      expr = `${varNames[0]} · ${varNames[1]} + ${varNames[2]}`;
-    } else {
-      [resN, resD] = [mn, md];
-      expr = `${varNames[0]} · ${varNames[1]}`;
-    }
-  } else if (type === 2 && nVars >= 2) {
-    // x / y
-    const [x, y] = [valMap[varNames[0]], valMap[varNames[1]]];
-    if (y.n === 0) return vnGen3();
-    [resN, resD] = divFrac(x.n, x.d, y.n, y.d);
-    expr = `<span class="frac"><span class="num">${varNames[0]}</span><span class="den">${varNames[1]}</span></span>`;
-  } else if (type === 3 && nVars >= 3) {
-    // (x + y) / z
-    const [x, y, z] = [valMap[varNames[0]], valMap[varNames[1]], valMap[varNames[2]]];
-    if (z.n === 0) return vnGen3();
-    const [sumN, sumD] = addFrac(x.n, x.d, y.n, y.d);
-    [resN, resD] = divFrac(sumN, sumD, z.n, z.d);
-    expr = `<span class="frac"><span class="num">${varNames[0]} + ${varNames[1]}</span><span class="den">${varNames[2]}</span></span>`;
+  const xVal = pickFrac();
+  const yVal = pickFrac();
+  const zVal = pickSqrt();
+  const wVal = pickSqrt();
+  const valMap = { x: xVal, y: yVal, z: {n:zVal,d:1}, w: {n:wVal,d:1} };
+
+  const type = rnd(0, 3);
+  let expr, resN, resD;
+
+  if (type === 0) {
+    expr = fracHtml(`${fmtPow2('x')} + ${fmtRoot('z')}`, `${fmtPow2('y')} + ${fmtRoot('w')}`);
+    const [x2n, x2d] = mulFrac(xVal.n, xVal.d, xVal.n, xVal.d);
+    const [numN, numD] = addFrac(x2n, x2d, Math.sqrt(zVal), 1);
+    const [y2n, y2d] = mulFrac(yVal.n, yVal.d, yVal.n, yVal.d);
+    const [denN, denD] = addFrac(y2n, y2d, Math.sqrt(wVal), 1);
+    if (denN === 0) return vnGen3();
+    [resN, resD] = divFrac(numN, numD, denN, denD);
+  } else if (type === 1) {
+    expr = fracHtml(`${fmtRoot('z')} − x`, `${fmtPow2('y')} + ${fmtRoot('w')}`);
+    const [numN, numD] = subFrac(Math.sqrt(zVal), 1, xVal.n, xVal.d);
+    const [y2n, y2d] = mulFrac(yVal.n, yVal.d, yVal.n, yVal.d);
+    const [denN, denD] = addFrac(y2n, y2d, Math.sqrt(wVal), 1);
+    if (denN === 0) return vnGen3();
+    [resN, resD] = divFrac(numN, numD, denN, denD);
+  } else if (type === 2) {
+    expr = fracHtml(`${fmtPow3('x')} + ${fmtRoot('z')}`, `${fmtRoot('w')} − y`);
+    const [x2n, x2d] = mulFrac(xVal.n, xVal.d, xVal.n, xVal.d);
+    const [x3n, x3d] = mulFrac(x2n, x2d, xVal.n, xVal.d);
+    const [numN, numD] = addFrac(x3n, x3d, Math.sqrt(zVal), 1);
+    const [denN, denD] = subFrac(Math.sqrt(wVal), 1, yVal.n, yVal.d);
+    if (denN === 0) return vnGen3();
+    [resN, resD] = divFrac(numN, numD, denN, denD);
   } else {
-    // x² + y − z (si hay 3+) o x² + y
-    const x = valMap[varNames[0]];
-    const [xSqN, xSqD] = mulFrac(x.n, x.d, x.n, x.d);
-    const y = valMap[varNames[1]];
-    const [sum2N, sum2D] = addFrac(xSqN, xSqD, y.n, y.d);
-    if (nVars >= 3) {
-      const z = valMap[varNames[2]];
-      [resN, resD] = subFrac(sum2N, sum2D, z.n, z.d);
-      expr = `${varNames[0]}² + ${varNames[1]} − ${varNames[2]}`;
-    } else {
-      [resN, resD] = [sum2N, sum2D];
-      expr = `${varNames[0]}² + ${varNames[1]}`;
-    }
+    expr = fracHtml(`${fmtPow2('x')} + ${fmtRoot('z')}`, `${fmtPow2('y')} − ${fmtRoot('w')}`);
+    const [x2n, x2d] = mulFrac(xVal.n, xVal.d, xVal.n, xVal.d);
+    const [numN, numD] = addFrac(x2n, x2d, Math.sqrt(zVal), 1);
+    const [y2n, y2d] = mulFrac(yVal.n, yVal.d, yVal.n, yVal.d);
+    const [denN, denD] = subFrac(y2n, y2d, Math.sqrt(wVal), 1);
+    if (denN === 0) return vnGen3();
+    [resN, resD] = divFrac(numN, numD, denN, denD);
   }
 
-  if (!resN && resN !== 0) return vnGen3();
-  if (Math.abs(resN) > 500 || resD > 100) return vnGen3();
+  if (!Number.isFinite(resN) || !Number.isFinite(resD) || resD === 0) return vnGen3();
+  if (Math.abs(resN) > 2000 || Math.abs(resD) > 400) return vnGen3();
 
-  const asignaciones = varNames.map((v, i) => {
-    const f = vals[i];
-    const [sn, sd] = vnSimplify(f.n, f.d);
-    return `${v} = ${vnShowVal(sn, sd)}`;
-  }).join(',  ');
+  const asignaciones = [
+    `x = ${vnShowVal(xVal.n, xVal.d)}`,
+    `y = ${vnShowVal(yVal.n, yVal.d)}`,
+    `z = ${zVal}`,
+    `w = ${wVal}`
+  ].join(',  ');
 
-  const resStr = vnFrac(resN, resD);
-
-  return { expr, asignaciones, sol: resStr, lvl: 3 };
+  return { expr, asignaciones, sol: vnFrac(resN, resD), lvl: 3 };
 }
 
 // ── Render ──
@@ -4390,8 +4381,10 @@ function generateValorNumerico() {
       att++;
       try {
         const e = gens[lvl]();
-        if (!e || seen.has(e.expr + e.asignaciones)) continue;
-        seen.add(e.expr + e.asignaciones);
+        if (!e) continue;
+        const exprKey = `${lvl}|${e.expr}`;
+        if (seen.has(exprKey)) continue;
+        seen.add(exprKey);
         ejercicios.push(e);
         count++;
       } catch(err) {}
