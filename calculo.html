@@ -367,12 +367,41 @@ body[data-hide-sol] .sol-opt-bar { display: none !important; }
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
+.nav-home-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent);
+  text-decoration: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.nav-home-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: translateY(-1px);
+}
+nav > p { display: none; }
+@media (max-width: 700px) {
+  nav { padding: 0.8rem 1rem; flex-wrap: wrap; }
+  .nav-copyright { width: 100%; margin-left: 0; }
+}
 body { padding-bottom: 2.5rem; }
 </style>
 </head>
 <body>
 
 <nav>
+  <a href="index.html" class="nav-home-btn">← Volver al inicio</a>
   <div class="nav-logo">Generador<span>.</span></div>
   <p>← <a href="index.html" style="color:var(--muted);text-decoration:none;">Volver al inicio</a></p>
   <span class="nav-copyright">© 2026 generadordeejercitarios.com · Maria Lopez Nery Huerta</span>
@@ -3732,10 +3761,10 @@ function getEjercitarioPDFCss() {
     '.ej-data-row{margin-bottom:1.4rem}',
     '.ej-header{border-bottom:2px solid #dde2f0;padding-bottom:1rem;margin-bottom:1.8rem}',
     '.level-header,.sp-level-header,.sol-title,.fc-section-title,.ri-section-title,.not-section-title,.ineq-section-title,.ineqc-section-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding:.3rem 0;margin-top:.8rem;border-bottom:1px dashed #dde2f0;display:block}',
-    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr 1fr;gap:.4rem 2rem;margin-bottom:2rem}',
-    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start}',
+    '.ejercicios-grid,.ejercicios-list{display:grid;grid-template-columns:1fr;gap:.5rem 0;margin-bottom:2rem}',
+    '.ejercicio-item{display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid #f5f5fa;align-items:flex-start;break-inside:avoid-page;page-break-inside:avoid}',
     '.ej-num,.sp-num{font-weight:900;font-size:.82rem;color:#8b92b1;min-width:1.4rem;flex-shrink:0}',
-    '.ej-content{flex:1;min-width:0}',
+    '.ej-content{flex:1;min-width:0;break-inside:avoid-page;page-break-inside:avoid}',
     '.ej-question,.ej-expr{font-size:.97rem;line-height:1.55}',
     '.soluciones-section,.sol-section{margin-top:1rem;padding:.5rem .8rem;background:#f9fafb;border-radius:6px}',
     '.solutions-title,.sol-title,.sp-sol-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#8b92b1;padding-top:1.4rem;border-top:2px solid #dde2f0;margin-bottom:.8rem;margin-top:2rem;display:block}',

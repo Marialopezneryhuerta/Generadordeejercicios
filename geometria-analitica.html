@@ -25,8 +25,29 @@ body { background: var(--bg); color: var(--ink); font-family: 'Nunito Sans', san
 nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0.9rem 2rem; display: flex; align-items: center; gap: 0.6rem; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 8px rgba(79,110,247,0.06); }
 .nav-logo { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.2rem; color: var(--accent); letter-spacing: -0.02em; }
 .nav-logo span { color: var(--ink); }
-.nav-back { font-size: 0.82rem; color: var(--muted); text-decoration: none; margin-right: 0.5rem; }
-.nav-back:hover { color: var(--accent); }
+.nav-back {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent);
+  text-decoration: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.nav-back:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+  transform: translateY(-1px);
+}
 nav p { font-size: 0.78rem; color: var(--muted); margin-left: 0.5rem; }
 .hero { background: linear-gradient(135deg, #a855f7 0%, #4f6ef7 100%); color: white; padding: 3rem 2rem; text-align: center; }
 .hero h1 { font-family: 'Nunito', sans-serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 0.6rem; }
@@ -255,6 +276,10 @@ body[data-hide-sol] .sol-opt-bar { display: none !important; }
   color: var(--muted, #8b92b1);
   letter-spacing: 0.01em;
   white-space: nowrap;
+}
+@media (max-width: 700px) {
+  nav { padding: 0.8rem 1rem; flex-wrap: wrap; }
+  .nav-copyright { width: 100%; margin-left: 0; }
 }
 body { padding-bottom: 2.5rem; }
 </style>
