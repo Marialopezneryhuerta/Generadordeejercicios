@@ -8555,18 +8555,28 @@ function facGroupGen(level) {
     leftCoeff = rnd(2, 6);
     rightCoeff = rnd(2, 6);
   } while (facGcd(leftCoeff, rightCoeff) !== 1);
-  const left = facTermHtml(leftCoeff, 1, vars[0] + facSup(rnd(1, 2)));
-  const right = facTermHtml(rightCoeff, 1, vars[1] + facSup(rnd(1, 2)));
+  const leftLiteral = vars[0] + facSup(rnd(1, 2));
+  const rightLiteral = vars[1] + facSup(rnd(1, 2));
+  const left = facTermHtml(leftCoeff, 1, leftLiteral);
+  const right = facTermHtml(rightCoeff, 1, rightLiteral);
   const isSix = level >= 3;
   const isDisordered = level === 2 || level === 4;
   const innerVars = isSix ? [vars[2], vars[3], vars[4]] : [vars[2], vars[3]];
   const innerSigns = isSix ? [false, false, rnd(0, 1) === 1] : [false, rnd(0, 1) === 1];
+  let innerCoeffs;
+  do {
+    innerCoeffs = innerVars.map(function() { return rnd(2, 7); });
+  } while (innerCoeffs.every(function(coef) { return coef === innerCoeffs[0]; }) || innerCoeffs.reduce(facGcd) !== 1);
   const shared = innerVars.map(function(v, index) {
-    return { text:v, negative:innerSigns[index] };
+    return { text:facTermHtml(innerCoeffs[index], 1, v), variable:v, coefficient:innerCoeffs[index], negative:innerSigns[index] };
   });
   const ordered = [];
-  shared.forEach(function(term) { ordered.push({ text:left + term.text, negative:term.negative }); });
-  shared.forEach(function(term) { ordered.push({ text:right + term.text, negative:term.negative }); });
+  shared.forEach(function(term) {
+    ordered.push({ text:facTermHtml(leftCoeff * term.coefficient, 1, leftLiteral + term.variable), negative:term.negative });
+  });
+  shared.forEach(function(term) {
+    ordered.push({ text:facTermHtml(rightCoeff * term.coefficient, 1, rightLiteral + term.variable), negative:term.negative });
+  });
   let terms = ordered;
   if (isDisordered) {
     if (isSix) {
