@@ -1383,6 +1383,7 @@ body { padding-bottom: 2.5rem; }
         <button class="subtype-btn" id="fac-type-polinomio" onclick="facSetType('polinomio')">Factor com&uacute;n polinomio</button>
         <button class="subtype-btn" id="fac-type-agrupacion" onclick="facSetType('agrupacion')">Agrupaci&oacute;n de t&eacute;rminos</button>
         <button class="subtype-btn" id="fac-type-cuadrados" onclick="facSetType('cuadrados')">Diferencia de cuadrados</button>
+        <button class="subtype-btn" id="fac-type-trinomio" onclick="facSetType('trinomio')">Trinomio cuadrado perfecto</button>
       </div>
     </div>
 
@@ -8368,6 +8369,7 @@ const facQtys = {1:0, 2:0, 3:0, 4:0, 5:0};
 const facPolyQtys = {1:0, 2:0};
 const facGroupQtys = {1:0, 2:0, 3:0, 4:0};
 const facSquareQtys = {1:0, 2:0, 3:0};
+const facTrinomialQtys = {1:0, 2:0, 3:0};
 let facCurrentType = 'monomio';
 const FAC_VARS = ['x', 'y', 'a', 'b', 'm', 'n'];
 
@@ -8468,6 +8470,7 @@ function facActiveQtys() {
   if (facCurrentType === 'polinomio') return facPolyQtys;
   if (facCurrentType === 'agrupacion') return facGroupQtys;
   if (facCurrentType === 'cuadrados') return facSquareQtys;
+  if (facCurrentType === 'trinomio') return facTrinomialQtys;
   return facQtys;
 }
 
@@ -8477,14 +8480,17 @@ function facSetType(type) {
   document.getElementById('fac-type-polinomio').classList.toggle('active', type === 'polinomio');
   document.getElementById('fac-type-agrupacion').classList.toggle('active', type === 'agrupacion');
   document.getElementById('fac-type-cuadrados').classList.toggle('active', type === 'cuadrados');
+  document.getElementById('fac-type-trinomio').classList.toggle('active', type === 'trinomio');
   const labels = type === 'polinomio'
     ? ['Nivel 1 - Polinomio com&uacute;n visible entre par&eacute;ntesis', 'Nivel 2 - Artificio con cambio de signo']
     : type === 'agrupacion'
       ? ['Nivel 1 - 4 t&eacute;rminos ordenados', 'Nivel 2 - 4 t&eacute;rminos desordenados', 'Nivel 3 - 6 t&eacute;rminos ordenados', 'Nivel 4 - 6 t&eacute;rminos desordenados']
       : type === 'cuadrados'
         ? ['Nivel 1 - N&uacute;meros hasta 100, potencia 2', 'Nivel 2 - N&uacute;meros hasta 1000, potencias pares', 'Nivel 3 - Fracciones']
-      : ['Nivel 1 - Solo factor com&uacute;n literal, potencia 1', 'Nivel 2 - Solo factor com&uacute;n num&eacute;rico', 'Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1', 'Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros', 'Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones'];
-  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : type === 'cuadrados' ? 3 : 2;
+        : type === 'trinomio'
+          ? ['Nivel 1 - N&uacute;meros hasta 100, potencia 2', 'Nivel 2 - N&uacute;meros hasta 1000, potencias pares', 'Nivel 3 - Fracciones']
+        : ['Nivel 1 - Solo factor com&uacute;n literal, potencia 1', 'Nivel 2 - Solo factor com&uacute;n num&eacute;rico', 'Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1', 'Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros', 'Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones'];
+  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : type === 'cuadrados' || type === 'trinomio' ? 3 : 2;
   for (let level = 1; level <= 5; level++) {
     const row = document.getElementById('fac-lvl-' + level);
     row.style.display = level > maxVisible ? 'none' : '';
@@ -8649,9 +8655,55 @@ function facSquareGen(level) {
   };
 }
 
+function facTrinomialGen(level) {
+  const variables = FAC_VARS.slice().sort(function() { return Math.random() - 0.5; });
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  const middleNegative = rnd(0, 1) === 1;
+
+  if (level === 3) {
+    const fractionRoots = [[1,2], [1,3], [2,3], [3,4], [2,5], [3,5], [4,5]];
+    const firstFraction = fractionRoots[rnd(0, fractionRoots.length - 1)];
+    let secondFraction;
+    do {
+      secondFraction = fractionRoots[rnd(0, fractionRoots.length - 1)];
+    } while (firstFraction[0] === secondFraction[0] && firstFraction[1] === secondFraction[1]);
+    const firstTerm = facTermHtml(firstFraction[0] * firstFraction[0], firstFraction[1] * firstFraction[1], firstVariable + facSup(2));
+    const middleTerm = facTermHtml(2 * firstFraction[0] * secondFraction[0], firstFraction[1] * secondFraction[1], firstVariable + secondVariable);
+    const secondTerm = facTermHtml(secondFraction[0] * secondFraction[0], secondFraction[1] * secondFraction[1], secondVariable + facSup(2));
+    const firstFactor = facTermHtml(firstFraction[0], firstFraction[1], firstVariable);
+    const secondFactor = facTermHtml(secondFraction[0], secondFraction[1], secondVariable);
+    return {
+      expr: firstTerm + (middleNegative ? ' - ' : ' + ') + middleTerm + ' + ' + secondTerm,
+      sol: '(' + firstFactor + (middleNegative ? ' - ' : ' + ') + secondFactor + ')<sup>2</sup>'
+    };
+  }
+
+  let firstRoot, secondRoot;
+  const limit = level === 1 ? 100 : 1000;
+  const maxRoot = level === 1 ? 10 : 31;
+  do {
+    firstRoot = rnd(2, maxRoot);
+    secondRoot = rnd(2, maxRoot);
+  } while (facGcd(firstRoot, secondRoot) !== 1 || 2 * firstRoot * secondRoot > limit);
+  const firstPower = level === 1 ? 2 : rnd(1, 3) * 2;
+  const secondPower = level === 1 ? 2 : rnd(1, 3) * 2;
+  const firstHalf = firstPower / 2;
+  const secondHalf = secondPower / 2;
+  const firstTerm = facTermHtml(firstRoot * firstRoot, 1, firstVariable + facSup(firstPower));
+  const middleTerm = facTermHtml(2 * firstRoot * secondRoot, 1, firstVariable + facSup(firstHalf) + secondVariable + facSup(secondHalf));
+  const secondTerm = facTermHtml(secondRoot * secondRoot, 1, secondVariable + facSup(secondPower));
+  const firstFactor = facTermHtml(firstRoot, 1, firstVariable + facSup(firstHalf));
+  const secondFactor = facTermHtml(secondRoot, 1, secondVariable + facSup(secondHalf));
+  return {
+    expr: firstTerm + (middleNegative ? ' - ' : ' + ') + middleTerm + ' + ' + secondTerm,
+    sol: '(' + firstFactor + (middleNegative ? ' - ' : ' + ') + secondFactor + ')<sup>2</sup>'
+  };
+}
+
 function generateFactorizacion() {
   const qtys = facActiveQtys();
-  const maxLevel = facCurrentType === 'polinomio' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'cuadrados' ? 3 : 5;
+  const maxLevel = facCurrentType === 'polinomio' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'cuadrados' || facCurrentType === 'trinomio' ? 3 : 5;
   const total = Object.values(qtys).reduce(function(sum, qty) { return sum + qty; }, 0);
   if (!total) { alert('Agrega al menos un ejercicio con +'); return; }
 
@@ -8661,7 +8713,7 @@ function generateFactorizacion() {
     let count = 0, attempts = 0;
     while (count < qtys[level] && attempts < qtys[level] * 80) {
       attempts++;
-      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facGen(level);
+      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facCurrentType === 'trinomio' ? facTrinomialGen(level) : facGen(level);
       if (seen.has(exercise.expr)) continue;
       seen.add(exercise.expr);
       exercise.id = ejercicios.length + 1;
@@ -8677,7 +8729,7 @@ function generateFactorizacion() {
     return '<div class="sol-item"><span class="sol-num">' + e.id + '.</span><div class="sol-val">' + e.sol + '</div></div>';
   }).join('');
   const el = document.getElementById('fac-ejercitario');
-  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
+  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : facCurrentType === 'trinomio' ? 'Factoriza los siguientes trinomios cuadrados perfectos' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
   el.innerHTML = '<div class="ej-header"><div class="ej-title">' + title + '</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>' + indGetTablaHTML('ind-filas') + '</div><div class="ejercicios-list">' + items + '</div><div class="solutions-title">Soluciones</div><div class="solutions-list">' + solutions + '</div><div class="ej-copyright">&copy; 2026 Maria Lopez Nery Huerta</div>';
   el.classList.add('visible');
   document.getElementById('fac-btnDownload').style.display = 'block';
