@@ -1382,6 +1382,7 @@ body { padding-bottom: 2.5rem; }
         <button class="subtype-btn active" id="fac-type-monomio" onclick="facSetType('monomio')">Factor com&uacute;n monomio</button>
         <button class="subtype-btn" id="fac-type-polinomio" onclick="facSetType('polinomio')">Factor com&uacute;n polinomio</button>
         <button class="subtype-btn" id="fac-type-agrupacion" onclick="facSetType('agrupacion')">Agrupaci&oacute;n de t&eacute;rminos</button>
+        <button class="subtype-btn" id="fac-type-cuadrados" onclick="facSetType('cuadrados')">Diferencia de cuadrados</button>
       </div>
     </div>
 
@@ -8366,6 +8367,7 @@ document.addEventListener('DOMContentLoaded',function(){
 const facQtys = {1:0, 2:0, 3:0, 4:0, 5:0};
 const facPolyQtys = {1:0, 2:0};
 const facGroupQtys = {1:0, 2:0, 3:0, 4:0};
+const facSquareQtys = {1:0, 2:0, 3:0};
 let facCurrentType = 'monomio';
 const FAC_VARS = ['x', 'y', 'a', 'b', 'm', 'n'];
 
@@ -8465,6 +8467,7 @@ function facGen(level) {
 function facActiveQtys() {
   if (facCurrentType === 'polinomio') return facPolyQtys;
   if (facCurrentType === 'agrupacion') return facGroupQtys;
+  if (facCurrentType === 'cuadrados') return facSquareQtys;
   return facQtys;
 }
 
@@ -8473,12 +8476,15 @@ function facSetType(type) {
   document.getElementById('fac-type-monomio').classList.toggle('active', type === 'monomio');
   document.getElementById('fac-type-polinomio').classList.toggle('active', type === 'polinomio');
   document.getElementById('fac-type-agrupacion').classList.toggle('active', type === 'agrupacion');
+  document.getElementById('fac-type-cuadrados').classList.toggle('active', type === 'cuadrados');
   const labels = type === 'polinomio'
     ? ['Nivel 1 - Polinomio com&uacute;n visible entre par&eacute;ntesis', 'Nivel 2 - Artificio con cambio de signo']
     : type === 'agrupacion'
       ? ['Nivel 1 - 4 t&eacute;rminos ordenados', 'Nivel 2 - 4 t&eacute;rminos desordenados', 'Nivel 3 - 6 t&eacute;rminos ordenados', 'Nivel 4 - 6 t&eacute;rminos desordenados']
+      : type === 'cuadrados'
+        ? ['Nivel 1 - N&uacute;meros hasta 100, potencia 2', 'Nivel 2 - N&uacute;meros hasta 1000, potencias pares', 'Nivel 3 - Fracciones']
       : ['Nivel 1 - Solo factor com&uacute;n literal, potencia 1', 'Nivel 2 - Solo factor com&uacute;n num&eacute;rico', 'Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1', 'Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros', 'Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones'];
-  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : 2;
+  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : type === 'cuadrados' ? 3 : 2;
   for (let level = 1; level <= 5; level++) {
     const row = document.getElementById('fac-lvl-' + level);
     row.style.display = level > maxVisible ? 'none' : '';
@@ -8594,9 +8600,58 @@ function facGroupGen(level) {
   };
 }
 
+function facSquareGen(level) {
+  const variables = FAC_VARS.slice().sort(function() { return Math.random() - 0.5; });
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  let firstRoot, secondRoot, firstPower, secondPower;
+
+  if (level === 1) {
+    do {
+      firstRoot = rnd(2, 10);
+      secondRoot = rnd(2, 10);
+    } while (facGcd(firstRoot, secondRoot) !== 1);
+    firstPower = 2;
+    secondPower = 2;
+  } else if (level === 2) {
+    do {
+      firstRoot = rnd(2, 31);
+      secondRoot = rnd(2, 31);
+    } while (facGcd(firstRoot, secondRoot) !== 1);
+    firstPower = rnd(1, 3) * 2;
+    secondPower = rnd(1, 3) * 2;
+  } else {
+    const fractionRoots = [[1,2], [1,3], [2,3], [3,4], [2,5], [3,5], [4,5]];
+    const firstFraction = fractionRoots[rnd(0, fractionRoots.length - 1)];
+    let secondFraction;
+    do {
+      secondFraction = fractionRoots[rnd(0, fractionRoots.length - 1)];
+    } while (firstFraction[0] === secondFraction[0] && firstFraction[1] === secondFraction[1]);
+    const firstLiteral = firstVariable + facSup(2);
+    const secondLiteral = secondVariable + facSup(2);
+    const firstTerm = facTermHtml(firstFraction[0] * firstFraction[0], firstFraction[1] * firstFraction[1], firstLiteral);
+    const secondTerm = facTermHtml(secondFraction[0] * secondFraction[0], secondFraction[1] * secondFraction[1], secondLiteral);
+    const firstFactor = facTermHtml(firstFraction[0], firstFraction[1], firstVariable);
+    const secondFactor = facTermHtml(secondFraction[0], secondFraction[1], secondVariable);
+    return {
+      expr: firstTerm + ' - ' + secondTerm,
+      sol: '(' + firstFactor + ' - ' + secondFactor + ')(' + firstFactor + ' + ' + secondFactor + ')'
+    };
+  }
+
+  const firstTerm = facTermHtml(firstRoot * firstRoot, 1, firstVariable + facSup(firstPower));
+  const secondTerm = facTermHtml(secondRoot * secondRoot, 1, secondVariable + facSup(secondPower));
+  const firstFactor = facTermHtml(firstRoot, 1, firstVariable + facSup(firstPower / 2));
+  const secondFactor = facTermHtml(secondRoot, 1, secondVariable + facSup(secondPower / 2));
+  return {
+    expr: firstTerm + ' - ' + secondTerm,
+    sol: '(' + firstFactor + ' - ' + secondFactor + ')(' + firstFactor + ' + ' + secondFactor + ')'
+  };
+}
+
 function generateFactorizacion() {
   const qtys = facActiveQtys();
-  const maxLevel = facCurrentType === 'polinomio' ? 2 : facCurrentType === 'agrupacion' ? 4 : 5;
+  const maxLevel = facCurrentType === 'polinomio' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'cuadrados' ? 3 : 5;
   const total = Object.values(qtys).reduce(function(sum, qty) { return sum + qty; }, 0);
   if (!total) { alert('Agrega al menos un ejercicio con +'); return; }
 
@@ -8606,7 +8661,7 @@ function generateFactorizacion() {
     let count = 0, attempts = 0;
     while (count < qtys[level] && attempts < qtys[level] * 80) {
       attempts++;
-      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facGen(level);
+      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facGen(level);
       if (seen.has(exercise.expr)) continue;
       seen.add(exercise.expr);
       exercise.id = ejercicios.length + 1;
@@ -8622,7 +8677,7 @@ function generateFactorizacion() {
     return '<div class="sol-item"><span class="sol-num">' + e.id + '.</span><div class="sol-val">' + e.sol + '</div></div>';
   }).join('');
   const el = document.getElementById('fac-ejercitario');
-  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
+  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
   el.innerHTML = '<div class="ej-header"><div class="ej-title">' + title + '</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>' + indGetTablaHTML('ind-filas') + '</div><div class="ejercicios-list">' + items + '</div><div class="solutions-title">Soluciones</div><div class="solutions-list">' + solutions + '</div><div class="ej-copyright">&copy; 2026 Maria Lopez Nery Huerta</div>';
   el.classList.add('visible');
   document.getElementById('fac-btnDownload').style.display = 'block';
