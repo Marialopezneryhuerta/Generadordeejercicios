@@ -645,11 +645,11 @@ body { padding-bottom: 2.5rem; }
     <button class="topic-btn" id="topic-pa" onclick="switchTopic('pa')">
       📈 Progresión Aritmética
     </button>
-    <button class="topic-btn" style="opacity:0.45;cursor:default;pointer-events:none">
-      🔢 Sistemas <span class="soon">pronto</span>
+    <button class="topic-btn" id="topic-factorizacion" onclick="switchTopic('factorizacion')">
+      Factorizaci&oacute;n
     </button>
     <button class="topic-btn" style="opacity:0.45;cursor:default;pointer-events:none">
-      ✂️ Factorización <span class="soon">pronto</span>
+      🔢 Sistemas <span class="soon">pronto</span>
     </button>
     <button class="topic-btn" id="topic-ineq" onclick="switchTopic('ineq')">
       📐 Inecuaciones Lineales
@@ -1374,6 +1374,35 @@ body { padding-bottom: 2.5rem; }
   </div>
 
   <!-- ══════════════════════════════════════════════════════ -->
+  <!-- PANEL: FACTORIZACION                                  -->
+  <div class="section-panel" id="panel-factorizacion">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fff7ed">F</span> Tipo de factorizaci&oacute;n</div>
+      <div class="subtype-selector">
+        <button class="subtype-btn active" id="fac-type-monomio" onclick="facSetType('monomio')">Factor com&uacute;n monomio</button>
+        <button class="subtype-btn" id="fac-type-polinomio" onclick="facSetType('polinomio')">Factor com&uacute;n polinomio</button>
+        <button class="subtype-btn" id="fac-type-agrupacion" onclick="facSetType('agrupacion')">Agrupaci&oacute;n de t&eacute;rminos</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#f0fdf4">#</span> Niveles y cantidad</div>
+      <div class="levels">
+        <div class="level-item" id="fac-lvl-1"><span class="level-dot"></span><span class="level-name" onclick="facToggle(1)">Nivel 1 - Solo factor com&uacute;n literal, potencia 1</span><div class="level-qty"><button class="lq-btn" onclick="facQty(1,-1)">-</button><span class="lq-val" id="fac-lqv-1">0</span><button class="lq-btn" onclick="facQty(1,1)">+</button></div></div>
+        <div class="level-item" id="fac-lvl-2"><span class="level-dot"></span><span class="level-name" onclick="facToggle(2)">Nivel 2 - Solo factor com&uacute;n num&eacute;rico</span><div class="level-qty"><button class="lq-btn" onclick="facQty(2,-1)">-</button><span class="lq-val" id="fac-lqv-2">0</span><button class="lq-btn" onclick="facQty(2,1)">+</button></div></div>
+        <div class="level-item" id="fac-lvl-3"><span class="level-dot"></span><span class="level-name" onclick="facToggle(3)">Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1</span><div class="level-qty"><button class="lq-btn" onclick="facQty(3,-1)">-</button><span class="lq-val" id="fac-lqv-3">0</span><button class="lq-btn" onclick="facQty(3,1)">+</button></div></div>
+        <div class="level-item" id="fac-lvl-4"><span class="level-dot"></span><span class="level-name" onclick="facToggle(4)">Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros</span><div class="level-qty"><button class="lq-btn" onclick="facQty(4,-1)">-</button><span class="lq-val" id="fac-lqv-4">0</span><button class="lq-btn" onclick="facQty(4,1)">+</button></div></div>
+        <div class="level-item" id="fac-lvl-5"><span class="level-dot"></span><span class="level-name" onclick="facToggle(5)">Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones</span><div class="level-qty"><button class="lq-btn" onclick="facQty(5,-1)">-</button><span class="lq-val" id="fac-lqv-5">0</span><button class="lq-btn" onclick="facQty(5,1)">+</button></div></div>
+      </div>
+      <div class="total-badge" id="fac-totalBadge">Total: <span>0</span> ejercicios</div>
+    </div>
+
+    <button class="btn-generate" onclick="generateFactorizacion()">Generar ejercitario</button>
+    <div class="ejercitario" id="fac-ejercitario"></div>
+    <button class="btn-download" id="fac-btnDownload" onclick="downloadEjercitario('fac-ejercitario','factor-comun-monomio')" style="display:none">Descargar PDF</button>
+    <button class="btn-download-sol" id="fac-btnSolAparte" onclick="downloadSolucionesAparte('fac-ejercitario','factor-comun-monomio')" style="display:none">Descargar soluciones</button>
+  </div>
+
   <!-- PANEL: SUCESIONES                                      -->
   <!-- ══════════════════════════════════════════════════════ -->
   <div class="section-panel" id="panel-sucesiones">
@@ -8333,6 +8362,264 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 // ═══════════════════════════════════════════════════════════════
+// FACTORIZACION: FACTOR COMUN MONOMIO
+const facQtys = {1:0, 2:0, 3:0, 4:0, 5:0};
+const facPolyQtys = {1:0, 2:0};
+const facGroupQtys = {1:0, 2:0, 3:0, 4:0};
+let facCurrentType = 'monomio';
+const FAC_VARS = ['x', 'y', 'a', 'b', 'm', 'n'];
+
+function facGcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { const r = a % b; a = b; b = r; }
+  return a || 1;
+}
+
+function facSup(power) { return power > 1 ? '<sup>' + power + '</sup>' : ''; }
+
+function facFracHtml(n, d) {
+  const g = facGcd(n, d);
+  n /= g; d /= g;
+  if (d === 1) return String(n);
+  return '<span class="frac"><span class="num">' + n + '</span><span class="den">' + d + '</span></span>';
+}
+
+function facTermHtml(n, d, literal) {
+  const g = facGcd(n, d);
+  n /= g; d /= g;
+  const absN = Math.abs(n);
+  let coeff = '';
+  if (d === 1) coeff = absN === 1 && literal ? '' : String(absN);
+  else coeff = facFracHtml(absN, d);
+  return coeff + literal;
+}
+
+function facJoinTerms(terms) {
+  return terms.map(function(term, index) {
+    const sign = term.n < 0 ? (index === 0 ? '-' : ' - ') : (index === 0 ? '' : ' + ');
+    return sign + facTermHtml(term.n, term.d, term.literal);
+  }).join('');
+}
+
+function facCommonHtml(n, d, variable, power) {
+  const literal = variable ? variable + facSup(power) : '';
+  return facTermHtml(n, d, literal);
+}
+
+function facResidualTerms(variable, allowConstant) {
+  const other = FAC_VARS.filter(function(v) { return v !== variable; })[rnd(0, FAC_VARS.length - 2)];
+  const forms = allowConstant ? ['', other, other + '<sup>2</sup>'] : [other, other + '<sup>2</sup>', ''];
+  let coeffs;
+  do {
+    coeffs = [rndNZ(-6, 6), rndNZ(-6, 6), rndNZ(-6, 6)];
+  } while (facGcd(facGcd(coeffs[0], coeffs[1]), coeffs[2]) !== 1);
+  return coeffs.map(function(coef, i) { return { n:coef, d:1, literal:forms[i] }; });
+}
+
+function facBuildCommon(commonN, commonD, variable, power, residuals) {
+  const terms = residuals.map(function(r) {
+    return {
+      n: commonN * r.n,
+      d: commonD * r.d,
+      literal: (variable ? variable + facSup(power) : '') + r.literal
+    };
+  });
+  const expr = facJoinTerms(terms);
+  const factor = facCommonHtml(commonN, commonD, variable, power);
+  const sol = factor + '(' + facJoinTerms(residuals) + ')';
+  return { expr:expr, sol:sol };
+}
+
+function facGen(level) {
+  const variable = FAC_VARS[rnd(0, FAC_VARS.length - 1)];
+  if (level === 1) {
+    return facBuildCommon(1, 1, variable, 1, facResidualTerms(variable, true));
+  }
+  if (level === 2) {
+    const factor = rnd(2, 9);
+    const vars = FAC_VARS.filter(function(v) { return v !== variable; });
+    let residuals;
+    do {
+      residuals = [
+        {n:rndNZ(-6, 6), d:1, literal:vars[0]},
+        {n:rndNZ(-6, 6), d:1, literal:vars[1] + '<sup>2</sup>'},
+        {n:rndNZ(-6, 6), d:1, literal:''}
+      ];
+    } while (facGcd(facGcd(residuals[0].n, residuals[1].n), residuals[2].n) !== 1);
+    return facBuildCommon(factor, 1, '', 0, residuals);
+  }
+  if (level === 3) {
+    return facBuildCommon(1, 1, variable, rnd(2, 4), facResidualTerms(variable, true));
+  }
+  if (level === 4) {
+    return facBuildCommon(rnd(2, 9), 1, variable, rnd(1, 3), facResidualTerms(variable, true));
+  }
+  const fracFactors = [[1,2], [1,3], [2,3], [3,4], [2,5]];
+  const chosen = fracFactors[rnd(0, fracFactors.length - 1)];
+  const residuals = facResidualTerms(variable, true);
+  residuals[0].n = 1;
+  residuals[1].n = -Math.abs(residuals[1].n);
+  return facBuildCommon(chosen[0], chosen[1], variable, rnd(1, 2), residuals);
+}
+
+function facActiveQtys() {
+  if (facCurrentType === 'polinomio') return facPolyQtys;
+  if (facCurrentType === 'agrupacion') return facGroupQtys;
+  return facQtys;
+}
+
+function facSetType(type) {
+  facCurrentType = type;
+  document.getElementById('fac-type-monomio').classList.toggle('active', type === 'monomio');
+  document.getElementById('fac-type-polinomio').classList.toggle('active', type === 'polinomio');
+  document.getElementById('fac-type-agrupacion').classList.toggle('active', type === 'agrupacion');
+  const labels = type === 'polinomio'
+    ? ['Nivel 1 - Polinomio com&uacute;n visible entre par&eacute;ntesis', 'Nivel 2 - Artificio con cambio de signo']
+    : type === 'agrupacion'
+      ? ['Nivel 1 - 4 t&eacute;rminos ordenados', 'Nivel 2 - 4 t&eacute;rminos desordenados', 'Nivel 3 - 6 t&eacute;rminos ordenados', 'Nivel 4 - 6 t&eacute;rminos desordenados']
+      : ['Nivel 1 - Solo factor com&uacute;n literal, potencia 1', 'Nivel 2 - Solo factor com&uacute;n num&eacute;rico', 'Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1', 'Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros', 'Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones'];
+  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : 2;
+  for (let level = 1; level <= 5; level++) {
+    const row = document.getElementById('fac-lvl-' + level);
+    row.style.display = level > maxVisible ? 'none' : '';
+    if (labels[level - 1]) row.querySelector('.level-name').innerHTML = labels[level - 1];
+  }
+  facRefreshAll();
+}
+
+function facToggle(level) {
+  const qtys = facActiveQtys();
+  qtys[level] = qtys[level] ? 0 : 1;
+  facRefresh(level);
+}
+
+function facQty(level, delta) {
+  const qtys = facActiveQtys();
+  qtys[level] = Math.max(0, Math.min(20, qtys[level] + delta));
+  facRefresh(level);
+}
+
+function facRefresh(level) {
+  const qtys = facActiveQtys();
+  document.getElementById('fac-lqv-' + level).textContent = qtys[level] || 0;
+  document.getElementById('fac-lvl-' + level).classList.toggle('active', (qtys[level] || 0) > 0);
+  const total = Object.values(qtys).reduce(function(sum, qty) { return sum + qty; }, 0);
+  document.getElementById('fac-totalBadge').innerHTML = 'Total: <span>' + total + '</span> ejercicios';
+}
+
+function facRefreshAll() {
+  for (let level = 1; level <= 5; level++) facRefresh(level);
+}
+
+function facPolyMonomial(variable, minPower) {
+  const coefficient = rnd(1, 6);
+  const power = rnd(minPower || 0, 2);
+  const literal = power === 0 ? '' : variable + facSup(power);
+  return facTermHtml(coefficient, 1, literal);
+}
+
+function facPolyBase(variable, constant) {
+  return '(' + variable + (constant > 0 ? ' + ' : ' - ') + Math.abs(constant) + ')';
+}
+
+function facPolyGen(level) {
+  const variable = FAC_VARS[rnd(0, FAC_VARS.length - 1)];
+  const constant = rndNZ(-6, 6);
+  const base = facPolyBase(variable, constant);
+  const first = facPolyMonomial(variable, level === 2 ? 1 : 0);
+  if (level === 1) {
+    const second = facPolyMonomial(FAC_VARS.filter(function(v) { return v !== variable; })[rnd(0, FAC_VARS.length - 2)]);
+    const subtract = rnd(0, 1) === 1;
+    return {
+      expr: first + base + (subtract ? ' - ' : ' + ') + second + base,
+      sol: base + '(' + first + (subtract ? ' - ' : ' + ') + second + ')'
+    };
+  }
+  const negativeTail = constant > 0 ? ' - ' + variable + ' - ' + Math.abs(constant) : ' - ' + variable + ' + ' + Math.abs(constant);
+  return {
+    expr: first + base + negativeTail,
+    sol: base + '(' + first + ' - 1)'
+  };
+}
+
+function facGroupJoin(terms) {
+  return terms.map(function(term, index) {
+    return (index === 0 ? (term.negative ? '-' : '') : (term.negative ? ' - ' : ' + ')) + term.text;
+  }).join('');
+}
+
+function facGroupGen(level) {
+  const vars = FAC_VARS.slice().sort(function() { return Math.random() - 0.5; });
+  let leftCoeff, rightCoeff;
+  do {
+    leftCoeff = rnd(2, 6);
+    rightCoeff = rnd(2, 6);
+  } while (facGcd(leftCoeff, rightCoeff) !== 1);
+  const left = facTermHtml(leftCoeff, 1, vars[0] + facSup(rnd(1, 2)));
+  const right = facTermHtml(rightCoeff, 1, vars[1] + facSup(rnd(1, 2)));
+  const isSix = level >= 3;
+  const isDisordered = level === 2 || level === 4;
+  const innerVars = isSix ? [vars[2], vars[3], vars[4]] : [vars[2], vars[3]];
+  const innerSigns = isSix ? [false, false, rnd(0, 1) === 1] : [false, rnd(0, 1) === 1];
+  const shared = innerVars.map(function(v, index) {
+    return { text:v, negative:innerSigns[index] };
+  });
+  const ordered = [];
+  shared.forEach(function(term) { ordered.push({ text:left + term.text, negative:term.negative }); });
+  shared.forEach(function(term) { ordered.push({ text:right + term.text, negative:term.negative }); });
+  let terms = ordered;
+  if (isDisordered) {
+    if (isSix) {
+      terms = [ordered[0], ordered[4], ordered[2], ordered[3], ordered[1], ordered[5]];
+    } else {
+      terms = [ordered[0], ordered[3], ordered[1], ordered[2]];
+    }
+  }
+  const inner = facGroupJoin(shared);
+  const groupedLeft = facGroupJoin(ordered.slice(0, shared.length));
+  const groupedRight = facGroupJoin(ordered.slice(shared.length));
+  return {
+    expr: facGroupJoin(terms),
+    sol: '(' + groupedLeft + ') + (' + groupedRight + ') = ' + left + '(' + inner + ') + ' + right + '(' + inner + ') = (' + left + ' + ' + right + ')(' + inner + ')'
+  };
+}
+
+function generateFactorizacion() {
+  const qtys = facActiveQtys();
+  const maxLevel = facCurrentType === 'polinomio' ? 2 : facCurrentType === 'agrupacion' ? 4 : 5;
+  const total = Object.values(qtys).reduce(function(sum, qty) { return sum + qty; }, 0);
+  if (!total) { alert('Agrega al menos un ejercicio con +'); return; }
+
+  const ejercicios = [];
+  const seen = new Set();
+  for (let level = 1; level <= maxLevel; level++) {
+    let count = 0, attempts = 0;
+    while (count < qtys[level] && attempts < qtys[level] * 80) {
+      attempts++;
+      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facGen(level);
+      if (seen.has(exercise.expr)) continue;
+      seen.add(exercise.expr);
+      exercise.id = ejercicios.length + 1;
+      ejercicios.push(exercise);
+      count++;
+    }
+  }
+
+  const items = ejercicios.map(function(e) {
+    return '<div class="ejercicio-item"><span class="ej-num">(' + e.id + ')</span><div class="ej-content"><div class="ej-question">' + e.expr + '</div><div class="work-space work-space-md"></div></div></div>';
+  }).join('');
+  const solutions = ejercicios.map(function(e) {
+    return '<div class="sol-item"><span class="sol-num">' + e.id + '.</span><div class="sol-val">' + e.sol + '</div></div>';
+  }).join('');
+  const el = document.getElementById('fac-ejercitario');
+  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
+  el.innerHTML = '<div class="ej-header"><div class="ej-title">' + title + '</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>' + indGetTablaHTML('ind-filas') + '</div><div class="ejercicios-list">' + items + '</div><div class="solutions-title">Soluciones</div><div class="solutions-list">' + solutions + '</div><div class="ej-copyright">&copy; 2026 Maria Lopez Nery Huerta</div>';
+  el.classList.add('visible');
+  document.getElementById('fac-btnDownload').style.display = 'block';
+  document.getElementById('fac-btnSolAparte').style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
 // SUCESIONES
 // ═══════════════════════════════════════════════════════════════
 
