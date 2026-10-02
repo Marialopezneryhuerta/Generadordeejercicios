@@ -1387,6 +1387,7 @@ body { padding-bottom: 2.5rem; }
         <button class="subtype-btn" id="fac-type-monic" onclick="facSetType('monic')">Trinomio x&sup2; + bx + c</button>
         <button class="subtype-btn" id="fac-type-general" onclick="facSetType('general')">Trinomio ax&sup2; + bx + c</button>
         <button class="subtype-btn" id="fac-type-odd-powers" onclick="facSetType('odd-powers')">Suma o diferencia de potencias impares</button>
+        <button class="subtype-btn" id="fac-type-cube" onclick="facSetType('cube')">Cuatrinomio cubo perfecto</button>
       </div>
     </div>
 
@@ -8376,6 +8377,7 @@ const facTrinomialQtys = {1:0, 2:0, 3:0};
 const facMonicQtys = {1:0, 2:0};
 const facGeneralQtys = {1:0, 2:0};
 const facOddPowerQtys = {1:0, 2:0};
+const facCubeQtys = {1:0, 2:0};
 let facCurrentType = 'monomio';
 const FAC_VARS = ['x', 'y', 'a', 'b', 'm', 'n'];
 
@@ -8480,6 +8482,7 @@ function facActiveQtys() {
   if (facCurrentType === 'monic') return facMonicQtys;
   if (facCurrentType === 'general') return facGeneralQtys;
   if (facCurrentType === 'odd-powers') return facOddPowerQtys;
+  if (facCurrentType === 'cube') return facCubeQtys;
   return facQtys;
 }
 
@@ -8493,6 +8496,7 @@ function facSetType(type) {
   document.getElementById('fac-type-monic').classList.toggle('active', type === 'monic');
   document.getElementById('fac-type-general').classList.toggle('active', type === 'general');
   document.getElementById('fac-type-odd-powers').classList.toggle('active', type === 'odd-powers');
+  document.getElementById('fac-type-cube').classList.toggle('active', type === 'cube');
   const labels = type === 'polinomio'
     ? ['Nivel 1 - Polinomio com&uacute;n visible entre par&eacute;ntesis', 'Nivel 2 - Artificio con cambio de signo']
     : type === 'agrupacion'
@@ -8507,6 +8511,8 @@ function facSetType(type) {
               ? ['Nivel 1 - a por c menor o igual a 100', 'Nivel 2 - a por c mayor que 100']
               : type === 'odd-powers'
                 ? ['Nivel 1 - C&uacute;bicos', 'Nivel 2 - Potencias impares mayores que 5']
+                : type === 'cube'
+                  ? ['Nivel 1 - Enteros', 'Nivel 2 - Fracciones']
         : ['Nivel 1 - Solo factor com&uacute;n literal, potencia 1', 'Nivel 2 - Solo factor com&uacute;n num&eacute;rico', 'Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1', 'Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros', 'Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones'];
   const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : type === 'cuadrados' || type === 'trinomio' ? 3 : 2;
   for (let level = 1; level <= 5; level++) {
@@ -8815,9 +8821,53 @@ function facOddPowerGen(level) {
   };
 }
 
+function facCubePerfectGen(level) {
+  const variables = FAC_VARS.slice().sort(function() { return Math.random() - 0.5; });
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  let firstN, firstD, secondN, secondD;
+
+  if (level === 1) {
+    do {
+      firstN = rnd(1, 3);
+      secondN = rnd(1, 3);
+    } while (firstN === secondN || facGcd(firstN, secondN) !== 1);
+    firstD = 1;
+    secondD = 1;
+  } else {
+    const fractions = [[1,2], [1,3], [2,3], [1,4], [3,4], [2,5]];
+    const firstFraction = fractions[rnd(0, fractions.length - 1)];
+    let secondFraction;
+    do {
+      secondFraction = fractions[rnd(0, fractions.length - 1)];
+    } while (firstFraction[0] === secondFraction[0] && firstFraction[1] === secondFraction[1]);
+    firstN = firstFraction[0];
+    firstD = firstFraction[1];
+    secondN = secondFraction[0];
+    secondD = secondFraction[1];
+  }
+
+  const isDifference = rnd(0, 1) === 1;
+  const middleSign = isDifference ? -1 : 1;
+  const lastSign = isDifference ? -1 : 1;
+  const terms = [
+    { n:Math.pow(firstN, 3), d:Math.pow(firstD, 3), literal:firstVariable + facSup(3) },
+    { n:middleSign * 3 * Math.pow(firstN, 2) * secondN, d:Math.pow(firstD, 2) * secondD, literal:firstVariable + facSup(2) + secondVariable },
+    { n:3 * firstN * Math.pow(secondN, 2), d:firstD * Math.pow(secondD, 2), literal:firstVariable + secondVariable + facSup(2) },
+    { n:lastSign * Math.pow(secondN, 3), d:Math.pow(secondD, 3), literal:secondVariable + facSup(3) }
+  ];
+  const firstRoot = facTermHtml(firstN, firstD, firstVariable);
+  const secondRoot = facTermHtml(secondN, secondD, secondVariable);
+
+  return {
+    expr: facJoinTerms(terms),
+    sol: '(' + firstRoot + (isDifference ? ' - ' : ' + ') + secondRoot + ')<sup>3</sup>'
+  };
+}
+
 function generateFactorizacion() {
   const qtys = facActiveQtys();
-  const maxLevel = facCurrentType === 'polinomio' || facCurrentType === 'monic' || facCurrentType === 'general' || facCurrentType === 'odd-powers' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'cuadrados' || facCurrentType === 'trinomio' ? 3 : 5;
+  const maxLevel = facCurrentType === 'polinomio' || facCurrentType === 'monic' || facCurrentType === 'general' || facCurrentType === 'odd-powers' || facCurrentType === 'cube' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'cuadrados' || facCurrentType === 'trinomio' ? 3 : 5;
   const total = Object.values(qtys).reduce(function(sum, qty) { return sum + qty; }, 0);
   if (!total) { alert('Agrega al menos un ejercicio con +'); return; }
 
@@ -8827,7 +8877,7 @@ function generateFactorizacion() {
     let count = 0, attempts = 0;
     while (count < qtys[level] && attempts < qtys[level] * 80) {
       attempts++;
-      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facCurrentType === 'trinomio' ? facTrinomialGen(level) : facCurrentType === 'monic' ? facMonicGen(level) : facCurrentType === 'general' ? facGeneralGen(level) : facCurrentType === 'odd-powers' ? facOddPowerGen(level) : facGen(level);
+      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facCurrentType === 'trinomio' ? facTrinomialGen(level) : facCurrentType === 'monic' ? facMonicGen(level) : facCurrentType === 'general' ? facGeneralGen(level) : facCurrentType === 'odd-powers' ? facOddPowerGen(level) : facCurrentType === 'cube' ? facCubePerfectGen(level) : facGen(level);
       if (seen.has(exercise.expr)) continue;
       seen.add(exercise.expr);
       exercise.id = ejercicios.length + 1;
@@ -8843,7 +8893,7 @@ function generateFactorizacion() {
     return '<div class="sol-item"><span class="sol-num">' + e.id + '.</span><div class="sol-val">' + e.sol + '</div></div>';
   }).join('');
   const el = document.getElementById('fac-ejercitario');
-  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : facCurrentType === 'trinomio' ? 'Factoriza los siguientes trinomios cuadrados perfectos' : facCurrentType === 'monic' ? 'Factoriza los siguientes trinomios de la forma x<sup>2</sup> + bx + c' : facCurrentType === 'general' ? 'Factoriza los siguientes trinomios de la forma ax<sup>2</sup> + bx + c' : facCurrentType === 'odd-powers' ? 'Factoriza las siguientes sumas o diferencias de potencias impares iguales' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
+  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : facCurrentType === 'trinomio' ? 'Factoriza los siguientes trinomios cuadrados perfectos' : facCurrentType === 'monic' ? 'Factoriza los siguientes trinomios de la forma x<sup>2</sup> + bx + c' : facCurrentType === 'general' ? 'Factoriza los siguientes trinomios de la forma ax<sup>2</sup> + bx + c' : facCurrentType === 'odd-powers' ? 'Factoriza las siguientes sumas o diferencias de potencias impares iguales' : facCurrentType === 'cube' ? 'Factoriza los siguientes cuatrinomios cubos perfectos' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
   el.innerHTML = '<div class="ej-header"><div class="ej-title">' + title + '</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>' + indGetTablaHTML('ind-filas') + '</div><div class="ejercicios-list">' + items + '</div><div class="solutions-title">Soluciones</div><div class="solutions-list">' + solutions + '</div><div class="ej-copyright">&copy; 2026 Maria Lopez Nery Huerta</div>';
   el.classList.add('visible');
   document.getElementById('fac-btnDownload').style.display = 'block';
