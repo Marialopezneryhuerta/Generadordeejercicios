@@ -1388,6 +1388,7 @@ body { padding-bottom: 2.5rem; }
         <button class="subtype-btn" id="fac-type-general" onclick="facSetType('general')">Trinomio ax&sup2; + bx + c</button>
         <button class="subtype-btn" id="fac-type-odd-powers" onclick="facSetType('odd-powers')">Suma o diferencia de potencias impares</button>
         <button class="subtype-btn" id="fac-type-cube" onclick="facSetType('cube')">Cuatrinomio cubo perfecto</button>
+        <button class="subtype-btn" id="fac-type-combined" onclick="facSetType('combined')">Casos combinados</button>
       </div>
     </div>
 
@@ -8378,6 +8379,7 @@ const facMonicQtys = {1:0, 2:0};
 const facGeneralQtys = {1:0, 2:0};
 const facOddPowerQtys = {1:0, 2:0};
 const facCubeQtys = {1:0, 2:0};
+const facCombinedQtys = {1:0, 2:0, 3:0};
 let facCurrentType = 'monomio';
 const FAC_VARS = ['x', 'y', 'a', 'b', 'm', 'n'];
 
@@ -8483,6 +8485,7 @@ function facActiveQtys() {
   if (facCurrentType === 'general') return facGeneralQtys;
   if (facCurrentType === 'odd-powers') return facOddPowerQtys;
   if (facCurrentType === 'cube') return facCubeQtys;
+  if (facCurrentType === 'combined') return facCombinedQtys;
   return facQtys;
 }
 
@@ -8497,6 +8500,7 @@ function facSetType(type) {
   document.getElementById('fac-type-general').classList.toggle('active', type === 'general');
   document.getElementById('fac-type-odd-powers').classList.toggle('active', type === 'odd-powers');
   document.getElementById('fac-type-cube').classList.toggle('active', type === 'cube');
+  document.getElementById('fac-type-combined').classList.toggle('active', type === 'combined');
   const labels = type === 'polinomio'
     ? ['Nivel 1 - Polinomio com&uacute;n visible entre par&eacute;ntesis', 'Nivel 2 - Artificio con cambio de signo']
     : type === 'agrupacion'
@@ -8513,8 +8517,10 @@ function facSetType(type) {
                 ? ['Nivel 1 - C&uacute;bicos', 'Nivel 2 - Potencias impares mayores que 5']
                 : type === 'cube'
                   ? ['Nivel 1 - Enteros', 'Nivel 2 - Fracciones']
+                  : type === 'combined'
+                    ? ['Nivel 1 - Un caso aleatorio', 'Nivel 2 - Dos casos consecutivos', 'Nivel 3 - Tres casos consecutivos']
         : ['Nivel 1 - Solo factor com&uacute;n literal, potencia 1', 'Nivel 2 - Solo factor com&uacute;n num&eacute;rico', 'Nivel 3 - Solo factor com&uacute;n literal, potencia mayor que 1', 'Nivel 4 - Factor com&uacute;n num&eacute;rico y literal, enteros', 'Nivel 5 - Factor com&uacute;n num&eacute;rico y literal, fracciones'];
-  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : type === 'cuadrados' || type === 'trinomio' ? 3 : 2;
+  const maxVisible = type === 'monomio' ? 5 : type === 'agrupacion' ? 4 : type === 'combined' || type === 'cuadrados' || type === 'trinomio' ? 3 : 2;
   for (let level = 1; level <= 5; level++) {
     const row = document.getElementById('fac-lvl-' + level);
     row.style.display = level > maxVisible ? 'none' : '';
@@ -8865,9 +8871,188 @@ function facCubePerfectGen(level) {
   };
 }
 
+function facComboVariables() {
+  return FAC_VARS.slice().sort(function() { return Math.random() - 0.5; });
+}
+
+function facComboCoprimePair(max) {
+  let first, second;
+  do {
+    first = rnd(1, max);
+    second = rnd(1, max);
+  } while (first === second || facGcd(first, second) !== 1);
+  return [first, second];
+}
+
+function facComboDifferenceFactor(firstCoefficient, firstVariable, secondCoefficient, secondVariable) {
+  const first = facTermHtml(firstCoefficient, 1, firstVariable);
+  const second = facTermHtml(secondCoefficient, 1, secondVariable);
+  return '(' + first + ' - ' + second + ')(' + first + ' + ' + second + ')';
+}
+
+function facComboLinearFactor(coefficient, variable) {
+  return facTermHtml(coefficient, 1, variable);
+}
+
+function facComboCubeFactor(firstCoefficient, firstVariable, secondCoefficient, secondVariable, isDifference) {
+  const first = facTermHtml(firstCoefficient, 1, firstVariable);
+  const second = facTermHtml(secondCoefficient, 1, secondVariable);
+  const squareFirst = facTermHtml(firstCoefficient * firstCoefficient, 1, firstVariable + facSup(2));
+  const middle = facTermHtml(firstCoefficient * secondCoefficient, 1, firstVariable + secondVariable);
+  const squareSecond = facTermHtml(secondCoefficient * secondCoefficient, 1, secondVariable ? secondVariable + facSup(2) : '');
+  return '(' + first + (isDifference ? ' - ' : ' + ') + second + ')(' + squareFirst + (isDifference ? ' + ' : ' - ') + middle + ' + ' + squareSecond + ')';
+}
+
+function facCombinedTwoGen() {
+  const recipe = rnd(0, 3);
+  const vars = facComboVariables();
+  const commonCoefficient = rnd(2, 6);
+  const commonVariable = vars[0];
+  const firstVariable = vars[1];
+  const secondVariable = vars[2];
+  const common = facTermHtml(commonCoefficient, 1, commonVariable);
+
+  if (recipe === 0) {
+    const pair = facComboCoprimePair(3);
+    const firstCoefficient = pair[0];
+    const secondCoefficient = pair[1];
+    return {
+      expr: facJoinTerms([
+        { n:commonCoefficient * firstCoefficient * firstCoefficient, d:1, literal:commonVariable + firstVariable + facSup(2) },
+        { n:-commonCoefficient * secondCoefficient * secondCoefficient, d:1, literal:commonVariable + secondVariable + facSup(2) }
+      ]),
+      sol: common + facComboDifferenceFactor(firstCoefficient, firstVariable, secondCoefficient, secondVariable)
+    };
+  }
+
+  if (recipe === 1) {
+    const pair = facComboCoprimePair(3);
+    const firstCoefficient = pair[0];
+    const secondCoefficient = pair[1];
+    const isDifference = rnd(0, 1) === 1;
+    return {
+      expr: facJoinTerms([
+        { n:commonCoefficient * Math.pow(firstCoefficient, 3), d:1, literal:commonVariable + firstVariable + facSup(3) },
+        { n:(isDifference ? -1 : 1) * commonCoefficient * Math.pow(secondCoefficient, 3), d:1, literal:commonVariable + secondVariable + facSup(3) }
+      ]),
+      sol: common + facComboCubeFactor(firstCoefficient, firstVariable, secondCoefficient, secondVariable, isDifference)
+    };
+  }
+
+  if (recipe === 2) {
+    const roots = facComboCoprimePair(8);
+    const negative = rnd(0, 1) === 1;
+    const sum = roots[0] + roots[1];
+    const product = roots[0] * roots[1];
+    return {
+      expr: facJoinTerms([
+        { n:commonCoefficient, d:1, literal:commonVariable + firstVariable + facSup(2) },
+        { n:(negative ? -1 : 1) * commonCoefficient * sum, d:1, literal:commonVariable + firstVariable },
+        { n:commonCoefficient * product, d:1, literal:commonVariable }
+      ]),
+      sol: common + '(' + firstVariable + (negative ? ' - ' : ' + ') + roots[0] + ')(' + firstVariable + (negative ? ' - ' : ' + ') + roots[1] + ')'
+    };
+  }
+
+  const pair = facComboCoprimePair(4);
+  const linearCoefficient = pair[0];
+  const constant = pair[1];
+  const roots = facComboCoprimePair(3);
+  return {
+    expr: facJoinTerms([
+      { n:linearCoefficient * roots[0] * roots[0], d:1, literal:firstVariable + secondVariable + facSup(2) },
+      { n:-linearCoefficient * roots[1] * roots[1], d:1, literal:firstVariable },
+      { n:constant * roots[0] * roots[0], d:1, literal:secondVariable + facSup(2) },
+      { n:-constant * roots[1] * roots[1], d:1, literal:'' }
+    ]),
+    sol: '(' + facComboLinearFactor(linearCoefficient, firstVariable) + ' + ' + constant + ')' + facComboDifferenceFactor(roots[0], secondVariable, roots[1], '')
+  };
+}
+
+function facCombinedThreeGen() {
+  const recipe = rnd(0, 2);
+  const vars = facComboVariables();
+  const commonCoefficient = rnd(2, 5);
+  const commonVariable = vars[0];
+  const linearVariable = vars[1];
+  const powerVariable = vars[2];
+  const common = facTermHtml(commonCoefficient, 1, commonVariable);
+  const linearPair = facComboCoprimePair(4);
+  const linearCoefficient = linearPair[0];
+  const linearConstant = linearPair[1];
+
+  if (recipe === 0) {
+    const pair = facComboCoprimePair(3);
+    const firstCoefficient = pair[0];
+    const secondCoefficient = pair[1];
+    return {
+      expr: facJoinTerms([
+        { n:commonCoefficient * linearCoefficient * firstCoefficient * firstCoefficient, d:1, literal:commonVariable + linearVariable + powerVariable + facSup(2) },
+        { n:-commonCoefficient * linearCoefficient * secondCoefficient * secondCoefficient, d:1, literal:commonVariable + linearVariable },
+        { n:commonCoefficient * linearConstant * firstCoefficient * firstCoefficient, d:1, literal:commonVariable + powerVariable + facSup(2) },
+        { n:-commonCoefficient * linearConstant * secondCoefficient * secondCoefficient, d:1, literal:commonVariable }
+      ]),
+      sol: common + '(' + facComboLinearFactor(linearCoefficient, linearVariable) + ' + ' + linearConstant + ')' + facComboDifferenceFactor(firstCoefficient, powerVariable, secondCoefficient, '')
+    };
+  }
+
+  if (recipe === 1) {
+    const pair = facComboCoprimePair(3);
+    const firstCoefficient = pair[0];
+    const secondCoefficient = pair[1];
+    const isDifference = rnd(0, 1) === 1;
+    const sign = isDifference ? -1 : 1;
+    return {
+      expr: facJoinTerms([
+        { n:commonCoefficient * linearCoefficient * Math.pow(firstCoefficient, 3), d:1, literal:commonVariable + linearVariable + powerVariable + facSup(3) },
+        { n:sign * commonCoefficient * linearCoefficient * Math.pow(secondCoefficient, 3), d:1, literal:commonVariable + linearVariable },
+        { n:commonCoefficient * linearConstant * Math.pow(firstCoefficient, 3), d:1, literal:commonVariable + powerVariable + facSup(3) },
+        { n:sign * commonCoefficient * linearConstant * Math.pow(secondCoefficient, 3), d:1, literal:commonVariable }
+      ]),
+      sol: common + '(' + facComboLinearFactor(linearCoefficient, linearVariable) + ' + ' + linearConstant + ')' + facComboCubeFactor(firstCoefficient, powerVariable, secondCoefficient, '', isDifference)
+    };
+  }
+
+  const pair = facComboCoprimePair(3);
+  const firstCoefficient = pair[0];
+  const secondCoefficient = pair[1];
+  const isDifference = rnd(0, 1) === 1;
+  const middleSign = isDifference ? -1 : 1;
+  const lastSign = isDifference ? -1 : 1;
+  return {
+    expr: facJoinTerms([
+      { n:commonCoefficient * linearCoefficient * firstCoefficient * firstCoefficient, d:1, literal:commonVariable + linearVariable + powerVariable + facSup(2) },
+      { n:middleSign * commonCoefficient * linearCoefficient * 2 * firstCoefficient * secondCoefficient, d:1, literal:commonVariable + linearVariable + powerVariable },
+      { n:commonCoefficient * linearCoefficient * secondCoefficient * secondCoefficient, d:1, literal:commonVariable + linearVariable },
+      { n:commonCoefficient * linearConstant * firstCoefficient * firstCoefficient, d:1, literal:commonVariable + powerVariable + facSup(2) },
+      { n:middleSign * commonCoefficient * linearConstant * 2 * firstCoefficient * secondCoefficient, d:1, literal:commonVariable + powerVariable },
+      { n:commonCoefficient * linearConstant * secondCoefficient * secondCoefficient, d:1, literal:commonVariable }
+    ]),
+    sol: common + '(' + facComboLinearFactor(linearCoefficient, linearVariable) + ' + ' + linearConstant + ')(' + facTermHtml(firstCoefficient, 1, powerVariable) + (isDifference ? ' - ' : ' + ') + secondCoefficient + ')<sup>2</sup>'
+  };
+}
+
+function facCombinedGen(level) {
+  if (level === 1) {
+    const generators = [
+      function() { return facGen(rnd(1, 5)); },
+      function() { return facPolyGen(rnd(1, 2)); },
+      function() { return facGroupGen(rnd(1, 4)); },
+      function() { return facSquareGen(rnd(1, 3)); },
+      function() { return facTrinomialGen(rnd(1, 3)); },
+      function() { return facMonicGen(rnd(1, 2)); },
+      function() { return facGeneralGen(rnd(1, 2)); },
+      function() { return facOddPowerGen(rnd(1, 2)); },
+      function() { return facCubePerfectGen(rnd(1, 2)); }
+    ];
+    return generators[rnd(0, generators.length - 1)]();
+  }
+  return level === 2 ? facCombinedTwoGen() : facCombinedThreeGen();
+}
+
 function generateFactorizacion() {
   const qtys = facActiveQtys();
-  const maxLevel = facCurrentType === 'polinomio' || facCurrentType === 'monic' || facCurrentType === 'general' || facCurrentType === 'odd-powers' || facCurrentType === 'cube' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'cuadrados' || facCurrentType === 'trinomio' ? 3 : 5;
+  const maxLevel = facCurrentType === 'polinomio' || facCurrentType === 'monic' || facCurrentType === 'general' || facCurrentType === 'odd-powers' || facCurrentType === 'cube' ? 2 : facCurrentType === 'agrupacion' ? 4 : facCurrentType === 'combined' || facCurrentType === 'cuadrados' || facCurrentType === 'trinomio' ? 3 : 5;
   const total = Object.values(qtys).reduce(function(sum, qty) { return sum + qty; }, 0);
   if (!total) { alert('Agrega al menos un ejercicio con +'); return; }
 
@@ -8877,7 +9062,7 @@ function generateFactorizacion() {
     let count = 0, attempts = 0;
     while (count < qtys[level] && attempts < qtys[level] * 80) {
       attempts++;
-      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facCurrentType === 'trinomio' ? facTrinomialGen(level) : facCurrentType === 'monic' ? facMonicGen(level) : facCurrentType === 'general' ? facGeneralGen(level) : facCurrentType === 'odd-powers' ? facOddPowerGen(level) : facCurrentType === 'cube' ? facCubePerfectGen(level) : facGen(level);
+      const exercise = facCurrentType === 'polinomio' ? facPolyGen(level) : facCurrentType === 'agrupacion' ? facGroupGen(level) : facCurrentType === 'cuadrados' ? facSquareGen(level) : facCurrentType === 'trinomio' ? facTrinomialGen(level) : facCurrentType === 'monic' ? facMonicGen(level) : facCurrentType === 'general' ? facGeneralGen(level) : facCurrentType === 'odd-powers' ? facOddPowerGen(level) : facCurrentType === 'cube' ? facCubePerfectGen(level) : facCurrentType === 'combined' ? facCombinedGen(level) : facGen(level);
       if (seen.has(exercise.expr)) continue;
       seen.add(exercise.expr);
       exercise.id = ejercicios.length + 1;
@@ -8893,7 +9078,7 @@ function generateFactorizacion() {
     return '<div class="sol-item"><span class="sol-num">' + e.id + '.</span><div class="sol-val">' + e.sol + '</div></div>';
   }).join('');
   const el = document.getElementById('fac-ejercitario');
-  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : facCurrentType === 'trinomio' ? 'Factoriza los siguientes trinomios cuadrados perfectos' : facCurrentType === 'monic' ? 'Factoriza los siguientes trinomios de la forma x<sup>2</sup> + bx + c' : facCurrentType === 'general' ? 'Factoriza los siguientes trinomios de la forma ax<sup>2</sup> + bx + c' : facCurrentType === 'odd-powers' ? 'Factoriza las siguientes sumas o diferencias de potencias impares iguales' : facCurrentType === 'cube' ? 'Factoriza los siguientes cuatrinomios cubos perfectos' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
+  const title = facCurrentType === 'polinomio' ? 'Extrae el factor com&uacute;n polin&oacute;mico de los siguientes ejercicios' : facCurrentType === 'agrupacion' ? 'Factoriza los siguientes polinomios por agrupaci&oacute;n de t&eacute;rminos' : facCurrentType === 'cuadrados' ? 'Factoriza las siguientes diferencias de cuadrados' : facCurrentType === 'trinomio' ? 'Factoriza los siguientes trinomios cuadrados perfectos' : facCurrentType === 'monic' ? 'Factoriza los siguientes trinomios de la forma x<sup>2</sup> + bx + c' : facCurrentType === 'general' ? 'Factoriza los siguientes trinomios de la forma ax<sup>2</sup> + bx + c' : facCurrentType === 'odd-powers' ? 'Factoriza las siguientes sumas o diferencias de potencias impares iguales' : facCurrentType === 'cube' ? 'Factoriza los siguientes cuatrinomios cubos perfectos' : facCurrentType === 'combined' ? 'Factoriza los siguientes polinomios aplicando casos combinados' : 'Extrae el factor com&uacute;n de los siguientes polinomios';
   el.innerHTML = '<div class="ej-header"><div class="ej-title">' + title + '</div><div class="ej-meta"></div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ &nbsp; Fecha: _____________</span></div>' + indGetTablaHTML('ind-filas') + '</div><div class="ejercicios-list">' + items + '</div><div class="solutions-title">Soluciones</div><div class="solutions-list">' + solutions + '</div><div class="ej-copyright">&copy; 2026 Maria Lopez Nery Huerta</div>';
   el.classList.add('visible');
   document.getElementById('fac-btnDownload').style.display = 'block';
