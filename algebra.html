@@ -8951,6 +8951,113 @@ function facComboCubeFactor(firstCoefficient, firstVariable, secondCoefficient, 
   return '(' + first + (isDifference ? ' - ' : ' + ') + second + ')(' + squareFirst + (isDifference ? ' + ' : ' - ') + middle + ' + ' + squareSecond + ')';
 }
 
+function facCombinedSquareGen() {
+  const variables = facComboVariables();
+  const pair = facComboCoprimePair(3);
+  const firstCoefficient = pair[0];
+  const secondCoefficient = pair[1];
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  return {
+    expr: facTermHtml(firstCoefficient * firstCoefficient, 1, firstVariable + facSup(2)) + ' - ' + facTermHtml(secondCoefficient * secondCoefficient, 1, secondVariable + facSup(2)),
+    sol: facComboDifferenceFactor(firstCoefficient, firstVariable, secondCoefficient, secondVariable)
+  };
+}
+
+function facCombinedTrinomialGen() {
+  const variables = facComboVariables();
+  const pair = facComboCoprimePair(3);
+  const firstCoefficient = pair[0];
+  const secondCoefficient = pair[1];
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  const negative = rnd(0, 1) === 1;
+  return {
+    expr: facJoinTerms([
+      { n:firstCoefficient * firstCoefficient, d:1, literal:firstVariable + facSup(2) },
+      { n:(negative ? -1 : 1) * 2 * firstCoefficient * secondCoefficient, d:1, literal:firstVariable + secondVariable },
+      { n:secondCoefficient * secondCoefficient, d:1, literal:secondVariable + facSup(2) }
+    ]),
+    sol: '(' + facTermHtml(firstCoefficient, 1, firstVariable) + (negative ? ' - ' : ' + ') + facTermHtml(secondCoefficient, 1, secondVariable) + ')<sup>2</sup>'
+  };
+}
+
+function facCombinedMonicGen() {
+  const roots = facComboCoprimePair(3);
+  const negative = rnd(0, 1) === 1;
+  const sum = roots[0] + roots[1];
+  const product = roots[0] * roots[1];
+  return {
+    expr: 'x<sup>2</sup>' + (negative ? ' - ' : ' + ') + sum + 'x + ' + product,
+    sol: '(x' + (negative ? ' - ' : ' + ') + roots[0] + ')(x' + (negative ? ' - ' : ' + ') + roots[1] + ')'
+  };
+}
+
+function facCombinedGeneralGen() {
+  let p, q, r, s, a, b, c;
+  do {
+    p = rnd(1, 2);
+    r = rnd(1, 2);
+    q = rnd(1, 2);
+    s = rnd(1, 2);
+    a = p * r;
+    b = p * s + q * r;
+    c = q * s;
+  } while (a === 1 || facGcd(facGcd(a, b), c) !== 1 || (p === r && q === s));
+  const negative = rnd(0, 1) === 1;
+  return {
+    expr: a + 'x<sup>2</sup>' + (negative ? ' - ' : ' + ') + b + 'x + ' + c,
+    sol: '(' + facGeneralLinearFactor(p, q, negative) + ')(' + facGeneralLinearFactor(r, s, negative) + ')'
+  };
+}
+
+function facCombinedCubeGen() {
+  const variables = facComboVariables();
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  const firstCoefficient = 1;
+  const secondCoefficient = 2;
+  const isDifference = rnd(0, 1) === 1;
+  return {
+    expr: facJoinTerms([
+      { n:1, d:1, literal:firstVariable + facSup(3) },
+      { n:(isDifference ? -1 : 1) * 6, d:1, literal:firstVariable + facSup(2) + secondVariable },
+      { n:12, d:1, literal:firstVariable + secondVariable + facSup(2) },
+      { n:(isDifference ? -1 : 1) * 8, d:1, literal:secondVariable + facSup(3) }
+    ]),
+    sol: '(' + firstVariable + (isDifference ? ' - ' : ' + ') + '2' + secondVariable + ')<sup>3</sup>'
+  };
+}
+
+function facCombinedOddPowerGen() {
+  const variables = facComboVariables();
+  const firstVariable = variables[0];
+  const secondVariable = variables[1];
+  const isDifference = rnd(0, 1) === 1;
+  return {
+    expr: firstVariable + facSup(3) + (isDifference ? ' - ' : ' + ') + '8' + secondVariable + facSup(3),
+    sol: facComboCubeFactor(1, firstVariable, 2, secondVariable, isDifference)
+  };
+}
+
+function facCombinedGroupGen() {
+  const variables = facComboVariables();
+  const firstOuter = variables[0];
+  const secondOuter = variables[1];
+  const firstInner = variables[2];
+  const secondInner = variables[3];
+  const negative = rnd(0, 1) === 1;
+  return {
+    expr: facJoinTerms([
+      { n:2, d:1, literal:firstOuter + firstInner },
+      { n:negative ? -2 : 2, d:1, literal:firstOuter + secondInner },
+      { n:3, d:1, literal:secondOuter + firstInner },
+      { n:negative ? -3 : 3, d:1, literal:secondOuter + secondInner }
+    ]),
+    sol: '(2' + firstOuter + ' + 3' + secondOuter + ')(' + firstInner + (negative ? ' - ' : ' + ') + secondInner + ')'
+  };
+}
+
 function facCombinedTwoGen() {
   const recipes = [
     ['monomio', 'cuadrados'],
@@ -8962,14 +9069,14 @@ function facCombinedTwoGen() {
   if (!availableRecipes.length) return null;
   const recipe = availableRecipes[rnd(0, availableRecipes.length - 1)].index;
   const vars = facComboVariables();
-  const commonCoefficient = rnd(2, 6);
+  const commonCoefficient = rnd(2, 3);
   const commonVariable = vars[0];
   const firstVariable = vars[1];
   const secondVariable = vars[2];
   const common = facTermHtml(commonCoefficient, 1, commonVariable);
 
   if (recipe === 0) {
-    const pair = facComboCoprimePair(3);
+    const pair = facComboCoprimePair(2);
     const firstCoefficient = pair[0];
     const secondCoefficient = pair[1];
     return {
@@ -8996,7 +9103,7 @@ function facCombinedTwoGen() {
   }
 
   if (recipe === 2) {
-    const roots = facComboCoprimePair(8);
+    const roots = facComboCoprimePair(3);
     const negative = rnd(0, 1) === 1;
     const sum = roots[0] + roots[1];
     const product = roots[0] * roots[1];
@@ -9010,10 +9117,10 @@ function facCombinedTwoGen() {
     };
   }
 
-  const pair = facComboCoprimePair(4);
+  const pair = facComboCoprimePair(2);
   const linearCoefficient = pair[0];
   const constant = pair[1];
-  const roots = facComboCoprimePair(3);
+  const roots = facComboCoprimePair(2);
   return {
     expr: facJoinTerms([
       { n:linearCoefficient * roots[0] * roots[0], d:1, literal:firstVariable + secondVariable + facSup(2) },
@@ -9035,17 +9142,17 @@ function facCombinedThreeGen() {
   if (!availableRecipes.length) return null;
   const recipe = availableRecipes[rnd(0, availableRecipes.length - 1)].index;
   const vars = facComboVariables();
-  const commonCoefficient = rnd(2, 5);
+  const commonCoefficient = rnd(2, 3);
   const commonVariable = vars[0];
   const linearVariable = vars[1];
   const powerVariable = vars[2];
   const common = facTermHtml(commonCoefficient, 1, commonVariable);
-  const linearPair = facComboCoprimePair(4);
+  const linearPair = facComboCoprimePair(2);
   const linearCoefficient = linearPair[0];
   const linearConstant = linearPair[1];
 
   if (recipe === 0) {
-    const pair = facComboCoprimePair(3);
+    const pair = facComboCoprimePair(2);
     const firstCoefficient = pair[0];
     const secondCoefficient = pair[1];
     return {
@@ -9060,7 +9167,7 @@ function facCombinedThreeGen() {
   }
 
   if (recipe === 1) {
-    const pair = facComboCoprimePair(3);
+    const pair = facComboCoprimePair(2);
     const firstCoefficient = pair[0];
     const secondCoefficient = pair[1];
     const isDifference = rnd(0, 1) === 1;
@@ -9076,7 +9183,7 @@ function facCombinedThreeGen() {
     };
   }
 
-  const pair = facComboCoprimePair(3);
+  const pair = facComboCoprimePair(2);
   const firstCoefficient = pair[0];
   const secondCoefficient = pair[1];
   const isDifference = rnd(0, 1) === 1;
@@ -9098,15 +9205,15 @@ function facCombinedThreeGen() {
 function facCombinedGen(level) {
   if (level === 1) {
     const generators = [
-      { type:'monomio', generate:function() { return facGen(rnd(1, 5)); } },
+      { type:'monomio', generate:function() { return facGen(rnd(1, 3)); } },
       { type:'polinomio', generate:function() { return facPolyGen(rnd(1, 2)); } },
-      { type:'agrupacion', generate:function() { return facGroupGen(rnd(1, 4)); } },
-      { type:'cuadrados', generate:function() { return facSquareGen(rnd(1, 3)); } },
-      { type:'trinomio', generate:function() { return facTrinomialGen(rnd(1, 3)); } },
-      { type:'monic', generate:function() { return facMonicGen(rnd(1, 2)); } },
-      { type:'general', generate:function() { return facGeneralGen(rnd(1, 2)); } },
-      { type:'odd-powers', generate:function() { return facOddPowerGen(rnd(1, 2)); } },
-      { type:'cube', generate:function() { return facCubePerfectGen(rnd(1, 2)); } }
+      { type:'agrupacion', generate:function() { return facCombinedGroupGen(); } },
+      { type:'cuadrados', generate:function() { return facCombinedSquareGen(); } },
+      { type:'trinomio', generate:function() { return facCombinedTrinomialGen(); } },
+      { type:'monic', generate:function() { return facCombinedMonicGen(); } },
+      { type:'general', generate:function() { return facCombinedGeneralGen(); } },
+      { type:'odd-powers', generate:function() { return facCombinedOddPowerGen(); } },
+      { type:'cube', generate:function() { return facCombinedCubeGen(); } }
     ];
     const availableGenerators = generators.filter(function(generator) { return facCombinedSelected[generator.type]; });
     return availableGenerators.length ? availableGenerators[rnd(0, availableGenerators.length - 1)].generate() : null;
