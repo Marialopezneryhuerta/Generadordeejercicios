@@ -2349,8 +2349,8 @@ function eliExercise(tipo, useDecimal = false) {
 }
 function generateElipse() {
   const total=Object.values(eliQtys).reduce((a,b)=>a+b,0); if(!total) { alert('Agregá al menos un ejercicio.'); return; }
-  const ejercicios=[], seen=new Set();
-  for(let tipo=1;tipo<=8;tipo++) for(let n=0;n<eliQtys[tipo];n++) { let e,tries=0,useDecimal=(ejercicios.length+1)%5===0; do { e=eliExercise(tipo,useDecimal); tries++; } while(seen.has(e.question)&&tries<30); seen.add(e.question); ejercicios.push({tipo,...e,id:ejercicios.length+1}); }
+  const ejercicios=[], seen=new Set(); let eligibleCount=0;
+  for(let tipo=1;tipo<=8;tipo++) for(let n=0;n<eliQtys[tipo];n++) { let e,tries=0,useDecimal=tipo!==2 && (++eligibleCount)%5===0; do { e=eliExercise(tipo,useDecimal); tries++; } while(seen.has(e.question)&&tries<30); seen.add(e.question); ejercicios.push({tipo,...e,id:ejercicios.length+1}); }
   let last=0, questions='<div class="ejercicios-list">', sols='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
   ejercicios.forEach(e=>{ if(e.tipo!==last) { last=e.tipo; questions+=`<div class="level-header">Tipo ${e.tipo} — ${ELI_TYPE_NAMES[e.tipo-1]}</div>`; } questions+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.question.replace(/\.?$/,'')} Graficá.</div><div class="work-space work-space-xl"></div></div></div>`; sols+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}<div class="ej-graph">${e.graph}</div></div></div>`; });
   questions+='</div>'; sols+='</div><div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
