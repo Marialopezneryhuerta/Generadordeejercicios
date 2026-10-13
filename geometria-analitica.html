@@ -307,6 +307,9 @@ body { padding-bottom: 2.5rem; }
     <button class="topic-btn" id="topic-circunferencia" onclick="switchTopic('circunferencia')">
       ⭕ Circunferencia
     </button>
+    <button class="topic-btn" id="topic-elipse" onclick="switchTopic('elipse')">
+      🥚 Elipse
+    </button>
     <button class="topic-btn" id="topic-rectas" onclick="switchTopic('rectas')">
       📏 Puntos y Rectas
     </button>
@@ -592,7 +595,28 @@ body { padding-bottom: 2.5rem; }
 <button class="btn-download" id="circ-btnDownload" onclick="downloadEjercitario('circ-ejercitario', 'circunferencias')">⬇️ Descargar PDF</button>
       <button class="btn-download-sol" id="circ-btnSolAparte" onclick="downloadSolucionesAparte('circ-ejercitario', 'circunferencias')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
 
-  </div>  <!-- PANEL: PUNTOS Y RECTAS -->
+  </div>  <!-- FIN PANEL: CIRCUNFERENCIA -->
+  <!-- PANEL: ELIPSE -->
+  <div class="section-panel" id="panel-elipse">
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fff7ed">🥚</span> Centro de la elipse</div>
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem;">
+        <button id="eli-center-00" onclick="eliSwitchCenter('00')" style="flex:1;font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;padding:.6rem;border:2px solid var(--accent);background:var(--accent);color:white;border-radius:10px;cursor:pointer;">Centro (0,0)</button>
+        <button id="eli-center-hk" onclick="eliSwitchCenter('hk')" style="flex:1;font-family:'Nunito',sans-serif;font-weight:800;font-size:.88rem;padding:.6rem;border:2px solid var(--border);background:white;color:var(--muted);border-radius:10px;cursor:pointer;">Centro (h,k)</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="icon" style="background:#fff7ed">🥚</span> Tipos de ejercicios — <span id="eli-center-label">Centro en (0,0)</span></div>
+      <div class="levels" id="eli-levels"></div>
+      <div class="total-badge" id="eli-totalBadge">Total: <span>0</span> ejercicios</div>
+    </div>
+    <button class="btn-generate" onclick="generateElipse()">⚡ Generar ejercitario</button>
+    <div class="ejercitario" id="eli-ejercitario"></div>
+    <button class="btn-download" id="eli-btnDownload" onclick="downloadEjercitario('eli-ejercitario', 'elipses')">⬇️ Descargar PDF</button>
+    <button class="btn-download-sol" id="eli-btnSolAparte" onclick="downloadSolucionesAparte('eli-ejercitario', 'elipses')" style="display:none">🔑 Descargar soluciones (hoja aparte)</button>
+  </div>
+
+  <!-- PANEL: PUNTOS Y RECTAS -->
   <div class="section-panel" id="panel-rectas">
 
     <div class="card">
@@ -2244,6 +2268,91 @@ function generateCircunferencia() {
 // ═══════════════════════════════════════════
 // PUNTOS Y RECTAS
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// ELIPSES
+// ═══════════════════════════════════════════
+const ELI_TYPE_NAMES = [
+  'Vértices → ecuación', 'Foco y vértice → ecuación', 'Medidas de los ejes → ecuación',
+  'Ecuación → vértices mayores', 'Ecuación → vértices menores', 'Ecuación → focos',
+  'Vértices → ecuación general', 'Ecuación general → vértices y focos'
+];
+let currentEliCenter = '00';
+let eliQtys = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0};
+
+function eliBuildControls() {
+  const levels = document.getElementById('eli-levels');
+  levels.innerHTML = ELI_TYPE_NAMES.map((name, i) => {
+    const n = i + 1;
+    return `<div class="level-item" id="eli-lvl-${n}"><span class="level-dot"></span><span class="level-name" onclick="eliToggleLevel(${n})">Tipo ${n} — ${name}</span><div class="level-qty"><button class="lq-btn" onclick="eliChangeQty(${n},-1)">−</button><span class="lq-val" id="eli-lqv-${n}">0</span><button class="lq-btn" onclick="eliChangeQty(${n},1)">+</button></div></div>`;
+  }).join('');
+  eliUpdateTotal();
+}
+function eliSwitchCenter(v) {
+  currentEliCenter = v;
+  document.getElementById('eli-center-label').textContent = v === '00' ? 'Centro en (0,0)' : 'Centro en (h,k)';
+  ['00','hk'].forEach(x => {
+    const b = document.getElementById('eli-center-' + x), active = x === v;
+    b.style.background = active ? 'var(--accent)' : 'white'; b.style.borderColor = active ? 'var(--accent)' : 'var(--border)'; b.style.color = active ? 'white' : 'var(--muted)';
+  });
+}
+function eliToggleLevel(n) { eliChangeQty(n, eliQtys[n] ? -eliQtys[n] : 1); }
+function eliChangeQty(n, delta) {
+  eliQtys[n] = Math.max(0, Math.min(20, eliQtys[n] + delta));
+  document.getElementById('eli-lqv-' + n).textContent = eliQtys[n];
+  document.getElementById('eli-lvl-' + n).classList.toggle('active', eliQtys[n] > 0); eliUpdateTotal();
+}
+function eliUpdateTotal() { document.getElementById('eli-totalBadge').innerHTML = `Total: <span>${Object.values(eliQtys).reduce((a,b)=>a+b,0)}</span> ejercicios`; }
+function eliPt(x,y) { return `(${x}, ${y})`; }
+function eliTerm(n, term, first) { if (!n) return ''; return (first ? (n < 0 ? '− ' : '') : (n < 0 ? ' − ' : ' + ')) + (Math.abs(n) === 1 && term ? '' : Math.abs(n)) + term; }
+function eliShift(v, letter) { return v === 0 ? letter : `(${letter} ${v < 0 ? '+' : '−'} ${Math.abs(v)})`; }
+function eliData(centerMode) {
+  const triples = [[5,3,4],[5,4,3],[10,6,8],[13,5,12],[13,12,5]];
+  const [a,b,c] = triples[rnd(0, triples.length - 1)], horizontal = Math.random() < .5;
+  const h = centerMode === 'hk' ? rndNZ(-6,6) : 0, k = centerMode === 'hk' ? rndNZ(-6,6) : 0;
+  const A2=a*a, B2=b*b, xD=horizontal?A2:B2, yD=horizontal?B2:A2;
+  const xPart = eliShift(h,'x'), yPart = eliShift(k,'y');
+  const canon = `${xPart}²/${xD} + ${yPart}²/${yD} = 1`;
+  const xCoeff=yD, yCoeff=xD, xLin=-2*xCoeff*h, yLin=-2*yCoeff*k, constant=xCoeff*h*h+yCoeff*k*k-A2*B2;
+  const general = `${eliTerm(xCoeff,'x²',true)}${eliTerm(yCoeff,'y²',false)}${eliTerm(xLin,'x',false)}${eliTerm(yLin,'y',false)}${eliTerm(constant,'',false)} = 0`;
+  const major = horizontal ? [[h-a,k],[h+a,k]] : [[h,k-a],[h,k+a]];
+  const minor = horizontal ? [[h,k-b],[h,k+b]] : [[h-b,k],[h+b,k]];
+  const foci = horizontal ? [[h-c,k],[h+c,k]] : [[h,k-c],[h,k+c]];
+  return {a,b,c,h,k,horizontal,A2,B2,canon,general,major,minor,foci};
+}
+function eliSVG(d) {
+  const W=280,H=230,range=Math.max(Math.abs(d.h)+d.a+2,Math.abs(d.k)+d.a+2,8), s=92/range, ox=W/2-d.h*s, oy=H/2+d.k*s;
+  const pt=(x,y)=>({x:ox+x*s,y:oy-y*s}); let ticks='';
+  for(let i=-Math.ceil(range);i<=Math.ceil(range);i+=2) { const px=pt(i,0),py=pt(0,i); ticks+=`<line x1="${px.x}" y1="${oy-3}" x2="${px.x}" y2="${oy+3}" stroke="#bbb"/><line x1="${ox-3}" y1="${py.y}" x2="${ox+3}" y2="${py.y}" stroke="#bbb"/>`; }
+  const c=pt(d.h,d.k), rx=(d.horizontal?d.a:d.b)*s, ry=(d.horizontal?d.b:d.a)*s;
+  const dots=(arr,label,color)=>arr.map((q,i)=>{const p=pt(q[0],q[1]);return `<circle cx="${p.x}" cy="${p.y}" r="3" fill="${color}"/><text x="${p.x+5}" y="${p.y-5}" font-size="10" fill="${color}">${label}${i+1}</text>`;}).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="280" height="230" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fff"/>${ticks}<line x1="0" y1="${oy}" x2="${W}" y2="${oy}" stroke="#555"/><line x1="${ox}" y1="0" x2="${ox}" y2="${H}" stroke="#555"/><ellipse cx="${c.x}" cy="${c.y}" rx="${rx}" ry="${ry}" fill="none" stroke="#4f6ef7" stroke-width="2.5"/>${dots(d.major,'V','#d97706')}${dots(d.minor,'v','#d97706')}${dots(d.foci,'F','#dc2626')}<circle cx="${c.x}" cy="${c.y}" r="3" fill="#111"/><text x="${c.x+5}" y="${c.y+13}" font-size="10">C</text></svg>`;
+}
+function eliAnswer(d) { return `Centro C${eliPt(d.h,d.k)}; vértices mayores: ${eliPt(...d.major[0])} y ${eliPt(...d.major[1])}; vértices menores: ${eliPt(...d.minor[0])} y ${eliPt(...d.minor[1])}; focos: ${eliPt(...d.foci[0])} y ${eliPt(...d.foci[1])}.`; }
+function eliExercise(tipo) {
+  const d=eliData(currentEliCenter), M=d.major.map(p=>eliPt(...p)).join(' y '), m=d.minor.map(p=>eliPt(...p)).join(' y '), F=d.foci.map(p=>eliPt(...p)).join(' y ');
+  const base = '<div class="ej-equation">' + d.canon + '</div>';
+  let question='', sol='';
+  if(tipo===1) { question=`Los vértices mayores de una elipse son ${M} y los vértices menores son ${m}. Escribí su ecuación canónica.`; sol=`${base} ${eliAnswer(d)}`; }
+  if(tipo===2) { const useMajor=Math.random()<.5, p=useMajor?d.major[1]:d.minor[1]; question=`La elipse tiene centro C${eliPt(d.h,d.k)}, foco F${eliPt(...d.foci[1])} y vértice ${useMajor?'mayor':'menor'} ${eliPt(...p)}. Escribí su ecuación canónica.`; sol=`${base} ${eliAnswer(d)}`; }
+  if(tipo===3) { question=`Una elipse con centro C${eliPt(d.h,d.k)} tiene eje mayor de medida ${2*d.a} y eje menor de medida ${2*d.b}. El eje mayor es ${d.horizontal?'horizontal':'vertical'}. Escribí su ecuación canónica.`; sol=`${base} ${eliAnswer(d)}`; }
+  if(tipo===4) { question=`Dada la elipse ${base}, hallá las coordenadas de sus vértices mayores.`; sol=`Vértices mayores: ${M}.<br>${eliAnswer(d)}`; }
+  if(tipo===5) { question=`Dada la elipse ${base}, hallá las coordenadas de sus vértices menores.`; sol=`Vértices menores: ${m}.<br>${eliAnswer(d)}`; }
+  if(tipo===6) { question=`Dada la elipse ${base}, hallá las coordenadas de sus focos.`; sol=`Focos: ${F}.<br>${eliAnswer(d)}`; }
+  if(tipo===7) { question=`Los vértices mayores son ${M} y los vértices menores son ${m}. Hallá la ecuación general de la elipse.`; sol=`<div class="ej-equation">${d.general}</div>${base}`; }
+  if(tipo===8) { question=`Dada la ecuación general de la elipse:<div class="ej-equation">${d.general}</div>hallá las coordenadas de los vértices y de los focos.`; sol=`${base}${eliAnswer(d)}`; }
+  return {question,sol,graph:eliSVG(d)};
+}
+function generateElipse() {
+  const total=Object.values(eliQtys).reduce((a,b)=>a+b,0); if(!total) { alert('Agregá al menos un ejercicio.'); return; }
+  const ejercicios=[], seen=new Set();
+  for(let tipo=1;tipo<=8;tipo++) for(let n=0;n<eliQtys[tipo];n++) { let e,tries=0; do { e=eliExercise(tipo); tries++; } while(seen.has(e.question)&&tries<30); seen.add(e.question); ejercicios.push({tipo,...e,id:ejercicios.length+1}); }
+  let last=0, questions='<div class="ejercicios-list">', sols='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
+  ejercicios.forEach(e=>{ if(e.tipo!==last) { last=e.tipo; questions+=`<div class="level-header">Tipo ${e.tipo} — ${ELI_TYPE_NAMES[e.tipo-1]}</div>`; } questions+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.question.replace(/\.?$/,'')} Graficá.</div><div class="work-space work-space-xl"></div></div></div>`; sols+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}<div class="ej-graph">${e.graph}</div></div></div>`; });
+  questions+='</div>'; sols+='</div><div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
+  const out=document.getElementById('eli-ejercitario'); out.innerHTML=`<div class="ej-header"><div class="ej-title">Elipse — ${currentEliCenter==='00'?'Centro en (0,0)':'Centro en (h,k)'}</div><div class="ej-data-row"><span>Nombre: ____________________________</span><span>Curso: _____________ Fecha: _____________</span></div>${indGetTablaHTML('ind-filas')}</div>${questions}${sols}`; out.style.display='block'; document.getElementById('eli-btnDownload').style.display='block';
+}
+eliBuildControls();
+
 const REC_KEYS = ['p1','p2','p3','p4','p5','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11'];
 const recQtys = {};
 REC_KEYS.forEach(k => recQtys[k] = k === 'p1' || k === 'p2' ? 0 : 0);
