@@ -1546,7 +1546,8 @@ function hkParabolaSVG(d) {
   const orient = d.orient;
 
   if (orient === 'up' || orient === 'down') {
-    for (let mx = d.h - range; mx <= d.h + range; mx += range/40) {
+    for (let mx = d.h - range; mx <= d.h + range; mx += range/40) {2313
+  
       const my = d.k + ((mx - d.h) * (mx - d.h)) / (4 * d.p);
       if (Math.abs(my - d.k) > range * 1.2) continue;
       const pt = toSVG(mx, my);
@@ -2310,7 +2311,7 @@ function eliTerm(n, term, first) { if (!n) return ''; return (first ? (n < 0 ? '
 function eliShift(v, letter) { return v === 0 ? letter : `(${letter} ${v < 0 ? '+' : '−'} ${Math.abs(v)})`; }
 function eliFrac(num, den) { return `<span class="frac"><span class="num">${num}</span><span class="den">${den}</span></span>`; }
 function eliData(centerMode) {
-  const triples = [[5,3,4],[5,4,3],[10,6,8],[13,5,12],[13,12,5]];
+  const triples = [[5,3,4],[5,4,3],[10,6,8],[13,5,12],[13,12,5],[17,8,15],[17,15,8],[25,7,24],[25,24,7],[25,15,20],[25,20,15],[26,10,24],[26,24,10],[29,20,21],[29,21,20]];
   const [a,b,c] = triples[rnd(0, triples.length - 1)], horizontal = Math.random() < .5;
   const h = centerMode === 'hk' ? rndNZ(-6,6) : 0, k = centerMode === 'hk' ? rndNZ(-6,6) : 0;
   const A2=a*a, B2=b*b, xD=horizontal?A2:B2, yD=horizontal?B2:A2;
