@@ -2310,9 +2310,9 @@ function eliPt(x,y) { const f=n=>Number.isInteger(n)?n:Number(n.toFixed(2)); ret
 function eliTerm(n, term, first) { if (!n) return ''; return (first ? (n < 0 ? '− ' : '') : (n < 0 ? ' − ' : ' + ')) + (Math.abs(n) === 1 && term ? '' : Math.abs(n)) + term; }
 function eliShift(v, letter) { return v === 0 ? letter : `(${letter} ${v < 0 ? '+' : '−'} ${Math.abs(v)})`; }
 function eliFrac(num, den) { return `<span class="frac"><span class="num">${num}</span><span class="den">${den}</span></span>`; }
-function eliData(centerMode) {
+function eliData(centerMode, useDecimal = false) {
   const triples = [[5,3,4],[5,4,3],[10,6,8],[13,5,12],[13,12,5],[17,8,15],[17,15,8],[25,7,24],[25,24,7],[25,15,20],[25,20,15],[26,10,24],[26,24,10],[29,20,21],[29,21,20],[7,4,Math.sqrt(33)],[8,5,Math.sqrt(39)],[9,4,Math.sqrt(65)],[11,6,Math.sqrt(85)],[12,7,Math.sqrt(95)],[14,9,Math.sqrt(115)]];
-  const [a,b,c] = triples[rnd(0, triples.length - 1)], horizontal = Math.random() < .5;
+  const exactTriples=triples.slice(0,15), decimalTriples=triples.slice(15), pool=useDecimal?decimalTriples:exactTriples; const [a,b,c]=pool[rnd(0,pool.length-1)], horizontal=Math.random()<.5;
   const h = centerMode === 'hk' ? rndNZ(-6,6) : 0, k = centerMode === 'hk' ? rndNZ(-6,6) : 0;
   const A2=a*a, B2=b*b, xD=horizontal?A2:B2, yD=horizontal?B2:A2;
   const xPart = eliShift(h,'x'), yPart = eliShift(k,'y');
@@ -2333,8 +2333,8 @@ function eliSVG(d) {
   return `<svg viewBox="0 0 ${W} ${H}" width="280" height="230" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#fff"/>${ticks}<line x1="0" y1="${oy}" x2="${W}" y2="${oy}" stroke="#555"/><line x1="${ox}" y1="0" x2="${ox}" y2="${H}" stroke="#555"/><ellipse cx="${c.x}" cy="${c.y}" rx="${rx}" ry="${ry}" fill="none" stroke="#4f6ef7" stroke-width="2.5"/>${dots(d.major,'V','#d97706')}${dots(d.minor,'v','#d97706')}${dots(d.foci,'F','#dc2626')}<circle cx="${c.x}" cy="${c.y}" r="3" fill="#111"/><text x="${c.x+5}" y="${c.y+13}" font-size="10">C</text></svg>`;
 }
 function eliAnswer(d) { return `Centro C${eliPt(d.h,d.k)}; vértices mayores: ${eliPt(...d.major[0])} y ${eliPt(...d.major[1])}; vértices menores: ${eliPt(...d.minor[0])} y ${eliPt(...d.minor[1])}; focos: ${eliPt(...d.foci[0])} y ${eliPt(...d.foci[1])}.`; }
-function eliExercise(tipo) {
-  const d=eliData(currentEliCenter), M=d.major.map(p=>eliPt(...p)).join(' y '), m=d.minor.map(p=>eliPt(...p)).join(' y '), F=d.foci.map(p=>eliPt(...p)).join(' y ');
+function eliExercise(tipo, useDecimal = false) {
+  const d=eliData(currentEliCenter,useDecimal), M=d.major.map(p=>eliPt(...p)).join(' y '), m=d.minor.map(p=>eliPt(...p)).join(' y '), F=d.foci.map(p=>eliPt(...p)).join(' y ');
   const base = '<div class="ej-equation">' + d.canon + '</div>';
   let question='', sol='';
   if(tipo===1) { question=`Los vértices mayores de una elipse son ${M} y los vértices menores son ${m}. Escribí su ecuación canónica.`; sol=`${base} ${eliAnswer(d)}`; }
@@ -2350,7 +2350,7 @@ function eliExercise(tipo) {
 function generateElipse() {
   const total=Object.values(eliQtys).reduce((a,b)=>a+b,0); if(!total) { alert('Agregá al menos un ejercicio.'); return; }
   const ejercicios=[], seen=new Set();
-  for(let tipo=1;tipo<=8;tipo++) for(let n=0;n<eliQtys[tipo];n++) { let e,tries=0; do { e=eliExercise(tipo); tries++; } while(seen.has(e.question)&&tries<30); seen.add(e.question); ejercicios.push({tipo,...e,id:ejercicios.length+1}); }
+  for(let tipo=1;tipo<=8;tipo++) for(let n=0;n<eliQtys[tipo];n++) { let e,tries=0,useDecimal=(ejercicios.length+1)%5===0; do { e=eliExercise(tipo,useDecimal); tries++; } while(seen.has(e.question)&&tries<30); seen.add(e.question); ejercicios.push({tipo,...e,id:ejercicios.length+1}); }
   let last=0, questions='<div class="ejercicios-list">', sols='<div class="solutions-title">✓ Soluciones</div><div class="solutions-list">';
   ejercicios.forEach(e=>{ if(e.tipo!==last) { last=e.tipo; questions+=`<div class="level-header">Tipo ${e.tipo} — ${ELI_TYPE_NAMES[e.tipo-1]}</div>`; } questions+=`<div class="ejercicio-item"><span class="ej-num">(${e.id})</span><div class="ej-content"><div class="ej-question">${e.question.replace(/\.?$/,'')} Graficá.</div><div class="work-space work-space-xl"></div></div></div>`; sols+=`<div class="sol-item"><span class="sol-num">${e.id}.</span><div class="sol-val">${e.sol}<div class="ej-graph">${e.graph}</div></div></div>`; });
   questions+='</div>'; sols+='</div><div class="ej-copyright">© 2026 Maria Lopez Nery Huerta</div>';
